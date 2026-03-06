@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Sliding Puzzle Online — Play Instantly | MiniGamePlanet</title>
+  <meta name="description" content="Play the classic Sliding Puzzle free online. Slide numbered tiles into the correct order on 3x3, 4x4, or 5x5 grids. Timer and move counter included.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/sliding-puzzle">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+  window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+  gtag('js',new Date());
+  gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500});
+  gtag('config','G-XXXXXXXXXX');
+  </script>
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Free Sliding Puzzle Online | MiniGamePlanet">
+  <meta property="og:description" content="Play the classic Sliding Puzzle free online. Slide numbered tiles into order on 3x3, 4x4, or 5x5 grids.">
+  <meta property="og:url" content="https://minigameplanet.com/games/sliding-puzzle">
+  <meta property="og:site_name" content="MiniGamePlanet">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"VideoGame","name":"Sliding Puzzle","url":"https://minigameplanet.com/games/sliding-puzzle","description":"Play the classic Sliding Puzzle free online. Slide numbered tiles into order on 3x3, 4x4, or 5x5 grids.","genre":"Puzzle","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+  </script>
+  <style>
+    .hero-grad{background:linear-gradient(135deg,#0891B2 0%,#2563EB 22%,#7C3AED 44%,#E11D48 66%,#EA580C 82%,#D97706 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:heroShift 8s ease-in-out infinite}
+    @keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+    .tile{display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-weight:700;border-radius:8px;cursor:pointer;user-select:none;transition:all 0.15s ease;position:absolute}
+    .tile:hover{filter:brightness(0.95)}
+    .tile.correct{box-shadow:inset 0 0 0 2px rgba(5,150,105,0.4)}
+    @keyframes floatUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-40px)}}
+    .score-pop{position:absolute;pointer-events:none;font-family:'DM Mono',monospace;font-weight:700;animation:floatUp 0.7s ease forwards;z-index:10}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;position:relative;" id="game-wrap">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <div>
+          <h1 style="font-size:22px;font-weight:700;margin:0;">🔀 Sliding Puzzle</h1>
+          <p style="font-size:12px;color:#94A3B8;margin:2px 0 0;">Click a tile next to the gap to slide it</p>
+        </div>
+        <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊 Sound</button>
+      </div>
+      <!-- Size selector -->
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+        <button class="size-btn" data-size="3" style="padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">3×3</button>
+        <button class="size-btn active" data-size="4" style="padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;border:2px solid #2563EB;background:#2563EB;color:#fff;cursor:pointer;font-family:inherit;">4×4</button>
+        <button class="size-btn" data-size="5" style="padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">5×5</button>
+      </div>
+      <!-- Stats -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding:8px 12px;background:#F8FAFC;border-radius:8px;flex-wrap:wrap;gap:8px;">
+        <div style="display:flex;align-items:center;gap:16px;">
+          <span style="font-family:'DM Mono',monospace;font-size:14px;font-weight:600;">🔢 Moves: <span id="moves">0</span></span>
+          <span style="font-family:'DM Mono',monospace;font-size:14px;font-weight:600;">⏱ <span id="timer">0:00</span></span>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;">
+          <span style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;">🔥 Streak: <span id="streak">0</span></span>
+          <span style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;">🏆 Best: <span id="best">---</span></span>
+        </div>
+      </div>
+      <div id="near-miss" style="display:none;text-align:center;padding:4px;font-size:12px;font-weight:600;color:#D97706;margin-bottom:6px;"></div>
+      <!-- Board -->
+      <div style="display:flex;justify-content:center;margin-bottom:12px;">
+        <div id="board" style="position:relative;background:#E2E8F0;border-radius:10px;"></div>
+      </div>
+      <!-- Game Over -->
+      <div id="game-over" style="display:none;text-align:center;padding:20px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;">
+        <div id="go-title" style="font-size:24px;font-weight:700;margin-bottom:4px;"></div>
+        <div id="go-sub" style="font-size:14px;color:#64748B;margin-bottom:12px;"></div>
+        <div id="session-stats" style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;text-align:left;max-width:220px;margin:0 auto 16px;padding:12px;background:#fff;border-radius:8px;"></div>
+        <button id="play-again" style="padding:10px 28px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">▶ Play Again</button>
+        <p style="font-size:11px;color:#94A3B8;margin-top:6px;">Press Enter or Space to restart</p>
+      </div>
+    </div>
+  </main>
+
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play the Sliding Puzzle</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>The Sliding Puzzle, also known as the 15 Puzzle or number slide, is one of the oldest and most satisfying mechanical puzzles ever devised. The goal is straightforward: rearrange numbered tiles on a grid so they appear in sequential order, from 1 in the top-left to the last number in the bottom-right, with the empty space in the final position. It sounds simple, but the constraint of only being able to slide tiles into the adjacent empty space makes it a genuine mental challenge.</p>
+
+      <h3 class="text-lg font-bold text-slate-900 mt-6">How to Play</h3>
+      <p>Click or tap any tile that is directly adjacent (horizontally or vertically) to the empty gap. That tile will slide into the gap's position. You can also use the arrow keys on your keyboard — pressing an arrow key slides the tile from that direction into the gap. For example, pressing the right arrow moves the tile to the left of the gap into the gap position.</p>
+      <p>Choose from three grid sizes: 3×3 (8 tiles — great for beginners), 4×4 (15 tiles — the classic difficulty), or 5×5 (24 tiles — a serious challenge). The game tracks both your move count and time elapsed. Try to solve the puzzle in as few moves as possible.</p>
+
+      <h3 class="text-lg font-bold text-slate-900 mt-6">History &amp; Origin</h3>
+      <p>The sliding puzzle was invented in the 1870s by Noyes Palmer Chapman, a postmaster in Canastota, New York. It was initially a physical wooden toy with 15 numbered blocks in a 4×4 tray. The puzzle became a worldwide sensation in the 1880s, with newspapers offering cash prizes for solutions. Notably, mathematicians proved that exactly half of all possible starting configurations are unsolvable — the puzzle can only be solved if the permutation of tiles is "even." Sam Loyd, the famous puzzle designer, famously offered $1,000 for solving a specific unsolvable configuration, knowing it was impossible. This game generates only solvable configurations, so you can always reach the solution.</p>
+
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Strategy &amp; Tips</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Solve row by row.</strong> Start by placing the tiles for the top row in their correct positions, then the second row, and so on. This structured approach prevents disrupting already-solved sections.</li>
+        <li><strong>Lock the first two rows.</strong> Once you have the top rows in place, you only need to rearrange the remaining smaller section.</li>
+        <li><strong>Use the last two of each row together.</strong> To place the final two tiles of a row without disrupting previous tiles, move them into position simultaneously using a specific rotation technique.</li>
+        <li><strong>Practice the 3×3 first.</strong> Master the smaller grid before tackling 4×4 or 5×5. The same strategies scale up, but the smaller grid lets you learn the patterns faster.</li>
+        <li><strong>Count your idle moves.</strong> If you find yourself cycling tiles without progress, stop and rethink your approach. Efficient solves minimize wasted moves.</li>
+      </ul>
+
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Frequently Asked Questions</h3>
+      <h4 class="font-semibold text-slate-800">Can every Sliding Puzzle configuration be solved?</h4>
+      <p>No — mathematically, only half of all possible tile arrangements are solvable. However, this online version always generates solvable starting positions, so you will never encounter an impossible puzzle.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">What is a good move count for the 4×4 puzzle?</h4>
+      <p>The optimal solution for a 15-puzzle averages around 50–80 moves, though the theoretical minimum varies by starting configuration. Casual solvers typically use 100–200 moves. Competitive speed-solvers aim for under 60 moves with sub-30-second times.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">Is the Sliding Puzzle good for your brain?</h4>
+      <p>Yes. Sliding puzzles exercise spatial reasoning, sequential planning, and working memory. They are commonly recommended as brain-training exercises. For more brain-boosting games, see our <a href="/blog/best-puzzle-games-online" class="text-blue-600 underline">Best Free Puzzle Games</a> roundup.</p>
+
+      <p class="mt-6">Play the Sliding Puzzle free right here in your browser — no downloads, no accounts. Pick a grid size and start sliding.</p>
+    </div>
+  </article>
+
+  <div id="related-games"></div>
+  <div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, isMuted, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playDrop, playLock } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+  document.addEventListener('click', () => initAudio(), { once: true });
+  initToolPage('sliding-puzzle');
+  initConsent();
+  trackGameView('sliding-puzzle', 'Puzzle');
+
+  let size = 4, tiles, emptyPos, moveCount, timerInterval, seconds, gameActive, gameStarted;
+  let streak = 0, best = { 3: null, 4: null, 5: null };
+  let session = { rounds:0, wins:0, bestMoves:null, totalMoves:0, startTime:Date.now() };
+  let consecutiveCorrect = 0;
+
+  const boardEl = document.getElementById('board');
+  const movesEl = document.getElementById('moves');
+  const timerEl = document.getElementById('timer');
+  const streakEl = document.getElementById('streak');
+  const bestEl = document.getElementById('best');
+  const goEl = document.getElementById('game-over');
+
+  document.getElementById('sound-btn').addEventListener('click', () => {
+    initAudio(); const m = muteAll();
+    document.getElementById('sound-btn').textContent = m ? '🔇 Sound' : '🔊 Sound';
+  });
+
+  document.querySelectorAll('.size-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      size = parseInt(btn.dataset.size);
+      document.querySelectorAll('.size-btn').forEach(b => {
+        b.style.background='#fff';b.style.color='#334155';b.style.borderColor='#E5E7EB';
+      });
+      btn.style.background='#2563EB';btn.style.color='#fff';btn.style.borderColor='#2563EB';
+      newGame();
+    });
+  });
+
+  function newGame() {
+    const total = size * size;
+    tiles = Array.from({length:total-1}, (_,i) => i+1);
+    tiles.push(0);
+
+    // Shuffle until solvable
+    do {
+      shuffleArray(tiles);
+    } while (!isSolvable(tiles, size) || isSolved());
+
+    emptyPos = tiles.indexOf(0);
+    moveCount = 0; seconds = 0; gameActive = true; gameStarted = false;
+    consecutiveCorrect = 0;
+    clearInterval(timerInterval);
+    movesEl.textContent = '0';
+    timerEl.textContent = '0:00';
+    goEl.style.display = 'none';
+    document.getElementById('near-miss').style.display = 'none';
+    updateBest();
+    render();
+  }
+
+  function shuffleArray(arr) {
+    const rand = new Uint32Array(arr.length);
+    crypto.getRandomValues(rand);
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = rand[i] % (i + 1);
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+  }
+
+  function isSolvable(arr, n) {
+    let inv = 0;
+    const flat = arr.filter(v => v !== 0);
+    for (let i = 0; i < flat.length; i++)
+      for (let j = i + 1; j < flat.length; j++)
+        if (flat[i] > flat[j]) inv++;
+    if (n % 2 === 1) return inv % 2 === 0;
+    const emptyRow = Math.floor(arr.indexOf(0) / n);
+    return (inv + emptyRow) % 2 === 1;
+  }
+
+  function isSolved() {
+    for (let i = 0; i < tiles.length - 1; i++) if (tiles[i] !== i + 1) return false;
+    return tiles[tiles.length - 1] === 0;
+  }
+
+  function render() {
+    const gap = 6;
+    const boardSize = Math.min(340, window.innerWidth - 64);
+    const tileSize = (boardSize - gap * (size + 1)) / size;
+    boardEl.style.width = boardSize + 'px';
+    boardEl.style.height = boardSize + 'px';
+    boardEl.innerHTML = '';
+
+    for (let i = 0; i < tiles.length; i++) {
+      if (tiles[i] === 0) continue;
+      const r = Math.floor(i / size), c = i % size;
+      const t = document.createElement('div');
+      t.className = 'tile';
+      const isCorrect = tiles[i] === i + 1;
+      if (isCorrect) t.classList.add('correct');
+
+      const hue = ((tiles[i] - 1) / (size*size - 1)) * 200 + 210;
+      const lightness = isCorrect ? 45 : 52;
+      t.style.background = `hsl(${hue}, 70%, ${lightness}%)`;
+      t.style.color = '#fff';
+      t.style.width = tileSize + 'px';
+      t.style.height = tileSize + 'px';
+      t.style.left = (gap + c * (tileSize + gap)) + 'px';
+      t.style.top = (gap + r * (tileSize + gap)) + 'px';
+      t.style.fontSize = (tileSize * 0.4) + 'px';
+      t.textContent = tiles[i];
+      t.dataset.idx = i;
+      t.addEventListener('click', () => tryMove(i));
+      boardEl.appendChild(t);
+    }
+  }
+
+  function tryMove(idx) {
+    if (!gameActive) return;
+    const r = Math.floor(idx / size), c = idx % size;
+    const er = Math.floor(emptyPos / size), ec = emptyPos % size;
+    if ((Math.abs(r-er) === 1 && c === ec) || (Math.abs(c-ec) === 1 && r === er)) {
+      if (!gameStarted) {
+        gameStarted = true;
+        trackGameStart('sliding-puzzle', 'Puzzle');
+        timerInterval = setInterval(() => { seconds++; const m=Math.floor(seconds/60),s=seconds%60; timerEl.textContent=`${m}:${String(s).padStart(2,'0')}`; }, 1000);
+      }
+
+      [tiles[idx], tiles[emptyPos]] = [tiles[emptyPos], tiles[idx]];
+      emptyPos = idx;
+      moveCount++;
+      movesEl.textContent = moveCount;
+
+      // Check if the moved tile is now correct
+      const tileVal = tiles[emptyPos === idx ? idx : emptyPos];
+      if (tiles[idx] !== 0 && tiles[idx] === idx + 1) {
+        consecutiveCorrect++;
+        if (consecutiveCorrect >= 5) playSuccess();
+        else playScoreUp(consecutiveCorrect * 80);
+        playLock();
+      } else {
+        consecutiveCorrect = 0;
+        playDrop();
+      }
+
+      render();
+
+      // Near-miss: count how many tiles are correct
+      let correct = 0;
+      for (let i = 0; i < tiles.length - 1; i++) if (tiles[i] === i + 1) correct++;
+      const total = tiles.length - 1;
+      const pct = correct / total;
+      if (pct >= 0.85 && pct < 1) {
+        document.getElementById('near-miss').style.display = 'block';
+        document.getElementById('near-miss').textContent = pct >= 0.95 ? '⚡ Almost there!' : '🔥 Close to solving!';
+      }
+
+      if (isSolved()) endGame();
+    } else {
+      playError();
+    }
+  }
+
+  // Keyboard controls
+  document.addEventListener('keydown', e => {
+    if (!gameActive && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); playClick(); newGame(); return; }
+    const er = Math.floor(emptyPos / size), ec = emptyPos % size;
+    let targetIdx = -1;
+    if (e.key === 'ArrowUp' && er < size - 1) targetIdx = emptyPos + size;
+    if (e.key === 'ArrowDown' && er > 0) targetIdx = emptyPos - size;
+    if (e.key === 'ArrowLeft' && ec < size - 1) targetIdx = emptyPos + 1;
+    if (e.key === 'ArrowRight' && ec > 0) targetIdx = emptyPos - 1;
+    if (targetIdx >= 0) { e.preventDefault(); tryMove(targetIdx); }
+  });
+
+  function endGame() {
+    gameActive = false;
+    clearInterval(timerInterval);
+    session.rounds++;
+    session.wins++;
+    session.totalMoves += moveCount;
+    streak++;
+    streakEl.textContent = streak;
+
+    if (best[size] === null || moveCount < best[size]) {
+      best[size] = moveCount;
+      document.getElementById('go-title').textContent = '🏆 NEW PERSONAL BEST!';
+      document.getElementById('go-title').style.color = '#D97706';
+      document.getElementById('go-sub').textContent = `Solved in ${moveCount} moves, ${seconds}s! New record!`;
+      playPerfect(); setTimeout(() => playLevelUp(), 300);
+    } else {
+      document.getElementById('go-title').textContent = '✅ Puzzle Solved!';
+      document.getElementById('go-title').style.color = '#059669';
+      const delta = moveCount - best[size];
+      document.getElementById('go-sub').textContent = `Solved in ${moveCount} moves, ${seconds}s — ${delta} moves from your best of ${best[size]}`;
+      playSuccess();
+    }
+    updateBest();
+    trackGameOver('sliding-puzzle', 'Puzzle', moveCount, seconds);
+
+    const elapsed = Math.round((Date.now() - session.startTime) / 1000);
+    const mins = Math.floor(elapsed/60), secs = elapsed%60;
+    const avgMoves = session.rounds > 0 ? Math.round(session.totalMoves / session.rounds) : 0;
+    document.getElementById('session-stats').innerHTML = `
+      🎮 This Session<br>
+      ─────────────────────<br>
+      Rounds played&nbsp;&nbsp;&nbsp;${session.rounds}<br>
+      Wins&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${session.wins}<br>
+      Best moves&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${best[size] || '---'}<br>
+      Average moves&nbsp;&nbsp;${avgMoves}<br>
+      Current streak&nbsp;${streak} ${streak>=3?'🔥':''}<br>
+      Time played&nbsp;&nbsp;&nbsp;&nbsp;${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}
+    `;
+
+    document.getElementById('near-miss').style.display = 'none';
+    goEl.style.display = 'block';
+    document.getElementById('play-again').focus();
+  }
+
+  function updateBest() {
+    bestEl.textContent = best[size] !== null ? best[size] + ' moves' : '---';
+  }
+
+  document.getElementById('play-again').addEventListener('click', () => { playClick(); newGame(); });
+  window.addEventListener('resize', () => { if (gameActive) render(); });
+
+  newGame();
+  </script>
+</body>
+</html>

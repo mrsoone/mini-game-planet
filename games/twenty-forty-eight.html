@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free 2048 Online — Play Instantly | MiniGamePlanet</title>
+  <meta name="description" content="Play 2048 free online. Slide and merge numbered tiles to reach 2048 and beyond. Smooth animations, score tracking, and gamepad support.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/twenty-forty-eight">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+  window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+  gtag('js',new Date());
+  gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500});
+  gtag('config','G-XXXXXXXXXX');
+  </script>
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Free 2048 Online | MiniGamePlanet">
+  <meta property="og:description" content="Play 2048 free online. Slide and merge numbered tiles to reach 2048 and beyond.">
+  <meta property="og:url" content="https://minigameplanet.com/games/twenty-forty-eight">
+  <meta property="og:site_name" content="MiniGamePlanet">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"VideoGame","name":"2048","url":"https://minigameplanet.com/games/twenty-forty-eight","description":"Play 2048 free online. Slide and merge numbered tiles to reach 2048 and beyond.","genre":"Puzzle","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+  </script>
+  <style>
+    .hero-grad{background:linear-gradient(135deg,#0891B2 0%,#2563EB 22%,#7C3AED 44%,#E11D48 66%,#EA580C 82%,#D97706 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:heroShift 8s ease-in-out infinite}
+    @keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+    #board{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:8px;background:#CBD5E1;border-radius:10px;max-width:340px;margin:0 auto;aspect-ratio:1;touch-action:none}
+    .tile{border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-weight:700;transition:all 0.12s ease;user-select:none}
+    @keyframes popIn{0%{transform:scale(0)}60%{transform:scale(1.1)}100%{transform:scale(1)}}
+    @keyframes merge{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+    .pop{animation:popIn 0.15s ease}
+    .merged{animation:merge 0.15s ease}
+    @keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-50px) scale(1.2)}}
+    .score-pop{position:absolute;pointer-events:none;font-family:'DM Mono',monospace;font-weight:700;animation:floatUp 0.7s ease forwards;z-index:10}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;position:relative;" id="game-wrap">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <div>
+          <h1 style="font-size:22px;font-weight:700;margin:0;">🔢 2048</h1>
+          <p style="font-size:12px;color:#94A3B8;margin:2px 0 0;">Arrow keys · Swipe · Gamepad</p>
+        </div>
+        <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊 Sound</button>
+      </div>
+      <!-- Score -->
+      <div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:100px;padding:8px 12px;background:#F8FAFC;border-radius:8px;text-align:center;">
+          <div style="font-size:10px;color:#94A3B8;font-weight:600;text-transform:uppercase;">Score</div>
+          <div id="score" style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:#2563EB;">0</div>
+        </div>
+        <div style="flex:1;min-width:100px;padding:8px 12px;background:#F8FAFC;border-radius:8px;text-align:center;">
+          <div style="font-size:10px;color:#94A3B8;font-weight:600;text-transform:uppercase;">Best</div>
+          <div id="best" style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:#D97706;">0</div>
+        </div>
+        <div style="flex:1;min-width:100px;padding:8px 12px;background:#F8FAFC;border-radius:8px;text-align:center;">
+          <div style="font-size:10px;color:#94A3B8;font-weight:600;text-transform:uppercase;">Moves</div>
+          <div id="moves" style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:#334155;">0</div>
+        </div>
+      </div>
+      <!-- Near-miss -->
+      <div id="near-miss" style="display:none;text-align:center;padding:4px;font-size:12px;font-weight:600;color:#D97706;margin-bottom:6px;"></div>
+      <!-- Board -->
+      <div id="board"></div>
+      <!-- Game Over -->
+      <div id="game-over" style="display:none;text-align:center;padding:20px;margin-top:12px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;">
+        <div id="go-title" style="font-size:24px;font-weight:700;margin-bottom:4px;"></div>
+        <div id="go-sub" style="font-size:14px;color:#64748B;margin-bottom:12px;"></div>
+        <div id="session-stats" style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;text-align:left;max-width:220px;margin:0 auto 16px;padding:12px;background:#fff;border-radius:8px;"></div>
+        <button id="play-again" style="padding:10px 28px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">▶ Play Again</button>
+        <p style="font-size:11px;color:#94A3B8;margin-top:6px;">Press Enter or Space to restart</p>
+      </div>
+    </div>
+  </main>
+
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play 2048</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>2048 is an addictive sliding tile puzzle that challenges you to combine numbered tiles on a 4×4 grid. The concept is beautifully simple: slide all tiles in one direction, and when two tiles with the same number collide, they merge into one tile with double the value. Your goal is to create a tile with the value 2048 — but once you get there, the real fun is pushing past it to see how high you can score.</p>
+
+      <h3 class="text-lg font-bold text-slate-900 mt-6">How to Play</h3>
+      <p>Use the arrow keys (or WASD) on your keyboard to slide all tiles in that direction. On mobile, swipe in the direction you want the tiles to move. After each move, a new tile (2 or 4) appears in a random empty cell. When two tiles of the same value collide during a slide, they merge into one tile worth their combined value. The game ends when no more moves are possible — the board is full and no adjacent tiles share a value.</p>
+      <p>Gamepad controllers are also supported: use the D-pad or left stick to slide tiles. The game tracks your score (sum of all merged tile values) and your best score for the session.</p>
+
+      <h3 class="text-lg font-bold text-slate-900 mt-6">History &amp; Origin</h3>
+      <p>2048 was created by Italian web developer Gabriele Cirulli in March 2014 as a weekend project. Built in JavaScript and released as open source, the game went massively viral within days, attracting millions of players worldwide. It was inspired by earlier sliding-tile games including "1024" by Veewo Studio and "Threes!" by Sirvo. Despite its simplicity, 2048 sparked an entire genre of merge-based puzzle games and remains one of the most recognized browser games ever made. For strategy tips, check out our <a href="/blog/how-to-win-at-2048" class="text-blue-600 underline">How to Win at 2048</a> guide.</p>
+
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Strategy &amp; Tips</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Pick a corner and commit.</strong> Keep your highest tile in one corner (bottom-left or bottom-right works well). Never move it away from that corner.</li>
+        <li><strong>Build a snake.</strong> Arrange your tiles in a descending chain that snakes from your corner tile. This keeps high and low values organized.</li>
+        <li><strong>Avoid the up key (or your anti-corner direction).</strong> If your highest tile is in the bottom-left, avoid pressing up. It pulls your big tile out of position.</li>
+        <li><strong>Think two moves ahead.</strong> Before each slide, consider where the new random tile might appear and whether it could disrupt your layout.</li>
+        <li><strong>Keep the bottom row full.</strong> A full row cannot be disrupted by new spawns, giving you a stable foundation to work from.</li>
+      </ul>
+
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Frequently Asked Questions</h3>
+      <h4 class="font-semibold text-slate-800">What is the highest possible tile in 2048?</h4>
+      <p>Theoretically, the highest tile you can create on a standard 4×4 board is 131,072 (2^17). In practice, reaching even 8192 is an impressive achievement for most players.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">Is 2048 a game of luck or skill?</h4>
+      <p>Mostly skill. While the random placement of new tiles introduces some variance, consistent application of the corner strategy will get you to the 2048 tile the vast majority of the time.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">Can you keep playing after reaching 2048?</h4>
+      <p>Yes! When you create the 2048 tile, you receive a congratulations message, but the game continues. Many players aim for 4096, 8192, or even higher tiles after their first win.</p>
+
+      <p class="mt-6">Play 2048 free in your browser right now — no download, no account needed. Swipe, merge, and chase your highest score.</p>
+    </div>
+  </article>
+
+  <div id="related-games"></div>
+  <div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, isMuted, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playDrop, playCollect } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { initGamepad, onButtonPress } from '/js/gamepad.js';
+
+  document.addEventListener('click', () => initAudio(), { once: true });
+  initToolPage('twenty-forty-eight');
+  initConsent();
+  trackGameView('twenty-forty-eight', 'Puzzle');
+  initGamepad();
+
+  const TILE_COLORS = {
+    2:    { bg:'#EFF6FF', text:'#1E40AF' },
+    4:    { bg:'#DBEAFE', text:'#1E40AF' },
+    8:    { bg:'#93C5FD', text:'#fff' },
+    16:   { bg:'#60A5FA', text:'#fff' },
+    32:   { bg:'#3B82F6', text:'#fff' },
+    64:   { bg:'#2563EB', text:'#fff' },
+    128:  { bg:'#1D4ED8', text:'#fff' },
+    256:  { bg:'#1E40AF', text:'#fff' },
+    512:  { bg:'#D97706', text:'#fff' },
+    1024: { bg:'#B45309', text:'#fff' },
+    2048: { bg:'#92400E', text:'#fff' },
+  };
+  const DEFAULT_TILE = { bg:'#0F172A', text:'#fff' };
+
+  let grid, score, bestScore = 0, moveCount, gameActive, gameStarted = false;
+  let session = { rounds:0, bestScore:0, avgScore:0, totalScore:0, startTime:Date.now(), streak:0, bestStreak:0 };
+  let combo = 0;
+
+  const boardEl = document.getElementById('board');
+  const scoreEl = document.getElementById('score');
+  const bestEl = document.getElementById('best');
+  const movesEl = document.getElementById('moves');
+  const goEl = document.getElementById('game-over');
+
+  document.getElementById('sound-btn').addEventListener('click', () => {
+    initAudio();
+    const m = muteAll();
+    document.getElementById('sound-btn').textContent = m ? '🔇 Sound' : '🔊 Sound';
+  });
+
+  function init() {
+    grid = Array.from({length:4}, () => Array(4).fill(0));
+    score = 0; moveCount = 0; gameActive = true; combo = 0;
+    goEl.style.display = 'none';
+    document.getElementById('near-miss').style.display = 'none';
+    scoreEl.textContent = '0';
+    movesEl.textContent = '0';
+    gameStarted = false;
+    addRandom(); addRandom();
+    render();
+  }
+
+  function addRandom() {
+    const empty = [];
+    for (let r=0;r<4;r++) for(let c=0;c<4;c++) if(grid[r][c]===0) empty.push([r,c]);
+    if(empty.length===0) return;
+    const rand = new Uint32Array(1); crypto.getRandomValues(rand);
+    const [r,c] = empty[rand[0] % empty.length];
+    crypto.getRandomValues(rand);
+    grid[r][c] = rand[0] % 10 === 0 ? 4 : 2;
+    return [r,c];
+  }
+
+  function render(newCell, mergedCells) {
+    boardEl.innerHTML = '';
+    for(let r=0;r<4;r++) for(let c=0;c<4;c++) {
+      const v = grid[r][c];
+      const t = document.createElement('div');
+      t.className = 'tile';
+      const colors = v > 0 ? (TILE_COLORS[v] || DEFAULT_TILE) : { bg:'#E2E8F0', text:'transparent' };
+      let fontSize = v >= 1024 ? '18px' : v >= 128 ? '22px' : '26px';
+      Object.assign(t.style, {
+        background: colors.bg, color: colors.text, fontSize, lineHeight: '1'
+      });
+      if(v > 0) t.textContent = v;
+      if(newCell && newCell[0]===r && newCell[1]===c) t.classList.add('pop');
+      if(mergedCells && mergedCells.some(m => m[0]===r && m[1]===c)) t.classList.add('merged');
+      boardEl.appendChild(t);
+    }
+  }
+
+  function slide(row) {
+    let arr = row.filter(v => v !== 0);
+    let merged = [];
+    let points = 0;
+    for (let i = 0; i < arr.length - 1; i++) {
+      if (arr[i] === arr[i+1]) {
+        arr[i] *= 2;
+        points += arr[i];
+        merged.push(i);
+        arr.splice(i+1, 1);
+      }
+    }
+    while(arr.length < 4) arr.push(0);
+    return { result: arr, points, merged: merged.length > 0 };
+  }
+
+  function move(dir) {
+    if (!gameActive) return;
+    let moved = false, totalPoints = 0, mergedCells = [];
+
+    const oldGrid = grid.map(r => [...r]);
+
+    if (dir === 'left' || dir === 'right') {
+      for (let r = 0; r < 4; r++) {
+        let row = [...grid[r]];
+        if (dir === 'right') row.reverse();
+        const { result, points, merged } = slide(row);
+        if (dir === 'right') result.reverse();
+        if (result.some((v,i) => v !== grid[r][i])) moved = true;
+        totalPoints += points;
+        grid[r] = result;
+        if (merged) {
+          for (let c = 0; c < 4; c++) if (grid[r][c] !== oldGrid[r][c] && grid[r][c] > 0 && oldGrid[r][c] > 0) mergedCells.push([r,c]);
+        }
+      }
+    } else {
+      for (let c = 0; c < 4; c++) {
+        let col = [grid[0][c], grid[1][c], grid[2][c], grid[3][c]];
+        if (dir === 'down') col.reverse();
+        const { result, points, merged } = slide(col);
+        if (dir === 'down') result.reverse();
+        if (result.some((v,i) => v !== grid[i][c])) moved = true;
+        totalPoints += points;
+        for (let r = 0; r < 4; r++) grid[r][c] = result[r];
+        if (merged) {
+          for (let r = 0; r < 4; r++) if (grid[r][c] !== oldGrid[r][c] && grid[r][c] > 0 && oldGrid[r][c] > 0) mergedCells.push([r,c]);
+        }
+      }
+    }
+
+    if (!moved) return;
+
+    if (!gameStarted) { gameStarted = true; trackGameStart('twenty-forty-eight', 'Puzzle'); }
+    moveCount++;
+    movesEl.textContent = moveCount;
+    score += totalPoints;
+    scoreEl.textContent = score;
+    if (score > bestScore) { bestScore = score; bestEl.textContent = bestScore; }
+
+    // Sound feedback based on points
+    if (totalPoints > 0) {
+      combo++;
+      if (combo >= 10) { playPerfect(); }
+      else if (combo >= 5) { playLevelUp(); }
+      else if (combo >= 3) { playSuccess(); }
+      else { playScoreUp(Math.min(combo * 50, 400)); }
+      showScorePop(totalPoints);
+    } else {
+      combo = 0;
+      playDrop();
+    }
+
+    // Near-miss
+    if (bestScore > 0 && score >= bestScore * 0.85 && score < bestScore) {
+      document.getElementById('near-miss').style.display = 'block';
+      document.getElementById('near-miss').textContent = score >= bestScore * 0.95 ? '⚡ Almost there!' : '🔥 Close to your best!';
+    } else {
+      document.getElementById('near-miss').style.display = 'none';
+    }
+
+    const nc = addRandom();
+    render(nc, mergedCells);
+
+    // Check 2048 reached
+    for (let r=0;r<4;r++) for(let c=0;c<4;c++) if(grid[r][c]===2048) {
+      showToast('🎉 You reached 2048! Keep going!');
+      playPerfect();
+    }
+
+    if (isGameOver()) endGame();
+  }
+
+  function showScorePop(pts) {
+    const pop = document.createElement('div');
+    pop.className = 'score-pop';
+    pop.textContent = `+${pts}`;
+    const size = pts >= 512 ? 28 : pts >= 64 ? 20 : 14;
+    const color = pts >= 512 ? '#D97706' : pts >= 64 ? '#2563EB' : '#64748B';
+    Object.assign(pop.style, { fontSize: size+'px', color, left:'50%', top:'40%' });
+    document.getElementById('game-wrap').appendChild(pop);
+    setTimeout(() => pop.remove(), 700);
+  }
+
+  function isGameOver() {
+    for(let r=0;r<4;r++) for(let c=0;c<4;c++) {
+      if(grid[r][c]===0) return false;
+      if(c<3 && grid[r][c]===grid[r][c+1]) return false;
+      if(r<3 && grid[r][c]===grid[r+1][c]) return false;
+    }
+    return true;
+  }
+
+  function endGame() {
+    gameActive = false;
+    session.rounds++;
+    session.totalScore += score;
+    if (score > session.bestScore) session.bestScore = score;
+    session.avgScore = Math.round(session.totalScore / session.rounds);
+
+    playGameOver();
+    trackGameOver('twenty-forty-eight', 'Puzzle', score, moveCount);
+
+    const goTitle = document.getElementById('go-title');
+    const goSub = document.getElementById('go-sub');
+
+    let maxTile = 0;
+    for(let r=0;r<4;r++) for(let c=0;c<4;c++) if(grid[r][c]>maxTile) maxTile=grid[r][c];
+
+    if (score >= session.bestScore && session.rounds > 1) {
+      goTitle.textContent = '🏆 NEW PERSONAL BEST!';
+      goTitle.style.color = '#D97706';
+      playPerfect();
+    } else {
+      goTitle.textContent = '🔢 Game Over';
+      goTitle.style.color = '#DC2626';
+    }
+    goSub.textContent = `Score: ${score} · Highest tile: ${maxTile} · ${moveCount} moves`;
+
+    const elapsed = Math.round((Date.now() - session.startTime) / 1000);
+    const mins = Math.floor(elapsed/60), secs = elapsed%60;
+    document.getElementById('session-stats').innerHTML = `
+      🎮 This Session<br>
+      ─────────────────────<br>
+      Rounds played&nbsp;&nbsp;&nbsp;${session.rounds}<br>
+      Best score&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${session.bestScore}<br>
+      Average score&nbsp;&nbsp;${session.avgScore}<br>
+      Highest tile&nbsp;&nbsp;&nbsp;${maxTile}<br>
+      Time played&nbsp;&nbsp;&nbsp;&nbsp;${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}
+    `;
+
+    goEl.style.display = 'block';
+    document.getElementById('play-again').focus();
+  }
+
+  function showToast(msg) {
+    const t = document.createElement('div');
+    t.textContent = msg;
+    Object.assign(t.style, {
+      position:'fixed',top:'60px',left:'50%',transform:'translateX(-50%)',background:'#0F172A',color:'#fff',
+      padding:'10px 20px',borderRadius:'8px',fontSize:'13px',fontWeight:'600',zIndex:'9998',
+      fontFamily:'"Space Grotesk",system-ui,sans-serif',boxShadow:'0 4px 16px rgba(0,0,0,0.2)'
+    });
+    document.body.appendChild(t);
+    setTimeout(() => { t.style.opacity='0'; t.style.transition='opacity 0.3s'; setTimeout(()=>t.remove(),300); }, 3000);
+  }
+
+  // Controls
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      if (!gameActive) { e.preventDefault(); playClick(); init(); return; }
+    }
+    const map = { ArrowLeft:'left', ArrowRight:'right', ArrowUp:'up', ArrowDown:'down', a:'left', d:'right', w:'up', s:'down' };
+    if (map[e.key]) { e.preventDefault(); move(map[e.key]); }
+  });
+
+  // Touch/swipe
+  let touchStartX, touchStartY;
+  boardEl.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY; }, { passive: true });
+  boardEl.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    if (Math.abs(dx) < 30 && Math.abs(dy) < 30) return;
+    if (Math.abs(dx) > Math.abs(dy)) move(dx > 0 ? 'right' : 'left');
+    else move(dy > 0 ? 'down' : 'up');
+  }, { passive: true });
+
+  // Gamepad
+  onButtonPress('left', () => move('left'));
+  onButtonPress('right', () => move('right'));
+  onButtonPress('up', () => move('up'));
+  onButtonPress('down', () => move('down'));
+
+  document.getElementById('play-again').addEventListener('click', () => { playClick(); init(); });
+
+  init();
+  </script>
+</body>
+</html>

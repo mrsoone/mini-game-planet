@@ -254,7 +254,7 @@ export const games = [
     icon: '💣',
     accent: '#2563EB',
     keywords: ['minesweeper', 'mine sweeper', 'logic puzzle', 'grid game'],
-    built: false
+    built: true
   },
   {
     name: '2048',
@@ -264,7 +264,7 @@ export const games = [
     icon: '🔢',
     accent: '#2563EB',
     keywords: ['2048', 'number puzzle', 'sliding tiles', 'merge game'],
-    built: false
+    built: true
   },
   {
     name: 'Sudoku',
@@ -294,7 +294,7 @@ export const games = [
     icon: '🔀',
     accent: '#2563EB',
     keywords: ['sliding puzzle', '15 puzzle', 'tile puzzle', 'number slide'],
-    built: false
+    built: true
   },
   {
     name: 'Tower of Hanoi',
