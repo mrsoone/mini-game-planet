@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Space Invaders - Classic Arcade Game | Mini Game Planet</title>
+  <meta name="description" content="Play Space Invaders online. Classic arcade action with marching aliens, shields, and waves. Free browser game.">
+  <link rel="canonical" href="https://minigameplanet.com/games/space-invaders">
+  <meta property="og:title" content="Space Invaders - Classic Arcade Game">
+  <meta property="og:description" content="Play Space Invaders online. Classic arcade action with marching aliens, shields, and waves.">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    #gameCanvas { display: block; margin: 0 auto; background: #0a0a0f; border-radius: 8px; }
+    .touch-zone { touch-action: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoGame",
+    "name": "Space Invaders",
+    "description": "Classic arcade Space Invaders game. Defend Earth from alien invasion.",
+    "gamePlatform": "Web Browser",
+    "genre": "Arcade, Shooter"
+  }
+  </script>
+  <!--
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXX" crossorigin="anonymous"></script>
+  -->
+</head>
+<body class="min-h-screen text-gray-800">
+  <div id="nav-container"></div>
+
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-8">
+      <header class="text-center mb-6">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Space Invaders</h1>
+        <p class="text-gray-600">Classic arcade action — defend Earth from the alien invasion!</p>
+      </header>
+
+      <div class="flex flex-wrap items-center justify-center gap-4 mb-4">
+        <button id="soundToggle" class="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 font-medium transition" aria-label="Toggle sound">🔊 Sound</button>
+        <div class="font-mono text-sm text-gray-600">
+          <span id="scoreDisplay">Score: 0</span> |
+          <span id="livesDisplay">Lives: 3</span> |
+          <span id="waveDisplay">Wave: 1</span>
+        </div>
+        <div class="font-mono text-sm text-amber-600">
+          <span id="streakDisplay">Streak: 0</span> |
+          <span id="bestDisplay">Best: 0</span>
+        </div>
+      </div>
+
+      <div class="relative mx-auto max-w-lg touch-zone" id="gameWrapper">
+        <canvas id="gameCanvas" width="480" height="640"></canvas>
+        <div id="touchOverlay" class="absolute inset-0 flex pointer-events-none">
+          <div id="touchLeft" class="flex-1 pointer-events-auto cursor-pointer" data-action="left"></div>
+          <div id="touchRight" class="flex-1 pointer-events-auto cursor-pointer" data-action="right"></div>
+        </div>
+        <div id="startOverlay" class="absolute inset-0 flex flex-col items-center justify-center bg-black/70 rounded-lg">
+          <p class="text-white text-xl font-bold mb-4">SPACE INVADERS</p>
+          <p class="text-gray-300 text-sm mb-2">Arrow keys or A/D to move • Space or tap to shoot</p>
+          <button id="startBtn" class="px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition">PLAY</button>
+        </div>
+        <div id="gameOverOverlay" class="absolute inset-0 hidden flex flex-col items-center justify-center bg-black/80 rounded-lg">
+          <p class="text-red-400 text-2xl font-bold mb-2">GAME OVER</p>
+          <p class="text-white font-mono mb-4">Score: <span id="finalScore">0</span></p>
+          <button id="restartBtn" class="px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition">PLAY AGAIN</button>
+        </div>
+      </div>
+
+      <div class="mt-6 prose prose-gray max-w-none">
+        <h2>About Space Invaders</h2>
+        <p>Space Invaders is one of the most iconic arcade games ever created. Originally released by Taito in 1978, it helped define the shoot-'em-up genre and became a cultural phenomenon. The game's distinctive pixelated aliens and relentless march toward Earth captured the imagination of players worldwide. In this browser version, you'll experience the same addictive gameplay that captivated millions of players decades ago—no quarters required.</p>
+
+        <h3>How to Play</h3>
+        <p>Your mission is simple: destroy all invading aliens before they reach Earth. You control a laser cannon at the bottom of the screen. Move left and right to dodge enemy fire while shooting upward to eliminate the alien formations. The aliens march in rows, moving side to side and stepping down each time they hit the screen edge. As you clear waves, the aliens move faster and become more aggressive. Use arrow keys or A/D to move, and press Space or tap the screen to shoot.</p>
+
+        <h3>Game Features</h3>
+        <p>Protective shields provide temporary cover but erode when hit by either your shots or alien bullets. Use them wisely—they won't last forever. You have three lives; lose them all and it's game over. Aliens will occasionally shoot back, so stay alert and keep moving. Your score increases with each alien destroyed, with bonus points for higher rows. Build combos for streak bonuses and try to beat your personal best! Session stats track your games played and cumulative score.</p>
+
+        <h3>Tips for High Scores</h3>
+        <p>Prioritize the bottom rows first—they're worth more points and removing them reduces incoming fire from above. Time your shots to hit multiple aliens as they align horizontally. Don't waste shots on shields when you can shoot around them. As waves progress, the pace quickens; stay calm and focus on accuracy over speed. Zero-friction restart lets you jump straight back into the action after game over.</p>
+
+        <h3>Touch and Keyboard Controls</h3>
+        <p>On desktop, use arrow keys or A/D to move and Space to shoot. On mobile, the screen is split into left and right halves—touch and hold the left side to move left, the right side to move right. Tap anywhere for a quick shot. The responsive layout works on phones and tablets.</p>
+
+        <h3>Classic Arcade Legacy</h3>
+        <p>Space Invaders pioneered many concepts still used in games today: progressive difficulty, high-score competition, and simple yet compelling mechanics. It sparked the golden age of arcade gaming and influenced countless titles that followed. Play free in your browser—no downloads, no ads interrupting your run. Whether you're a veteran or new to the classic, this Space Invaders game delivers authentic arcade action.</p>
+      </div>
+    </div>
+
+    <div id="related-games"></div>
+    <div id="footer-container"></div>
+  </main>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playShoot, playExplosion } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('space-invaders');
+    initConsent();
+    trackGameView('space-invaders', 'Arcade');
+
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const startOverlay = document.getElementById('startOverlay');
+    const gameOverOverlay = document.getElementById('gameOverOverlay');
+    const startBtn = document.getElementById('startBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const soundToggle = document.getElementById('soundToggle');
+    const touchLeft = document.getElementById('touchLeft');
+    const touchRight = document.getElementById('touchRight');
+    const gameWrapper = document.getElementById('gameWrapper');
+
+    let muted = false;
+    let gameRunning = false;
+    let animationId = null;
+
+    const W = canvas.width;
+    const H = canvas.height;
+    const PLAYER_W = 40;
+    const PLAYER_H = 24;
+    const ALIEN_W = 32;
+    const ALIEN_H = 24;
+    const BULLET_W = 4;
+    const BULLET_H = 12;
+    const SHIELD_W = 60;
+    const SHIELD_H = 40;
+
+    function rand() {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] / (0xFFFFFFFF + 1);
+    }
+
+    let state = {
+      player: { x: W / 2 - PLAYER_W / 2, y: H - 50, w: PLAYER_W, h: PLAYER_H, speed: 6 },
+      aliens: [],
+      bullets: [],
+      alienBullets: [],
+      shields: [],
+      keys: {},
+      score: 0,
+      lives: 3,
+      wave: 1,
+      alienDir: 1,
+      alienStep: 0,
+      alienSpeed: 800,
+      lastAlienMove: 0,
+      lastAlienShot: 0,
+      streak: 0,
+      sessionBest: parseInt(localStorage.getItem('space-invaders-best') || '0', 10),
+      sessionGames: parseInt(sessionStorage.getItem('space-invaders-games') || '0', 10),
+      sessionScore: parseInt(sessionStorage.getItem('space-invaders-session-score') || '0', 10),
+    };
+
+    function spawnAliens() {
+      state.aliens = [];
+      const rows = 5;
+      const cols = 11;
+      const points = [30, 20, 20, 10, 10];
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          state.aliens.push({
+            x: 60 + c * (ALIEN_W + 8),
+            y: 80 + r * (ALIEN_H + 8),
+            w: ALIEN_W,
+            h: ALIEN_H,
+            points: points[r],
+          });
+        }
+      }
+    }
+
+    function spawnShields() {
+      state.shields = [];
+      const sx = [80, 180, 300, 400];
+      for (const x of sx) {
+        for (let py = 0; py < 4; py++) {
+          for (let px = 0; px < 6; px++) {
+            state.shields.push({
+              x: x + px * 8,
+              y: H - 140 + py * 8,
+              w: 8,
+              h: 8,
+              hp: 1,
+            });
+          }
+        }
+      }
+    }
+
+    function hitShield(x, y, w, h) {
+      return state.shields.filter(s => {
+        const hit = x + w > s.x && x < s.x + s.w && y + h > s.y && y < s.y + s.h;
+        if (hit) s.hp = 0;
+        return hit;
+      });
+    }
+
+    function updateUI() {
+      document.getElementById('scoreDisplay').textContent = `Score: ${state.score}`;
+      document.getElementById('livesDisplay').textContent = `Lives: ${state.lives}`;
+      document.getElementById('waveDisplay').textContent = `Wave: ${state.wave}`;
+      document.getElementById('streakDisplay').textContent = `Streak: ${state.streak}`;
+      document.getElementById('bestDisplay').textContent = `Best: ${state.sessionBest}`;
+    }
+
+    function startGame() {
+      if (gameRunning) return;
+      playClick();
+      trackGameStart('space-invaders');
+      state.score = 0;
+      state.lives = 3;
+      state.wave = 1;
+      state.streak = 0;
+      state.alienDir = 1;
+      state.alienSpeed = 800;
+      state.bullets = [];
+      state.alienBullets = [];
+      spawnAliens();
+      spawnShields();
+      state.player.x = W / 2 - PLAYER_W / 2;
+      state.player.y = H - 50;
+      state.lastAlienMove = performance.now();
+      state.lastAlienShot = performance.now();
+      startOverlay.classList.add('hidden');
+      gameOverOverlay.classList.add('hidden');
+      gameOverOverlay.classList.remove('flex');
+      gameRunning = true;
+      state.sessionGames++;
+      sessionStorage.setItem('space-invaders-games', String(state.sessionGames));
+      updateUI();
+      gameLoop(performance.now());
+    }
+
+    function endGame() {
+      gameRunning = false;
+      if (animationId) cancelAnimationFrame(animationId);
+      playGameOver();
+      trackGameOver('space-invaders', state.score);
+      if (state.score > state.sessionBest) {
+        state.sessionBest = state.score;
+        localStorage.setItem('space-invaders-best', String(state.sessionBest));
+      }
+      state.sessionScore += state.score;
+      sessionStorage.setItem('space-invaders-session-score', String(state.sessionScore));
+      document.getElementById('finalScore').textContent = state.score;
+      gameOverOverlay.classList.remove('hidden');
+      gameOverOverlay.classList.add('flex');
+    }
+
+    function shoot() {
+      if (!gameRunning || state.bullets.some(b => b.fromPlayer)) return;
+      state.bullets.push({
+        x: state.player.x + PLAYER_W / 2 - BULLET_W / 2,
+        y: state.player.y,
+        w: BULLET_W,
+        h: BULLET_H,
+        speed: -12,
+        fromPlayer: true,
+      });
+      playShoot();
+    }
+
+    function alienShoot() {
+      if (state.aliens.length === 0) return;
+      const idx = Math.floor(rand() * state.aliens.length);
+      const a = state.aliens[idx];
+      state.alienBullets.push({
+        x: a.x + a.w / 2 - BULLET_W / 2,
+        y: a.y + a.h,
+        w: BULLET_W,
+        h: BULLET_H,
+        speed: 5,
+      });
+    }
+
+    function gameLoop(now) {
+      if (!gameRunning) return;
+
+      const dt = Math.min(now - (state._lastTime || now), 50);
+      state._lastTime = now;
+
+      if (state.keys['ArrowLeft'] || state.keys['a'] || state.keys['A']) state.player.x = Math.max(0, state.player.x - state.player.speed);
+      if (state.keys['ArrowRight'] || state.keys['d'] || state.keys['D']) state.player.x = Math.min(W - PLAYER_W, state.player.x + state.player.speed);
+
+      if (now - state.lastAlienMove > state.alienSpeed) {
+        state.lastAlienMove = now;
+        let hitEdge = false;
+        for (const a of state.aliens) {
+          a.x += 20 * state.alienDir;
+          if (a.x <= 0 || a.x + a.w >= W) hitEdge = true;
+        }
+        if (hitEdge) {
+          state.alienDir *= -1;
+          for (const a of state.aliens) a.y += 16;
+        }
+      }
+
+      if (now - state.lastAlienShot > 600 - state.wave * 50) {
+        state.lastAlienShot = now;
+        alienShoot();
+      }
+
+      state.bullets = state.bullets.filter(b => {
+        b.y += b.speed;
+        if (b.y + b.h < 0) {
+          if (b.fromPlayer) state.streak = 0;
+          return false;
+        }
+        if (b.fromPlayer) {
+          const shieldHit = state.shields.some(s => s.hp > 0 && b.x + b.w > s.x && b.x < s.x + s.w && b.y + b.h > s.y && b.y < s.y + s.h);
+          if (shieldHit) {
+            hitShield(b.x, b.y, b.w, b.h);
+            state.streak = 0;
+            return false;
+          }
+          const hit = state.aliens.findIndex(a => b.x + b.w > a.x && b.x < a.x + a.w && b.y < a.y + a.h && b.y + b.h > a.y);
+          if (hit >= 0) {
+            state.score += state.aliens[hit].points;
+            state.streak++;
+            if (state.streak >= 5) playPerfect();
+            else playExplosion();
+            state.aliens.splice(hit, 1);
+            return false;
+          }
+        }
+        return true;
+      });
+
+      state.alienBullets = state.alienBullets.filter(b => {
+        b.y += b.speed;
+        if (b.y > H) return false;
+        hitShield(b.x, b.y, b.w, b.h);
+        if (b.x + b.w > state.player.x && b.x < state.player.x + PLAYER_W && b.y + b.h > state.player.y && b.y < state.player.y + PLAYER_H) {
+          state.lives--;
+          state.streak = 0;
+          playError();
+          if (state.lives <= 0) endGame();
+          return false;
+        }
+        return true;
+      });
+
+      state.shields = state.shields.filter(s => s.hp > 0);
+
+      if (state.aliens.length === 0) {
+        state.wave++;
+        state.alienSpeed = Math.max(200, state.alienSpeed - 50);
+        playLevelUp();
+        spawnAliens();
+        spawnShields();
+      }
+
+      const lowestAlien = Math.max(...state.aliens.map(a => a.y + a.h), 0);
+      if (lowestAlien >= state.player.y) endGame();
+
+      updateUI();
+
+      ctx.fillStyle = '#0a0a0f';
+      ctx.fillRect(0, 0, W, H);
+
+      ctx.fillStyle = '#22c55e';
+      ctx.fillRect(state.player.x, state.player.y, state.player.w, state.player.h);
+
+      for (const a of state.aliens) {
+        ctx.fillStyle = '#ef4444';
+        ctx.fillRect(a.x, a.y, a.w, a.h);
+      }
+
+      for (const b of state.bullets) {
+        ctx.fillStyle = '#eab308';
+        ctx.fillRect(b.x, b.y, b.w, b.h);
+      }
+      for (const b of state.alienBullets) {
+        ctx.fillStyle = '#f97316';
+        ctx.fillRect(b.x, b.y, b.w, b.h);
+      }
+
+      for (const s of state.shields) {
+        ctx.fillStyle = '#3b82f6';
+        ctx.fillRect(s.x, s.y, s.w, s.h);
+      }
+
+      animationId = requestAnimationFrame(gameLoop);
+    }
+
+    document.addEventListener('keydown', e => {
+      if (['ArrowLeft', 'ArrowRight', 'a', 'A', 'd', 'D'].includes(e.key)) e.preventDefault();
+      state.keys[e.key] = true;
+      if (e.key === ' ' && gameRunning) {
+        e.preventDefault();
+        shoot();
+      }
+    });
+    document.addEventListener('keyup', e => { state.keys[e.key] = false; });
+
+    let touchLeftActive = false, touchRightActive = false;
+    let touchStartTime = 0;
+
+    touchLeft.addEventListener('touchstart', e => { e.preventDefault(); touchLeftActive = true; touchStartTime = performance.now(); });
+    touchLeft.addEventListener('touchend', (e) => {
+      touchLeftActive = false;
+      if (gameRunning && performance.now() - touchStartTime < 300) shoot();
+    });
+    touchRight.addEventListener('touchstart', e => { e.preventDefault(); touchRightActive = true; touchStartTime = performance.now(); });
+    touchRight.addEventListener('touchend', (e) => {
+      touchRightActive = false;
+      if (gameRunning && performance.now() - touchStartTime < 300) shoot();
+    });
+
+    gameWrapper.addEventListener('click', e => {
+      if (!gameRunning || e.target.closest('button')) return;
+      const rect = gameWrapper.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      if (x < rect.width / 2) state.keys['ArrowLeft'] = true;
+      else state.keys['ArrowRight'] = true;
+      shoot();
+      setTimeout(() => {
+        state.keys['ArrowLeft'] = false;
+        state.keys['ArrowRight'] = false;
+      }, 100);
+    });
+
+    setInterval(() => {
+      if (!gameRunning) return;
+      if (touchLeftActive) state.player.x = Math.max(0, state.player.x - state.player.speed);
+      if (touchRightActive) state.player.x = Math.min(W - PLAYER_W, state.player.x + state.player.speed);
+    }, 16);
+
+    startBtn.addEventListener('click', startGame);
+    restartBtn.addEventListener('click', () => {
+      playClick();
+      startGame();
+    });
+
+    soundToggle.addEventListener('click', () => {
+      muted = !muted;
+      muteAll(muted);
+      soundToggle.textContent = muted ? '🔇 Muted' : '🔊 Sound';
+      playClick();
+    });
+
+    initAudio().then(() => updateUI());
+  </script>
+</body>
+</html>

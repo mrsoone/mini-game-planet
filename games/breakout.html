@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Breakout - Brick Breaker Arcade Game | Mini Game Planet</title>
+  <meta name="description" content="Play Breakout, the classic brick breaker arcade game. Break bricks with a bouncing ball, collect power-ups, and clear multiple levels. Free to play online.">
+  <link rel="canonical" href="https://minigameplanet.com/games/breakout.html">
+  <!-- Open Graph -->
+  <meta property="og:title" content="Breakout - Brick Breaker Arcade Game">
+  <meta property="og:description" content="Play the classic Breakout brick breaker game. Break all bricks, collect power-ups, and beat your high score.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/breakout.html">
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoGame",
+    "name": "Breakout",
+    "description": "Classic brick breaker arcade game. Break bricks with a bouncing ball, collect power-ups, and clear multiple levels.",
+    "gamePlatform": "Web Browser",
+    "genre": "Arcade",
+    "playMode": "SinglePlayer"
+  }
+  </script>
+  <!-- AdSense (commented)
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXX" crossorigin="anonymous"></script>
+  -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root { font-family: 'Space Grotesk', sans-serif; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    body { background-color: #F5F5F4; }
+    #gameCanvas { display: block; margin: 0 auto; border-radius: 8px; background: #1a1a2e; }
+    .powerup-wide { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+    .powerup-slow { background: linear-gradient(90deg, #10b981, #34d399); }
+    .powerup-multi { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+  </style>
+</head>
+<body class="min-h-screen text-gray-800">
+  <div id="nav-container" class="border-b border-gray-200 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+    <nav class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="font-semibold text-lg text-gray-800 hover:text-indigo-600 transition">Mini Game Planet</a>
+      <div class="flex items-center gap-4">
+        <button id="soundToggle" class="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-sm font-medium" aria-label="Toggle sound">🔊 Sound</button>
+      </div>
+    </nav>
+  </div>
+
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 md:p-8">
+      <header class="text-center mb-6">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Breakout</h1>
+        <p class="text-gray-600">Classic Brick Breaker Arcade Game</p>
+      </header>
+
+      <div class="flex flex-wrap items-center justify-center gap-4 mb-4">
+        <div class="font-mono text-sm bg-gray-100 px-3 py-2 rounded-lg"><span class="text-gray-500">Score:</span> <span id="score">0</span></div>
+        <div class="font-mono text-sm bg-gray-100 px-3 py-2 rounded-lg"><span class="text-gray-500">Lives:</span> <span id="lives">3</span></div>
+        <div class="font-mono text-sm bg-gray-100 px-3 py-2 rounded-lg"><span class="text-gray-500">Level:</span> <span id="level">1</span></div>
+        <div class="font-mono text-sm bg-amber-100 px-3 py-2 rounded-lg"><span class="text-gray-500">Streak:</span> <span id="streak">0</span></div>
+        <div class="font-mono text-sm bg-indigo-100 px-3 py-2 rounded-lg"><span class="text-gray-500">Best:</span> <span id="best">0</span></div>
+      </div>
+
+      <div class="relative flex justify-center mb-4">
+        <canvas id="gameCanvas" width="720" height="480" class="max-w-full border-2 border-gray-200"></canvas>
+        <div id="overlay" class="absolute inset-0 flex flex-col items-center justify-center bg-black/60 rounded-lg">
+          <p id="overlayText" class="text-white text-2xl font-bold mb-4">Click or tap to start</p>
+          <button id="startBtn" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition">Play</button>
+        </div>
+      </div>
+
+      <div class="text-center text-sm text-gray-500 mb-8">
+        <p>Mouse / Touch to move paddle • Arrow keys • Gamepad supported</p>
+      </div>
+
+      <article class="prose prose-gray max-w-none mt-12">
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">How to Play Breakout</h2>
+        <p>Breakout is a classic arcade game where you control a paddle at the bottom of the screen to bounce a ball and destroy rows of bricks. Use your mouse, touch screen, arrow keys, or gamepad to move the paddle left and right. Keep the ball in play—if it falls past your paddle, you lose a life. You have three lives to clear all bricks and advance through multiple levels.</p>
+        <p>Each brick you break adds to your score. Bricks in higher rows are worth more points. Build combos by breaking multiple bricks in quick succession to earn streak bonuses. Collect power-ups that drop from certain bricks: widen your paddle for easier catches, slow the ball for precision shots, or spawn extra balls for faster brick clearing.</p>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">History of Breakout</h2>
+        <p>Breakout was created by Atari in 1976, with Steve Jobs and Steve Wozniak contributing to its development before founding Apple. The game was inspired by Pong and inverted the concept: instead of two players batting a ball, a single player uses a paddle to break a wall of bricks. It became an instant hit in arcades and on home consoles.</p>
+        <p>Over the decades, Breakout spawned countless clones and variations, including Arkanoid (1986), which added power-ups and became one of the most influential brick breaker games. The simple yet addictive formula—clear the bricks, don't let the ball fall—has kept the genre alive on every platform from mobile to modern browsers.</p>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Strategy Tips</h2>
+        <p>Start by targeting the sides of the brick formation to create cascading breaks. Bricks that fall from above often clear multiple rows. Aim for corners to maximize the ball's travel and reduce the chance of dead angles where the ball bounces in a predictable pattern.</p>
+        <p>Prioritize power-ups when they drop—especially the wider paddle early in a level. Save multi-ball for levels with many bricks. Use slow ball when you need precise control to hit a stubborn brick. Watch the ball's trajectory and position your paddle accordingly; small movements matter.</p>
+        <p>Maintain your streak by breaking bricks continuously. A short pause resets the streak, so keep the action flowing. Learn each level's layout; later levels have gaps and patterns that require strategic aiming.</p>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">FAQ</h2>
+        <p><strong>How many levels are there?</strong> The game features multiple levels with increasingly complex brick layouts. Each level is procedurally varied to keep gameplay fresh.</p>
+        <p><strong>What do the power-up colors mean?</strong> Blue widens your paddle, green slows the ball, and gold spawns extra balls. Grab them before they fall off the screen.</p>
+        <p><strong>Can I play on mobile?</strong> Yes. Touch and drag to move the paddle. The game is fully responsive and works on phones and tablets.</p>
+        <p><strong>Does my high score save?</strong> Your personal best and session stats are stored in your browser for the current session. Zero-friction restart lets you jump back in instantly after a game over.</p>
+      </article>
+    </div>
+
+    <div id="related-games" class="mt-8 p-6 bg-white rounded-2xl shadow-lg border border-gray-100">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Related Games</h3>
+      <div class="flex flex-wrap gap-4">
+        <a href="/games/pong.html" class="text-indigo-600 hover:underline">Pong</a>
+        <a href="/games/snake.html" class="text-indigo-600 hover:underline">Snake</a>
+        <a href="/games/tetris.html" class="text-indigo-600 hover:underline">Tetris</a>
+        <a href="/games/arkanoid.html" class="text-indigo-600 hover:underline">Arkanoid</a>
+      </div>
+    </div>
+  </main>
+
+  <footer id="footer-container" class="border-t border-gray-200 mt-12 py-8">
+    <div class="max-w-4xl mx-auto px-4 text-center text-gray-500 text-sm">
+      <p>© Mini Game Planet. Breakout is a classic arcade game. Play for free.</p>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playBounce, playExplosion, playCollect } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('breakout');
+    initConsent();
+    trackGameView('breakout', 'Arcade');
+
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const overlay = document.getElementById('overlay');
+    const overlayText = document.getElementById('overlayText');
+    const startBtn = document.getElementById('startBtn');
+    const scoreEl = document.getElementById('score');
+    const livesEl = document.getElementById('lives');
+    const levelEl = document.getElementById('level');
+    const streakEl = document.getElementById('streak');
+    const bestEl = document.getElementById('best');
+    const soundToggle = document.getElementById('soundToggle');
+
+    function secureRandom() {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] / (0xFFFFFFFF + 1);
+    }
+
+    let gameState = 'idle';
+    let score = 0, lives = 3, level = 1, streak = 0;
+    let bestScore = parseInt(localStorage.getItem('breakoutBest') || '0', 10);
+    let sessionGames = parseInt(sessionStorage.getItem('breakoutGames') || '0', 10);
+    let sessionBest = parseInt(sessionStorage.getItem('breakoutSessionBest') || '0', 10);
+    let paddleX, paddleW = 100, paddleH = 12, paddleY;
+    let ballX, ballY, ballDX, ballDY, ballR = 8, ballSpeed = 5;
+    let bricks = [], powerups = [], balls = [];
+    let animId;
+
+    const BRICK_COLORS = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#8b5cf6'];
+    const POWERUP_TYPES = ['wide', 'slow', 'multi'];
+
+    function initBricks() {
+      bricks = [];
+      const cols = 10 + Math.floor(level / 2);
+      const rows = 4 + Math.min(level, 4);
+      const pad = 4;
+      const bw = (canvas.width - pad * (cols + 1)) / cols;
+      const bh = 20;
+      const startY = 60;
+
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const dropPowerup = secureRandom() < 0.15;
+          bricks.push({
+            x: pad + c * (bw + pad),
+            y: startY + r * (bh + pad),
+            w: bw,
+            h: bh,
+            color: BRICK_COLORS[r % BRICK_COLORS.length],
+            points: (rows - r) * 10,
+            dropPowerup
+          });
+        }
+      }
+    }
+
+    function spawnPowerup(x, y, type) {
+      powerups.push({
+        x, y, w: 24, h: 12,
+        dy: 3,
+        type: POWERUP_TYPES[type % POWERUP_TYPES.length]
+      });
+    }
+
+    function resetBall(speedMult = 1) {
+      const baseSpeed = 5 + level * 0.5;
+      const angle = -Math.PI / 2 + (secureRandom() - 0.5) * 0.8;
+      return {
+        x: canvas.width / 2,
+        y: paddleY - ballR - 2,
+        dx: Math.cos(angle) * baseSpeed * speedMult,
+        dy: Math.sin(angle) * baseSpeed * speedMult,
+        r: ballR,
+        speedMult
+      };
+    }
+
+    function initLevel() {
+      initBricks();
+      powerups = [];
+      paddleW = 100;
+      ballSpeed = 5 + level * 0.5;
+      paddleX = (canvas.width - paddleW) / 2;
+      paddleY = canvas.height - 40;
+      balls = [resetBall()];
+    }
+
+    function startGame() {
+      gameState = 'playing';
+      score = 0;
+      lives = 3;
+      level = 1;
+      streak = 0;
+      overlay.style.display = 'none';
+      initLevel();
+      trackGameStart('breakout');
+      playClick();
+      updateUI();
+      gameLoop();
+    }
+
+    function restartGame() {
+      gameState = 'playing';
+      lives = 3;
+      streak = 0;
+      overlay.style.display = 'none';
+      initLevel();
+      playClick();
+      updateUI();
+      gameLoop();
+    }
+
+    function updateUI() {
+      scoreEl.textContent = score;
+      livesEl.textContent = lives;
+      levelEl.textContent = level;
+      streakEl.textContent = streak;
+      bestEl.textContent = Math.max(bestScore, score, sessionBest);
+    }
+
+    function updateBest() {
+      if (score > bestScore) {
+        bestScore = score;
+        localStorage.setItem('breakoutBest', String(bestScore));
+      }
+      if (score > sessionBest) {
+        sessionBest = score;
+        sessionStorage.setItem('breakoutSessionBest', String(sessionBest));
+      }
+      sessionGames++;
+      sessionStorage.setItem('breakoutGames', String(sessionGames));
+    }
+
+    function gameOver() {
+      gameState = 'over';
+      cancelAnimationFrame(animId);
+      updateBest();
+      trackGameOver('breakout', score);
+      playGameOver();
+      overlay.style.display = 'flex';
+      overlayText.textContent = `Game Over! Score: ${score}`;
+      startBtn.textContent = 'Play Again';
+      startBtn.onclick = restartGame;
+    }
+
+    function nextLevel() {
+      level++;
+      playLevelUp();
+      if (bricks.length === 0) playPerfect();
+      initLevel();
+      overlay.style.display = 'flex';
+      overlayText.textContent = `Level ${level}!`;
+      startBtn.textContent = 'Continue';
+      startBtn.onclick = () => {
+        overlay.style.display = 'none';
+        gameLoop();
+      };
+    }
+
+    function handleInput(e) {
+      if (gameState !== 'playing') return;
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      paddleX = (clientX - rect.left) * scaleX - paddleW / 2;
+      paddleX = Math.max(0, Math.min(canvas.width - paddleW, paddleX));
+    }
+
+    canvas.addEventListener('mousemove', handleInput);
+    canvas.addEventListener('touchmove', (e) => { e.preventDefault(); handleInput(e); }, { passive: false });
+
+    document.addEventListener('keydown', (e) => {
+      if (gameState !== 'playing') return;
+      const step = 25;
+      if (e.key === 'ArrowLeft') paddleX = Math.max(0, paddleX - step);
+      if (e.key === 'ArrowRight') paddleX = Math.min(canvas.width - paddleW, paddleX + step);
+    });
+
+    if (navigator.getGamepads) {
+      function pollGamepad() {
+        const gp = navigator.getGamepads()[0];
+        if (gp && gameState === 'playing') {
+          const axis = gp.axes[0];
+          if (Math.abs(axis) > 0.15) {
+            paddleX += axis * 15;
+            paddleX = Math.max(0, Math.min(canvas.width - paddleW, paddleX));
+          }
+        }
+        if (gameState === 'playing') requestAnimationFrame(pollGamepad);
+      }
+      window.addEventListener('gamepadconnected', () => requestAnimationFrame(pollGamepad));
+    }
+
+    function gameLoop() {
+      if (gameState !== 'playing') return;
+
+      ctx.fillStyle = '#1a1a2e';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      paddleX = Math.max(0, Math.min(canvas.width - paddleW, paddleX));
+      ctx.fillStyle = '#6366f1';
+      if (ctx.roundRect) {
+        ctx.beginPath();
+        ctx.roundRect(paddleX, paddleY, paddleW, paddleH, 6);
+        ctx.fill();
+      } else {
+        ctx.fillRect(paddleX, paddleY, paddleW, paddleH);
+      }
+
+      for (let i = balls.length - 1; i >= 0; i--) {
+        const b = balls[i];
+        b.x += b.dx;
+        b.y += b.dy;
+
+        if (b.x - b.r <= 0 || b.x + b.r >= canvas.width) {
+          b.dx *= -1;
+          playBounce();
+        }
+        if (b.y - b.r <= 0) {
+          b.dy *= -1;
+          playBounce();
+        }
+
+        if (b.y + b.r >= paddleY && b.y - b.r <= paddleY + paddleH &&
+            b.x >= paddleX && b.x <= paddleX + paddleW) {
+          const hitPos = (b.x - paddleX) / paddleW - 0.5;
+          b.dy = -Math.abs(b.dy);
+          b.dx = hitPos * 8;
+          playBounce();
+        }
+
+        if (b.y - b.r > canvas.height) {
+          balls.splice(i, 1);
+          if (balls.length === 0) {
+            lives--;
+            streak = 0;
+            playError();
+            updateUI();
+            if (lives <= 0) {
+              gameOver();
+              return;
+            }
+            balls = [resetBall()];
+          }
+          continue;
+        }
+
+        ctx.fillStyle = '#f8fafc';
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      for (let i = bricks.length - 1; i >= 0; i--) {
+        const br = bricks[i];
+        for (const b of balls) {
+          if (b.x + b.r >= br.x && b.x - b.r <= br.x + br.w &&
+              b.y + b.r >= br.y && b.y - b.r <= br.y + br.h) {
+            b.dy *= -1;
+            score += br.points;
+            streak++;
+            playExplosion();
+            playScoreUp();
+            if (br.dropPowerup) {
+              spawnPowerup(br.x + br.w / 2 - 12, br.y, Math.floor(secureRandom() * 3));
+            }
+            bricks.splice(i, 1);
+            break;
+          }
+        }
+      }
+
+      for (let i = powerups.length - 1; i >= 0; i--) {
+        const p = powerups[i];
+        p.y += p.dy;
+        if (p.y > canvas.height) {
+          powerups.splice(i, 1);
+          continue;
+        }
+        const hit = p.y + p.h >= paddleY && p.y <= paddleY + paddleH &&
+          p.x + p.w >= paddleX && p.x <= paddleX + paddleW;
+        if (hit) {
+          playCollect();
+          if (p.type === 'wide') paddleW = Math.min(160, paddleW + 30);
+          if (p.type === 'slow') balls.forEach(b => { b.dx *= 0.7; b.dy *= 0.7; });
+          if (p.type === 'multi') balls.push(resetBall(0.9));
+          powerups.splice(i, 1);
+          continue;
+        }
+        ctx.fillStyle = p.type === 'wide' ? '#3b82f6' : p.type === 'slow' ? '#10b981' : '#f59e0b';
+        ctx.fillRect(p.x, p.y, p.w, p.h);
+      }
+
+      for (const br of bricks) {
+        ctx.fillStyle = br.color;
+        ctx.fillRect(br.x, br.y, br.w, br.h);
+      }
+
+      if (bricks.length === 0) {
+        nextLevel();
+        return;
+      }
+
+      updateUI();
+      animId = requestAnimationFrame(gameLoop);
+    }
+
+    startBtn.onclick = startGame;
+
+    soundToggle.addEventListener('click', () => {
+      muteAll();
+      soundToggle.textContent = document.body.classList.contains('muted') ? '🔇 Sound' : '🔊 Sound';
+    });
+  </script>
+</body>
+</html>

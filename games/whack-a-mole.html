@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Whack-a-Mole - Free Arcade Game | Mini Game Planet</title>
+  <meta name="description" content="Play Whack-a-Mole online! Smack moles, avoid bombs, and catch golden moles for bonus points. Free arcade game with 3 difficulty levels.">
+  <link rel="canonical" href="https://minigameplanet.com/games/whack-a-mole">
+  <meta property="og:title" content="Whack-a-Mole - Free Arcade Game">
+  <meta property="og:description" content="Smack moles, avoid bombs, catch golden moles. Free arcade game with 3 difficulty levels.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/whack-a-mole">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    .hole { transition: transform 0.15s ease; cursor: pointer; }
+    .hole:hover:not(.empty) { transform: scale(1.05); }
+    .hole.whacked { animation: whack 0.2s ease; }
+    @keyframes whack { 0% { transform: scale(1.1); } 100% { transform: scale(1); } }
+    .mole-pop { animation: pop 0.2s ease-out; }
+    @keyframes pop { 0% { transform: scale(0); opacity: 0; } 70% { transform: scale(1.15); } 100% { transform: scale(1); opacity: 1; } }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoGame",
+    "name": "Whack-a-Mole",
+    "description": "Classic arcade whack-a-mole game. Smack moles for points, avoid bombs, catch golden moles for 3x bonus.",
+    "gamePlatform": "Web Browser",
+    "genre": "Arcade",
+    "playMode": "SinglePlayer",
+    "url": "https://minigameplanet.com/games/whack-a-mole"
+  }
+  </script>
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXX" crossorigin="anonymous"></script> -->
+</head>
+<body class="min-h-screen text-gray-800 antialiased">
+  <nav id="nav-container" class="bg-white/80 backdrop-blur border-b border-gray-200 sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="font-semibold text-lg text-gray-800 hover:text-amber-600 transition">Mini Game Planet</a>
+      <div class="flex items-center gap-4">
+        <button id="sound-toggle" class="text-gray-600 hover:text-gray-900 text-sm" aria-label="Toggle sound">🔊 Sound</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    <article class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 mb-8">
+      <header class="mb-6">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Whack-a-Mole</h1>
+        <p class="text-gray-600">Classic arcade fun. Smack moles, avoid bombs, catch golden moles!</p>
+      </header>
+
+      <div class="flex flex-wrap gap-4 items-center mb-6">
+        <select id="difficulty" class="font-mono px-4 py-2 rounded-lg border border-gray-200 bg-white text-gray-800 focus:ring-2 focus:ring-amber-400 focus:border-amber-400">
+          <option value="easy">Easy</option>
+          <option value="normal" selected>Normal</option>
+          <option value="hard">Hard</option>
+        </select>
+        <button id="start-btn" class="px-6 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-semibold transition shadow-sm">Start Game</button>
+      </div>
+
+      <div class="grid grid-cols-3 gap-2 max-w-sm mx-auto mb-6">
+        <div class="font-mono text-center p-2 bg-gray-50 rounded-lg">
+          <span class="text-gray-500 text-xs block">Score</span>
+          <span id="score" class="text-xl font-bold">0</span>
+        </div>
+        <div class="font-mono text-center p-2 bg-gray-50 rounded-lg">
+          <span class="text-gray-500 text-xs block">Time</span>
+          <span id="timer" class="text-xl font-bold">30</span>
+        </div>
+        <div class="font-mono text-center p-2 bg-gray-50 rounded-lg">
+          <span class="text-gray-500 text-xs block">Streak</span>
+          <span id="streak" class="text-xl font-bold">0</span>
+        </div>
+      </div>
+
+      <div id="game-area" class="aspect-square max-w-sm mx-auto grid grid-cols-3 gap-3 p-4 bg-amber-50/50 rounded-2xl border border-amber-100 mb-6 opacity-60 pointer-events-none">
+        <!-- 3x3 holes -->
+        <div class="hole aspect-square rounded-full bg-amber-900/80 flex items-center justify-center text-4xl empty" data-index="0"></div>
+        <div class="hole aspect-square rounded-full bg-amber-900/80 flex items-center justify-center text-4xl empty" data-index="1"></div>
+        <div class="hole aspect-square rounded-full bg-amber-900/80 flex items-center justify-center text-4xl empty" data-index="2"></div>
+        <div class="hole aspect-square rounded-full bg-amber-900/80 flex items-center justify-center text-4xl empty" data-index="3"></div>
+        <div class="hole aspect-square rounded-full bg-amber-900/80 flex items-center justify-center text-4xl empty" data-index="4"></div>
+        <div class="hole aspect-square rounded-full bg-amber-900/80 flex items-center justify-center text-4xl empty" data-index="5"></div>
+        <div class="hole aspect-square rounded-full bg-amber-900/80 flex items-center justify-center text-4xl empty" data-index="6"></div>
+        <div class="hole aspect-square rounded-full bg-amber-900/80 flex items-center justify-center text-4xl empty" data-index="7"></div>
+        <div class="hole aspect-square rounded-full bg-amber-900/80 flex items-center justify-center text-4xl empty" data-index="8"></div>
+      </div>
+
+      <div id="game-over-area" class="hidden text-center py-6">
+        <p class="text-2xl font-bold text-gray-900 mb-2">Time's Up!</p>
+        <p class="text-lg text-gray-600 mb-4">Final Score: <span id="final-score" class="font-bold text-amber-600">0</span></p>
+        <p class="text-sm text-gray-500 mb-2">Personal Best: <span id="personal-best" class="font-mono font-bold">0</span></p>
+        <p class="text-sm text-gray-500 mb-4">Session: <span id="session-games" class="font-mono">0</span> games, <span id="session-total" class="font-mono">0</span> total points</p>
+        <button id="restart-btn" class="px-6 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-semibold transition">Play Again</button>
+      </div>
+
+      <section class="prose prose-gray max-w-none mt-8">
+        <h2 class="text-xl font-semibold text-gray-900 mb-3">How to Play Whack-a-Mole</h2>
+        <p class="text-gray-600 mb-4">
+          Whack-a-Mole is a timeless arcade classic that tests your reflexes and hand-eye coordination. Moles pop up from holes in a 3×3 grid—your job is to click or tap them before they disappear. Each successful hit earns you points, but watch out for bombs that will cost you! The game runs for 30 seconds, and your goal is to rack up as many points as possible while avoiding costly mistakes.
+        </p>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Scoring</h3>
+        <ul class="list-disc pl-6 text-gray-600 mb-4 space-y-1">
+          <li><strong>🐹 Regular mole:</strong> 1 point per hit</li>
+          <li><strong>⭐ Golden mole:</strong> 3 points per hit (3× bonus!)</li>
+          <li><strong>💣 Bomb:</strong> −5 points if you hit it—avoid these!</li>
+        </ul>
+        <p class="text-gray-600 mb-4">
+          Golden moles are rare but rewarding. When you see that star, prioritize it—but only if you're confident you won't accidentally tap a bomb in the next hole. Bombs can quickly erase a good run, so a split-second pause to confirm what you're hitting can save your score.
+        </p>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Difficulty Levels</h3>
+        <p class="text-gray-600 mb-4">
+          Choose Easy for a relaxed pace with fewer bombs and slower mole appearances. Normal offers balanced gameplay for most players. Hard mode increases mole speed and bomb frequency—ideal for seasoned players seeking a real challenge. As time passes in any mode, moles pop up more frequently, so the final seconds are always the most intense.
+        </p>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Tips & Strategy</h3>
+        <p class="text-gray-600 mb-4">
+          Build combos by hitting moles in quick succession—your streak counter rewards consistency and helps you stay in the zone. The game runs for 30 seconds, so every second counts. Focus on golden moles when they appear, but never sacrifice accuracy for speed when a bomb might be lurking. Keep your cursor or finger near the center of the grid to minimize travel time. Your personal best and session stats are saved in your browser so you can track your progress and compete against yourself.
+        </p>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">A Brief History</h3>
+        <p class="text-gray-600 mb-4">
+          Whack-a-Mole originated in Japanese arcades in the 1970s and became a staple of carnivals and amusement parks worldwide. The physical game used mechanical moles that popped up from holes; players wielded mallets to bonk them before they retreated. The digital version you're playing captures that same quick-hit excitement in your browser. No downloads, no sign-ups—just pure arcade fun. Whether you're killing time, warming up your reflexes, or chasing a new high score, Whack-a-Mole delivers instant gratification. Enjoy!
+        </p>
+      </section>
+    </article>
+
+    <section id="related-games" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Related Games</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <a href="/games/snake.html" class="block p-3 rounded-lg bg-gray-50 hover:bg-amber-50 border border-gray-100 hover:border-amber-200 transition text-center">🐍 Snake</a>
+        <a href="/games/breakout.html" class="block p-3 rounded-lg bg-gray-50 hover:bg-amber-50 border border-gray-100 hover:border-amber-200 transition text-center">🧱 Breakout</a>
+        <a href="/games/memory.html" class="block p-3 rounded-lg bg-gray-50 hover:bg-amber-50 border border-gray-100 hover:border-amber-200 transition text-center">🧠 Memory</a>
+        <a href="/games/typing.html" class="block p-3 rounded-lg bg-gray-50 hover:bg-amber-50 border border-gray-100 hover:border-amber-200 transition text-center">⌨️ Typing</a>
+      </div>
+    </section>
+
+    <footer id="footer-container" class="text-center text-gray-500 text-sm py-8">
+      <p>© Mini Game Planet. Free arcade games for everyone.</p>
+    </footer>
+  </main>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playCollect, playExplosion } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('whack-a-mole');
+    initConsent();
+    initAudio();
+    trackGameView('whack-a-mole', 'Arcade');
+
+    const MOLE = '🐹';
+    const GOLDEN = '⭐';
+    const BOMB = '💣';
+
+    const config = {
+      easy: { minDelay: 800, maxDelay: 1400, bombChance: 0.05 },
+      normal: { minDelay: 600, maxDelay: 1100, bombChance: 0.12 },
+      hard: { minDelay: 400, maxDelay: 800, bombChance: 0.22 },
+    };
+
+    function secureRandom() {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] / (0xFFFFFFFF + 1);
+    }
+
+    function randomInt(min, max) {
+      return Math.floor(secureRandom() * (max - min + 1)) + min;
+    }
+
+    let state = {
+      score: 0,
+      timeLeft: 30,
+      streak: 0,
+      running: false,
+      timerId: null,
+      popId: null,
+      personalBest: parseInt(localStorage.getItem('whack-mole-pb') || '0', 10),
+      sessionGames: parseInt(sessionStorage.getItem('whack-mole-session') || '0', 10),
+      sessionTotal: parseInt(sessionStorage.getItem('whack-mole-total') || '0', 10),
+      soundOn: true,
+    };
+
+    const holes = document.querySelectorAll('.hole');
+    const gameArea = document.getElementById('game-area');
+    const startBtn = document.getElementById('start-btn');
+    const restartBtn = document.getElementById('restart-btn');
+    const difficultySelect = document.getElementById('difficulty');
+    const soundToggle = document.getElementById('sound-toggle');
+
+    function updateUI() {
+      document.getElementById('score').textContent = state.score;
+      document.getElementById('timer').textContent = state.timeLeft;
+      document.getElementById('streak').textContent = state.streak;
+      document.getElementById('personal-best').textContent = state.personalBest;
+      document.getElementById('session-games').textContent = state.sessionGames;
+      document.getElementById('session-total').textContent = state.sessionTotal;
+    }
+
+    function spawnMole() {
+      if (!state.running) return;
+      const emptyHoles = [...holes].filter(h => h.classList.contains('empty'));
+      if (emptyHoles.length === 0) return;
+
+      const idx = randomInt(0, emptyHoles.length - 1);
+      const hole = emptyHoles[idx];
+      const cfg = config[difficultySelect.value];
+      const isBomb = secureRandom() < cfg.bombChance;
+      const isGolden = !isBomb && secureRandom() < 0.2;
+
+      hole.classList.remove('empty');
+      hole.dataset.type = isBomb ? 'bomb' : (isGolden ? 'golden' : 'mole');
+      hole.textContent = isBomb ? BOMB : (isGolden ? GOLDEN : MOLE);
+      hole.classList.add('mole-pop');
+
+      const baseDelay = cfg.minDelay + secureRandom() * (cfg.maxDelay - cfg.minDelay);
+      const timeProgress = 1 - (state.timeLeft / 30);
+      const speedup = Math.max(0.5, 1 - timeProgress * 0.5);
+      const delay = Math.max(300, baseDelay * speedup);
+
+      setTimeout(() => {
+        if (hole.classList.contains('empty')) return;
+        hole.classList.add('empty');
+        hole.textContent = '';
+        hole.dataset.type = '';
+        hole.classList.remove('mole-pop');
+      }, delay);
+
+      scheduleNext();
+    }
+
+    function scheduleNext() {
+      if (!state.running) return;
+      const cfg = config[difficultySelect.value];
+      const baseDelay = cfg.minDelay + secureRandom() * (cfg.maxDelay - cfg.minDelay);
+      const timeProgress = 1 - (state.timeLeft / 30);
+      const speedup = Math.max(0.6, 1 - timeProgress * 0.4);
+      const delay = Math.max(250, baseDelay * speedup);
+      state.popId = setTimeout(spawnMole, delay);
+    }
+
+    function handleWhack(e) {
+      const hole = e.target.closest('.hole');
+      if (!hole || hole.classList.contains('empty')) return;
+      const type = hole.dataset.type;
+
+      hole.classList.add('whacked');
+      hole.classList.remove('empty');
+      hole.textContent = '';
+      hole.dataset.type = '';
+      setTimeout(() => hole.classList.remove('whacked'), 200);
+
+      if (type === 'bomb') {
+        state.score = Math.max(0, state.score - 5);
+        state.streak = 0;
+        if (state.soundOn) playExplosion().catch(() => {});
+        if (state.soundOn) playError().catch(() => {});
+      } else {
+        const pts = type === 'golden' ? 3 : 1;
+        state.score += pts;
+        state.streak++;
+        if (state.soundOn) playClick().catch(() => {});
+        if (state.soundOn) playScoreUp().catch(() => {});
+      }
+
+      updateUI();
+    }
+
+    function startGame() {
+      if (state.running) return;
+      state.running = true;
+      state.score = 0;
+      state.timeLeft = 30;
+      state.streak = 0;
+      holes.forEach(h => {
+        h.classList.add('empty');
+        h.textContent = '';
+        h.dataset.type = '';
+      });
+      gameArea.classList.remove('opacity-60', 'pointer-events-none');
+      document.getElementById('game-over-area').classList.add('hidden');
+      startBtn.classList.add('hidden');
+      difficultySelect.disabled = true;
+      updateUI();
+      trackGameStart('whack-a-mole');
+
+      state.timerId = setInterval(() => {
+        state.timeLeft--;
+        document.getElementById('timer').textContent = state.timeLeft;
+        if (state.timeLeft <= 0) endGame();
+      }, 1000);
+
+      spawnMole();
+    }
+
+    function endGame() {
+      state.running = false;
+      clearInterval(state.timerId);
+      if (state.popId) clearTimeout(state.popId);
+      state.popId = null;
+      gameArea.classList.add('opacity-60', 'pointer-events-none');
+      startBtn.classList.remove('hidden');
+      difficultySelect.disabled = false;
+
+      holes.forEach(h => {
+        h.classList.add('empty');
+        h.textContent = '';
+        h.dataset.type = '';
+      });
+
+      if (state.score > state.personalBest) {
+        state.personalBest = state.score;
+        localStorage.setItem('whack-mole-pb', state.personalBest);
+        if (state.soundOn) playLevelUp().catch(() => {});
+      }
+      state.sessionGames++;
+      state.sessionTotal += state.score;
+      sessionStorage.setItem('whack-mole-session', state.sessionGames);
+      sessionStorage.setItem('whack-mole-total', state.sessionTotal);
+
+      document.getElementById('final-score').textContent = state.score;
+      document.getElementById('personal-best').textContent = state.personalBest;
+      document.getElementById('session-games').textContent = state.sessionGames;
+      document.getElementById('session-total').textContent = state.sessionTotal;
+      document.getElementById('game-over-area').classList.remove('hidden');
+
+      if (state.soundOn) playGameOver().catch(() => {});
+      trackGameOver('whack-a-mole', state.score);
+    }
+
+    startBtn.addEventListener('click', startGame);
+    restartBtn.addEventListener('click', startGame);
+    gameArea.addEventListener('click', handleWhack);
+
+    soundToggle.addEventListener('click', () => {
+      state.soundOn = !state.soundOn;
+      soundToggle.textContent = state.soundOn ? '🔊 Sound' : '🔇 Sound';
+      if (!state.soundOn) muteAll().catch(() => {});
+    });
+
+    updateUI();
+  </script>
+</body>
+</html>

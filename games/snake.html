@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snake - Classic Arcade Game | Mini Game Planet</title>
+  <meta name="description" content="Play the classic Snake game online. Eat food, grow longer, and avoid walls and yourself. Free arcade game with multiple speeds and touch controls.">
+  <link rel="canonical" href="https://minigameplanet.com/games/snake">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="Snake - Classic Arcade Game | Mini Game Planet">
+  <meta property="og:description" content="Play the classic Snake game online. Eat food, grow longer, and avoid walls and yourself.">
+  <meta property="og:url" content="https://minigameplanet.com/games/snake">
+  <meta property="og:type" content="website">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background-color: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    .card { background: white; border-radius: 0.75rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    #gameCanvas { display: block; margin: 0 auto; background: #1a1a2e; border-radius: 0.5rem; }
+    .speed-btn.active { background: #3b82f6; color: white; }
+    .near-miss { animation: pulse 0.5s ease-in-out; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+  </style>
+  
+  <!-- JSON-LD VideoGame Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoGame",
+    "name": "Snake",
+    "description": "Classic Snake arcade game. Control a snake, eat food to grow, avoid walls and yourself. Multiple speed modes and full touch/gamepad support.",
+    "url": "https://minigameplanet.com/games/snake",
+    "gamePlatform": "Web Browser",
+    "genre": "Arcade",
+    "playMode": "SinglePlayer",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Mini Game Planet"
+    }
+  }
+  </script>
+  
+  <!-- GA4 Consent Mode (defaults denied) -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('consent', 'default', {
+      'analytics_storage': 'denied',
+      'ad_storage': 'denied',
+      'ad_user_data': 'denied',
+      'ad_personalization': 'denied'
+    });
+  </script>
+  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script> -->
+  <!-- AdSense: <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXX" crossorigin="anonymous"></script> -->
+</head>
+<body class="min-h-screen text-gray-800">
+  <div id="nav-container"></div>
+
+  <main class="max-w-2xl mx-auto px-4 py-8">
+    <div class="card p-6 md:p-8">
+      <h1 class="text-2xl md:text-3xl font-bold mb-2">Snake</h1>
+      <p class="text-gray-600 mb-6">Classic arcade snake. Eat food, grow longer, don't hit walls or yourself.</p>
+
+      <!-- Controls bar -->
+      <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+        <div class="flex items-center gap-2">
+          <span class="text-sm font-medium">Speed:</span>
+          <button id="speed-easy" class="speed-btn px-3 py-1.5 text-sm rounded-lg border border-gray-300 hover:bg-gray-100">Easy</button>
+          <button id="speed-normal" class="speed-btn active px-3 py-1.5 text-sm rounded-lg border border-gray-300 hover:bg-gray-100">Normal</button>
+          <button id="speed-fast" class="speed-btn px-3 py-1.5 text-sm rounded-lg border border-gray-300 hover:bg-gray-100">Fast</button>
+        </div>
+        <div class="flex items-center gap-3">
+          <button id="sound-toggle" class="p-2 rounded-lg border border-gray-300 hover:bg-gray-100" title="Toggle sound" aria-label="Toggle sound">
+            <svg id="sound-on" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.076L4.235 13H1a1 1 0 01-1-1V8a1 1 0 011-1h3.235l4.148-3.924zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414z"/></svg>
+            <svg id="sound-off" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.076L4.235 13H1a1 1 0 01-1-1V8a1 1 0 011-1h3.235l4.148-3.924zM12.293 7.293a1 1 0 011.414 0L15 8.586l1.293-1.293a1 1 0 111.414 1.414L16.414 10l1.293 1.293a1 1 0 01-1.414 1.414L15 11.414l-1.293 1.293a1 1 0 01-1.414-1.414L13.586 10l-1.293-1.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+          </button>
+          <div class="font-mono text-lg font-semibold">
+            Score: <span id="score">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Game canvas -->
+      <div class="relative">
+        <canvas id="gameCanvas" width="400" height="400"></canvas>
+        <div id="near-miss-msg" class="absolute top-2 left-1/2 -translate-x-1/2 text-amber-600 font-semibold text-sm hidden">Close call!</div>
+        <div id="start-overlay" class="absolute inset-0 flex flex-col items-center justify-center bg-black/50 rounded-lg">
+          <p class="text-white text-xl font-semibold mb-2">Press any key or tap to start</p>
+          <p class="text-white/80 text-sm">Arrow keys, WASD, or swipe</p>
+        </div>
+        <div id="gameover-overlay" class="absolute inset-0 hidden flex-col items-center justify-center bg-black/70 rounded-lg text-white p-6">
+          <h2 class="text-2xl font-bold mb-2">Game Over</h2>
+          <p class="text-xl mb-1">Score: <span id="final-score">0</span></p>
+          <p class="text-amber-300 mb-1">Best: <span id="best-score">0</span></p>
+          <p class="text-sm text-gray-300 mb-1">Session games: <span id="session-games">0</span></p>
+          <p class="text-sm text-gray-300 mb-4">Streak: <span id="streak">0</span></p>
+          <p class="text-sm text-white/90">Press Enter or Space to restart</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEO Article -->
+    <article class="card p-6 md:p-8 mt-8 prose prose-gray max-w-none">
+      <h2>How to Play Snake</h2>
+      <p>Snake is a timeless arcade game where you control a growing serpent across a grid. Use the arrow keys, WASD, touch swipes, or a gamepad to move your snake in one of four directions: up, down, left, or right. Your snake moves continuously in the current direction until you change it. The goal is simple: eat the food (usually shown as a colored dot or square) that appears randomly on the grid. Each time you eat food, your snake grows longer and your score increases. The game ends if you run into a wall or collide with your own body. As your snake grows, the game speeds up, making it increasingly challenging to avoid obstacles and plan your path.</p>
+
+      <h2>History of Snake</h2>
+      <p>Snake originated in the late 1970s with games like "Blockade" (1976) and "Worm" on early computer systems. It gained massive popularity in 1997 when Nokia pre-installed "Snake" on its 6110 phone, making it one of the first mobile games to reach a global audience. Millions of people played Snake on Nokia devices, and it became an icon of early mobile gaming. The game's simple mechanics—move, eat, grow, avoid—have inspired countless variants and remain beloved by players of all ages. Today, Snake continues to thrive as a web and mobile game, proving that great game design stands the test of time.</p>
+
+      <h2>Strategy Tips</h2>
+      <p>To excel at Snake, plan your route before you move. Avoid trapping yourself in corners or creating dead ends. When your snake is long, move in wide loops around the edges of the grid to give yourself room to maneuver. Try to keep the head near the center when possible, and anticipate where food might spawn. Use the "Easy" speed when learning, then switch to "Normal" or "Fast" as you improve. Near-miss moments—when you barely avoid hitting yourself—are a sign you're pushing your limits; stay calm and focus on the next safe move. Building a streak of high-scoring games takes practice, patience, and spatial awareness.</p>
+
+      <h2>FAQ</h2>
+      <p><strong>What happens when I eat food?</strong> Your snake grows by one segment and your score increases. The game may also speed up slightly as you grow longer.</p>
+      <p><strong>Can I use a gamepad?</strong> Yes. Snake supports standard gamepad D-pad and left stick controls for directional movement.</p>
+      <p><strong>How is the best score saved?</strong> Your best score is stored in your browser's localStorage and persists between sessions.</p>
+      <p><strong>What are session stats and streak?</strong> Session games count how many games you've played in the current browser session. Streak tracks consecutive games where you beat your previous score.</p>
+      <p><strong>Why does the game feel faster as I grow?</strong> To increase challenge, the game speed scales with snake length, making late-game play more intense.</p>
+    </article>
+  </main>
+
+  <div id="related-games"></div>
+  <div id="footer-container"></div>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playCollect } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('snake');
+    initConsent();
+    trackGameView('snake', 'Arcade');
+
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const GRID_SIZE = 20;
+    const COLS = canvas.width / GRID_SIZE;
+    const ROWS = canvas.height / GRID_SIZE;
+
+    const SPEEDS = { easy: 120, normal: 85, fast: 55 };
+    let currentSpeed = 'normal';
+    let gameLoopId = null;
+    let snake = [];
+    let food = { x: 0, y: 0 };
+    let dir = { x: 0, y: 0 };
+    let nextDir = { x: 0, y: 0 };
+    let score = 0;
+    let bestScore = parseInt(localStorage.getItem('snakeBest') || '0', 10);
+    let sessionGames = 0;
+    let streak = 0;
+    let lastScore = 0;
+    let gameStarted = false;
+    let gameOver = false;
+    let nearMissShown = false;
+
+    const startOverlay = document.getElementById('start-overlay');
+    const gameoverOverlay = document.getElementById('gameover-overlay');
+    const nearMissMsg = document.getElementById('near-miss-msg');
+
+    function getRandomInt(max) {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] % max;
+    }
+
+    function spawnFood() {
+      const empty = [];
+      const bodySet = new Set(snake.map(s => `${s.x},${s.y}`));
+      for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) {
+        if (!bodySet.has(`${x},${y}`)) empty.push({ x, y });
+      }
+      if (empty.length === 0) return;
+      const idx = getRandomInt(empty.length);
+      food = empty[idx];
+    }
+
+    function initGame() {
+      snake = [{ x: Math.floor(COLS / 2), y: Math.floor(ROWS / 2) }];
+      dir = { x: 1, y: 0 };
+      nextDir = { x: 1, y: 0 };
+      score = 0;
+      nearMissShown = false;
+      spawnFood();
+      updateScoreDisplay();
+    }
+
+    function getInterval() {
+      const base = SPEEDS[currentSpeed];
+      const lenBonus = Math.min(snake.length * 2, 30);
+      return Math.max(base - lenBonus, 35);
+    }
+
+    function updateScoreDisplay() {
+      document.getElementById('score').textContent = score;
+      document.getElementById('best-score').textContent = bestScore;
+      document.getElementById('session-games').textContent = sessionGames;
+      document.getElementById('streak').textContent = streak;
+    }
+
+    function draw() {
+      ctx.fillStyle = '#1a1a2e';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.strokeStyle = '#2d2d44';
+      ctx.lineWidth = 1;
+      for (let x = 0; x <= COLS; x++) ctx.fillRect(x * GRID_SIZE, 0, 1, canvas.height);
+      for (let y = 0; y <= ROWS; y++) ctx.fillRect(0, y * GRID_SIZE, canvas.width, 1);
+
+      snake.forEach((seg, i) => {
+        ctx.fillStyle = i === 0 ? '#22c55e' : '#16a34a';
+        ctx.fillRect(seg.x * GRID_SIZE + 1, seg.y * GRID_SIZE + 1, GRID_SIZE - 2, GRID_SIZE - 2);
+      });
+
+      ctx.fillStyle = '#ef4444';
+      ctx.beginPath();
+      ctx.arc(food.x * GRID_SIZE + GRID_SIZE / 2, food.y * GRID_SIZE + GRID_SIZE / 2, GRID_SIZE / 2 - 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function checkNearMiss() {
+      if (snake.length < 8 || nearMissShown) return;
+      const head = snake[0];
+      for (let i = 1; i < snake.length; i++) {
+        const dx = Math.abs(head.x - snake[i].x);
+        const dy = Math.abs(head.y - snake[i].y);
+        if ((dx === 1 && dy === 0) || (dx === 0 && dy === 1)) {
+          nearMissShown = true;
+          nearMissMsg.textContent = 'Close call!';
+          nearMissMsg.classList.remove('hidden');
+          nearMissMsg.classList.add('near-miss');
+          try { playError(); } catch (_) {}
+          setTimeout(() => { nearMissMsg.classList.add('hidden'); }, 800);
+          break;
+        }
+      }
+    }
+
+    function tick() {
+      if (gameOver) return;
+      dir = { ...nextDir };
+
+      const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
+
+      if (head.x < 0 || head.x >= COLS || head.y < 0 || head.y >= ROWS) {
+        endGame();
+        return;
+      }
+      if (snake.some(s => s.x === head.x && s.y === head.y)) {
+        endGame();
+        return;
+      }
+
+      checkNearMiss();
+
+      snake.unshift(head);
+      if (head.x === food.x && head.y === food.y) {
+        score++;
+        try { playCollect(); } catch (_) {}
+        if (score % 5 === 0 && score > 0) try { playLevelUp(); } catch (_) {}
+        spawnFood();
+      } else {
+        snake.pop();
+      }
+
+      draw();
+    }
+
+    function endGame() {
+      gameOver = true;
+      if (gameLoopId) cancelAnimationFrame(gameLoopId);
+      try { playGameOver(); } catch (_) {}
+      trackGameOver('snake', score);
+
+      if (score > bestScore) {
+        bestScore = score;
+        localStorage.setItem('snakeBest', String(bestScore));
+      }
+      sessionGames++;
+      if (score > lastScore) streak++; else streak = 0;
+      lastScore = score;
+
+      document.getElementById('final-score').textContent = score;
+      updateScoreDisplay();
+      gameoverOverlay.classList.remove('hidden');
+      gameoverOverlay.classList.add('flex');
+    }
+
+    function gameLoop(timestamp) {
+      if (!gameStarted || gameOver) return;
+      if (gameLoop.last === undefined) gameLoop.last = timestamp;
+      const elapsed = timestamp - gameLoop.last;
+      if (elapsed >= getInterval()) {
+        gameLoop.last = timestamp;
+        tick();
+      }
+      gameLoopId = requestAnimationFrame(gameLoop);
+    }
+
+    function startGame() {
+      if (gameStarted && !gameOver) return;
+      gameOver = false;
+      gameStarted = true;
+      startOverlay.classList.add('hidden');
+      gameoverOverlay.classList.add('hidden');
+      gameoverOverlay.classList.remove('flex');
+      initGame();
+      draw();
+      gameLoop.last = undefined;
+      trackGameStart('snake');
+      gameLoopId = requestAnimationFrame(gameLoop);
+    }
+
+    function restart() {
+      if (gameOver) {
+        startGame();
+      }
+    }
+
+    function setDir(dx, dy) {
+      if (dx === -dir.x && dy === -dir.y) return;
+      nextDir = { x: dx, y: dy };
+    }
+
+    let touchStart = null;
+    canvas.addEventListener('touchstart', e => {
+      touchStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    }, { passive: true });
+    canvas.addEventListener('touchend', e => {
+      if (!touchStart) return;
+      const dx = e.changedTouches[0].clientX - touchStart.x;
+      const dy = e.changedTouches[0].clientY - touchStart.y;
+      const thresh = 30;
+      if (Math.abs(dx) > Math.abs(dy)) setDir(dx > 0 ? 1 : -1, 0);
+      else if (Math.abs(dy) > thresh) setDir(0, dy > 0 ? 1 : -1);
+      touchStart = null;
+    }, { passive: true });
+
+    document.addEventListener('keydown', e => {
+      if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyW','KeyA','KeyS','KeyD',' '].includes(e.code)) e.preventDefault();
+      if (e.code === 'Enter' || e.code === 'Space') {
+        if (gameOver) { restart(); return; }
+        if (!gameStarted) startGame();
+        return;
+      }
+      if (!gameStarted || gameOver) return;
+      switch (e.code) {
+        case 'ArrowUp': case 'KeyW': setDir(0, -1); break;
+        case 'ArrowDown': case 'KeyS': setDir(0, 1); break;
+        case 'ArrowLeft': case 'KeyA': setDir(-1, 0); break;
+        case 'ArrowRight': case 'KeyD': setDir(1, 0); break;
+      }
+    });
+
+    window.addEventListener('gamepadconnected', () => {});
+    function pollGamepad() {
+      const gp = navigator.getGamepads?.()[0];
+      if (!gp || !gameStarted || gameOver) return;
+      const ax = gp.axes[0], ay = gp.axes[1];
+      const thresh = 0.5;
+      if (Math.abs(ax) > thresh) setDir(ax > 0 ? 1 : -1, 0);
+      else if (Math.abs(ay) > thresh) setDir(0, ay > 0 ? 1 : -1);
+      if (gp.buttons[12]?.pressed) setDir(0, -1);
+      if (gp.buttons[13]?.pressed) setDir(0, 1);
+      if (gp.buttons[14]?.pressed) setDir(-1, 0);
+      if (gp.buttons[15]?.pressed) setDir(1, 0);
+    }
+    setInterval(pollGamepad, 80);
+
+    startOverlay.addEventListener('click', () => { if (!gameStarted) startGame(); });
+    canvas.addEventListener('click', () => { if (!gameStarted) startGame(); });
+
+    document.querySelectorAll('.speed-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        if (btn.id === 'speed-easy') currentSpeed = 'easy';
+        else if (btn.id === 'speed-fast') currentSpeed = 'fast';
+        else currentSpeed = 'normal';
+        try { playClick(); } catch (_) {}
+      });
+    });
+
+    let muted = false;
+    document.getElementById('sound-toggle').addEventListener('click', () => {
+      muted = !muted;
+      try { muted ? muteAll() : initAudio(); } catch (_) {}
+      document.getElementById('sound-on').classList.toggle('hidden', muted);
+      document.getElementById('sound-off').classList.toggle('hidden', !muted);
+      try { playClick(); } catch (_) {}
+    });
+
+    initGame();
+    draw();
+    updateScoreDisplay();
+  </script>
+</body>
+</html>

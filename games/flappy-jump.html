@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flappy Jump - Arcade Game | Mini Game Planet</title>
+  <meta name="description" content="Play Flappy Jump online. Tap to flap, dodge pipes, and beat your high score. Free browser arcade game inspired by Flappy Bird.">
+  <link rel="canonical" href="https://minigameplanet.com/games/flappy-jump">
+  <meta property="og:title" content="Flappy Jump - Arcade Game | Mini Game Planet">
+  <meta property="og:description" content="Play Flappy Jump online. Tap to flap, dodge pipes, and beat your high score.">
+  <meta property="og:url" content="https://minigameplanet.com/games/flappy-jump">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    #gameCanvas { display: block; margin: 0 auto; background: #87CEEB; border-radius: 8px; }
+    .touch-zone { touch-action: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoGame",
+    "name": "Flappy Jump",
+    "description": "Flappy Bird-style arcade game. Tap to flap, avoid pipes, and score points. Free browser game.",
+    "url": "https://minigameplanet.com/games/flappy-jump",
+    "gamePlatform": "Web Browser",
+    "genre": "Arcade",
+    "playMode": "SinglePlayer"
+  }
+  </script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('consent', 'default', {
+      'analytics_storage': 'denied',
+      'ad_storage': 'denied',
+      'ad_user_data': 'denied',
+      'ad_personalization': 'denied'
+    });
+  </script>
+  <!--
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXX" crossorigin="anonymous"></script>
+  -->
+</head>
+<body class="min-h-screen text-gray-800">
+  <div id="nav-container"></div>
+
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-8">
+      <header class="text-center mb-6">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Flappy Jump</h1>
+        <p class="text-gray-600">Tap to flap — dodge the pipes and beat your high score!</p>
+      </header>
+
+      <div class="flex flex-wrap items-center justify-center gap-4 mb-4">
+        <button id="soundToggle" class="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 font-medium transition" aria-label="Toggle sound">🔊 Sound</button>
+        <div class="font-mono text-sm text-gray-600">
+          <span id="scoreDisplay">Score: 0</span> |
+          <span id="sessionDisplay">Session: 0</span>
+        </div>
+        <div class="font-mono text-sm text-amber-600">
+          <span id="streakDisplay">Streak: 0</span> |
+          <span id="bestDisplay">Best: 0</span>
+        </div>
+      </div>
+
+      <div class="relative mx-auto max-w-lg touch-zone" id="gameWrapper">
+        <canvas id="gameCanvas" width="480" height="640"></canvas>
+        <div id="startOverlay" class="absolute inset-0 flex flex-col items-center justify-center bg-black/60 rounded-lg">
+          <p class="text-white text-xl font-bold mb-4">FLAPPY JUMP</p>
+          <p class="text-gray-300 text-sm mb-2">Click, tap, Space or Up to flap</p>
+          <button id="startBtn" class="px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition">PLAY</button>
+        </div>
+        <div id="gameOverOverlay" class="absolute inset-0 hidden flex flex-col items-center justify-center bg-black/80 rounded-lg">
+          <p class="text-red-400 text-2xl font-bold mb-2">GAME OVER</p>
+          <p class="text-white font-mono mb-1">Score: <span id="finalScore">0</span></p>
+          <p class="text-amber-300 font-mono mb-4">Best: <span id="finalBest">0</span></p>
+          <button id="restartBtn" class="px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition">PLAY AGAIN</button>
+        </div>
+      </div>
+
+      <div class="mt-6 prose prose-gray max-w-none">
+        <h2>About Flappy Jump</h2>
+        <p>Flappy Jump is a fast-paced arcade game inspired by the legendary Flappy Bird. You control a bird that must navigate through a series of pipes by tapping or clicking to flap and gain altitude. Gravity constantly pulls your bird downward, so timing is everything. Each pipe you pass adds one point to your score. Hit a pipe, the ground, or the ceiling and it's instant game over. The game rewards precision, reflexes, and persistence. With zero-friction restart, you can jump straight back into the action and chase your personal best.</p>
+
+        <h3>How to Play</h3>
+        <p>Your bird starts on the left side of the screen. Press Space, Up arrow, or tap/click anywhere to flap and gain upward momentum. Release and gravity takes over, pulling the bird down. Pipes scroll in from the right with a gap in the middle—fly through the gap to score a point. The bird rotates based on its velocity: nose up when rising, nose down when falling. This visual feedback helps you judge your trajectory. Avoid hitting the top or bottom pipes, the ground, or the ceiling. There are no lives—one collision and the game ends. The challenge is to see how many pipes you can pass before making a mistake.</p>
+
+        <h3>Controls</h3>
+        <p>Use any of these inputs to flap: Space bar, Up arrow key, mouse click anywhere on the game area, or tap on touch devices. The controls are designed for instant response—no holding, just tap to flap. On mobile, the entire canvas is a tap zone, so you can play one-handed. The game works on desktop and mobile with full touch support.</p>
+
+        <h3>Scoring and Stats</h3>
+        <p>You earn one point for each pipe you successfully pass. Your personal best is saved in the browser and persists between sessions. Session stats track how many games you've played in the current browser tab. Streak counts consecutive games where you beat your previous score—a streak of 3 means your last three games each improved on the one before. These stats add a layer of progression and give you goals beyond the raw score.</p>
+
+        <h3>Tips for High Scores</h3>
+        <p>Stay centered in the pipe gap—don't scrape the edges. Flap in short bursts rather than rapid tapping; over-flapping sends you into the ceiling. Let gravity do the work between pipes; conserve flaps for when you need to rise. Watch the bird's rotation to anticipate when you'll need to flap next. The pipes are randomly placed using secure random values, so each run is unique. Practice the rhythm: flap, glide, flap, glide. Zero-friction restart means you can immediately try again and build muscle memory.</p>
+
+        <h3>Technical Notes</h3>
+        <p>Flappy Jump runs entirely in your browser using HTML5 Canvas and requestAnimationFrame for smooth 60fps gameplay. Pipe positions are generated with crypto.getRandomValues() for fair, unpredictable obstacles. The ground scrolls for a polished visual effect. No downloads, no ads interrupting your run—just pure arcade action. Whether you're chasing a new high score or killing a few minutes, Flappy Jump delivers quick, addictive gameplay.</p>
+      </div>
+    </div>
+
+    <div id="related-games"></div>
+    <div id="footer-container"></div>
+  </main>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('flappy-jump');
+    initConsent();
+    trackGameView('flappy-jump', 'Arcade');
+
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const startOverlay = document.getElementById('startOverlay');
+    const gameOverOverlay = document.getElementById('gameOverOverlay');
+    const startBtn = document.getElementById('startBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const soundToggle = document.getElementById('soundToggle');
+    const gameWrapper = document.getElementById('gameWrapper');
+
+    let muted = false;
+    let gameRunning = false;
+    let animationId = null;
+
+    const W = canvas.width;
+    const H = canvas.height;
+    const BIRD_X = 80;
+    const BIRD_R = 18;
+    const GRAVITY = 0.45;
+    const FLAP_STRENGTH = -9;
+    const PIPE_W = 70;
+    const PIPE_GAP = 180;
+    const PIPE_SPEED = 3;
+    const PIPE_SPAWN_INTERVAL = 1800;
+    const GROUND_H = 80;
+    const CEILING = 60;
+    const GROUND_TILE_W = 48;
+
+    function rand() {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] / (0xFFFFFFFF + 1);
+    }
+
+    function randInt(min, max) {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return min + (arr[0] % (max - min + 1));
+    }
+
+    let state = {
+      bird: { y: H / 2 - BIRD_R, vy: 0 },
+      pipes: [],
+      groundOffset: 0,
+      score: 0,
+      lastPipeSpawn: 0,
+      passedPipes: new Set(),
+      sessionBest: parseInt(localStorage.getItem('flappy-jump-best') || '0', 10),
+      sessionGames: parseInt(sessionStorage.getItem('flappy-jump-games') || '0', 10),
+      sessionScore: parseInt(sessionStorage.getItem('flappy-jump-session-score') || '0', 10),
+      streak: parseInt(sessionStorage.getItem('flappy-jump-streak') || '0', 10),
+      lastScore: parseInt(sessionStorage.getItem('flappy-jump-last-score') || '0', 10),
+      _lastTime: 0,
+    };
+
+    function spawnPipe(now) {
+      const minTop = CEILING + 40;
+      const maxTop = H - GROUND_H - PIPE_GAP - 80;
+      const top = minTop + rand() * (maxTop - minTop);
+      state.pipes.push({
+        x: W,
+        topH: top,
+        gapY: top + PIPE_GAP,
+        bottomY: top + PIPE_GAP,
+        bottomH: H - GROUND_H - top - PIPE_GAP,
+        id: now,
+      });
+    }
+
+    function flap() {
+      if (!gameRunning) return;
+      state.bird.vy = FLAP_STRENGTH;
+      playClick();
+    }
+
+    function updateUI() {
+      document.getElementById('scoreDisplay').textContent = `Score: ${state.score}`;
+      document.getElementById('sessionDisplay').textContent = `Session: ${state.sessionGames}`;
+      document.getElementById('streakDisplay').textContent = `Streak: ${state.streak}`;
+      document.getElementById('bestDisplay').textContent = `Best: ${state.sessionBest}`;
+    }
+
+    function startGame() {
+      if (gameRunning) return;
+      playClick();
+      trackGameStart('flappy-jump');
+      state.bird = { y: H / 2 - BIRD_R, vy: 0 };
+      state.pipes = [];
+      state.groundOffset = 0;
+      state.score = 0;
+      state.passedPipes = new Set();
+      state.lastPipeSpawn = performance.now();
+      startOverlay.classList.add('hidden');
+      gameOverOverlay.classList.add('hidden');
+      gameOverOverlay.classList.remove('flex');
+      gameRunning = true;
+      state.sessionGames++;
+      sessionStorage.setItem('flappy-jump-games', String(state.sessionGames));
+      updateUI();
+      gameLoop(performance.now());
+    }
+
+    function endGame() {
+      gameRunning = false;
+      if (animationId) cancelAnimationFrame(animationId);
+      playGameOver();
+      trackGameOver('flappy-jump', state.score);
+
+      if (state.score > state.sessionBest) {
+        state.sessionBest = state.score;
+        localStorage.setItem('flappy-jump-best', String(state.sessionBest));
+      }
+      if (state.score > state.lastScore) {
+        state.streak++;
+      } else {
+        state.streak = 0;
+      }
+      state.lastScore = state.score;
+      sessionStorage.setItem('flappy-jump-streak', String(state.streak));
+      sessionStorage.setItem('flappy-jump-last-score', String(state.lastScore));
+      state.sessionScore += state.score;
+      sessionStorage.setItem('flappy-jump-session-score', String(state.sessionScore));
+
+      document.getElementById('finalScore').textContent = state.score;
+      document.getElementById('finalBest').textContent = state.sessionBest;
+      gameOverOverlay.classList.remove('hidden');
+      gameOverOverlay.classList.add('flex');
+    }
+
+    function checkCollision() {
+      const bx = BIRD_X;
+      const by = state.bird.y + BIRD_R;
+      const br = BIRD_R - 2;
+
+      if (state.bird.y - BIRD_R <= CEILING || state.bird.y + BIRD_R >= H - GROUND_H) {
+        return true;
+      }
+
+      for (const p of state.pipes) {
+        if (bx + br < p.x || bx - br > p.x + PIPE_W) continue;
+        if (state.bird.y - BIRD_R < p.topH || state.bird.y + BIRD_R > p.bottomY) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    function gameLoop(now) {
+      if (!gameRunning) return;
+
+      const dt = Math.min(now - (state._lastTime || now), 50) / 16.67;
+      state._lastTime = now;
+
+      state.bird.vy += GRAVITY * dt;
+      state.bird.y += state.bird.vy;
+
+      if (now - state.lastPipeSpawn > PIPE_SPAWN_INTERVAL) {
+        state.lastPipeSpawn = now;
+        spawnPipe(now);
+      }
+
+      for (const p of state.pipes) {
+        p.x -= PIPE_SPEED * dt;
+        if (p.x + PIPE_W < BIRD_X && !state.passedPipes.has(p.id)) {
+          state.passedPipes.add(p.id);
+          state.score++;
+          playScoreUp();
+        }
+      }
+      state.pipes = state.pipes.filter(p => p.x + PIPE_W > 0);
+
+      state.groundOffset = (state.groundOffset + PIPE_SPEED * dt * 2) % GROUND_TILE_W;
+
+      if (checkCollision()) {
+        endGame();
+        return;
+      }
+
+      updateUI();
+
+      ctx.fillStyle = '#87CEEB';
+      ctx.fillRect(0, 0, W, H);
+
+      for (let i = 0; i < 5; i++) {
+        ctx.fillStyle = '#e0f2fe';
+        ctx.beginPath();
+        ctx.arc(50 + i * 120 + (now / 50) % 120, 100 + i * 80, 30, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      for (const p of state.pipes) {
+        ctx.fillStyle = '#22c55e';
+        ctx.fillRect(p.x, 0, PIPE_W, p.topH);
+        ctx.fillRect(p.x, p.bottomY, PIPE_W, p.bottomH);
+        ctx.fillStyle = '#16a34a';
+        ctx.fillRect(p.x + 4, 0, PIPE_W - 8, p.topH);
+        ctx.fillRect(p.x + 4, p.bottomY, PIPE_W - 8, p.bottomH);
+      }
+
+      ctx.save();
+      ctx.translate(BIRD_X, state.bird.y);
+      const rot = Math.max(-0.6, Math.min(0.6, state.bird.vy * 0.08));
+      ctx.rotate(rot);
+      ctx.fillStyle = '#fbbf24';
+      ctx.beginPath();
+      ctx.ellipse(0, 0, BIRD_R, BIRD_R - 4, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#f59e0b';
+      ctx.beginPath();
+      ctx.moveTo(BIRD_R - 4, 0);
+      ctx.lineTo(BIRD_R + 6, -4);
+      ctx.lineTo(BIRD_R + 6, 4);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = '#1f2937';
+      ctx.beginPath();
+      ctx.arc(4, -2, 3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      ctx.fillStyle = '#d4a574';
+      for (let x = -GROUND_TILE_W; x < W + GROUND_TILE_W; x += GROUND_TILE_W) {
+        ctx.fillRect(x + state.groundOffset, H - GROUND_H, GROUND_TILE_W + 2, GROUND_H + 5);
+      }
+      ctx.fillStyle = '#8B4513';
+      ctx.fillRect(0, H - 8, W, 8);
+
+      animationId = requestAnimationFrame(gameLoop);
+    }
+
+    function handleFlap(e) {
+      if (e) e.preventDefault();
+      if (!gameRunning && !startOverlay.classList.contains('hidden')) {
+        startBtn.click();
+        return;
+      }
+      if (gameRunning) flap();
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === ' ' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (gameOverOverlay.classList.contains('hidden') === false) {
+          restartBtn.click();
+          return;
+        }
+        handleFlap(e);
+      }
+    });
+
+    gameWrapper.addEventListener('click', e => {
+      if (e.target.closest('button')) return;
+      if (gameOverOverlay.classList.contains('hidden') === false) {
+        restartBtn.click();
+        return;
+      }
+      handleFlap(e);
+    });
+
+    gameWrapper.addEventListener('touchstart', e => {
+      e.preventDefault();
+      if (gameOverOverlay.classList.contains('hidden') === false) {
+        restartBtn.click();
+        return;
+      }
+      handleFlap(e);
+    }, { passive: false });
+
+    startBtn.addEventListener('click', startGame);
+    restartBtn.addEventListener('click', () => {
+      playClick();
+      startGame();
+    });
+
+    soundToggle.addEventListener('click', () => {
+      muted = !muted;
+      muteAll(muted);
+      soundToggle.textContent = muted ? '🔇 Muted' : '🔊 Sound';
+      playClick();
+    });
+
+    initAudio().then(() => updateUI());
+  </script>
+</body>
+</html>

@@ -131,7 +131,7 @@ export const games = [
     icon: '🐍',
     accent: '#0891B2',
     keywords: ['snake game', 'classic arcade', 'retro game', 'nokia snake'],
-    built: false
+    built: true
   },
   {
     name: 'Pong',
@@ -141,7 +141,7 @@ export const games = [
     icon: '🏓',
     accent: '#0891B2',
     keywords: ['pong', 'table tennis', 'arcade classic', 'two player'],
-    built: false
+    built: true
   },
   {
     name: 'Brick Breaker',
@@ -151,7 +151,7 @@ export const games = [
     icon: '🧱',
     accent: '#0891B2',
     keywords: ['brick breaker', 'breakout', 'arcade', 'ball game'],
-    built: false
+    built: true
   },
   {
     name: 'Asteroids',
@@ -161,7 +161,7 @@ export const games = [
     icon: '☄',
     accent: '#0891B2',
     keywords: ['asteroids', 'space shooter', 'arcade classic', 'retro'],
-    built: false
+    built: true
   },
   {
     name: 'Space Invaders',
@@ -171,7 +171,7 @@ export const games = [
     icon: '👾',
     accent: '#0891B2',
     keywords: ['space invaders', 'alien shooter', 'arcade shooter', 'retro'],
-    built: false
+    built: true
   },
   {
     name: 'Flappy Jump',
@@ -181,7 +181,7 @@ export const games = [
     icon: '🐦',
     accent: '#0891B2',
     keywords: ['flappy game', 'one tap game', 'pipe game', 'arcade'],
-    built: false
+    built: true
   },
   {
     name: 'Fruit Slicer',
@@ -191,7 +191,7 @@ export const games = [
     icon: '🍉',
     accent: '#0891B2',
     keywords: ['fruit slicer', 'fruit ninja', 'swipe game', 'touch arcade'],
-    built: false
+    built: true
   },
   {
     name: 'Endless Runner',
@@ -201,7 +201,7 @@ export const games = [
     icon: '🏃',
     accent: '#0891B2',
     keywords: ['endless runner', 'running game', 'side scroller', 'obstacle game'],
-    built: false
+    built: true
   },
   {
     name: 'Whack-a-Mole',
@@ -211,7 +211,7 @@ export const games = [
     icon: '🔨',
     accent: '#0891B2',
     keywords: ['whack a mole', 'tapping game', 'reaction game', 'arcade'],
-    built: false
+    built: true
   },
   {
     name: 'Helicopter',
@@ -221,7 +221,7 @@ export const games = [
     icon: '🚁',
     accent: '#0891B2',
     keywords: ['helicopter game', 'cave flyer', 'one button', 'distance game'],
-    built: false
+    built: true
   },
   {
     name: 'Target Shooter',
@@ -231,7 +231,7 @@ export const games = [
     icon: '🎯',
     accent: '#0891B2',
     keywords: ['target shooter', 'aim game', 'shooting game', 'accuracy'],
-    built: false
+    built: true
   },
   {
     name: 'Dodge Ball',
@@ -241,7 +241,7 @@ export const games = [
     icon: '⚡',
     accent: '#0891B2',
     keywords: ['dodge ball', 'dodge game', 'survival', 'avoidance game'],
-    built: false
+    built: true
   },
 
   // ─── PUZZLE (14) ──────────────────────────────────────────────

@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dodge Ball Arcade - Mini Game Planet</title>
+  <meta name="description" content="Play Dodge Ball online! Control your circle and avoid falling balls. Survive as long as possible, collect power-ups, and beat your high score.">
+  <link rel="canonical" href="https://minigameplanet.com/games/dodge-ball.html">
+  <meta property="og:title" content="Dodge Ball Arcade - Mini Game Planet">
+  <meta property="og:description" content="Dodge falling balls, collect power-ups, and survive as long as possible in this fast-paced arcade game.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/dodge-ball.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    #gameCanvas { display: block; margin: 0 auto; border-radius: 8px; background: #1a1a1a; cursor: none; }
+    .nav-container, .related-games, .footer-container { max-width: 48rem; margin-left: auto; margin-right: auto; }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Dodge Ball Arcade",
+    "description": "A fast-paced arcade game where you dodge falling balls, collect power-ups, and survive as long as possible.",
+    "applicationCategory": "Game",
+    "operatingSystem": "Any",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+</head>
+<body class="min-h-screen text-gray-800">
+  <!-- AdSense placeholder (commented)
+  <ins class="adsbygoogle" data-ad-client="ca-pub-XXXX" data-ad-slot="XXXX" data-ad-format="auto"></ins>
+  -->
+
+  <nav class="nav-container py-4 px-4">
+    <a href="/" class="text-lg font-semibold text-amber-600 hover:text-amber-700">← Mini Game Planet</a>
+  </nav>
+
+  <main class="max-w-2xl mx-auto px-4 pb-12">
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+      <h1 class="text-2xl font-bold mb-2">Dodge Ball</h1>
+      <p class="text-gray-600 mb-4">Avoid the falling balls! Survive as long as possible. Collect power-ups for an edge.</p>
+
+      <div class="flex flex-wrap gap-4 items-center mb-4">
+        <button id="soundToggle" class="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-sm font-mono">🔊 Sound</button>
+        <div class="font-mono text-sm text-gray-600">
+          <span>Score: <strong id="scoreDisplay">0</strong>s</span>
+          <span class="ml-4">Best: <strong id="bestDisplay">0</strong>s</span>
+          <span class="ml-4">Streak: <strong id="streakDisplay">0</strong></span>
+        </div>
+      </div>
+
+      <div class="relative rounded-lg overflow-hidden bg-gray-900 mb-6">
+        <canvas id="gameCanvas" width="600" height="400"></canvas>
+        <div id="startOverlay" class="absolute inset-0 flex flex-col items-center justify-center bg-black/60 text-white">
+          <h2 class="text-xl font-bold mb-2">Dodge Ball</h2>
+          <p class="text-sm mb-4 opacity-90">Move with mouse, arrows, or A/D</p>
+          <button id="startBtn" class="px-6 py-3 bg-amber-500 hover:bg-amber-600 rounded-lg font-semibold">Play</button>
+        </div>
+        <div id="gameOverOverlay" class="absolute inset-0 hidden flex-col items-center justify-center bg-black/70 text-white">
+          <h2 class="text-xl font-bold mb-2">Game Over</h2>
+          <p class="text-lg mb-1">Survived <span id="finalScore">0</span> seconds</p>
+          <p id="newBestMsg" class="text-amber-400 text-sm mb-4 hidden">New personal best!</p>
+          <button id="restartBtn" class="px-6 py-3 bg-amber-500 hover:bg-amber-600 rounded-lg font-semibold">Play Again</button>
+        </div>
+      </div>
+
+      <article class="prose prose-gray max-w-none">
+        <h2>How to Play Dodge Ball</h2>
+        <p>Dodge Ball is a classic arcade survival game where your goal is simple: stay alive as long as you can. You control a small circle at the bottom of the screen while colored balls rain down from above. Some balls bounce off the walls, making them trickier to predict. The longer you survive, the higher your score—and the harder the game gets.</p>
+
+        <h3>Controls</h3>
+        <p>Use your mouse or touch to move your player left and right. Keyboard players can use the arrow keys or A and D. Your circle follows your cursor or finger, so precise movement is key when the screen gets crowded. The game hides your cursor over the play area so nothing blocks your view—your player circle is your focus.</p>
+
+        <h3>Power-Ups</h3>
+        <p>Occasionally, helpful power-ups will fall from the sky. Grab them before they hit the ground! The <strong>Shield</strong> (blue) grants temporary invincibility—you can pass through balls without taking damage for several seconds. <strong>Slow-Mo</strong> (purple) slows down everything on screen, giving you more time to react when things get hectic. The <strong>Shrink</strong> (green) power-up makes your player smaller, so you're a harder target to hit. Power-ups are rare, so prioritize them when it's safe to do so.</p>
+
+        <h3>Strategy</h3>
+        <p>Early on, the game is forgiving. Balls fall slowly and infrequently. As time passes, both speed and spawn rate increase. Plan your movements ahead—don't get trapped in a corner. Watch for bouncing balls that change direction; they can catch you off guard. When you have a shield, you can take risks to grab power-ups or clear a path through dense clusters. Use slow-mo wisely during intense moments when multiple balls converge. A smaller player from the Shrink power-up is especially valuable in the late game when space is tight.</p>
+
+        <h3>Scoring</h3>
+        <p>Your score is the number of seconds you've survived. The game tracks your personal best and your current session streak—how many games in a row you've improved or matched your best. Zero-friction restart means you can jump right back in with one click. No menus, no delays.</p>
+
+        <h3>Tips for High Scores</h3>
+        <p>Stay near the center when possible—you have more room to dodge in either direction. When balls cluster on one side, drift toward the open space before they spread. Bouncing balls require extra attention; track their angles. Combine power-ups when you can: a shield plus shrink makes you nearly untouchable. Most importantly, stay calm. Panic movements often lead to collisions. Breathe, watch the patterns, and move deliberately.</p>
+      </article>
+    </div>
+
+    <section class="related-games bg-white rounded-xl shadow-lg p-6">
+      <h2 class="text-lg font-bold mb-4">Related Games</h2>
+      <div class="grid grid-cols-2 gap-4">
+        <a href="/games/snake.html" class="p-3 rounded-lg bg-gray-50 hover:bg-gray-100">Snake</a>
+        <a href="/games/breakout.html" class="p-3 rounded-lg bg-gray-50 hover:bg-gray-100">Breakout</a>
+        <a href="/games/pong.html" class="p-3 rounded-lg bg-gray-50 hover:bg-gray-100">Pong</a>
+        <a href="/" class="p-3 rounded-lg bg-gray-50 hover:bg-gray-100">All Games</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer-container py-8 px-4 text-center text-gray-500 text-sm">
+    <p>© Mini Game Planet. Play free in your browser.</p>
+  </footer>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playCollect } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('dodge-ball');
+    initConsent();
+    trackGameView('dodge-ball', 'Arcade');
+
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const startOverlay = document.getElementById('startOverlay');
+    const gameOverOverlay = document.getElementById('gameOverOverlay');
+    const startBtn = document.getElementById('startBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const bestDisplay = document.getElementById('bestDisplay');
+    const streakDisplay = document.getElementById('streakDisplay');
+    const finalScoreEl = document.getElementById('finalScore');
+    const newBestMsg = document.getElementById('newBestMsg');
+    const soundToggle = document.getElementById('soundToggle');
+
+    function secureRandom() {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] / (0xFFFFFFFF + 1);
+    }
+
+    let gameState = 'idle';
+    let player = { x: 300, y: 360, r: 12, baseR: 12 };
+    let balls = [];
+    let powerUps = [];
+    let score = 0;
+    let startTime = 0;
+    let lastSpawn = 0;
+    let spawnInterval = 1200;
+    let baseSpeed = 2;
+    let mouseX = 300;
+    let bestTime = parseInt(localStorage.getItem('dodgeBallBest') || '0', 10);
+    let streak = parseInt(localStorage.getItem('dodgeBallStreak') || '0', 10);
+    let lastBestTime = bestTime;
+    let bestAtGameStart = bestTime;
+    let shieldUntil = 0;
+    let slowMoUntil = 0;
+    let shrinkUntil = 0;
+    let muted = false;
+
+    const POWERUP_TYPES = { shield: '#3b82f6', slowmo: '#8b5cf6', shrink: '#22c55e' };
+
+    function spawnBall() {
+      const r = 8 + secureRandom() * 10;
+      const bounce = secureRandom() < 0.4;
+      balls.push({
+        x: r + secureRandom() * (canvas.width - 2 * r),
+        y: -r,
+        r,
+        vy: baseSpeed * (0.8 + secureRandom() * 0.4),
+        vx: bounce ? (secureRandom() - 0.5) * 2 : 0,
+        bounce,
+        color: `hsl(${secureRandom() * 360}, 70%, 55%)`,
+      });
+    }
+
+    function spawnPowerUp() {
+      if (secureRandom() > 0.015) return;
+      const types = Object.keys(POWERUP_TYPES);
+      const type = types[Math.floor(secureRandom() * types.length)];
+      powerUps.push({
+        x: 20 + secureRandom() * (canvas.width - 40),
+        y: -15,
+        w: 24,
+        h: 24,
+        type,
+        color: POWERUP_TYPES[type],
+        vy: 2,
+      });
+    }
+
+    function dist(a, b) {
+      return Math.hypot(a.x - b.x, a.y - b.y);
+    }
+
+    function rectCircleCollide(rect, circle) {
+      const cx = Math.max(rect.x, Math.min(circle.x, rect.x + rect.w));
+      const cy = Math.max(rect.y, Math.min(circle.y, rect.y + rect.h));
+      return Math.hypot(circle.x - cx, circle.y - cy) <= circle.r;
+    }
+
+    function update(dt) {
+      if (gameState !== 'playing') return;
+      const now = performance.now() / 1000;
+      const elapsed = now - startTime;
+      score = Math.floor(elapsed);
+
+      const slowFactor = slowMoUntil > now ? 0.4 : 1;
+      const d = dt * slowFactor;
+
+      player.r = shrinkUntil > now ? player.baseR * 0.6 : player.baseR;
+      player.x += (mouseX - player.x) * 0.15;
+
+      if (player.x - player.r < 0) player.x = player.r;
+      if (player.x + player.r > canvas.width) player.x = canvas.width - player.r;
+
+      baseSpeed = 2 + elapsed * 0.15;
+      spawnInterval = Math.max(400, 1200 - elapsed * 40);
+
+      if (now - lastSpawn > spawnInterval / 1000) {
+        spawnBall();
+        lastSpawn = now;
+      }
+      spawnPowerUp();
+
+      for (const b of balls) {
+        b.y += b.vy * d * 60;
+        b.x += b.vx * d * 60;
+        if (b.bounce) {
+          if (b.x - b.r < 0) { b.x = b.r; b.vx *= -1; }
+          if (b.x + b.r > canvas.width) { b.x = canvas.width - b.r; b.vx *= -1; }
+        }
+        if (shieldUntil <= now && dist(player, b) < player.r + b.r) {
+          gameState = 'over';
+          playGameOver();
+          trackGameOver('dodge-ball', score);
+          if (score > bestTime) {
+            bestTime = score;
+            localStorage.setItem('dodgeBallBest', String(bestTime));
+            if (score > lastBestTime) streak++;
+            else streak = 1;
+            lastBestTime = bestTime;
+            localStorage.setItem('dodgeBallStreak', String(streak));
+          } else streak = 0;
+          gameOverOverlay.classList.remove('hidden');
+          gameOverOverlay.classList.add('flex');
+          finalScoreEl.textContent = score;
+          newBestMsg.classList.toggle('hidden', score <= bestAtGameStart);
+        }
+      }
+      balls = balls.filter(b => b.y < canvas.height + 20);
+
+      for (const p of powerUps) {
+        p.y += p.vy * d * 60;
+        if (rectCircleCollide({ x: p.x, y: p.y, w: p.w, h: p.h }, player)) {
+          playCollect();
+          if (p.type === 'shield') shieldUntil = now + 4;
+          if (p.type === 'slowmo') slowMoUntil = now + 3;
+          if (p.type === 'shrink') shrinkUntil = now + 5;
+          powerUps = powerUps.filter(x => x !== p);
+        }
+      }
+      powerUps = powerUps.filter(p => p.y < canvas.height + 30);
+
+      scoreDisplay.textContent = score;
+      bestDisplay.textContent = bestTime;
+      streakDisplay.textContent = streak;
+    }
+
+    function draw() {
+      ctx.fillStyle = '#1a1a1a';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      if (gameState !== 'playing' && gameState !== 'over') return;
+
+      ctx.fillStyle = shieldUntil > performance.now() / 1000 ? 'rgba(59,130,246,0.5)' : '#f59e0b';
+      ctx.beginPath();
+      ctx.arc(player.x, player.y, player.r, 0, Math.PI * 2);
+      ctx.fill();
+      if (shieldUntil > performance.now() / 1000) {
+        ctx.strokeStyle = '#3b82f6';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+
+      for (const b of balls) {
+        ctx.fillStyle = b.color;
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      for (const p of powerUps) {
+        ctx.fillStyle = p.color;
+        ctx.fillRect(p.x, p.y, p.w, p.h);
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(p.x, p.y, p.w, p.h);
+      }
+    }
+
+    function loop(t) {
+      update((t - (loop.last || t)) / 1000);
+      loop.last = t;
+      draw();
+      requestAnimationFrame(loop);
+    }
+    requestAnimationFrame(loop);
+
+    canvas.addEventListener('mousemove', e => {
+      const rect = canvas.getBoundingClientRect();
+      mouseX = ((e.clientX - rect.left) / rect.width) * canvas.width;
+    });
+    canvas.addEventListener('touchmove', e => {
+      e.preventDefault();
+      const rect = canvas.getBoundingClientRect();
+      mouseX = ((e.touches[0].clientX - rect.left) / rect.width) * canvas.width;
+    }, { passive: false });
+
+    document.addEventListener('keydown', e => {
+      if (gameState !== 'playing') return;
+      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') mouseX = Math.max(player.r, mouseX - 25);
+      if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') mouseX = Math.min(canvas.width - player.r, mouseX + 25);
+    });
+
+    function startGame() {
+      playClick();
+      trackGameStart('dodge-ball');
+      bestAtGameStart = bestTime;
+      gameState = 'playing';
+      balls = [];
+      powerUps = [];
+      startTime = performance.now() / 1000;
+      lastSpawn = startTime;
+      player.x = canvas.width / 2;
+      player.y = 360;
+      player.r = 12;
+      player.baseR = 12;
+      mouseX = canvas.width / 2;
+      shieldUntil = 0;
+      slowMoUntil = 0;
+      shrinkUntil = 0;
+      startOverlay.classList.add('hidden');
+      gameOverOverlay.classList.add('hidden');
+      gameOverOverlay.classList.remove('flex');
+    }
+
+    startBtn.addEventListener('click', startGame);
+    restartBtn.addEventListener('click', () => { playClick(); startGame(); });
+
+    soundToggle.addEventListener('click', () => {
+      muted = !muted;
+      if (muted) muteAll();
+      soundToggle.textContent = muted ? '🔇 Muted' : '🔊 Sound';
+    });
+
+    try { initAudio(); } catch (_) {}
+  </script>
+</body>
+</html>

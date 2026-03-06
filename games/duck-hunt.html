@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Target Shooter - Duck Hunt Arcade Game | Mini Game Planet</title>
+  <meta name="description" content="Play Target Shooter, a classic duck hunt-style arcade game. Shoot flying targets, track accuracy, and beat your high score in 60 seconds.">
+  <link rel="canonical" href="https://minigameplanet.com/games/duck-hunt.html">
+  <meta property="og:title" content="Target Shooter - Duck Hunt Arcade Game">
+  <meta property="og:description" content="Shoot flying targets in this classic arcade shooting gallery. 60-second timer, accuracy tracking, and bonus targets.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/duck-hunt.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    #gameCanvas { cursor: crosshair; display: block; border-radius: 8px; }
+    .target-bird { transition: transform 0.1s; }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoGame",
+    "name": "Target Shooter",
+    "description": "A classic duck hunt-style target shooting arcade game. Shoot flying targets across the screen, track your accuracy, and beat your high score in 60 seconds.",
+    "genre": "Arcade",
+    "gamePlatform": "Web Browser",
+    "url": "https://minigameplanet.com/games/duck-hunt.html"
+  }
+  </script>
+  <!--
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXX" crossorigin="anonymous"></script>
+  -->
+</head>
+<body class="min-h-screen text-gray-800">
+  <nav class="nav-container bg-white shadow-sm border-b border-gray-200">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="font-semibold text-lg">Mini Game Planet</a>
+      <div class="flex items-center gap-4">
+        <button id="soundToggle" class="text-sm px-3 py-1 rounded bg-gray-100 hover:bg-gray-200" aria-label="Toggle sound">🔊 Sound On</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-4xl mx-auto px-4 py-6">
+    <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+      <h1 class="text-2xl font-bold mb-2">Target Shooter</h1>
+      <p class="text-gray-600 mb-4">Click or tap to shoot flying targets. 60 seconds on the clock. Hit bonus targets for extra points!</p>
+
+      <div class="flex flex-wrap gap-4 mb-4 items-center">
+        <div class="font-mono text-sm">
+          <span id="timerDisplay">60</span>s | Score: <span id="scoreDisplay">0</span> | Hits: <span id="hitsDisplay">0</span>/<span id="shotsDisplay">0</span>
+          <span id="accuracyDisplay" class="text-gray-500">(—%)</span>
+        </div>
+        <div class="font-mono text-sm text-amber-600">
+          Streak: <span id="streakDisplay">0</span>
+        </div>
+        <div class="font-mono text-sm text-indigo-600">
+          Best: <span id="bestDisplay">0</span>
+        </div>
+      </div>
+
+      <div class="relative bg-gray-100 rounded-lg overflow-hidden" style="min-height: 400px;">
+        <canvas id="gameCanvas" width="800" height="400"></canvas>
+        <div id="startOverlay" class="absolute inset-0 flex flex-col items-center justify-center bg-black/40 rounded-lg">
+          <h2 class="text-2xl font-bold text-white mb-2">Target Shooter</h2>
+          <p class="text-white/90 mb-4">Click to start</p>
+          <button id="startBtn" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition">Start Game</button>
+        </div>
+        <div id="gameOverOverlay" class="absolute inset-0 hidden flex-col items-center justify-center bg-black/60 rounded-lg">
+          <h2 class="text-2xl font-bold text-white mb-2">Time's Up!</h2>
+          <p class="text-white text-xl mb-1">Score: <span id="finalScore">0</span></p>
+          <p class="text-white/90 mb-2">Accuracy: <span id="finalAccuracy">—</span></p>
+          <p class="text-white/80 text-sm mb-4">Best: <span id="finalBest">0</span></p>
+          <button id="restartBtn" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition">Play Again</button>
+        </div>
+      </div>
+    </div>
+
+    <article class="bg-white rounded-xl shadow-md p-6 mb-6 prose prose-gray max-w-none">
+      <h2>Target Shooter: Classic Arcade Shooting Fun</h2>
+      <p>Target Shooter brings the timeless excitement of shooting gallery games to your browser. Inspired by classic arcade hits like Duck Hunt, this game challenges your reflexes and aim as colorful targets fly across the screen. Whether you're a casual player looking for quick fun or a competitive gamer chasing high scores, Target Shooter delivers fast-paced action in every 60-second round.</p>
+
+      <h3>How to Play</h3>
+      <p>The rules are simple: click or tap to shoot. Your crosshair cursor helps you line up shots as targets—styled as colorful circles and bird-like shapes—move across the play area at varying speeds and trajectories. Each hit adds to your score. The game tracks your accuracy by comparing shots fired to successful hits, so precision matters as much as speed.</p>
+
+      <h3>Progression and Difficulty</h3>
+      <p>As the round progresses, targets become faster and smaller. Early waves feature larger, slower-moving targets perfect for warming up. Later waves ramp up the challenge with quicker movement and reduced hit zones. Bonus targets appear periodically, worth extra points—keep an eye out for these golden opportunities to boost your score.</p>
+
+      <h3>Stats and Personal Bests</h3>
+      <p>Target Shooter keeps you motivated with comprehensive session statistics. Your streak counter rewards consecutive hits, encouraging focused play. The personal best score persists across rounds, giving you a clear goal to beat. Accuracy percentage helps you improve your aim over time. Zero-friction restart means you can jump straight back into the action with a single click.</p>
+
+      <h3>Accessibility and Controls</h3>
+      <p>The game works with both mouse and touch input, making it playable on desktop and mobile devices. A sound toggle lets you customize the audio experience. The clean, minimal interface keeps the focus on the targets and your crosshair. Space Grotesk and DM Mono fonts ensure readable, modern typography throughout.</p>
+
+      <h3>Free to Play</h3>
+      <p>Target Shooter is completely free to play in your web browser. No downloads, no sign-ups—just instant arcade action. Part of Mini Game Planet's collection of bite-sized browser games, it's perfect for a quick break or an extended shooting session. Grab your virtual rifle and see how many targets you can hit before time runs out!</p>
+    </article>
+
+    <div class="related-games bg-white rounded-xl shadow-md p-6 mb-6">
+      <h2 class="text-lg font-semibold mb-3">Related Games</h2>
+      <div class="flex flex-wrap gap-3">
+        <a href="/games/" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm">More Arcade Games</a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer-container border-t border-gray-200 mt-8 py-6">
+    <div class="max-w-4xl mx-auto px-4 text-center text-sm text-gray-500">
+      <p>© Mini Game Planet. Target Shooter - Free browser arcade game.</p>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playShoot, playExplosion } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('duck-hunt');
+    initConsent();
+    trackGameView('duck-hunt', 'Arcade');
+
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const startOverlay = document.getElementById('startOverlay');
+    const gameOverOverlay = document.getElementById('gameOverOverlay');
+    const startBtn = document.getElementById('startBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const soundToggle = document.getElementById('soundToggle');
+
+    const GAME_DURATION = 60;
+    const BASE_TARGET_RADIUS = 28;
+    const MIN_TARGET_RADIUS = 12;
+    const BONUS_POINTS = 50;
+    const NORMAL_POINTS = 10;
+
+    let gameState = 'idle';
+    let timer = GAME_DURATION;
+    let score = 0;
+    let shotsFired = 0;
+    let hits = 0;
+    let streak = 0;
+    let wave = 1;
+    let targets = [];
+    let lastSpawn = 0;
+    let animationId = null;
+    let gameStartTime = 0;
+
+    const bestKey = 'duck-hunt-best';
+
+    function secureRandom() {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] / (0xFFFFFFFF + 1);
+    }
+
+    function getBestScore() {
+      try {
+        return parseInt(localStorage.getItem(bestKey) || '0', 10);
+      } catch {
+        return 0;
+      }
+    }
+
+    function setBestScore(val) {
+      try {
+        localStorage.setItem(bestKey, String(val));
+      } catch (_) {}
+    }
+
+    function updateDisplays() {
+      document.getElementById('timerDisplay').textContent = Math.max(0, Math.ceil(timer));
+      document.getElementById('scoreDisplay').textContent = score;
+      document.getElementById('hitsDisplay').textContent = hits;
+      document.getElementById('shotsDisplay').textContent = shotsFired;
+      const acc = shotsFired > 0 ? Math.round((hits / shotsFired) * 100) : 0;
+      document.getElementById('accuracyDisplay').textContent = `(${acc}%)`;
+      document.getElementById('streakDisplay').textContent = streak;
+      document.getElementById('bestDisplay').textContent = getBestScore();
+    }
+
+    function createTarget() {
+      const isBonus = secureRandom() < 0.15;
+      const sizeMult = Math.max(0.45, 1 - (wave - 1) * 0.08);
+      const r = Math.max(MIN_TARGET_RADIUS, BASE_TARGET_RADIUS * sizeMult);
+      const fromLeft = secureRandom() < 0.5;
+      const y = r + secureRandom() * (canvas.height - 2 * r);
+      const speed = 80 + wave * 25 + secureRandom() * 60;
+      const dir = fromLeft ? 1 : -1;
+      const wobble = (secureRandom() - 0.5) * 40;
+
+      return {
+        x: fromLeft ? -r - 20 : canvas.width + r + 20,
+        y,
+        r,
+        vx: dir * speed * 0.016,
+        vy: wobble * 0.016,
+        bonus: isBonus,
+        hit: false,
+      };
+    }
+
+    function spawnTarget(now) {
+      const interval = Math.max(400, 1200 - wave * 80);
+      if (now - lastSpawn > interval) {
+        targets.push(createTarget());
+        lastSpawn = now;
+      }
+    }
+
+    function drawTarget(t) {
+      if (t.hit) return;
+      ctx.save();
+      ctx.translate(t.x, t.y);
+      if (t.bonus) {
+        ctx.fillStyle = '#F59E0B';
+        ctx.strokeStyle = '#D97706';
+        ctx.lineWidth = 2;
+      } else {
+        const colors = ['#EF4444', '#3B82F6', '#22C55E', '#8B5CF6'];
+        ctx.fillStyle = colors[Math.floor(secureRandom() * colors.length)];
+        ctx.strokeStyle = '#1F2937';
+        ctx.lineWidth = 1;
+      }
+      ctx.beginPath();
+      ctx.arc(0, 0, t.r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      if (t.bonus) {
+        ctx.fillStyle = '#FFF';
+        ctx.font = `bold ${t.r * 0.6}px sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('+', 0, 0);
+      }
+      ctx.restore();
+    }
+
+    function hitTest(t, mx, my) {
+      const dx = mx - t.x;
+      const dy = my - t.y;
+      return dx * dx + dy * dy <= t.r * t.r;
+    }
+
+    function handleShot(mx, my) {
+      if (gameState !== 'playing') return;
+      shotsFired++;
+      updateDisplays();
+      playShoot?.();
+
+      for (let i = targets.length - 1; i >= 0; i--) {
+        const t = targets[i];
+        if (!t.hit && hitTest(t, mx, my)) {
+          t.hit = true;
+          hits++;
+          streak++;
+          const pts = t.bonus ? BONUS_POINTS : NORMAL_POINTS;
+          score += pts;
+          if (streak >= 3) score += Math.min(20, streak * 5);
+          playExplosion?.();
+          playScoreUp?.();
+          if (score > getBestScore()) {
+            setBestScore(score);
+            playLevelUp?.();
+          }
+          updateDisplays();
+          return;
+        }
+      }
+      streak = 0;
+      playError?.();
+      updateDisplays();
+    }
+
+    function gameLoop(now) {
+      if (gameState !== 'playing') return;
+
+      const dt = 0.016;
+      timer -= dt;
+      wave = Math.max(1, Math.floor((GAME_DURATION - timer) / 15) + 1);
+
+      spawnTarget(now);
+
+      for (const t of targets) {
+        t.x += t.vx;
+        t.y += t.vy;
+        if (t.y < t.r || t.y > canvas.height - t.r) t.vy *= -1;
+      }
+      targets = targets.filter(t => !t.hit && t.x > -t.r - 50 && t.x < canvas.width + t.r + 50);
+
+      ctx.fillStyle = '#E5E7EB';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      targets.forEach(drawTarget);
+
+      updateDisplays();
+
+      if (timer <= 0) {
+        gameState = 'over';
+        playGameOver?.();
+        trackGameOver?.('duck-hunt', score, { hits, shotsFired, accuracy: shotsFired > 0 ? (hits / shotsFired * 100) : 0 });
+        gameOverOverlay.classList.remove('hidden');
+        gameOverOverlay.classList.add('flex');
+        document.getElementById('finalScore').textContent = score;
+        document.getElementById('finalAccuracy').textContent = shotsFired > 0 ? Math.round((hits / shotsFired) * 100) + '%' : '—';
+        document.getElementById('finalBest').textContent = getBestScore();
+        return;
+      }
+
+      animationId = requestAnimationFrame(gameLoop);
+    }
+
+    function startGame() {
+      gameState = 'playing';
+      timer = GAME_DURATION;
+      score = 0;
+      shotsFired = 0;
+      hits = 0;
+      streak = 0;
+      wave = 1;
+      targets = [];
+      lastSpawn = 0;
+      startOverlay.classList.add('hidden');
+      gameOverOverlay.classList.add('hidden');
+      gameOverOverlay.classList.remove('flex');
+      gameStartTime = performance.now();
+      trackGameStart?.('duck-hunt');
+      playClick?.();
+      gameLoop(gameStartTime);
+    }
+
+    canvas.addEventListener('click', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const mx = (e.clientX - rect.left) * scaleX;
+      const my = (e.clientY - rect.top) * scaleY;
+      handleShot(mx, my);
+    });
+
+    canvas.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const t = e.touches[0];
+      const mx = (t.clientX - rect.left) * scaleX;
+      const my = (t.clientY - rect.top) * scaleY;
+      handleShot(mx, my);
+    }, { passive: false });
+
+    startBtn.addEventListener('click', () => {
+      if (gameState === 'idle') startGame();
+    });
+
+    restartBtn.addEventListener('click', () => {
+      playClick?.();
+      startGame();
+    });
+
+    let muted = false;
+    soundToggle.addEventListener('click', () => {
+      muted = !muted;
+      if (muted) {
+        muteAll?.();
+        soundToggle.textContent = '🔇 Sound Off';
+      } else {
+        initAudio?.();
+        soundToggle.textContent = '🔊 Sound On';
+      }
+    });
+
+    updateDisplays();
+  </script>
+</body>
+</html>

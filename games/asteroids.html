@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Asteroids - Classic Arcade Game | Mini Game Planet</title>
+  <meta name="description" content="Play Asteroids online. Classic arcade space shooter with rotating ship, thrust, and asteroid destruction. Free browser game.">
+  <link rel="canonical" href="https://minigameplanet.com/games/asteroids.html">
+  <!-- Open Graph -->
+  <meta property="og:title" content="Asteroids - Classic Arcade Game">
+  <meta property="og:description" content="Play the classic Asteroids arcade game in your browser. Dodge and destroy asteroids, survive waves, beat your high score.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/asteroids.html">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    }
+  </script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    #gameCanvas { display: block; margin: 0 auto; background: #0a0a0f; border-radius: 8px; }
+    .touch-btn { touch-action: manipulation; user-select: none; -webkit-tap-highlight-color: transparent; }
+  </style>
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoGame",
+    "name": "Asteroids",
+    "description": "Classic arcade space shooter. Control a ship, destroy asteroids, survive waves.",
+    "genre": "Arcade",
+    "gamePlatform": "Web Browser",
+    "playMode": "SinglePlayer"
+  }
+  </script>
+  <!-- AdSense (commented - uncomment when ready)
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXX" crossorigin="anonymous"></script>
+  -->
+</head>
+<body class="min-h-screen text-gray-800 antialiased">
+  <div id="nav-container" class="bg-white shadow-sm border-b border-gray-200">
+    <nav class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="font-semibold text-lg text-gray-800 hover:text-indigo-600 transition">Mini Game Planet</a>
+      <div class="flex items-center gap-4">
+        <button id="soundToggle" class="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-sm font-medium" aria-label="Toggle sound">🔊 Sound</button>
+      </div>
+    </nav>
+  </div>
+
+  <main class="max-w-4xl mx-auto px-4 py-6">
+    <article class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden mb-6">
+      <header class="p-6 border-b border-gray-100">
+        <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Asteroids</h1>
+        <p class="text-gray-600">Classic arcade space shooter. Rotate, thrust, and blast asteroids into oblivion.</p>
+      </header>
+
+      <div class="p-6">
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+          <div class="flex items-center gap-4 font-mono text-sm">
+            <span>Lives: <strong id="livesDisplay">3</strong></span>
+            <span>Score: <strong id="scoreDisplay">0</strong></span>
+            <span>Wave: <strong id="waveDisplay">1</strong></span>
+            <span>Best: <strong id="bestDisplay">0</strong></span>
+            <span>Session Best: <strong id="sessionDisplay">0</strong></span>
+            <span>Streak: <strong id="streakDisplay">0</strong></span>
+          </div>
+          <button id="startBtn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition">Play</button>
+        </div>
+
+        <div class="relative inline-block mx-auto">
+          <canvas id="gameCanvas" width="640" height="480"></canvas>
+          <div id="touchControls" class="absolute bottom-4 left-0 right-0 flex justify-between px-4 gap-2 pointer-events-none opacity-0 md:opacity-100 md:pointer-events-auto">
+            <div class="flex flex-col gap-2">
+              <button class="touch-btn w-14 h-14 rounded-full bg-white/80 border-2 border-gray-300 font-bold text-xl shadow-lg active:bg-gray-200" data-key="ArrowLeft">◀</button>
+              <button class="touch-btn w-14 h-14 rounded-full bg-white/80 border-2 border-gray-300 font-bold text-xl shadow-lg active:bg-gray-200" data-key="ArrowRight">▶</button>
+            </div>
+            <button class="touch-btn w-16 h-16 rounded-full bg-indigo-500/90 border-2 border-indigo-600 font-bold text-white text-sm shadow-lg self-center active:bg-indigo-600" data-key=" ">THRUST</button>
+            <button class="touch-btn w-14 h-14 rounded-full bg-red-500/90 border-2 border-red-600 font-bold text-white text-sm shadow-lg self-center active:bg-red-600" data-key="Space">FIRE</button>
+          </div>
+          <div id="gameOverlay" class="absolute inset-0 flex flex-col items-center justify-center bg-black/60 rounded-lg pointer-events-none cursor-pointer" style="border-radius: 8px;">
+            <p id="overlayText" class="text-white text-2xl font-bold mb-2">Press Play to Start</p>
+            <p id="overlaySub" class="text-gray-300 text-sm"></p>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <section class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-6">
+      <h2 class="text-xl font-bold text-gray-900 mb-4">How to Play</h2>
+      <p class="text-gray-700 mb-4">Asteroids is a classic arcade space shooter. You control a triangular ship floating in a field of asteroids. Your goal is to destroy all asteroids on screen to advance to the next wave while avoiding collisions. The game rewards precision, timing, and spatial awareness.</p>
+      <ul class="list-disc list-inside text-gray-700 space-y-2 mb-4">
+        <li><strong>Rotate:</strong> Use Arrow Left/Right or A/D to turn your ship. Rotation is instant—no momentum on turning.</li>
+        <li><strong>Thrust:</strong> Press Arrow Up or W to accelerate forward. Your ship has momentum—release to coast. Use short bursts to maneuver.</li>
+        <li><strong>Shoot:</strong> Press Space to fire. Bullets travel in a straight line and destroy asteroids on contact.</li>
+        <li><strong>Wrap:</strong> Flying off one edge wraps you to the opposite side. Use this to escape tight situations.</li>
+        <li><strong>Lives:</strong> You start with 3 lives. Hitting an asteroid costs a life. Survive as long as you can!</li>
+      </ul>
+      <p class="text-gray-700 mb-4">Large asteroids split into two medium asteroids when shot. Medium asteroids split into two small ones. Small asteroids are destroyed completely. Scoring: Large 20 points, Medium 50 points, Small 100 points. Destroy asteroids in quick succession to build a streak and maximize your score.</p>
+      <p class="text-gray-700">On mobile devices, use the on-screen buttons for rotation, thrust, and fire. The game adapts to touch screens for play anywhere.</p>
+    </section>
+
+    <section class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-6">
+      <h2 class="text-xl font-bold text-gray-900 mb-4">History of Asteroids</h2>
+      <p class="text-gray-700 mb-4">Asteroids was released by Atari in 1979 and became one of the most successful arcade games of all time. Designed by Lyle Rains and Ed Logg, it featured vector graphics displayed on a black-and-white CRT monitor, creating a distinctive minimalist aesthetic.</p>
+      <p class="text-gray-700 mb-4">The game's physics—ship inertia, wrap-around screen, and asteroid fragmentation—were innovative for the era. Players could drift through space, building momentum before firing, which added strategic depth. The increasing difficulty and hypnotic gameplay made it a quarter-eating staple in arcades worldwide.</p>
+      <p class="text-gray-700">Asteroids influenced countless space shooters and remains a touchstone of game design. This browser version captures the core experience while adding modern conveniences like touch controls and session statistics.</p>
+    </section>
+
+    <section class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-6">
+      <h2 class="text-xl font-bold text-gray-900 mb-4">Strategy Tips</h2>
+      <ul class="list-disc list-inside text-gray-700 space-y-2">
+        <li><strong>Keep moving:</strong> A stationary ship is an easy target. Use short thrust bursts to change direction.</li>
+        <li><strong>Prioritize large asteroids:</strong> Breaking them early reduces screen clutter and creates more manageable fragments.</li>
+        <li><strong>Use the wrap:</strong> When surrounded, thrust toward an edge to escape and reappear on the opposite side.</li>
+        <li><strong>Lead your shots:</strong> Asteroids move; aim where they'll be, not where they are.</li>
+        <li><strong>Build streaks:</strong> Destroy asteroids in quick succession for bonus points.</li>
+      </ul>
+    </section>
+
+    <section class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-6">
+      <h2 class="text-xl font-bold text-gray-900 mb-4">FAQ</h2>
+      <div class="space-y-4">
+        <div>
+          <h3 class="font-semibold text-gray-900">How many lives do I get?</h3>
+          <p class="text-gray-700">You start with 3 lives. Each collision with an asteroid costs one life. When all lives are gone, the game ends.</p>
+        </div>
+        <div>
+          <h3 class="font-semibold text-gray-900">Do waves get harder?</h3>
+          <p class="text-gray-700">Yes. Each wave adds more asteroids and increases their speed. Later waves require faster reflexes and better planning.</p>
+        </div>
+        <div>
+          <h3 class="font-semibold text-gray-900">Can I play on mobile?</h3>
+          <p class="text-gray-700">Yes. On-screen touch buttons appear on smaller screens for rotation, thrust, and fire controls.</p>
+        </div>
+        <div>
+          <h3 class="font-semibold text-gray-900">What is the streak bonus?</h3>
+          <p class="text-gray-700">Destroying asteroids in quick succession builds a streak. Higher streaks can earn bonus points and track your hot runs.</p>
+        </div>
+      </div>
+    </section>
+
+    <div id="related-games" class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-6">
+      <h2 class="text-xl font-bold text-gray-900 mb-4">Related Games</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <a href="/games/snake.html" class="block p-3 rounded-lg border border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 transition">Snake</a>
+        <a href="/games/tetris.html" class="block p-3 rounded-lg border border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 transition">Tetris</a>
+        <a href="/games/breakout.html" class="block p-3 rounded-lg border border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 transition">Breakout</a>
+        <a href="/games/pong.html" class="block p-3 rounded-lg border border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 transition">Pong</a>
+      </div>
+    </div>
+  </main>
+
+  <footer id="footer-container" class="border-t border-gray-200 bg-white py-6 mt-8">
+    <div class="max-w-4xl mx-auto px-4 text-center text-gray-600 text-sm">
+      <p>© Mini Game Planet. Free browser games. Play Asteroids and more.</p>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playShoot, playExplosion } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('asteroids');
+    initConsent();
+    trackGameView('asteroids', 'Arcade');
+
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width;
+    const H = canvas.height;
+
+    function secureRandom() {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] / (0xFFFFFFFF + 1);
+    }
+
+    let gameState = 'idle';
+    let lives = 3;
+    let score = 0;
+    let wave = 1;
+    let bestScore = parseInt(localStorage.getItem('asteroids_best') || '0', 10);
+    let streak = 0;
+    let lastDestroyTime = 0;
+    const STREAK_WINDOW = 800;
+    let sessionGames = parseInt(sessionStorage.getItem('asteroids_session') || '0', 10);
+    let sessionBest = parseInt(sessionStorage.getItem('asteroids_session_best') || '0', 10);
+
+    const ship = {
+      x: W / 2, y: H / 2,
+      vx: 0, vy: 0,
+      angle: -Math.PI / 2,
+      thrust: false,
+      size: 12,
+      friction: 0.995,
+      thrustPower: 0.15,
+      turnSpeed: 0.08,
+    };
+
+    let asteroids = [];
+    let bullets = [];
+    let particles = [];
+    let keys = {};
+    let animId = null;
+
+    const ASTEROID_SIZES = { large: 3, medium: 2, small: 1 };
+    const ASTEROID_POINTS = { large: 20, medium: 50, small: 100 };
+    const ASTEROID_RADII = { large: 40, medium: 25, small: 12 };
+
+    function updateUI() {
+      document.getElementById('livesDisplay').textContent = lives;
+      document.getElementById('scoreDisplay').textContent = score;
+      document.getElementById('waveDisplay').textContent = wave;
+      document.getElementById('bestDisplay').textContent = bestScore;
+      document.getElementById('sessionDisplay').textContent = sessionBest;
+      document.getElementById('streakDisplay').textContent = streak;
+    }
+
+    function createAsteroid(size, x, y) {
+      const r = ASTEROID_RADII[size];
+      const verts = 8 + Math.floor(secureRandom() * 4);
+      const pts = [];
+      for (let i = 0; i < verts; i++) {
+        const a = (i / verts) * Math.PI * 2 + secureRandom() * 0.5;
+        pts.push(r * (0.7 + secureRandom() * 0.6) * Math.cos(a));
+        pts.push(r * (0.7 + secureRandom() * 0.6) * Math.sin(a));
+      }
+      const speed = 0.5 + secureRandom() * 1.5 + wave * 0.2;
+      const angle = secureRandom() * Math.PI * 2;
+      return {
+        size, x: x ?? secureRandom() * W, y: y ?? secureRandom() * H,
+        vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
+        verts: pts, r,
+      };
+    }
+
+    function spawnWave() {
+      const count = 3 + wave * 2;
+      asteroids = [];
+      for (let i = 0; i < count; i++) {
+        let x, y;
+        do {
+          x = secureRandom() * W;
+          y = secureRandom() * H;
+        } while (Math.hypot(x - ship.x, y - ship.y) < 80);
+        asteroids.push(createAsteroid('large', x, y));
+      }
+    }
+
+    function splitAsteroid(a) {
+      const next = a.size === 'large' ? 'medium' : a.size === 'medium' ? 'small' : null;
+      if (!next) return [];
+      const pts = ASTEROID_POINTS[a.size];
+      score += pts;
+      if (typeof playScoreUp === 'function') playScoreUp();
+      const now = Date.now();
+      if (now - lastDestroyTime < STREAK_WINDOW) streak++; else streak = 1;
+      lastDestroyTime = now;
+      if (typeof playExplosion === 'function') playExplosion();
+      for (let i = 0; i < 3; i++) particles.push({ x: a.x, y: a.y, vx: (secureRandom() - 0.5) * 4, vy: (secureRandom() - 0.5) * 4, life: 20 });
+      const off1 = (secureRandom() - 0.5) * 20;
+      const off2 = (secureRandom() - 0.5) * 20;
+      return [
+        createAsteroid(next, a.x + off1, a.y + off2),
+        createAsteroid(next, a.x - off1 * 0.5, a.y - off2 * 0.5),
+      ];
+    }
+
+    function destroyAsteroid(a) {
+      score += ASTEROID_POINTS[a.size];
+      if (typeof playScoreUp === 'function') playScoreUp();
+      const now = Date.now();
+      if (now - lastDestroyTime < STREAK_WINDOW) streak++; else streak = 1;
+      lastDestroyTime = now;
+      if (typeof playExplosion === 'function') playExplosion();
+      for (let i = 0; i < 5; i++) particles.push({ x: a.x, y: a.y, vx: (secureRandom() - 0.5) * 4, vy: (secureRandom() - 0.5) * 4, life: 20 });
+    }
+
+    function wrap(v, max) {
+      if (v < 0) return v + max;
+      if (v >= max) return v - max;
+      return v;
+    }
+
+    function collidesCircle(x1, y1, r1, x2, y2, r2) {
+      return Math.hypot(x1 - x2, y1 - y2) < r1 + r2;
+    }
+
+    function collidesBulletAsteroid(b, a) {
+      return Math.hypot(b.x - a.x, b.y - a.y) < a.r;
+    }
+
+    function gameLoop() {
+      ctx.fillStyle = '#0a0a0f';
+      ctx.fillRect(0, 0, W, H);
+
+      if (gameState === 'playing') {
+        if (keys['ArrowLeft'] || keys['KeyA']) ship.angle -= ship.turnSpeed;
+        if (keys['ArrowRight'] || keys['KeyD']) ship.angle += ship.turnSpeed;
+        if (keys['ArrowUp'] || keys['KeyW'] || ship.thrust) {
+          ship.vx += Math.cos(ship.angle) * ship.thrustPower;
+          ship.vy += Math.sin(ship.angle) * ship.thrustPower;
+        }
+        ship.vx *= ship.friction;
+        ship.vy *= ship.friction;
+        ship.x = wrap(ship.x + ship.vx, W);
+        ship.y = wrap(ship.y + ship.vy, H);
+
+        bullets = bullets.filter(b => {
+          b.x = wrap(b.x + b.vx, W);
+          b.y = wrap(b.y + b.vy, H);
+          b.life--;
+          if (b.life <= 0) return false;
+          for (let i = asteroids.length - 1; i >= 0; i--) {
+            const a = asteroids[i];
+            if (collidesBulletAsteroid(b, a)) {
+              if (a.size === 'small') destroyAsteroid(a);
+              else asteroids.push(...splitAsteroid(a));
+              asteroids.splice(i, 1);
+              return false;
+            }
+          }
+          return true;
+        });
+
+        asteroids.forEach(a => {
+          a.x = wrap(a.x + a.vx, W);
+          a.y = wrap(a.y + a.vy, H);
+        });
+
+        particles = particles.filter(p => {
+          p.x += p.vx; p.y += p.vy; p.life--;
+          ctx.fillStyle = `rgba(255,200,100,${p.life / 20})`;
+          ctx.fillRect(p.x - 2, p.y - 2, 4, 4);
+          return p.life > 0;
+        });
+
+        for (const a of asteroids) {
+          if (collidesCircle(ship.x, ship.y, ship.size, a.x, a.y, a.r)) {
+            lives--;
+            if (typeof playError === 'function') playError();
+            ship.x = W / 2; ship.y = H / 2;
+            ship.vx = 0; ship.vy = 0;
+            streak = 0;
+            if (lives <= 0) {
+              gameState = 'over';
+              if (typeof playGameOver === 'function') playGameOver();
+              trackGameOver('asteroids', score, wave);
+              sessionGames++;
+              sessionBest = Math.max(sessionBest, score);
+              sessionStorage.setItem('asteroids_session', String(sessionGames));
+              sessionStorage.setItem('asteroids_session_best', String(sessionBest));
+            }
+          }
+        }
+
+        if (asteroids.length === 0) {
+          wave++;
+          if (typeof playLevelUp === 'function') playLevelUp();
+          spawnWave();
+        }
+      }
+
+      ctx.save();
+      ctx.translate(ship.x, ship.y);
+      ctx.rotate(ship.angle);
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(ship.size, 0);
+      ctx.lineTo(-ship.size * 0.8, ship.size * 0.6);
+      ctx.lineTo(-ship.size * 0.5, 0);
+      ctx.lineTo(-ship.size * 0.8, -ship.size * 0.6);
+      ctx.closePath();
+      ctx.stroke();
+      if (ship.thrust || keys['ArrowUp'] || keys['KeyW']) {
+        ctx.strokeStyle = '#ff6600';
+        ctx.beginPath();
+        ctx.moveTo(-ship.size * 0.5, 0);
+        ctx.lineTo(-ship.size * 1.2, 0);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      asteroids.forEach(a => {
+        ctx.strokeStyle = '#aaa';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        const n = a.verts.length / 2;
+        ctx.moveTo(a.x + a.verts[0], a.y + a.verts[1]);
+        for (let i = 1; i < n; i++) ctx.lineTo(a.x + a.verts[i * 2], a.y + a.verts[i * 2 + 1]);
+        ctx.closePath();
+        ctx.stroke();
+      });
+
+      bullets.forEach(b => {
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(b.x - 1, b.y - 1, 2, 2);
+      });
+
+      if (score > bestScore) {
+        bestScore = score;
+        localStorage.setItem('asteroids_best', String(bestScore));
+      }
+      updateUI();
+
+      const overlay = document.getElementById('gameOverlay');
+      const text = document.getElementById('overlayText');
+      const sub = document.getElementById('overlaySub');
+      overlay.style.pointerEvents = gameState !== 'playing' ? 'auto' : 'none';
+      overlay.style.opacity = gameState === 'playing' ? '0' : '1';
+      if (gameState === 'idle') {
+        text.textContent = 'Press Play to Start';
+        sub.textContent = 'Arrow keys / WASD + Space';
+      } else if (gameState === 'over') {
+        text.textContent = 'Game Over';
+        sub.textContent = `Score: ${score} | Wave: ${wave} | Best: ${bestScore}`;
+      } else {
+        text.textContent = '';
+        sub.textContent = '';
+      }
+
+      animId = requestAnimationFrame(gameLoop);
+    }
+
+    function startGame() {
+      if (gameState === 'playing') return;
+      gameState = 'playing';
+      lives = 3;
+      score = 0;
+      wave = 1;
+      streak = 0;
+      lastDestroyTime = 0;
+      bullets = [];
+      particles = [];
+      ship.x = W / 2; ship.y = H / 2;
+      ship.vx = 0; ship.vy = 0;
+      ship.angle = -Math.PI / 2;
+      spawnWave();
+      if (typeof playClick === 'function') playClick();
+      trackGameStart('asteroids');
+    }
+
+    document.getElementById('startBtn').addEventListener('click', () => {
+      startGame();
+    });
+
+    document.addEventListener('keydown', e => {
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) e.preventDefault();
+      keys[e.code] = true;
+      if (e.code === 'Space' && gameState === 'playing') {
+        e.preventDefault();
+        bullets.push({
+          x: ship.x + Math.cos(ship.angle) * ship.size,
+          y: ship.y + Math.sin(ship.angle) * ship.size,
+          vx: Math.cos(ship.angle) * 8,
+          vy: Math.sin(ship.angle) * 8,
+          life: 60,
+        });
+        if (typeof playShoot === 'function') playShoot();
+      }
+    });
+    document.addEventListener('keyup', e => { keys[e.code] = false; });
+
+    document.querySelectorAll('[data-key]').forEach(btn => {
+      btn.addEventListener('touchstart', e => {
+        e.preventDefault();
+        const k = btn.dataset.key;
+        if (k === ' ') ship.thrust = true;
+        else keys[k === ' ' ? 'ArrowUp' : k === 'Space' ? 'Space' : k] = true;
+        if (k === 'Space' && gameState === 'playing') {
+          bullets.push({
+            x: ship.x + Math.cos(ship.angle) * ship.size,
+            y: ship.y + Math.sin(ship.angle) * ship.size,
+            vx: Math.cos(ship.angle) * 8,
+            vy: Math.sin(ship.angle) * 8,
+            life: 60,
+          });
+          if (typeof playShoot === 'function') playShoot();
+        }
+      });
+      btn.addEventListener('touchend', e => {
+        e.preventDefault();
+        const k = btn.dataset.key;
+        if (k === ' ') ship.thrust = false;
+        else keys[k === 'Space' ? 'Space' : k] = false;
+      });
+      btn.addEventListener('mousedown', e => {
+        if (e.button !== 0) return;
+        const k = btn.dataset.key;
+        if (k === ' ') ship.thrust = true;
+        else keys[k === ' ' ? 'ArrowUp' : k === 'Space' ? 'Space' : k] = true;
+        if (k === 'Space' && gameState === 'playing') {
+          bullets.push({
+            x: ship.x + Math.cos(ship.angle) * ship.size,
+            y: ship.y + Math.sin(ship.angle) * ship.size,
+            vx: Math.cos(ship.angle) * 8,
+            vy: Math.sin(ship.angle) * 8,
+            life: 60,
+          });
+          if (typeof playShoot === 'function') playShoot();
+        }
+      });
+      btn.addEventListener('mouseup', () => {
+        const k = btn.dataset.key;
+        if (k === ' ') ship.thrust = false;
+        else keys[k === 'Space' ? 'Space' : k] = false;
+      });
+      btn.addEventListener('mouseleave', () => {
+        const k = btn.dataset.key;
+        if (k === ' ') ship.thrust = false;
+        else keys[k === 'Space' ? 'Space' : k] = false;
+      });
+    });
+
+    document.getElementById('soundToggle').addEventListener('click', () => {
+      muteAll();
+      document.getElementById('soundToggle').textContent = document.getElementById('soundToggle').textContent.includes('On') ? '🔇 Sound' : '🔊 Sound';
+    });
+
+    const overlay = document.getElementById('gameOverlay');
+    overlay.addEventListener('click', () => {
+      if (gameState === 'idle' || gameState === 'over') startGame();
+    });
+
+    if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+      document.getElementById('touchControls').style.opacity = '1';
+      document.getElementById('touchControls').style.pointerEvents = 'auto';
+    }
+
+    updateUI();
+    gameLoop();
+  </script>
+</body>
+</html>

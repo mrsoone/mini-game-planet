@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pong - Classic Arcade Game | Mini Game Planet</title>
+  <meta name="description" content="Play Pong online - the classic arcade game. Single player vs AI or 2-player local. Three difficulty levels. Free to play.">
+  <link rel="canonical" href="https://minigameplanet.com/games/pong.html">
+  <!-- Open Graph -->
+  <meta property="og:title" content="Pong - Classic Arcade Game">
+  <meta property="og:description" content="Play Pong online. Single player vs AI or 2-player local. Free classic arcade game.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/pong.html">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    }
+  </script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    #gameCanvas { display: block; margin: 0 auto; border-radius: 8px; background: #1a1a1a; }
+    .ball-trail { position: absolute; border-radius: 50%; pointer-events: none; }
+  </style>
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoGame",
+    "name": "Pong",
+    "description": "Classic Pong arcade game. Single player vs AI or 2-player local. Three difficulty levels.",
+    "gamePlatform": "Web Browser",
+    "genre": "Arcade",
+    "playMode": "SinglePlayer, MultiPlayer"
+  }
+  </script>
+  <!-- AdSense (commented) -->
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXX" crossorigin="anonymous"></script> -->
+</head>
+<body class="min-h-screen text-gray-800">
+  <!-- GA4 Consent (defaults) -->
+  <div id="consent-banner" class="hidden fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t p-4 z-50">
+    <p class="text-sm mb-2">We use cookies for analytics. <a href="/privacy" class="underline">Privacy</a></p>
+    <button id="consent-accept" class="px-4 py-2 bg-gray-900 text-white rounded text-sm">Accept</button>
+    <button id="consent-decline" class="px-4 py-2 bg-gray-200 rounded text-sm ml-2">Decline</button>
+  </div>
+
+  <div class="max-w-4xl mx-auto px-4 py-6">
+    <!-- Nav -->
+    <nav class="nav-container mb-6">
+      <a href="/" class="text-gray-600 hover:text-gray-900 text-sm">← Back to Games</a>
+    </nav>
+
+    <!-- White Card -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+      <h1 class="text-2xl font-bold mb-2">Pong</h1>
+      <p class="text-gray-600 text-sm mb-4">Classic arcade paddle game. First to 7 wins.</p>
+
+      <!-- Game Controls -->
+      <div class="flex flex-wrap gap-4 items-center mb-4">
+        <div>
+          <label class="text-xs text-gray-500 block mb-1">Mode</label>
+          <select id="gameMode" class="border rounded px-3 py-2 text-sm">
+            <option value="ai">1 Player vs AI</option>
+            <option value="2p">2 Player Local</option>
+          </select>
+        </div>
+        <div id="aiDifficultyWrap">
+          <label class="text-xs text-gray-500 block mb-1">AI Difficulty</label>
+          <select id="aiDifficulty" class="border rounded px-3 py-2 text-sm">
+            <option value="easy">Easy</option>
+            <option value="normal">Normal</option>
+            <option value="hard">Hard</option>
+          </select>
+        </div>
+        <div class="flex items-end gap-2">
+          <button id="startBtn" class="px-4 py-2 bg-green-600 text-white rounded text-sm font-medium hover:bg-green-700">Start</button>
+          <button id="soundToggle" class="px-4 py-2 bg-gray-200 rounded text-sm hover:bg-gray-300" title="Toggle sound">🔊 Sound</button>
+        </div>
+      </div>
+
+      <!-- Session Stats -->
+      <div id="sessionStats" class="text-sm text-gray-500 mb-2 font-mono hidden">
+        Session: <span id="sessionWins">0</span> wins · Streak: <span id="sessionStreak">0</span>
+      </div>
+
+      <!-- Canvas Container -->
+      <div class="relative">
+        <canvas id="gameCanvas" width="640" height="400" tabindex="0"></canvas>
+        <div id="gameOverlay" class="absolute inset-0 flex flex-col items-center justify-center bg-black/60 rounded-lg pointer-events-none hidden">
+          <p id="overlayText" class="text-white text-xl font-bold mb-2"></p>
+          <p id="overlaySubtext" class="text-white/80 text-sm"></p>
+        </div>
+      </div>
+
+      <!-- Score Display -->
+      <div class="flex justify-between mt-2 font-mono text-lg">
+        <span>Player 1: <strong id="scoreP1">0</strong></span>
+        <span>Player 2: <strong id="scoreP2">0</strong></span>
+      </div>
+
+      <!-- Zero-friction Restart -->
+      <button id="restartBtn" class="mt-4 px-4 py-2 bg-gray-800 text-white rounded text-sm hover:bg-gray-900 hidden">Play Again</button>
+    </div>
+
+    <!-- SEO Article -->
+    <article class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+      <h2 class="text-xl font-bold mb-4">How to Play Pong</h2>
+      <p class="mb-4 text-gray-700">
+        Pong is the quintessential arcade game that started it all. Two paddles face off across a black court, 
+        volleying a bouncing ball back and forth. Your goal is simple: don't let the ball get past your paddle. 
+        Each time your opponent fails to return the ball, you score a point. The first player to reach 7 points wins the game.
+      </p>
+      <p class="mb-4 text-gray-700">
+        In single-player mode, you control the left paddle using <strong>W</strong> and <strong>S</strong> keys. 
+        The right paddle is controlled by the AI, with three difficulty levels to choose from. In 2-player mode, 
+        Player 1 uses W/S while Player 2 uses the <strong>Arrow Up</strong> and <strong>Arrow Down</strong> keys. 
+        The ball speeds up as rallies continue, adding tension and excitement to every volley.
+      </p>
+
+      <h3 class="text-lg font-semibold mt-6 mb-2">History of Pong</h3>
+      <p class="mb-4 text-gray-700">
+        Pong was created by Allan Alcorn at Atari in 1972, inspired by an electronic ping-pong game included in 
+        the Magnavox Odyssey. It became the first commercially successful video game, spawning the entire arcade 
+        industry. The original cabinet featured simple two-dimensional graphics and analog circuitry. Pong's 
+        success proved that video games could be a viable business, leading to the golden age of arcades and 
+        eventually the home console revolution.
+      </p>
+
+      <h3 class="text-lg font-semibold mt-6 mb-2">Strategy Tips</h3>
+      <p class="mb-4 text-gray-700">
+        Master the angles: hitting the ball with the edge of your paddle creates sharper angles that are harder 
+        to return. Aim for the corners when attacking. When defending, try to stay centered and react quickly— 
+        the ball accelerates during long rallies. Against the AI, vary your shot placement; predictable patterns 
+        are easily exploited on higher difficulties. In 2-player matches, psychological warfare matters—mix up 
+        your timing and placement to keep your opponent guessing.
+      </p>
+
+      <h3 class="text-lg font-semibold mt-6 mb-2">FAQ</h3>
+      <dl class="space-y-2">
+        <dt class="font-medium">How do I start a new game?</dt>
+        <dd class="text-gray-700 ml-4 mb-2">Click Start, then press any key or click when the "Press to serve" message appears. After a game ends, click "Play Again" for instant restart.</dd>
+        <dt class="font-medium">Does the ball really speed up?</dt>
+        <dd class="text-gray-700 ml-4 mb-2">Yes. Each time the ball hits a paddle, it gains a small amount of speed, making long rallies increasingly challenging.</dd>
+        <dt class="font-medium">What's the difference between AI difficulties?</dt>
+        <dd class="text-gray-700 ml-4 mb-2">Easy AI reacts slowly and sometimes misses. Normal AI tracks the ball well with occasional mistakes. Hard AI has near-perfect reaction time and rarely misses.</dd>
+        <dt class="font-medium">Can I play on mobile?</dt>
+        <dd class="text-gray-700 ml-4 mb-2">The game works best with a keyboard. Touch controls may be added in future updates.</dd>
+      </dl>
+    </article>
+
+    <!-- Related Games -->
+    <div class="related-games mb-6">
+      <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Related Games</h3>
+      <div class="flex flex-wrap gap-2">
+        <a href="/games/snake.html" class="text-sm text-blue-600 hover:underline">Snake</a>
+        <a href="/games/breakout.html" class="text-sm text-blue-600 hover:underline">Breakout</a>
+        <a href="/games/tetris.html" class="text-sm text-blue-600 hover:underline">Tetris</a>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer-container text-center text-sm text-gray-500">
+      <p>© Mini Game Planet. Play free arcade games online.</p>
+    </footer>
+  </div>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playBounce } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('pong');
+    initConsent();
+    trackGameView('pong', 'Arcade');
+
+    // Crypto-based random
+    function randomFloat() {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] / (0xFFFFFFFF + 1);
+    }
+    function randomRange(min, max) {
+      return min + randomFloat() * (max - min);
+    }
+
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const overlay = document.getElementById('gameOverlay');
+    const overlayText = document.getElementById('overlayText');
+    const overlaySubtext = document.getElementById('overlaySubtext');
+    const scoreP1 = document.getElementById('scoreP1');
+    const scoreP2 = document.getElementById('scoreP2');
+    const startBtn = document.getElementById('startBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const gameMode = document.getElementById('gameMode');
+    const aiDifficulty = document.getElementById('aiDifficulty');
+    const aiDifficultyWrap = document.getElementById('aiDifficultyWrap');
+    const soundToggle = document.getElementById('soundToggle');
+    const sessionStats = document.getElementById('sessionStats');
+    const sessionWinsEl = document.getElementById('sessionWins');
+    const sessionStreakEl = document.getElementById('sessionStreak');
+
+    const PADDLE_W = 12;
+    const PADDLE_H = 80;
+    const BALL_R = 8;
+    const PADDLE_SPEED = 6;
+    const BASE_BALL_SPEED = 5;
+    const WIN_SCORE = 7;
+    const TRAIL_LENGTH = 12;
+
+    let state = 'idle'; // idle, serving, playing, gameover
+    let p1Y = 160;
+    let p2Y = 160;
+    let ballX = 320;
+    let ballY = 200;
+    let ballVx = 0;
+    let ballVy = 0;
+    let ballSpeed = BASE_BALL_SPEED;
+    let score1 = 0;
+    let score2 = 0;
+    let trail = [];
+    let lastServePlayer = 2;
+    let sessionWins = 0;
+    let sessionStreak = 0;
+    let lastWinner = null;
+    let rallyCount = 0;
+    let animId = null;
+    const keys = {};
+
+    document.addEventListener('keydown', e => {
+      keys[e.key] = true;
+      if (state === 'serving') {
+        e.preventDefault();
+        serve();
+      }
+    });
+    document.addEventListener('keyup', e => { keys[e.key] = false; });
+
+    gameMode.addEventListener('change', () => {
+      aiDifficultyWrap.classList.toggle('hidden', gameMode.value === '2p');
+    });
+    aiDifficultyWrap.classList.toggle('hidden', gameMode.value === '2p');
+
+    function resetBall(servingPlayer) {
+      ballX = canvas.width / 2;
+      ballY = canvas.height / 2;
+      ballSpeed = BASE_BALL_SPEED;
+      rallyCount = 0;
+      trail = [];
+      const angle = randomRange(-0.4, 0.4);
+      const dir = servingPlayer === 1 ? 1 : -1;
+      ballVx = dir * ballSpeed * Math.cos(angle);
+      ballVy = ballSpeed * Math.sin(angle);
+    }
+
+    function serve() {
+      lastServePlayer = lastServePlayer === 1 ? 2 : 1;
+      resetBall(lastServePlayer);
+      state = 'playing';
+      overlay.classList.add('hidden');
+      overlay.style.pointerEvents = 'none';
+      try { playClick(); } catch (_) {}
+    }
+
+    function startGame() {
+      score1 = 0;
+      score2 = 0;
+      p1Y = (canvas.height - PADDLE_H) / 2;
+      p2Y = (canvas.height - PADDLE_H) / 2;
+      lastServePlayer = 2;
+      state = 'serving';
+      overlay.classList.remove('hidden');
+      overlayText.textContent = 'Press any key or click to serve';
+      overlaySubtext.textContent = gameMode.value === 'ai' ? 'Player 1 (left) vs AI (right)' : 'Player 1: W/S · Player 2: Arrows';
+      overlay.style.pointerEvents = 'auto';
+      restartBtn.classList.add('hidden');
+      startBtn.classList.add('hidden');
+      updateScoreDisplay();
+      try { initAudio(); trackGameStart('pong'); } catch (_) {}
+      canvas.focus();
+    }
+
+    function endGame(winner) {
+      state = 'gameover';
+      overlay.classList.remove('hidden');
+      overlay.style.pointerEvents = 'auto';
+      overlayText.textContent = winner === 1 ? 'Player 1 Wins!' : (gameMode.value === 'ai' ? 'AI Wins!' : 'Player 2 Wins!');
+      overlaySubtext.textContent = `Final: ${score1} - ${score2}`;
+      restartBtn.classList.remove('hidden');
+      if (winner === 1) {
+        sessionWins++;
+        sessionStreak = lastWinner === 1 ? sessionStreak + 1 : 1;
+      } else {
+        sessionStreak = 0;
+      }
+      lastWinner = winner;
+      sessionStats.classList.remove('hidden');
+      sessionWinsEl.textContent = sessionWins;
+      sessionStreakEl.textContent = sessionStreak;
+      try { playGameOver(); trackGameOver('pong', winner === 1 ? 'win' : 'loss'); } catch (_) {}
+    }
+
+    function updateScoreDisplay() {
+      scoreP1.textContent = score1;
+      scoreP2.textContent = score2;
+    }
+
+    function aiMove() {
+      const diff = aiDifficulty.value;
+      const targetY = ballY - PADDLE_H / 2;
+      let speed = PADDLE_SPEED * 0.5;
+      if (diff === 'normal') speed = PADDLE_SPEED * 0.85;
+      if (diff === 'hard') speed = PADDLE_SPEED * 1.1;
+      const err = diff === 'easy' ? 40 : (diff === 'normal' ? 15 : 5);
+      const noise = (randomFloat() - 0.5) * err;
+      const desired = targetY + noise;
+      if (p2Y < desired - 5) p2Y = Math.min(p2Y + speed, canvas.height - PADDLE_H);
+      else if (p2Y > desired + 5) p2Y = Math.max(p2Y - speed, 0);
+    }
+
+    function update() {
+      if (state !== 'playing') return;
+
+      // Ball
+      ballX += ballVx;
+      ballY += ballVy;
+
+      trail.push({ x: ballX, y: ballY, alpha: 1 });
+      if (trail.length > TRAIL_LENGTH) trail.shift();
+
+      // Paddle 1
+      if (keys['w'] || keys['W']) p1Y = Math.max(0, p1Y - PADDLE_SPEED);
+      if (keys['s'] || keys['S']) p1Y = Math.min(canvas.height - PADDLE_H, p1Y + PADDLE_SPEED);
+
+      if (gameMode.value === 'ai') aiMove();
+      else {
+        if (keys['ArrowUp']) p2Y = Math.max(0, p2Y - PADDLE_SPEED);
+        if (keys['ArrowDown']) p2Y = Math.min(canvas.height - PADDLE_H, p2Y + PADDLE_SPEED);
+      }
+
+      // Paddle collisions
+      const p1Left = 20;
+      const p1Right = 20 + PADDLE_W;
+      const p2Left = canvas.width - 20 - PADDLE_W;
+      const p2Right = canvas.width - 20;
+
+      if (ballVx < 0 && ballX - BALL_R <= p1Right && ballX + BALL_R >= p1Left &&
+          ballY + BALL_R >= p1Y && ballY - BALL_R <= p1Y + PADDLE_H) {
+        ballVx = -ballVx;
+        const hitPos = (ballY - p1Y) / PADDLE_H;
+        ballVy = (hitPos - 0.5) * ballSpeed * 1.2;
+        ballSpeed = Math.min(ballSpeed + 0.4, 14);
+        const spd = Math.sqrt(ballVx * ballVx + ballVy * ballVy);
+        ballVx = (ballVx / spd) * ballSpeed;
+        ballVy = (ballVy / spd) * ballSpeed;
+        ballX = p1Right + BALL_R;
+        rallyCount++;
+        try { playBounce(); } catch (_) {}
+      }
+      if (ballVx > 0 && ballX + BALL_R >= p2Left && ballX - BALL_R <= p2Right &&
+          ballY + BALL_R >= p2Y && ballY - BALL_R <= p2Y + PADDLE_H) {
+        ballVx = -ballVx;
+        const hitPos = (ballY - p2Y) / PADDLE_H;
+        ballVy = (hitPos - 0.5) * ballSpeed * 1.2;
+        ballSpeed = Math.min(ballSpeed + 0.4, 14);
+        const spd = Math.sqrt(ballVx * ballVx + ballVy * ballVy);
+        ballVx = (ballVx / spd) * ballSpeed;
+        ballVy = (ballVy / spd) * ballSpeed;
+        ballX = p2Left - BALL_R;
+        rallyCount++;
+        try { playBounce(); } catch (_) {}
+      }
+
+      // Walls
+      if (ballY - BALL_R <= 0 || ballY + BALL_R >= canvas.height) {
+        ballVy = -ballVy;
+        try { playBounce(); } catch (_) {}
+      }
+
+      // Score
+      if (ballX - BALL_R <= 0) {
+        score2++;
+        try { playScoreUp(); } catch (_) {}
+        updateScoreDisplay();
+        if (score2 >= WIN_SCORE) endGame(2);
+        else {
+          resetBall(1);
+          state = 'serving';
+          overlay.classList.remove('hidden');
+          overlayText.textContent = 'Press to serve';
+          overlaySubtext.textContent = '';
+          overlay.style.pointerEvents = 'auto';
+        }
+      }
+      if (ballX + BALL_R >= canvas.width) {
+        score1++;
+        try { playScoreUp(); } catch (_) {}
+        updateScoreDisplay();
+        if (score1 >= WIN_SCORE) endGame(1);
+        else {
+          resetBall(2);
+          state = 'serving';
+          overlay.classList.remove('hidden');
+          overlayText.textContent = 'Press to serve';
+          overlaySubtext.textContent = '';
+          overlay.style.pointerEvents = 'auto';
+        }
+      }
+    }
+
+    canvas.addEventListener('click', () => {
+      if (state === 'serving') serve();
+    });
+
+    function gameLoop() {
+      update();
+
+      // Draw
+      ctx.fillStyle = '#1a1a1a';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Trail
+      trail.forEach((t, i) => {
+        const a = trail.length ? (i / trail.length) * 0.5 : 0;
+        ctx.beginPath();
+        ctx.arc(t.x, t.y, BALL_R * 0.8, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${a})`;
+        ctx.fill();
+      });
+
+      // Center line
+      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.setLineDash([10, 10]);
+      ctx.beginPath();
+      ctx.moveTo(canvas.width / 2, 0);
+      ctx.lineTo(canvas.width / 2, canvas.height);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Paddles
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(20, p1Y, PADDLE_W, PADDLE_H);
+      ctx.fillRect(canvas.width - 20 - PADDLE_W, p2Y, PADDLE_W, PADDLE_H);
+
+      // Ball
+      ctx.beginPath();
+      ctx.arc(ballX, ballY, BALL_R, 0, Math.PI * 2);
+      ctx.fillStyle = '#fff';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+      ctx.stroke();
+
+      animId = requestAnimationFrame(gameLoop);
+    }
+
+    startBtn.addEventListener('click', () => {
+      startGame();
+      gameLoop();
+    });
+
+    restartBtn.addEventListener('click', () => {
+      if (animId) cancelAnimationFrame(animId);
+      startGame();
+      gameLoop();
+      try { playClick(); } catch (_) {}
+    });
+
+    soundToggle.addEventListener('click', () => {
+      try {
+        muteAll();
+        soundToggle.textContent = document.body.dataset.muted === 'true' ? '🔇 Sound' : '🔊 Sound';
+      } catch (_) {}
+    });
+
+    overlay.classList.add('hidden');
+    overlay.style.pointerEvents = 'none';
+  </script>
+</body>
+</html>

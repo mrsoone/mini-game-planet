@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fruit Slicer - Slice Fruits, Avoid Bombs | Mini Game Planet</title>
+  <meta name="description" content="Slice flying fruits in this addictive Fruit Ninja-style arcade game. Swipe to cut apples, oranges, watermelons and more. Avoid bombs! Combo bonuses, 3 lives, and endless fun.">
+  <link rel="canonical" href="https://minigameplanet.com/games/fruit-slicer.html">
+  <!-- Open Graph -->
+  <meta property="og:title" content="Fruit Slicer - Slice Fruits, Avoid Bombs">
+  <meta property="og:description" content="Slice flying fruits in this addictive Fruit Ninja-style arcade game. Swipe to cut, avoid bombs, rack up combos!">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/fruit-slicer.html">
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Fruit Slicer",
+    "description": "Slice flying fruits in this addictive Fruit Ninja-style arcade game. Swipe to cut fruits, avoid bombs, earn combo bonuses.",
+    "applicationCategory": "Game",
+    "operatingSystem": "Any",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+  <!-- AdSense (commented) -->
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXX" crossorigin="anonymous"></script> -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root { --bg: #F5F5F4; --card: #FFFFFF; }
+    body { font-family: 'Space Grotesk', sans-serif; background: var(--bg); }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    #game-canvas { display: block; touch-action: none; cursor: crosshair; }
+    .blade-trail { position: absolute; pointer-events: none; }
+  </style>
+</head>
+<body class="min-h-screen text-gray-800 antialiased">
+  <div id="consent-banner" class="hidden fixed bottom-0 left-0 right-0 z-50 p-4 bg-gray-900 text-white text-sm">
+    <p class="mb-2">We use cookies for analytics (GA4). By continuing you consent.</p>
+    <button id="consent-accept" class="px-4 py-2 bg-green-600 rounded hover:bg-green-700">Accept</button>
+    <button id="consent-decline" class="ml-2 px-4 py-2 bg-gray-600 rounded hover:bg-gray-700">Decline</button>
+  </div>
+
+  <nav id="nav-container" class="bg-white shadow-sm border-b border-gray-200">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="font-semibold text-lg">Mini Game Planet</a>
+      <div class="flex items-center gap-4">
+        <button id="sound-toggle" class="text-sm px-3 py-1 rounded border border-gray-300 hover:bg-gray-50" aria-label="Toggle sound">🔊 Sound</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-4xl mx-auto px-4 py-6">
+    <article class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden mb-6">
+      <div class="p-6 md:p-8">
+        <h1 class="text-2xl md:text-3xl font-bold mb-2">Fruit Slicer</h1>
+        <p class="text-gray-600 mb-4">Slice flying fruits, avoid bombs, and rack up combos in this fast-paced arcade game!</p>
+
+        <div class="flex flex-wrap gap-4 items-center mb-4">
+          <div class="flex items-center gap-2">
+            <span class="font-mono text-lg font-semibold">Score:</span>
+            <span id="score-display" class="font-mono text-xl">0</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-sm text-gray-600">Lives:</span>
+            <span id="lives-display">❤️❤️❤️</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-sm text-gray-600">Combo:</span>
+            <span id="combo-display" class="font-mono">0</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-sm text-gray-600">Best:</span>
+            <span id="best-display" class="font-mono">0</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-sm text-gray-600">Streak:</span>
+            <span id="streak-display" class="font-mono">0</span>
+          </div>
+        </div>
+
+        <div class="relative bg-gray-100 rounded-lg overflow-hidden mb-6" style="min-height: 400px;">
+          <canvas id="game-canvas" width="600" height="400" class="w-full max-w-full"></canvas>
+          <div id="start-overlay" class="absolute inset-0 flex flex-col items-center justify-center bg-black/40">
+            <h2 class="text-2xl font-bold text-white mb-2">Fruit Slicer</h2>
+            <p class="text-white/90 mb-4 text-center px-4">Swipe or drag to slice fruits. Avoid bombs!</p>
+            <button id="start-btn" class="px-8 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 shadow-lg">Play</button>
+          </div>
+          <div id="game-over-overlay" class="hidden absolute inset-0 flex flex-col items-center justify-center bg-black/60">
+            <h2 class="text-2xl font-bold text-white mb-2">Game Over</h2>
+            <p id="final-score" class="text-white/90 mb-4">Score: 0</p>
+            <button id="restart-btn" class="px-8 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 shadow-lg">Play Again</button>
+          </div>
+        </div>
+
+        <div id="session-stats" class="text-sm text-gray-500 font-mono mb-6 p-3 bg-gray-50 rounded">
+          Session: <span id="games-played">0</span> games | Best: <span id="session-best">0</span> | Streak: <span id="session-streak">0</span>
+        </div>
+
+        <div class="prose prose-gray max-w-none">
+          <h2>How to Play Fruit Slicer</h2>
+          <p>Fruit Slicer is an addictive arcade game inspired by the classic fruit-slicing genre. Colorful fruits launch upward from the bottom of the screen, and your job is to slice them before they fall off the top. Use your mouse or finger to swipe across fruits—each successful slice adds to your score. But beware: bombs occasionally appear among the fruit. Slice a bomb and it's game over!</p>
+
+          <h3>Game Mechanics</h3>
+          <p>Fruits spawn at the bottom and arc upward. You have three lives—lose one each time a fruit escapes off the top of the screen unsliced. Slice multiple fruits in quick succession to build combos and earn bonus points. The more fruits you slice in one swipe, the higher your combo multiplier. Your personal best score is saved for the session, and you can track your streak of consecutive games.</p>
+
+          <h3>Fruits and Bombs</h3>
+          <p>The game features five fruit types: apple, orange, watermelon, banana, and pear. Each appears as a colored circle with an emoji. Bombs look different—slice them and the game ends immediately. Stay alert and only slice what you're sure is fruit!</p>
+
+          <h3>Tips for High Scores</h3>
+          <p>Build combos by slicing multiple fruits in a single swipe. Plan your cuts to hit several fruits at once. Watch the trajectory of fruits and time your swipes. Avoid rushing—accuracy matters more than speed when bombs are on screen. Use the visible blade trail to aim your slices precisely.</p>
+
+          <h3>Controls</h3>
+          <p>On desktop, click and drag across the screen to slice. On mobile, use touch and swipe. A visible trail shows your blade path. The game runs smoothly on both desktop and mobile browsers.</p>
+        </div>
+      </div>
+    </article>
+
+    <section id="related-games" class="mb-8">
+      <h2 class="text-xl font-semibold mb-4">Related Games</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <a href="/games/snake.html" class="block p-4 bg-white rounded-lg shadow border border-gray-200 hover:border-green-500 transition">Snake</a>
+        <a href="/games/breakout.html" class="block p-4 bg-white rounded-lg shadow border border-gray-200 hover:border-green-500 transition">Breakout</a>
+        <a href="/games/tetris.html" class="block p-4 bg-white rounded-lg shadow border border-gray-200 hover:border-green-500 transition">Tetris</a>
+        <a href="/games/flappy.html" class="block p-4 bg-white rounded-lg shadow border border-gray-200 hover:border-green-500 transition">Flappy Bird</a>
+      </div>
+    </section>
+  </main>
+
+  <footer id="footer-container" class="border-t border-gray-200 py-6 mt-8">
+    <div class="max-w-4xl mx-auto px-4 text-center text-sm text-gray-500">
+      <p>© Mini Game Planet. Free online games.</p>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playCollect, playExplosion } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('fruit-slicer');
+    initConsent();
+    trackGameView('fruit-slicer', 'Arcade');
+
+    const canvas = document.getElementById('game-canvas');
+    const ctx = canvas.getContext('2d');
+    const scoreEl = document.getElementById('score-display');
+    const livesEl = document.getElementById('lives-display');
+    const comboEl = document.getElementById('combo-display');
+    const bestEl = document.getElementById('best-display');
+    const streakEl = document.getElementById('streak-display');
+    const startOverlay = document.getElementById('start-overlay');
+    const gameOverOverlay = document.getElementById('game-over-overlay');
+    const finalScoreEl = document.getElementById('final-score');
+    const startBtn = document.getElementById('start-btn');
+    const restartBtn = document.getElementById('restart-btn');
+    const gamesPlayedEl = document.getElementById('games-played');
+    const sessionBestEl = document.getElementById('session-best');
+    const sessionStreakEl = document.getElementById('session-streak');
+    const soundToggle = document.getElementById('sound-toggle');
+
+    function secureRandom() {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] / (0xFFFFFFFF + 1);
+    }
+
+    const FRUITS = [
+      { emoji: '🍎', color: '#E53935', name: 'apple' },
+      { emoji: '🍊', color: '#FB8C00', name: 'orange' },
+      { emoji: '🍉', color: '#43A047', name: 'watermelon' },
+      { emoji: '🍌', color: '#FDD835', name: 'banana' },
+      { emoji: '🍐', color: '#7CB342', name: 'pear' }
+    ];
+    const BOMB = { emoji: '💣', color: '#424242', name: 'bomb' };
+
+    let gameState = 'idle';
+    let score = 0, lives = 3, combo = 0, best = 0;
+    let sessionGames = 0, sessionBest = 0, sessionStreak = 0;
+    let bestAtStart = 0;
+    let lastComboTime = 0;
+    const COMBO_TIMEOUT = 800;
+    let spawnTimer = 0;
+    const SPAWN_INTERVAL = 60;
+    let bladeTrail = [];
+    let objects = [];
+    let animId = null;
+
+    function getBest() { return parseInt(localStorage.getItem('fruit-slicer-best') || '0', 10); }
+    function setBest(v) { localStorage.setItem('fruit-slicer-best', String(v)); }
+
+    function updateUI() {
+      scoreEl.textContent = score;
+      livesEl.textContent = '❤️'.repeat(lives) + '🖤'.repeat(3 - lives);
+      comboEl.textContent = combo;
+      bestEl.textContent = best;
+      streakEl.textContent = sessionStreak;
+      gamesPlayedEl.textContent = sessionGames;
+      sessionBestEl.textContent = sessionBest;
+      sessionStreakEl.textContent = sessionStreak;
+    }
+
+    function lineIntersectsCircle(x1, y1, x2, y2, cx, cy, r) {
+      const dx = x2 - x1, dy = y2 - y1;
+      const len = Math.hypot(dx, dy);
+      if (len < 1e-6) return Math.hypot(cx - x1, cy - y1) <= r;
+      const u = ((cx - x1) * dx + (cy - y1) * dy) / (len * len);
+      const u2 = Math.max(0, Math.min(1, u));
+      const px = x1 + u2 * dx, py = y1 + u2 * dy;
+      return Math.hypot(cx - px, cy - py) <= r;
+    }
+
+    function spawnObject() {
+      const isBomb = secureRandom() < 0.12;
+      const item = isBomb ? BOMB : FRUITS[Math.floor(secureRandom() * FRUITS.length)];
+      const x = 60 + secureRandom() * (canvas.width - 120);
+      const vy = -8 - secureRandom() * 6;
+      const vx = (secureRandom() - 0.5) * 2;
+      objects.push({
+        x, y: canvas.height + 30,
+        vx, vy,
+        r: 28,
+        emoji: item.emoji,
+        color: item.color,
+        isBomb,
+        sliced: false,
+        halves: []
+      });
+    }
+
+    function sliceObject(obj, nx, ny) {
+      if (obj.sliced) return;
+      obj.sliced = true;
+      if (obj.isBomb) {
+        playExplosion();
+        gameState = 'over';
+        trackGameOver('fruit-slicer', score);
+        showGameOver();
+        return;
+      }
+      const now = Date.now();
+      if (now - lastComboTime > COMBO_TIMEOUT) combo = 0;
+      lastComboTime = now;
+      combo++;
+      const pts = 10 + (combo - 1) * 5;
+      score += pts;
+      if (score > best) { best = score; setBest(best); }
+      if (score > sessionBest) sessionBest = score;
+      playScoreUp();
+      if (combo >= 3) playPerfect();
+      obj.halves = [
+        { x: obj.x, y: obj.y, vx: -4, vy: -2, rot: 0, drot: 0.15 },
+        { x: obj.x, y: obj.y, vx: 4, vy: -2, rot: 0, drot: -0.15 }
+      ];
+    }
+
+    function handleSlice(x1, y1, x2, y2) {
+      for (const obj of objects) {
+        if (lineIntersectsCircle(x1, y1, x2, y2, obj.x, obj.y, obj.r)) {
+          sliceObject(obj, (x1 + x2) / 2, (y1 + y2) / 2);
+        }
+      }
+    }
+
+    function gameLoop() {
+      if (gameState !== 'playing') return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const dt = 1/60;
+      spawnTimer++;
+      if (spawnTimer >= SPAWN_INTERVAL) {
+        spawnTimer = 0;
+        spawnObject();
+      }
+
+      for (let i = objects.length - 1; i >= 0; i--) {
+        const o = objects[i];
+        if (o.sliced) {
+          for (const h of o.halves) {
+            h.x += h.vx; h.y += h.vy; h.vy += 0.4; h.rot += h.drot;
+            ctx.save();
+            ctx.translate(h.x, h.y);
+            ctx.rotate(h.rot);
+            ctx.font = '24px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(o.emoji, 0, 0);
+            ctx.restore();
+          }
+          if (o.halves[0].y > canvas.height + 50) objects.splice(i, 1);
+          continue;
+        }
+        o.x += o.vx; o.y += o.vy; o.vy += 0.25;
+        if (o.y < -50) {
+          objects.splice(i, 1);
+          lives--;
+          if (lives <= 0) {
+            gameState = 'over';
+            playGameOver();
+            trackGameOver('fruit-slicer', score);
+            showGameOver();
+          } else {
+            playError();
+          }
+          continue;
+        }
+        ctx.beginPath();
+        ctx.arc(o.x, o.y, o.r, 0, Math.PI * 2);
+        ctx.fillStyle = o.color;
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(0,0,0,0.2)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.font = '28px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(o.emoji, o.x, o.y);
+      }
+
+      if (bladeTrail.length >= 2) {
+        ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+        ctx.lineWidth = 4;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.beginPath();
+        ctx.moveTo(bladeTrail[0].x, bladeTrail[0].y);
+        for (let i = 1; i < bladeTrail.length; i++) ctx.lineTo(bladeTrail[i].x, bladeTrail[i].y);
+        ctx.stroke();
+        ctx.strokeStyle = 'rgba(100,200,100,0.6)';
+        ctx.lineWidth = 8;
+        ctx.stroke();
+      }
+      if (bladeTrail.length > 0) bladeTrail = bladeTrail.slice(-15);
+
+      updateUI();
+      if (gameState === 'playing') animId = requestAnimationFrame(gameLoop);
+    }
+
+    function getCanvasCoords(e) {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width, scaleY = canvas.height / rect.height;
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
+    }
+
+    function onPointerDown(e) {
+      if (gameState !== 'playing') return;
+      e.preventDefault();
+      const { x, y } = getCanvasCoords(e);
+      bladeTrail = [{ x, y }];
+    }
+
+    function onPointerMove(e) {
+      if (gameState !== 'playing') return;
+      e.preventDefault();
+      const { x, y } = getCanvasCoords(e);
+      if (bladeTrail.length > 0) {
+        const last = bladeTrail[bladeTrail.length - 1];
+        if (Math.hypot(x - last.x, y - last.y) > 8) {
+          bladeTrail.push({ x, y });
+          if (bladeTrail.length >= 2) handleSlice(last.x, last.y, x, y);
+        }
+      }
+    }
+
+    function onPointerUp(e) {
+      if (gameState !== 'playing') return;
+      e.preventDefault();
+      bladeTrail = [];
+    }
+
+    function startGame() {
+      playClick();
+      trackGameStart('fruit-slicer');
+      gameState = 'playing';
+      score = 0; lives = 3; combo = 0;
+      best = getBest();
+      bestAtStart = best;
+      sessionGames++;
+      objects = [];
+      spawnTimer = 0;
+      lastComboTime = 0;
+      startOverlay.classList.add('hidden');
+      gameOverOverlay.classList.add('hidden');
+      updateUI();
+      gameLoop();
+    }
+
+    function showGameOver() {
+      gameOverOverlay.classList.remove('hidden');
+      finalScoreEl.textContent = `Score: ${score} | Best: ${best}`;
+      if (score > bestAtStart && score > 0) sessionStreak++;
+      else if (sessionStreak > 0 && score <= bestAtStart) sessionStreak = 0;
+      sessionStreakEl.textContent = sessionStreak;
+    }
+
+    startBtn.addEventListener('click', startGame);
+    restartBtn.addEventListener('click', () => {
+      playClick();
+      gameOverOverlay.classList.add('hidden');
+      startGame();
+    });
+
+    canvas.addEventListener('mousedown', onPointerDown);
+    canvas.addEventListener('mousemove', onPointerMove);
+    canvas.addEventListener('mouseup', onPointerUp);
+    canvas.addEventListener('mouseleave', onPointerUp);
+    canvas.addEventListener('touchstart', onPointerDown, { passive: false });
+    canvas.addEventListener('touchmove', onPointerMove, { passive: false });
+    canvas.addEventListener('touchend', onPointerUp, { passive: false });
+
+    soundToggle.addEventListener('click', () => {
+      const muted = document.body.dataset.muted === '1';
+      if (muted) { initAudio(); soundToggle.textContent = '🔊 Sound'; document.body.dataset.muted = '0'; }
+      else { muteAll(); soundToggle.textContent = '🔇 Muted'; document.body.dataset.muted = '1'; }
+    });
+
+    updateUI();
+  </script>
+</body>
+</html>

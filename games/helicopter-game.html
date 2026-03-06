@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Helicopter Game - Classic Arcade | Mini Game Planet</title>
+  <meta name="description" content="Play the classic Helicopter arcade game online. Navigate through cave walls, avoid obstacles, and beat your high score. Free to play!">
+  <link rel="canonical" href="https://minigameplanet.com/games/helicopter-game.html">
+  <!-- Open Graph -->
+  <meta property="og:title" content="Helicopter Game - Classic Arcade | Mini Game Planet">
+  <meta property="og:description" content="Play the classic Helicopter arcade game. Hold to rise, release to fall. How far can you fly?">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/helicopter-game.html">
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Helicopter Game",
+    "description": "Classic arcade helicopter game. Navigate through cave walls and avoid obstacles.",
+    "applicationCategory": "Game",
+    "operatingSystem": "Any",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+  <!-- AdSense (commented) -->
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXX" crossorigin="anonymous"></script> -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { fontFamily: { sans: ['Space Grotesk', 'sans-serif'], mono: ['DM Mono', 'monospace'] } } } };
+  </script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    #gameCanvas { display: block; margin: 0 auto; background: #1a1a2e; border-radius: 8px; }
+  </style>
+</head>
+<body class="min-h-screen text-gray-800">
+  <nav class="nav-container bg-white/80 backdrop-blur border-b border-gray-200 sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="font-semibold text-lg">Mini Game Planet</a>
+      <div class="flex items-center gap-3">
+        <button id="soundToggle" class="px-3 py-1.5 rounded-lg border border-gray-300 text-sm hover:bg-gray-50" aria-label="Toggle sound">🔊 Sound</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 md:p-8">
+      <h1 class="text-2xl md:text-3xl font-bold mb-2">Helicopter Game</h1>
+      <p class="text-gray-600 mb-6">Hold mouse, touch, or space to rise. Release to fall. Avoid the cave walls!</p>
+
+      <div class="flex flex-wrap gap-4 items-center justify-between mb-4">
+        <div class="flex gap-4 font-mono text-sm">
+          <span>Distance: <strong id="score">0</strong></span>
+          <span>Best: <strong id="best">0</strong></span>
+          <span>Streak: <strong id="streak">0</strong></span>
+        </div>
+        <button id="startBtn" class="px-4 py-2 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 transition">Start Game</button>
+      </div>
+
+      <div class="relative inline-block mx-auto">
+        <canvas id="gameCanvas" width="600" height="400" class="cursor-pointer touch-none"></canvas>
+        <div id="overlay" class="absolute inset-0 flex flex-col items-center justify-center bg-black/50 rounded-lg pointer-events-none hidden">
+          <p id="overlayText" class="text-white text-xl font-bold mb-2">Click to Start</p>
+          <p class="text-white/80 text-sm">Hold to rise • Release to fall</p>
+        </div>
+      </div>
+
+      <div class="mt-6 prose prose-gray max-w-none">
+        <h2>How to Play Helicopter Game</h2>
+        <p>The Helicopter game is a timeless arcade classic that tests your reflexes and timing. Your helicopter starts on the left side of the screen, and cave walls scroll toward you from the right. Your mission is simple: stay alive as long as possible by flying through the gaps in the walls.</p>
+        <p><strong>Controls are intuitive:</strong> hold down the mouse button, touch the screen, or press the spacebar to make your helicopter rise. Release to let gravity pull it down. The key to success is finding the right rhythm—don't hold too long or you'll hit the ceiling, and don't release too long or you'll crash into the floor.</p>
+        <p>As you progress, the game gets harder. The scroll speed gradually increases, demanding faster reactions. The cave walls are generated with smooth random variation using secure random number generation, so no two runs are exactly alike. Each wall presents a new challenge, and your score is measured by the distance you've traveled.</p>
+        <p>This browser version brings the classic experience to life with smooth canvas rendering and responsive controls. Whether you're on desktop or mobile, you can enjoy the same addictive gameplay. Track your personal best, build your streak, and see how far you can go. The game features zero-friction restart—just tap or click to try again immediately after a crash.</p>
+        <p>Helicopter games have been popular since the early 2000s, with many iterations appearing on flash game sites and later as mobile apps. This implementation stays true to the original formula while adding modern touches like session statistics and persistent high scores. Challenge yourself to beat your record, or compete with friends to see who can reach the highest distance.</p>
+        <p>Tips for high scores: practice short, controlled taps rather than long holds. Anticipate the next gap by watching the wall approach. Stay centered in the current gap before worrying about the next one. As speed increases, your reaction time must improve—stay calm and avoid panic inputs. Many players find that a steady, rhythmic tapping pattern works better than erratic movements.</p>
+        <p>No download or installation is required. The game runs entirely in your browser using HTML5 canvas and works offline once loaded. Your best distance is saved locally, so you can always try to beat your personal record. Share your score with friends and see who can survive the longest in this addictive one-button arcade experience.</p>
+      </div>
+
+      <div class="related-games mt-10 pt-8 border-t border-gray-200">
+        <h3 class="font-semibold mb-3">Related Games</h3>
+        <div class="flex flex-wrap gap-2">
+          <a href="/games/flappy-bird.html" class="px-3 py-1.5 bg-gray-100 rounded-lg text-sm hover:bg-gray-200">Flappy Bird</a>
+          <a href="/games/dino-run.html" class="px-3 py-1.5 bg-gray-100 rounded-lg text-sm hover:bg-gray-200">Dino Run</a>
+          <a href="/games/snake.html" class="px-3 py-1.5 bg-gray-100 rounded-lg text-sm hover:bg-gray-200">Snake</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer-container mt-12 py-6 text-center text-sm text-gray-500">
+    <p>© Mini Game Planet. Free arcade games to play in your browser.</p>
+  </footer>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('helicopter-game');
+    initConsent();
+    trackGameView('helicopter-game', 'Arcade');
+
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const scoreEl = document.getElementById('score');
+    const bestEl = document.getElementById('best');
+    const streakEl = document.getElementById('streak');
+    const startBtn = document.getElementById('startBtn');
+    const overlay = document.getElementById('overlay');
+    const overlayText = document.getElementById('overlayText');
+    const soundToggle = document.getElementById('soundToggle');
+
+    const W = canvas.width;
+    const H = canvas.height;
+    const HELI_X = 80;
+    const HELI_W = 40;
+    const HELI_H = 24;
+    const WALL_W = 50;
+    const GAP_MIN = 100;
+    const GAP_MAX = 180;
+    const BASE_SPEED = 3;
+    const MAX_SPEED = 8;
+    const GRAVITY = 0.35;
+    const LIFT = -0.6;
+
+    let heliY, heliVy, score, best, streak, walls, gameOver, playing, animId;
+    let speed = BASE_SPEED;
+    let wallSpawnTimer = 0;
+    let isHolding = false;
+
+    const STORAGE_KEY = 'helicopter-best';
+    const STREAK_KEY = 'helicopter-streak';
+
+    function randBuf(n) {
+      const buf = new Uint32Array(n);
+      crypto.getRandomValues(buf);
+      return buf;
+    }
+
+    function smoothRandom(seed, min, max) {
+      const t = ((Math.sin(seed * 12.9898) * 43758.5453) % 1 + 1) % 1;
+      return min + t * (max - min);
+    }
+
+    function init() {
+      heliY = H / 2 - HELI_H / 2;
+      heliVy = 0;
+      score = 0;
+      walls = [];
+      wallSpawnTimer = 0;
+      speed = BASE_SPEED;
+      gameOver = false;
+      playing = true;
+      best = parseInt(localStorage.getItem(STORAGE_KEY) || '0', 10);
+      streak = parseInt(sessionStorage.getItem(STREAK_KEY) || '0', 10);
+      bestEl.textContent = best;
+      streakEl.textContent = streak;
+      scoreEl.textContent = '0';
+      overlay.classList.add('hidden');
+      overlay.classList.remove('flex');
+      overlayText.textContent = '';
+      trackGameStart('helicopter-game');
+    }
+
+    function spawnWall() {
+      const buf = randBuf(2);
+      const gap = GAP_MIN + smoothRandom(buf[0] / 0xFFFFFFFF, 0, 1) * (GAP_MAX - GAP_MIN);
+      const gapY = smoothRandom(buf[1] / 0xFFFFFFFF, 0, 1) * (H - gap - 80) + 40;
+      walls.push({
+        x: W,
+        top: 0,
+        topH: gapY,
+        bottom: gapY + gap,
+        bottomH: H - gapY - gap,
+        scored: false
+      });
+    }
+
+    function collides(w) {
+      const hx = HELI_X;
+      const hy = heliY;
+      const hw = HELI_W;
+      const hh = HELI_H;
+      if (hy < 0 || hy + hh > H) return true;
+      const wx = w.x;
+      if (hx + hw < wx || hx > wx + WALL_W) return false;
+      if (hy < w.topH) return true;
+      if (hy + hh > w.bottom) return true;
+      return false;
+    }
+
+    function gameLoop() {
+      if (!playing) return;
+
+      ctx.fillStyle = '#1a1a2e';
+      ctx.fillRect(0, 0, W, H);
+
+      if (gameOver) {
+        ctx.fillStyle = 'rgba(0,0,0,0.6)';
+        ctx.fillRect(0, 0, W, H);
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 28px "Space Grotesk"';
+        ctx.textAlign = 'center';
+        ctx.fillText('Game Over', W / 2, H / 2 - 20);
+        ctx.font = '16px "Space Grotesk"';
+        ctx.fillText(`Distance: ${score}`, W / 2, H / 2 + 10);
+        ctx.fillText('Click or tap to restart', W / 2, H / 2 + 40);
+        animId = requestAnimationFrame(gameLoop);
+        return;
+      }
+
+      if (isHolding) heliVy += LIFT;
+      heliVy += GRAVITY;
+      heliY += heliVy;
+
+      wallSpawnTimer += speed;
+      if (wallSpawnTimer > 120) {
+        wallSpawnTimer = 0;
+        spawnWall();
+      }
+
+      for (let i = walls.length - 1; i >= 0; i--) {
+        const w = walls[i];
+        w.x -= speed;
+        if (w.x + WALL_W < 0) {
+          walls.splice(i, 1);
+          continue;
+        }
+        if (!w.scored && w.x + WALL_W < HELI_X) {
+          w.scored = true;
+          score++;
+          playScoreUp();
+          if (score % 100 === 0 && score > 0) playLevelUp();
+        }
+        if (collides(w)) {
+          gameOver = true;
+          playGameOver();
+          trackGameOver('helicopter-game', score);
+          if (score > best) {
+            best = score;
+            localStorage.setItem(STORAGE_KEY, String(best));
+            bestEl.textContent = best;
+            playPerfect();
+          }
+        }
+        ctx.fillStyle = '#2d5a27';
+        ctx.fillRect(w.x, w.top, WALL_W, w.topH);
+        ctx.fillRect(w.x, w.bottom, WALL_W, w.bottomH);
+        ctx.strokeStyle = '#1a3d17';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(w.x, w.top, WALL_W, w.topH);
+        ctx.strokeRect(w.x, w.bottom, WALL_W, w.bottomH);
+      }
+
+      speed = Math.min(BASE_SPEED + score * 0.02, MAX_SPEED);
+
+      ctx.fillStyle = '#4ade80';
+      ctx.beginPath();
+      ctx.moveTo(HELI_X + HELI_W / 2, heliY);
+      ctx.lineTo(HELI_X + HELI_W, heliY + HELI_H / 2);
+      ctx.lineTo(HELI_X + HELI_W / 2, heliY + HELI_H);
+      ctx.lineTo(HELI_X, heliY + HELI_H / 2);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = '#22c55e';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      scoreEl.textContent = score;
+
+      animId = requestAnimationFrame(gameLoop);
+    }
+
+    function startGame() {
+      init();
+      playClick();
+      gameLoop();
+    }
+
+    function restart() {
+      streak = (parseInt(sessionStorage.getItem(STREAK_KEY) || '0', 10)) + 1;
+      sessionStorage.setItem(STREAK_KEY, String(streak));
+      streakEl.textContent = streak;
+      startGame();
+    }
+
+    function setHold(v) {
+      isHolding = v;
+    }
+
+    startBtn.addEventListener('click', () => {
+      if (!playing || gameOver) restart();
+      else startGame();
+    });
+
+    canvas.addEventListener('mousedown', (e) => { e.preventDefault(); setHold(true); });
+    canvas.addEventListener('mouseup', () => setHold(false));
+    canvas.addEventListener('mouseleave', () => setHold(false));
+    canvas.addEventListener('click', () => { if (gameOver) restart(); });
+
+    canvas.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      if (gameOver) { restart(); return; }
+      setHold(true);
+    }, { passive: false });
+    canvas.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      setHold(false);
+    }, { passive: false });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        setHold(true);
+      }
+    });
+    document.addEventListener('keyup', (e) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        setHold(false);
+      }
+    });
+
+    soundToggle.addEventListener('click', () => {
+      muteAll();
+      soundToggle.textContent = document.body.classList.contains('muted') ? '🔇 Muted' : '🔊 Sound';
+    });
+
+    overlay.classList.remove('hidden');
+    overlay.classList.add('flex');
+    overlayText.textContent = 'Click to Start';
+    overlay.style.pointerEvents = 'auto';
+    overlay.addEventListener('click', () => {
+      overlay.style.pointerEvents = 'none';
+      if (!playing || gameOver) restart();
+      else startGame();
+    });
+
+    initAudio();
+  </script>
+</body>
+</html>
