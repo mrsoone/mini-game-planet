@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /data/
+Disallow: /js/
+Disallow: /reference/
+Disallow: /admin
+Disallow: /admin.html
+Sitemap: https://minigameplanet.com/sitemap.xml
