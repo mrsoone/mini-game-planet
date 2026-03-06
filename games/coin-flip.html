@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coin Flip - Free Online Casino Game | Mini Game Planet</title>
+  <meta name="description" content="Flip a virtual coin with realistic 3D animation. Choose heads or tails, track your stats, streaks, and percentages. Free coin flip game with crypto-secure randomness.">
+  <link rel="canonical" href="https://minigameplanet.com/games/coin-flip.html">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="Coin Flip - Free Online Casino Game">
+  <meta property="og:description" content="Flip a virtual coin with realistic 3D animation. Choose heads or tails, track stats and streaks.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/coin-flip.html">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- GA4 Consent defaults (commented - configure as needed) -->
+  <!-- window.dataLayer = window.dataLayer || []; gtag('config', 'G-XXXXXXXX'); -->
+  
+  <!-- AdSense (commented - add your publisher ID) -->
+  <!-- script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXX" crossorigin="anonymous"></script -->
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background-color: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    
+    /* 3D Coin */
+    .coin-scene {
+      perspective: 1000px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 200px;
+    }
+    .coin {
+      width: 140px;
+      height: 140px;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.01s linear;
+    }
+    .coin.flipping {
+      animation: flip-coin 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    @keyframes flip-coin {
+      0% { transform: rotateY(0deg) rotateX(0deg); }
+      50% { transform: rotateY(900deg) rotateX(10deg); }
+      100% { transform: rotateY(var(--final-rotation, 1800deg)) rotateX(0deg); }
+    }
+    .coin-face {
+      position: absolute;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      backface-visibility: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      font-weight: 700;
+      font-family: 'DM Mono', monospace;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
+    }
+    .coin-face.heads {
+      background: linear-gradient(145deg, #fef3c7, #fde68a);
+      color: #92400e;
+      border: 3px solid #f59e0b;
+      transform: rotateY(0deg);
+    }
+    .coin-face.tails {
+      background: linear-gradient(145deg, #e5e7eb, #d1d5db);
+      color: #374151;
+      border: 3px solid #9ca3af;
+      transform: rotateY(180deg);
+    }
+    .coin-face span { text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+  </style>
+  
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Coin Flip",
+    "description": "Free online coin flip game with 3D animation. Choose heads or tails and track your statistics.",
+    "url": "https://minigameplanet.com/games/coin-flip.html",
+    "applicationCategory": "Game",
+    "operatingSystem": "Any"
+  }
+  </script>
+</head>
+<body class="min-h-screen text-gray-800">
+  <div id="nav-container" class="bg-white/80 backdrop-blur border-b border-gray-200 sticky top-0 z-50">
+    <nav class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="font-semibold text-lg text-amber-600 hover:text-amber-700">Mini Game Planet</a>
+      <div class="flex items-center gap-4">
+        <button id="sound-toggle" class="text-sm text-gray-600 hover:text-gray-800 flex items-center gap-1" title="Toggle sound">
+          <svg id="sound-on-icon" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.076L4.926 12H2a1 1 0 01-1-1V9a1 1 0 011-1h2.926l3.457-4.924zM14.657 5.343a1 1 0 011.414 0A9 9 0 0117 12a9 9 0 01-.929 4.343 1 1 0 11-1.828-.686A7 7 0 0015 12a7 7 0 00-.586-2.657 1 1 0 010-1.414z"/></svg>
+          <svg id="sound-off-icon" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.076L4.926 12H2a1 1 0 01-1-1V9a1 1 0 011-1h2.926l3.457-4.924a1 1 0 011.617.076zM14.657 5.343a1 1 0 011.414 0A9 9 0 0117 12a9 9 0 01-.929 4.343 1 1 0 11-1.828-.686A7 7 0 0015 12a7 7 0 00-.586-2.657 1 1 0 010-1.414z" clip-rule="evenodd"/><path d="M12.293 7.293a1 1 0 011.414 0L15 8.586l1.293-1.293a1 1 0 111.414 1.414L16.414 10l1.293 1.293a1 1 0 01-1.414 1.414L15 11.414l-1.293 1.293a1 1 0 01-1.414-1.414L13.586 10l-1.293-1.293a1 1 0 010-1.414z"/></svg>
+          <span id="sound-label">Sound On</span>
+        </button>
+      </div>
+    </nav>
+  </div>
+
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    <article class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 mb-8">
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Coin Flip</h1>
+      <p class="text-gray-600 mb-6">A classic 50/50 chance game with realistic 3D flip animation. Choose heads or tails, then flip the coin!</p>
+
+      <!-- Game Area -->
+      <div class="flex flex-col items-center gap-6 mb-8">
+        <div class="coin-scene">
+          <div id="coin" class="coin">
+            <div class="coin-face heads"><span>H</span></div>
+            <div class="coin-face tails"><span>T</span></div>
+          </div>
+        </div>
+
+        <div class="flex gap-4">
+<button id="btn-heads" class="px-6 py-3 rounded-xl font-semibold bg-amber-500 text-white hover:bg-amber-600 transition shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+          Heads
+          </button>
+          <button id="btn-tails" class="px-6 py-3 rounded-xl font-semibold bg-gray-500 text-white hover:bg-gray-600 transition shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+            Tails
+          </button>
+        </div>
+
+        <p id="result-text" class="text-lg font-mono font-medium text-gray-700 min-h-[2rem]"></p>
+
+        <!-- Stats -->
+        <div class="w-full max-w-md grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="bg-gray-50 rounded-xl p-4 text-center">
+            <div class="text-2xl font-mono font-bold text-amber-600" id="stat-total">0</div>
+            <div class="text-sm text-gray-500">Total Flips</div>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-4 text-center">
+            <div class="text-2xl font-mono font-bold text-amber-600" id="stat-heads">0</div>
+            <div class="text-sm text-gray-500">Heads</div>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-4 text-center">
+            <div class="text-2xl font-mono font-bold text-gray-600" id="stat-tails">0</div>
+            <div class="text-sm text-gray-500">Tails</div>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-4 text-center">
+            <div class="text-2xl font-mono font-bold text-indigo-600" id="stat-streak">0</div>
+            <div class="text-sm text-gray-500">Current Streak</div>
+          </div>
+        </div>
+
+        <div class="w-full max-w-md flex flex-col sm:flex-row gap-4 items-center justify-center">
+          <div class="bg-gray-50 rounded-xl px-4 py-2 text-center flex-1">
+            <span class="text-sm text-gray-500">Heads %</span>
+            <span id="stat-heads-pct" class="font-mono font-bold ml-2">0%</span>
+          </div>
+          <div class="bg-gray-50 rounded-xl px-4 py-2 text-center flex-1">
+            <span class="text-sm text-gray-500">Tails %</span>
+            <span id="stat-tails-pct" class="font-mono font-bold ml-2">0%</span>
+          </div>
+          <div class="bg-gray-50 rounded-xl px-4 py-2 text-center flex-1">
+            <span class="text-sm text-gray-500">Longest Streak</span>
+            <span id="stat-longest" class="font-mono font-bold ml-2">0</span>
+          </div>
+        </div>
+
+        <button id="btn-reset" class="text-sm text-gray-500 hover:text-gray-700 underline">Reset Stats</button>
+      </div>
+
+      <!-- SEO Article -->
+      <div class="prose prose-gray max-w-none">
+        <h2 class="text-xl font-bold text-gray-900 mt-8 mb-4">How to Play Coin Flip</h2>
+        <p>Coin Flip is one of the simplest and most universally understood games of chance. Whether you're deciding who goes first, settling a bet, or just passing the time, flipping a coin has been a trusted method for centuries. Our free online coin flip game brings this classic experience to your browser with a stunning 3D animation that mimics the physics of a real coin toss.</p>
+
+        <h2 class="text-xl font-bold text-gray-900 mt-8 mb-4">Fair and Random Results</h2>
+        <p>Unlike traditional coin flips that can be influenced by thumb pressure or surface texture, our game uses <strong>crypto.getRandomValues()</strong> to generate cryptographically secure random numbers. This ensures that every flip is truly random and unpredictable—exactly what you'd expect from a fair 50/50 chance. No algorithms favor heads or tails; the outcome is determined purely by chance.</p>
+
+        <h2 class="text-xl font-bold text-gray-900 mt-8 mb-4">Track Your Statistics</h2>
+        <p>One of the unique features of our coin flip game is the built-in statistics tracker. After each flip, you'll see your total number of flips, how many landed on heads versus tails, and the percentage breakdown. We also track your current streak—how many times in a row you've guessed correctly—and your longest streak ever. These stats persist during your session, so you can see how your luck holds up over dozens or hundreds of flips.</p>
+
+        <h2 class="text-xl font-bold text-gray-900 mt-8 mb-4">Perfect for Decisions and Fun</h2>
+        <p>Need to make a quick decision? Flip the coin and let fate decide. Playing a board game and need to determine the starting player? Our coin flip is instant and fair. Teaching kids about probability? The live statistics make it easy to see how results converge toward 50/50 over time. Or simply enjoy the satisfying 3D flip animation and the thrill of guessing correctly.</p>
+
+        <h2 class="text-xl font-bold text-gray-900 mt-8 mb-4">No Download Required</h2>
+        <p>Our coin flip game runs entirely in your browser. There's no app to install, no account to create, and no fees to pay. Just open the page, choose heads or tails, and flip. The game works on desktop, tablet, and mobile devices, so you can take your virtual coin anywhere. Sound effects add to the experience when enabled, and you can mute them anytime with the sound toggle in the navigation bar.</p>
+
+        <h2 class="text-xl font-bold text-gray-900 mt-8 mb-4">Play Responsibly</h2>
+        <p>While our coin flip game is designed for entertainment, it's important to remember that it simulates a game of chance. There is no strategy that can improve your odds—each flip is independent. Use it for fun, for decisions, or for learning about probability, but always play responsibly. Enjoy the game!</p>
+      </div>
+    </article>
+
+    <div id="related-games" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
+      <h2 class="text-lg font-bold text-gray-900 mb-4">Related Games</h2>
+      <div class="flex flex-wrap gap-3">
+        <a href="/games/dice-roller.html" class="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 text-gray-700 text-sm font-medium">Dice Roller</a>
+        <a href="/games/rock-paper-scissors.html" class="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 text-gray-700 text-sm font-medium">Rock Paper Scissors</a>
+        <a href="/games/slot-machine.html" class="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 text-gray-700 text-sm font-medium">Slot Machine</a>
+      </div>
+    </div>
+  </main>
+
+  <footer id="footer-container" class="border-t border-gray-200 bg-white/50 py-6 mt-8">
+    <div class="max-w-4xl mx-auto px-4 text-center text-sm text-gray-500">
+      <p>&copy; Mini Game Planet. Free games for entertainment only.</p>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playBounce } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart } from '/js/analytics.js';
+
+    initToolPage('coin-flip');
+    initConsent();
+    trackGameView('coin-flip', 'Casino');
+
+    // State
+    let stats = {
+      total: 0,
+      heads: 0,
+      tails: 0,
+      streak: 0,
+      longestStreak: 0,
+      lastResult: null,
+    };
+    let chosenSide = null;
+    let isFlipping = false;
+
+    const coin = document.getElementById('coin');
+    const btnHeads = document.getElementById('btn-heads');
+    const btnTails = document.getElementById('btn-tails');
+    const btnReset = document.getElementById('btn-reset');
+    const resultText = document.getElementById('result-text');
+    const soundToggle = document.getElementById('sound-toggle');
+    const soundOnIcon = document.getElementById('sound-on-icon');
+    const soundOffIcon = document.getElementById('sound-off-icon');
+    const soundLabel = document.getElementById('sound-label');
+
+    function getRandomBoolean() {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] % 2 === 0;
+    }
+
+    function flipCoin() {
+      return getRandomBoolean(); // true = heads, false = tails
+    }
+
+    function updateStats() {
+      document.getElementById('stat-total').textContent = stats.total;
+      document.getElementById('stat-heads').textContent = stats.heads;
+      document.getElementById('stat-tails').textContent = stats.tails;
+      document.getElementById('stat-streak').textContent = stats.streak;
+      document.getElementById('stat-longest').textContent = stats.longestStreak;
+      const headsPct = stats.total > 0 ? Math.round((stats.heads / stats.total) * 100) : 0;
+      const tailsPct = stats.total > 0 ? Math.round((stats.tails / stats.total) * 100) : 0;
+      document.getElementById('stat-heads-pct').textContent = headsPct + '%';
+      document.getElementById('stat-tails-pct').textContent = tailsPct + '%';
+    }
+
+    function setCoinFace(showHeads) {
+      const deg = showHeads ? 0 : 180;
+      coin.style.transform = `rotateY(${deg}deg)`;
+    }
+
+    function doFlip() {
+      if (isFlipping || chosenSide === null) return;
+      isFlipping = true;
+      btnHeads.disabled = true;
+      btnTails.disabled = true;
+      resultText.textContent = '';
+
+      const result = flipCoin();
+      const resultStr = result ? 'heads' : 'tails';
+      const won = (chosenSide === 'heads' && result) || (chosenSide === 'tails' && !result);
+
+      stats.total++;
+      if (result) stats.heads++; else stats.tails++;
+      if (won) {
+        stats.streak++;
+        if (stats.streak > stats.longestStreak) stats.longestStreak = stats.streak;
+      } else {
+        stats.streak = 0;
+      }
+      stats.lastResult = resultStr;
+
+      const extraRotations = 4 + Math.floor(Math.random() * 4);
+      const finalDeg = (result ? 0 : 180) + extraRotations * 360;
+      coin.style.setProperty('--final-rotation', `${finalDeg}deg`);
+      coin.classList.add('flipping');
+
+      playBounce();
+
+      setTimeout(() => {
+        coin.classList.remove('flipping');
+        setCoinFace(result);
+        resultText.textContent = `Landed on ${resultStr.toUpperCase()}! ${won ? 'You won!' : 'You lost.'}`;
+        if (won) playSuccess(); else playError();
+        isFlipping = false;
+        chosenSide = null;
+        btnHeads.disabled = false;
+        btnTails.disabled = false;
+        updateStats();
+      }, 1200);
+    }
+
+    btnHeads.addEventListener('click', () => {
+      if (isFlipping) return;
+      chosenSide = 'heads';
+      playClick();
+      trackGameStart('coin-flip', 'Casino');
+      doFlip();
+    });
+    btnTails.addEventListener('click', () => {
+      if (isFlipping) return;
+      chosenSide = 'tails';
+      playClick();
+      trackGameStart('coin-flip', 'Casino');
+      doFlip();
+    });
+
+    btnReset.addEventListener('click', () => {
+      stats = { total: 0, heads: 0, tails: 0, streak: 0, longestStreak: 0, lastResult: null };
+      setCoinFace(true);
+      resultText.textContent = '';
+      updateStats();
+      playClick();
+    });
+
+    soundToggle.addEventListener('click', () => {
+      muteAll();
+      const muted = document.body.dataset.muted === 'true';
+      soundOnIcon.classList.toggle('hidden', muted);
+      soundOffIcon.classList.toggle('hidden', !muted);
+      soundLabel.textContent = muted ? 'Sound Off' : 'Sound On';
+    });
+
+    initAudio();
+    updateStats();
+    setCoinFace(true);
+    btnHeads.disabled = false;
+    btnTails.disabled = false;
+  </script>
+</body>
+</html>

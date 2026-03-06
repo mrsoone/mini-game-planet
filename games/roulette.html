@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Roulette Online — European Roulette | MiniGamePlanet</title>
+  <meta name="description" content="Play free European Roulette online. Spin the wheel, place bets on red, black, numbers, dozens, and more. Virtual credits, no real money. For entertainment only.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/roulette">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500});gtag('config','G-XXXXXXXXXX');</script>
+  <meta property="og:type" content="website"><meta property="og:title" content="Free Roulette Online | MiniGamePlanet"><meta property="og:description" content="Play European Roulette free. Spin the wheel, bet on red, black, numbers. Virtual credits only."><meta property="og:url" content="https://minigameplanet.com/games/roulette"><meta property="og:site_name" content="MiniGamePlanet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Roulette","url":"https://minigameplanet.com/games/roulette","description":"Play free European Roulette online — spin the wheel, place bets.","genre":"Casino","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <!-- AdSense placeholder - uncomment when ready
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXX" crossorigin="anonymous"></script>
+  -->
+  <style>
+    .action-btn{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:700;border:2px solid;cursor:pointer;font-family:inherit;transition:all 0.1s}
+    .action-btn:hover{transform:translateY(-1px)}
+    .action-btn:active{transform:scale(0.97)}
+    .action-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none}
+    .bet-chip{min-width:36px;height:36px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-weight:700;font-size:12px;cursor:pointer;border:2px solid;transition:transform 0.1s}
+    .bet-chip:hover{transform:scale(1.08)}
+    .bet-chip.selected{transform:scale(1.15);box-shadow:0 0 0 3px #2563EB}
+    .bet-cell{min-width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:11px;font-weight:600;cursor:pointer;border-radius:4px;border:1px solid #E2E8F0;transition:all 0.1s}
+    .bet-cell:hover{background:#F1F5F9}
+    .bet-cell.red{background:#FEE2E2;color:#DC2626}
+    .bet-cell.black{background:#1E293B;color:#fff}
+    .bet-cell.green{background:#166534;color:#fff}
+    .bet-cell.outside{background:#F8FAFC;color:#475569;min-width:60px}
+    .bet-cell.has-bet{box-shadow:inset 0 0 0 2px #2563EB}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-6xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;" id="game-wrap">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <div><h1 style="font-size:22px;font-weight:700;margin:0;">🎡 European Roulette</h1>
+        <p style="font-size:12px;color:#94A3B8;margin:2px 0 0;">Single zero, 0–36</p></div>
+        <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊 Sound</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:10px;padding:6px 10px;background:#F8FAFC;border-radius:8px;flex-wrap:wrap;">
+        <span style="font-family:'DM Mono',monospace;font-size:13px;font-weight:600;">💰 Credits: <span id="credits">500</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;">🎯 Total Bet: <span id="total-bet">0</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;">📊 W<span id="wins">0</span> / L<span id="losses">0</span></span>
+      </div>
+
+      <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start;justify-content:center;">
+        <!-- Wheel -->
+        <div style="flex-shrink:0;">
+          <canvas id="wheel-canvas" width="280" height="280" style="display:block;border-radius:50%;box-shadow:0 4px 20px rgba(0,0,0,0.15);"></canvas>
+          <div style="text-align:center;margin-top:8px;">
+            <button id="spin-btn" class="action-btn" style="background:#059669;color:#fff;border-color:#047857;padding:10px 28px;font-size:15px;">SPIN</button>
+          </div>
+          <p id="last-result" style="text-align:center;font-family:'DM Mono',monospace;font-size:18px;font-weight:700;margin-top:8px;min-height:28px;"></p>
+        </div>
+
+        <!-- Betting Board -->
+        <div style="flex:1;min-width:280px;">
+          <p style="font-size:12px;font-weight:600;color:#64748B;margin-bottom:6px;">Chip size:</p>
+          <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
+            <button class="bet-chip" data-amt="1" style="background:#3B82F6;color:#fff;border-color:#2563EB;">1</button>
+            <button class="bet-chip" data-amt="5" style="background:#059669;color:#fff;border-color:#047857;">5</button>
+            <button class="bet-chip" data-amt="10" style="background:#D97706;color:#fff;border-color:#B45309;">10</button>
+            <button class="bet-chip" data-amt="25" style="background:#DC2626;color:#fff;border-color:#B91C1C;">25</button>
+            <button class="bet-chip" data-amt="50" style="background:#7C3AED;color:#fff;border-color:#6D28D9;">50</button>
+            <button class="bet-chip" data-amt="100" style="background:#0F172A;color:#fff;border-color:#020617;">100</button>
+          </div>
+          <p style="font-size:11px;color:#94A3B8;margin-bottom:8px;">Click cells to place bets. Click again to remove.</p>
+
+          <!-- Number grid (European layout: 3 columns x 12 rows, 0 separate) -->
+          <div style="display:grid;grid-template-columns:auto 1fr 1fr 1fr;gap:2px;font-size:10px;max-width:320px;">
+            <div></div>
+            <div style="text-align:center;font-weight:600;color:#64748B;">1st</div>
+            <div style="text-align:center;font-weight:600;color:#64748B;">2nd</div>
+            <div style="text-align:center;font-weight:600;color:#64748B;">3rd</div>
+            <div class="bet-cell green" data-bet="0" title="0">0</div>
+            <div class="bet-cell red" data-bet="1">1</div>
+            <div class="bet-cell black" data-bet="2">2</div>
+            <div class="bet-cell red" data-bet="3">3</div>
+            <div class="bet-cell black" data-bet="4">4</div>
+            <div class="bet-cell red" data-bet="5">5</div>
+            <div class="bet-cell black" data-bet="6">6</div>
+            <div class="bet-cell red" data-bet="7">7</div>
+            <div class="bet-cell black" data-bet="8">8</div>
+            <div class="bet-cell red" data-bet="9">9</div>
+            <div class="bet-cell black" data-bet="10">10</div>
+            <div class="bet-cell black" data-bet="11">11</div>
+            <div class="bet-cell red" data-bet="12">12</div>
+            <div class="bet-cell black" data-bet="13">13</div>
+            <div class="bet-cell red" data-bet="14">14</div>
+            <div class="bet-cell black" data-bet="15">15</div>
+            <div class="bet-cell red" data-bet="16">16</div>
+            <div class="bet-cell black" data-bet="17">17</div>
+            <div class="bet-cell red" data-bet="18">18</div>
+            <div class="bet-cell red" data-bet="19">19</div>
+            <div class="bet-cell black" data-bet="20">20</div>
+            <div class="bet-cell red" data-bet="21">21</div>
+            <div class="bet-cell black" data-bet="22">22</div>
+            <div class="bet-cell red" data-bet="23">23</div>
+            <div class="bet-cell black" data-bet="24">24</div>
+            <div class="bet-cell red" data-bet="25">25</div>
+            <div class="bet-cell black" data-bet="26">26</div>
+            <div class="bet-cell red" data-bet="27">27</div>
+            <div class="bet-cell black" data-bet="28">28</div>
+            <div class="bet-cell black" data-bet="29">29</div>
+            <div class="bet-cell red" data-bet="30">30</div>
+            <div class="bet-cell black" data-bet="31">31</div>
+            <div class="bet-cell red" data-bet="32">32</div>
+            <div class="bet-cell black" data-bet="33">33</div>
+            <div class="bet-cell red" data-bet="34">34</div>
+            <div class="bet-cell black" data-bet="35">35</div>
+            <div class="bet-cell red" data-bet="36">36</div>
+          </div>
+
+          <!-- Outside bets -->
+          <div style="display:grid;grid-template-columns:auto 1fr 1fr 1fr;gap:2px;margin-top:8px;max-width:320px;">
+            <div></div>
+            <div class="bet-cell outside" data-bet="dozen1" title="1-12">1-12</div>
+            <div class="bet-cell outside" data-bet="dozen2" title="13-24">13-24</div>
+            <div class="bet-cell outside" data-bet="dozen3" title="25-36">25-36</div>
+            <div></div>
+            <div class="bet-cell outside" data-bet="col1" title="Column 1">2:1</div>
+            <div class="bet-cell outside" data-bet="col2" title="Column 2">2:1</div>
+            <div class="bet-cell outside" data-bet="col3" title="Column 3">2:1</div>
+            <div class="bet-cell outside" data-bet="red" title="Red">Red 1:1</div>
+            <div class="bet-cell outside" data-bet="black" title="Black">Black 1:1</div>
+            <div class="bet-cell outside" data-bet="odd" title="Odd">Odd 1:1</div>
+            <div class="bet-cell outside" data-bet="even" title="Even">Even 1:1</div>
+            <div class="bet-cell outside" data-bet="low" title="1-18">1-18 1:1</div>
+            <div class="bet-cell outside" data-bet="high" title="19-36">19-36 1:1</div>
+          </div>
+
+          <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+            <button id="clear-bets" class="action-btn" style="background:#64748B;color:#fff;border-color:#475569;">Clear Bets</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Session stats -->
+      <div id="session-panel" style="display:none;text-align:center;padding:20px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;margin-top:12px;">
+        <div style="font-size:20px;font-weight:700;color:#DC2626;margin-bottom:4px;">💸 Out of Credits!</div>
+        <div id="session-stats" style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;text-align:left;max-width:220px;margin:0 auto 16px;padding:12px;background:#fff;border-radius:8px;"></div>
+        <button id="reset-credits" class="action-btn" style="background:#2563EB;color:#fff;border-color:#1D4ED8;padding:10px 28px;">Start Fresh (500 credits)</button>
+      </div>
+
+      <div style="background:#FEF3C7;border:1px solid #FDE68A;border-radius:8px;padding:8px 12px;margin-top:12px;">
+        <p style="font-size:11px;color:#92400E;margin:0;"><strong>🎲 For entertainment only. No real money.</strong> — This is a free game with virtual credits. No deposits, withdrawals, or real gambling.</p>
+      </div>
+    </div>
+  </main>
+
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play European Roulette</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>Roulette is one of the most iconic casino games in the world. The spinning wheel, the bouncing ball, and the anticipation of where it will land have captivated players for centuries. European Roulette uses a single zero wheel with 37 pockets (0 and 1–36), giving it a lower house edge than American Roulette, which has both 0 and 00.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">How to Play</h3>
+      <p>Start with 500 virtual credits. Select a chip size (1, 5, 10, 25, 50, or 100), then click on the betting board to place your bets. You can bet on individual numbers (straight up), groups of numbers (split, street, corner, line), or outside bets like red/black, odd/even, dozens, and columns. Once your bets are placed, click SPIN to spin the wheel. The ball will bounce and eventually land in one of the 37 pockets. All winning bets are paid according to standard European Roulette odds.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Bet Types and Payouts</h3>
+      <ul class="list-disc pl-5 space-y-1">
+        <li><strong>Straight up</strong> (single number): 35:1</li>
+        <li><strong>Split</strong> (two adjacent numbers): 17:1</li>
+        <li><strong>Street</strong> (three numbers in a row): 11:1</li>
+        <li><strong>Corner</strong> (four numbers): 8:1</li>
+        <li><strong>Line</strong> (six numbers): 5:1</li>
+        <li><strong>Dozen</strong> (1–12, 13–24, 25–36): 2:1</li>
+        <li><strong>Column</strong> (1st, 2nd, 3rd column): 2:1</li>
+        <li><strong>Red / Black / Odd / Even / 1–18 / 19–36:</strong> 1:1</li>
+      </ul>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">History &amp; Origin</h3>
+      <p>Roulette originated in 18th-century France. The name comes from the French word for "little wheel." Blaise Pascal is often credited with inventing an early form while experimenting with perpetual motion machines. The single-zero European wheel became the standard in Monte Carlo, while American casinos added the double zero to increase the house edge. Today, European Roulette remains the preferred version for players seeking better odds.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Strategy &amp; Tips</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Outside bets have lower payouts but higher win probability.</strong> Red/black and odd/even pay 1:1 and win almost half the time (excluding zero).</li>
+        <li><strong>Inside bets offer bigger payouts but lower odds.</strong> A straight-up bet pays 35:1 but has only a 1-in-37 chance of winning.</li>
+        <li><strong>Zero is the house advantage.</strong> When the ball lands on 0, all outside bets (red, black, odd, even, etc.) lose. Only bets directly on 0 win.</li>
+        <li><strong>Manage your bankroll.</strong> Start with smaller bets and avoid chasing losses. This game uses virtual credits, so experiment freely.</li>
+      </ul>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Frequently Asked Questions</h3>
+      <h4 class="font-semibold text-slate-800">Does this game use real money?</h4>
+      <p>No. This is a 100% free game with virtual credits. No real money, no deposits, no withdrawals. It is for entertainment and practice only.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">What is the house edge in European Roulette?</h4>
+      <p>European Roulette has a house edge of approximately 2.7% due to the single zero. American Roulette, with 0 and 00, has about 5.26% house edge.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">Is the wheel random?</h4>
+      <p>Yes. This game uses <code class="font-mono text-sm bg-gray-100 px-1 rounded">crypto.getRandomValues()</code> for cryptographically secure randomness. Every spin is fair and unpredictable.</p>
+      <p class="mt-6">Play European Roulette free in your browser — no sign-up, no download. Spin the wheel and enjoy the thrill.</p>
+    </div>
+  </article>
+  <div id="related-games"></div>
+  <div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+  document.addEventListener('click',()=>initAudio(),{once:true});
+  initToolPage('roulette'); initConsent(); trackGameView('roulette','Casino');
+
+  // European wheel order (clockwise from 0)
+  const WHEEL_ORDER = [0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
+  const RED_NUMS = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];
+
+  let credits = 500;
+  let chipAmt = 5;
+  let bets = {};
+  let spinning = false;
+  let winCount = 0, lossCount = 0;
+  let session = { rounds: 0, wins: 0, totalWon: 0, startTime: Date.now() };
+
+  const saved = localStorage.getItem('mgp_roulette_credits');
+  if (saved) credits = Math.max(10, parseInt(saved) || 500);
+
+  function saveCredits() { localStorage.setItem('mgp_roulette_credits', credits); }
+
+  function secureRandom() {
+    const arr = new Uint32Array(1);
+    crypto.getRandomValues(arr);
+    return arr[0] / (0xFFFFFFFF + 1);
+  }
+
+  function spinWheel() {
+    return Math.floor(secureRandom() * 37);
+  }
+
+  const canvas = document.getElementById('wheel-canvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width;
+  const H = canvas.height;
+  const cx = W / 2;
+  const cy = H / 2;
+  const wheelRadius = 120;
+  const ballRadius = 6;
+
+  let wheelRotation = 0;
+  let ballAngle = 0;
+  let ballRadiusAnim = wheelRadius - 25;
+  let animId = null;
+
+  function getColor(n) {
+    if (n === 0) return '#166534';
+    return RED_NUMS.includes(n) ? '#DC2626' : '#1E293B';
+  }
+
+  function drawWheel(rot) {
+    ctx.clearRect(0, 0, W, H);
+    const sliceAngle = (2 * Math.PI) / 37;
+    for (let i = 0; i < 37; i++) {
+      const n = WHEEL_ORDER[i];
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, wheelRadius, rot + i * sliceAngle, rot + (i + 1) * sliceAngle);
+      ctx.closePath();
+      ctx.fillStyle = getColor(n);
+      ctx.fill();
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.save();
+      ctx.translate(cx + Math.cos(rot + (i + 0.5) * sliceAngle) * (wheelRadius - 18), cy + Math.sin(rot + (i + 0.5) * sliceAngle) * (wheelRadius - 18));
+      ctx.rotate(rot + (i + 0.5) * sliceAngle);
+      ctx.fillStyle = n === 0 ? '#fff' : (RED_NUMS.includes(n) ? '#fff' : '#fff');
+      ctx.font = 'bold 11px "DM Mono", monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(String(n), 0, 0);
+      ctx.restore();
+    }
+    ctx.beginPath();
+    ctx.arc(cx, cy, wheelRadius + 8, 0, 2 * Math.PI);
+    ctx.strokeStyle = '#0F172A';
+    ctx.lineWidth = 4;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(cx, cy, 15, 0, 2 * Math.PI);
+    ctx.fillStyle = '#0F172A';
+    ctx.fill();
+  }
+
+  function drawBall(angle, r) {
+    const x = cx + Math.cos(angle) * r;
+    const y = cy + Math.sin(angle) * r;
+    ctx.beginPath();
+    ctx.arc(x, y, ballRadius, 0, 2 * Math.PI);
+    ctx.fillStyle = '#FDE68A';
+    ctx.fill();
+    ctx.strokeStyle = '#0F172A';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  function getWinningPocketIndex(result) {
+    return WHEEL_ORDER.indexOf(result);
+  }
+
+  function animateSpin(result, onComplete) {
+    const targetPocketIdx = getWinningPocketIndex(result);
+    const sliceAngle = (2 * Math.PI) / 37;
+    const BALL_OFFSET = -Math.PI / 2;
+    const targetWheelAngle = BALL_OFFSET - (targetPocketIdx + 0.5) * sliceAngle;
+    const spins = 4 + secureRandom() * 3;
+    const totalWheelRot = spins * 2 * Math.PI + targetWheelAngle;
+    const duration = 4000 + secureRandom() * 1500;
+    const startTime = performance.now();
+    const startWheel = wheelRotation;
+
+    function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+    function tick(now) {
+      const elapsed = now - startTime;
+      const t = Math.min(1, elapsed / duration);
+      const eased = easeOutCubic(t);
+      wheelRotation = startWheel + totalWheelRot * eased;
+      ballAngle = wheelRotation + BALL_OFFSET + Math.sin(elapsed * 0.025) * 0.15;
+      ballRadiusAnim = wheelRadius - 25 + Math.sin(elapsed * 0.015) * 3;
+      drawWheel(wheelRotation);
+      drawBall(ballAngle, ballRadiusAnim);
+      if (t < 1) {
+        animId = requestAnimationFrame(tick);
+      } else {
+        animId = null;
+        drawWheel(wheelRotation);
+        drawBall(wheelRotation + BALL_OFFSET, ballRadiusAnim);
+        onComplete();
+      }
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function getTotalBet() {
+    let t = 0;
+    for (const k of Object.keys(bets)) t += bets[k];
+    return t;
+  }
+
+  function updateUI() {
+    document.getElementById('credits').textContent = credits;
+    document.getElementById('total-bet').textContent = getTotalBet();
+    document.getElementById('wins').textContent = winCount;
+    document.getElementById('losses').textContent = lossCount;
+  }
+
+  document.querySelectorAll('.bet-chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      chipAmt = parseInt(btn.dataset.amt);
+      document.querySelectorAll('.bet-chip').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      playClick();
+    });
+  });
+  document.querySelector('.bet-chip[data-amt="5"]').classList.add('selected');
+
+  document.querySelectorAll('.bet-cell').forEach(cell => {
+    cell.addEventListener('click', () => {
+      if (spinning) return;
+      const key = cell.dataset.bet;
+      if (!key) return;
+      if (bets[key]) {
+        credits += bets[key];
+        delete bets[key];
+        cell.classList.remove('has-bet');
+      } else if (credits >= chipAmt) {
+        bets[key] = chipAmt;
+        credits -= chipAmt;
+        cell.classList.add('has-bet');
+      }
+      updateUI();
+      playClick();
+    });
+  });
+
+  document.getElementById('clear-bets').addEventListener('click', () => {
+    if (spinning) return;
+    for (const k of Object.keys(bets)) credits += bets[k];
+    bets = {};
+    document.querySelectorAll('.bet-cell.has-bet').forEach(c => c.classList.remove('has-bet'));
+    updateUI();
+    playClick();
+  });
+
+  function resolveBetsCorrect(result) {
+    const isRed = RED_NUMS.includes(result);
+    const isBlack = result > 0 && !isRed;
+    const isOdd = result > 0 && result % 2 === 1;
+    const isEven = result > 0 && result % 2 === 0;
+    const isLow = result >= 1 && result <= 18;
+    const isHigh = result >= 19 && result <= 36;
+    const dozen = result >= 1 && result <= 12 ? 'dozen1' : result >= 13 && result <= 24 ? 'dozen2' : result >= 25 ? 'dozen3' : null;
+    const col = result > 0 ? 'col' + (((result - 1) % 3) + 1) : null;
+
+    let totalWin = 0;
+    for (const [key, amt] of Object.entries(bets)) {
+      let payout = 0;
+      const num = parseInt(key);
+      if (!isNaN(num) && num >= 0 && num <= 36) {
+        if (num === result) payout = amt * 36;
+      } else if (key === 'red' && isRed) payout = amt * 2;
+      else if (key === 'black' && isBlack) payout = amt * 2;
+      else if (key === 'odd' && isOdd) payout = amt * 2;
+      else if (key === 'even' && isEven) payout = amt * 2;
+      else if (key === 'low' && isLow) payout = amt * 2;
+      else if (key === 'high' && isHigh) payout = amt * 2;
+      else if (key === dozen && dozen) payout = amt * 3;
+      else if (key === col && col) payout = amt * 3;
+      totalWin += payout;
+    }
+
+    credits += totalWin;
+    const totalBet = getTotalBet();
+    if (totalWin > totalBet) { winCount++; session.wins++; playSuccess(); }
+    else if (totalBet > 0) { lossCount++; playError(); }
+    session.rounds++;
+    session.totalWon += totalWin - totalBet;
+    bets = {};
+    document.querySelectorAll('.bet-cell.has-bet').forEach(c => c.classList.remove('has-bet'));
+  }
+
+  document.getElementById('spin-btn').addEventListener('click', () => {
+    if (spinning) return;
+    const totalBet = getTotalBet();
+    if (totalBet === 0) {
+      playError();
+      return;
+    }
+    if (totalBet > credits) {
+      playError();
+      return;
+    }
+    spinning = true;
+    document.getElementById('spin-btn').disabled = true;
+    trackGameStart('roulette', 'Casino');
+
+    const result = spinWheel();
+    document.getElementById('last-result').textContent = '';
+
+    animateSpin(result, () => {
+      document.getElementById('last-result').textContent = `Result: ${result}`;
+      document.getElementById('last-result').style.color = result === 0 ? '#166534' : RED_NUMS.includes(result) ? '#DC2626' : '#1E293B';
+      resolveBetsCorrect(result);
+      updateUI();
+      spinning = false;
+      document.getElementById('spin-btn').disabled = false;
+      saveCredits();
+      trackGameOver('roulette', 'Casino', credits);
+
+      if (credits <= 0) {
+        document.getElementById('session-stats').innerHTML = `Rounds: ${session.rounds}<br>Wins: ${session.wins}<br>Net: ${session.totalWon >= 0 ? '+' : ''}${session.totalWon}`;
+        document.getElementById('session-panel').style.display = 'block';
+        playGameOver();
+      }
+    });
+  });
+
+  document.getElementById('reset-credits').addEventListener('click', () => {
+    credits = 500;
+    saveCredits();
+    document.getElementById('session-panel').style.display = 'none';
+    updateUI();
+    playClick();
+  });
+
+  document.getElementById('sound-btn').addEventListener('click', () => {
+    initAudio();
+    const m = muteAll();
+    document.getElementById('sound-btn').textContent = m ? '🔇 Sound' : '🔊 Sound';
+  });
+
+  drawWheel(0);
+  updateUI();
+  </script>
+</body>
+</html>

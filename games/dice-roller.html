@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dice Roller - Roll Virtual Dice Online | Mini Game Planet</title>
+  <meta name="description" content="Roll 1-6 dice online with realistic 3D animation. Play D&D, Yahtzee, or Craps modes. Free dice roller with statistics and roll history.">
+  <link rel="canonical" href="https://minigameplanet.com/games/dice-roller.html">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Dice Roller - Roll Virtual Dice Online">
+  <meta property="og:description" content="Roll 1-6 dice online with realistic 3D animation. D&D, Yahtzee, Craps modes. Free dice roller with statistics.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/dice-roller.html">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    }
+  </script>
+
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Dice Roller",
+    "description": "Roll 1-6 virtual dice online with 3D animation. Supports D&D, Yahtzee, and Craps game modes.",
+    "url": "https://minigameplanet.com/games/dice-roller.html",
+    "applicationCategory": "Game",
+    "operatingSystem": "Any"
+  }
+  </script>
+
+  <!-- AdSense (commented) -->
+  <!--
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXX" crossorigin="anonymous"></script>
+  -->
+
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+
+    /* 3D Dice */
+    .dice-container {
+      perspective: 1000px;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .dice {
+      width: 64px;
+      height: 64px;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.1s;
+    }
+
+    .dice.rolling {
+      animation: tumble 0.6s ease-out forwards;
+    }
+
+    @keyframes tumble {
+      0% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+      25% { transform: rotateX(180deg) rotateY(90deg) rotateZ(45deg); }
+      50% { transform: rotateX(360deg) rotateY(180deg) rotateZ(90deg); }
+      75% { transform: rotateX(540deg) rotateY(270deg) rotateZ(135deg); }
+      100% { transform: rotateX(720deg) rotateY(360deg) rotateZ(180deg); }
+    }
+
+    .dice-face {
+      position: absolute;
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(145deg, #ffffff, #e8e8e8);
+      border: 2px solid #d4d4d4;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 0 8px rgba(0,0,0,0.05);
+      backface-visibility: hidden;
+    }
+
+    .dice-face .pip {
+      width: 8px;
+      height: 8px;
+      background: #1f2937;
+      border-radius: 50%;
+      position: absolute;
+    }
+
+    /* Face 1 */
+    .dice-face[data-face="1"] .pip { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+
+    /* Face 2 */
+    .dice-face[data-face="2"] .pip:nth-child(1) { top: 20%; left: 20%; }
+    .dice-face[data-face="2"] .pip:nth-child(2) { bottom: 20%; right: 20%; }
+
+    /* Face 3 */
+    .dice-face[data-face="3"] .pip:nth-child(1) { top: 20%; left: 20%; }
+    .dice-face[data-face="3"] .pip:nth-child(2) { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+    .dice-face[data-face="3"] .pip:nth-child(3) { bottom: 20%; right: 20%; }
+
+    /* Face 4 */
+    .dice-face[data-face="4"] .pip:nth-child(1) { top: 20%; left: 20%; }
+    .dice-face[data-face="4"] .pip:nth-child(2) { top: 20%; right: 20%; }
+    .dice-face[data-face="4"] .pip:nth-child(3) { bottom: 20%; left: 20%; }
+    .dice-face[data-face="4"] .pip:nth-child(4) { bottom: 20%; right: 20%; }
+
+    /* Face 5 */
+    .dice-face[data-face="5"] .pip:nth-child(1) { top: 20%; left: 20%; }
+    .dice-face[data-face="5"] .pip:nth-child(2) { top: 20%; right: 20%; }
+    .dice-face[data-face="5"] .pip:nth-child(3) { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+    .dice-face[data-face="5"] .pip:nth-child(4) { bottom: 20%; left: 20%; }
+    .dice-face[data-face="5"] .pip:nth-child(5) { bottom: 20%; right: 20%; }
+
+    /* Face 6 */
+    .dice-face[data-face="6"] .pip:nth-child(1) { top: 20%; left: 20%; }
+    .dice-face[data-face="6"] .pip:nth-child(2) { top: 20%; right: 20%; }
+    .dice-face[data-face="6"] .pip:nth-child(3) { top: 50%; left: 20%; }
+    .dice-face[data-face="6"] .pip:nth-child(4) { top: 50%; right: 20%; }
+    .dice-face[data-face="6"] .pip:nth-child(5) { bottom: 20%; left: 20%; }
+    .dice-face[data-face="6"] .pip:nth-child(6) { bottom: 20%; right: 20%; }
+
+    /* 3D face positions */
+    .dice-face[data-face="1"] { transform: rotateY(0deg) translateZ(32px); }
+    .dice-face[data-face="6"] { transform: rotateY(180deg) translateZ(32px); }
+    .dice-face[data-face="2"] { transform: rotateY(90deg) translateZ(32px); }
+    .dice-face[data-face="5"] { transform: rotateY(-90deg) translateZ(32px); }
+    .dice-face[data-face="3"] { transform: rotateX(90deg) translateZ(32px); }
+    .dice-face[data-face="4"] { transform: rotateX(-90deg) translateZ(32px); }
+
+    .dice.show-1 { transform: rotateX(0deg) rotateY(0deg); }
+    .dice.show-2 { transform: rotateX(0deg) rotateY(-90deg); }
+    .dice.show-3 { transform: rotateX(-90deg) rotateY(0deg); }
+    .dice.show-4 { transform: rotateX(90deg) rotateY(0deg); }
+    .dice.show-5 { transform: rotateX(0deg) rotateY(90deg); }
+    .dice.show-6 { transform: rotateX(180deg) rotateY(0deg); }
+
+    .dice.polyhedral-done { transform: none !important; }
+  </style>
+</head>
+<body class="min-h-screen bg-[#F5F5F4] text-gray-800">
+  <div id="nav-container"></div>
+
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-6">
+      <h1 class="text-3xl font-bold mb-2">Dice Roller</h1>
+      <p class="text-gray-600 mb-6">Roll virtual dice with realistic 3D animation. Choose your game mode and click to roll.</p>
+
+      <!-- Game Mode Selector -->
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Game Mode</label>
+        <div class="flex flex-wrap gap-2">
+          <button data-mode="custom" class="mode-btn px-4 py-2 rounded-lg border-2 border-gray-300 hover:border-gray-500 transition font-medium">Custom</button>
+          <button data-mode="dnd" class="mode-btn px-4 py-2 rounded-lg border-2 border-gray-300 hover:border-gray-500 transition font-medium">D&D</button>
+          <button data-mode="yahtzee" class="mode-btn px-4 py-2 rounded-lg border-2 border-gray-300 hover:border-gray-500 transition font-medium">Yahtzee (5d6)</button>
+          <button data-mode="craps" class="mode-btn px-4 py-2 rounded-lg border-2 border-gray-300 hover:border-gray-500 transition font-medium">Craps (2d6)</button>
+        </div>
+      </div>
+
+      <!-- Craps Gambling Disclaimer -->
+      <div id="craps-disclaimer" class="hidden mb-4 p-4 bg-amber-50 border border-amber-200 rounded-lg text-amber-800 text-sm">
+        <strong>Gambling Disclaimer:</strong> This is a free simulation for entertainment only. Real-money gambling may be illegal in your jurisdiction. Play responsibly. This tool does not facilitate real gambling.
+      </div>
+
+      <!-- Dice Count (Custom mode) -->
+      <div id="dice-count-section" class="mb-6">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Number of Dice (1–6)</label>
+        <input type="range" id="dice-count" min="1" max="6" value="2" class="w-full max-w-xs">
+        <span id="dice-count-value" class="font-mono ml-2">2</span>
+      </div>
+
+      <!-- D&D Dice Type (D&D mode) -->
+      <div id="dnd-section" class="hidden mb-6">
+        <label class="block text-sm font-medium text-gray-700 mb-2">D&D Dice Type</label>
+        <select id="dnd-dice" class="px-4 py-2 border rounded-lg">
+          <option value="d4">d4 (4-sided)</option>
+          <option value="d6">d6 (6-sided)</option>
+          <option value="d8">d8 (8-sided)</option>
+          <option value="d10">d10 (10-sided)</option>
+          <option value="d12">d12 (12-sided)</option>
+          <option value="d20">d20 (20-sided)</option>
+        </select>
+      </div>
+
+      <!-- Roll Button -->
+      <button id="roll-btn" class="w-full py-4 bg-gray-800 hover:bg-gray-700 text-white font-bold rounded-xl text-lg transition mb-6">
+        Roll Dice
+      </button>
+
+      <!-- Dice Display -->
+      <div class="dice-container min-h-[120px] mb-6" id="dice-container"></div>
+
+      <!-- Results -->
+      <div class="grid md:grid-cols-2 gap-6 mb-6">
+        <div>
+          <h2 class="text-lg font-semibold mb-2">Results</h2>
+          <div id="results-display" class="font-mono text-gray-700">
+            <p id="individual-results">—</p>
+            <p id="total-result" class="text-xl font-bold mt-2">Total: —</p>
+          </div>
+        </div>
+        <div>
+          <h2 class="text-lg font-semibold mb-2">Roll History</h2>
+          <div id="roll-history" class="font-mono text-sm text-gray-600 max-h-32 overflow-y-auto">
+            <p class="text-gray-400">No rolls yet</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Statistics -->
+      <div class="mb-6">
+        <h2 class="text-lg font-semibold mb-2">Frequency Distribution</h2>
+        <div id="stats-bars" class="space-y-2">
+          <div class="flex items-center gap-2">
+            <span class="w-8 font-mono text-sm">1:</span>
+            <div class="flex-1 h-6 bg-gray-200 rounded overflow-hidden"><div id="bar-1" class="h-full bg-gray-600 rounded transition-all" style="width:0%"></div></div>
+            <span id="count-1" class="w-8 font-mono text-sm">0</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-8 font-mono text-sm">2:</span>
+            <div class="flex-1 h-6 bg-gray-200 rounded overflow-hidden"><div id="bar-2" class="h-full bg-gray-600 rounded transition-all" style="width:0%"></div></div>
+            <span id="count-2" class="w-8 font-mono text-sm">0</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-8 font-mono text-sm">3:</span>
+            <div class="flex-1 h-6 bg-gray-200 rounded overflow-hidden"><div id="bar-3" class="h-full bg-gray-600 rounded transition-all" style="width:0%"></div></div>
+            <span id="count-3" class="w-8 font-mono text-sm">0</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-8 font-mono text-sm">4:</span>
+            <div class="flex-1 h-6 bg-gray-200 rounded overflow-hidden"><div id="bar-4" class="h-full bg-gray-600 rounded transition-all" style="width:0%"></div></div>
+            <span id="count-4" class="w-8 font-mono text-sm">0</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-8 font-mono text-sm">5:</span>
+            <div class="flex-1 h-6 bg-gray-200 rounded overflow-hidden"><div id="bar-5" class="h-full bg-gray-600 rounded transition-all" style="width:0%"></div></div>
+            <span id="count-5" class="w-8 font-mono text-sm">0</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-8 font-mono text-sm">6:</span>
+            <div class="flex-1 h-6 bg-gray-200 rounded overflow-hidden"><div id="bar-6" class="h-full bg-gray-600 rounded transition-all" style="width:0%"></div></div>
+            <span id="count-6" class="w-8 font-mono text-sm">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sound Toggle -->
+      <div class="flex items-center gap-2">
+        <button id="sound-toggle" class="px-3 py-1 rounded border text-sm">🔊 Sound On</button>
+      </div>
+    </div>
+
+    <!-- SEO Article -->
+    <article class="bg-white rounded-2xl shadow-lg p-6 md:p-8 prose prose-gray max-w-none">
+      <h2 class="text-2xl font-bold mb-4">Roll Virtual Dice Online – Free Dice Roller for Games</h2>
+      <p>Whether you're playing Dungeons & Dragons, Yahtzee, Craps, or any tabletop game that requires dice, our free online dice roller brings the thrill of rolling to your screen. No physical dice needed—just click and watch realistic 3D dice tumble across your device.</p>
+
+      <h3 class="text-xl font-semibold mt-6 mb-2">Why Use an Online Dice Roller?</h3>
+      <p>Online dice rollers offer convenience, fairness, and accessibility. You can roll anywhere, anytime, without hunting for lost dice under the couch. Our dice use <strong>cryptographically secure randomness</strong> via <code>crypto.getRandomValues()</code>, ensuring each roll is truly random—no predictable patterns or bias. That matters when the outcome of a game hangs on a single roll.</p>
+      <p>Tabletop gamers, educators, and casual players alike benefit from a reliable virtual dice. No more accusations of loaded dice or uneven surfaces. Every roll is generated using the same cryptographic standards that secure web transactions, so you can trust the results.</p>
+
+      <h3 class="text-xl font-semibold mt-6 mb-2">Game Modes for Every Player</h3>
+      <p>We support multiple game modes to match your needs. <strong>Custom mode</strong> lets you choose 1 to 6 standard six-sided dice—perfect for general use. <strong>D&D mode</strong> simulates polyhedral dice: d4, d6, d8, d10, d12, and d20, so you can roll for initiative, damage, or ability checks. <strong>Yahtzee mode</strong> locks in 5d6 for that classic five-dice experience. <strong>Craps mode</strong> uses 2d6, mimicking the casino dice game—with a clear gambling disclaimer that this is entertainment only.</p>
+      <p>D&D players will appreciate the full polyhedral set. Roll a d20 for that critical hit, a d6 for weapon damage, or a d4 for a rogue's dagger. Yahtzee fans get the exact five-dice setup. Craps enthusiasts can practice the feel of a two-dice roll without any real-money stakes.</p>
+
+      <h3 class="text-xl font-semibold mt-6 mb-2">Statistics and Roll History</h3>
+      <p>Curious whether the dice are fair? Our frequency distribution panel shows how often each face (1–6) has appeared across your session. Over many rolls, you'll see the distribution even out—a hallmark of true randomness. Roll history keeps the last 20 rolls so you can review past results or settle disputes.</p>
+      <p>The statistics bar chart updates in real time. Watch as hundreds of rolls gradually flatten the distribution, demonstrating that our random number generator produces unbiased outcomes. Perfect for teaching probability or satisfying your inner skeptic.</p>
+
+      <h3 class="text-xl font-semibold mt-6 mb-2">How It Works</h3>
+      <p>Select your game mode, choose the number of dice (or dice type for D&D), and click Roll. Each die animates with a tumbling effect before landing on its final value. Individual results and the total are displayed immediately. The interface is clean, fast, and works on desktop and mobile.</p>
+      <p>Six-sided dice display traditional pips (dots) in a 3D cube that tumbles before settling. Polyhedral dice show their numeric result in a clean, readable format. Sound effects are optional—toggle them on or off to suit your environment.</p>
+
+      <h3 class="text-xl font-semibold mt-6 mb-2">Play Responsibly</h3>
+      <p>This dice roller is for fun and tabletop gaming. In Craps mode, we include a gambling disclaimer: real-money gambling may be illegal where you live, and this tool does not facilitate it. Enjoy the game, roll fairly, and may the dice be ever in your favor.</p>
+    </article>
+
+    <div id="related-games" class="mt-6"></div>
+  </main>
+
+  <div id="footer-container"></div>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playBounce } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart } from '/js/analytics.js';
+
+    initToolPage('dice-roller');
+    initConsent();
+    trackGameView('dice-roller', 'Casino');
+
+    // Secure random via crypto.getRandomValues
+    function secureRandomInt(min, max) {
+      const range = max - min + 1;
+      const array = new Uint32Array(1);
+      crypto.getRandomValues(array);
+      return min + (array[0] % range);
+    }
+
+    const MAX_HISTORY = 20;
+    let rollHistory = [];
+    let frequency = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
+    let currentMode = 'custom';
+    let soundEnabled = true;
+
+    const diceCountInput = document.getElementById('dice-count');
+    const diceCountValue = document.getElementById('dice-count-value');
+    const diceCountSection = document.getElementById('dice-count-section');
+    const dndSection = document.getElementById('dnd-section');
+    const dndDiceSelect = document.getElementById('dnd-dice');
+    const crapsDisclaimer = document.getElementById('craps-disclaimer');
+    const rollBtn = document.getElementById('roll-btn');
+    const diceContainer = document.getElementById('dice-container');
+    const individualResults = document.getElementById('individual-results');
+    const totalResult = document.getElementById('total-result');
+    const rollHistoryEl = document.getElementById('roll-history');
+    const soundToggle = document.getElementById('sound-toggle');
+
+    function getDiceConfig() {
+      switch (currentMode) {
+        case 'yahtzee': return { count: 5, sides: 6 };
+        case 'craps': return { count: 2, sides: 6 };
+        case 'dnd':
+          const dndMap = { d4: 4, d6: 6, d8: 8, d10: 10, d12: 12, d20: 20 };
+          return { count: 1, sides: dndMap[document.getElementById('dnd-dice').value] };
+        default: return { count: parseInt(diceCountInput.value, 10), sides: 6 };
+      }
+    }
+
+    function createPips(face) {
+      const pips = [];
+      const pipCount = Math.min(6, Math.max(1, face));
+      for (let i = 0; i < pipCount; i++) pips.push('<span class="pip"></span>');
+      return pips.join('');
+    }
+
+    function createDieElement(value, isD6) {
+      const div = document.createElement('div');
+      div.className = 'dice';
+      if (isD6) {
+        div.innerHTML = [1,2,3,4,5,6].map(f => `<div class="dice-face" data-face="${f}">${createPips(f)}</div>`).join('');
+        div.classList.add(`show-${value}`);
+      } else {
+        div.innerHTML = `<div class="dice-face polyhedral" data-face="1" style="transform:translateZ(32px);"><span class="font-mono text-2xl font-bold">${value}</span></div>`;
+      }
+      return div;
+    }
+
+    function renderDice(values, config) {
+      diceContainer.innerHTML = '';
+      const isD6 = config.sides === 6;
+      values.forEach((v, i) => {
+        const die = createDieElement(v, isD6);
+        die.classList.add('rolling');
+        diceContainer.appendChild(die);
+        setTimeout(() => {
+          die.classList.remove('rolling');
+          if (isD6) die.classList.add(`show-${v}`);
+          else die.classList.add('polyhedral-done');
+        }, 600);
+      });
+    }
+
+    function rollDice() {
+      const config = getDiceConfig();
+      const values = [];
+      for (let i = 0; i < config.count; i++) {
+        values.push(secureRandomInt(1, config.sides));
+      }
+
+      if (config.sides === 6) {
+        values.forEach(v => { frequency[v] = (frequency[v] || 0) + 1; });
+      }
+
+      const total = values.reduce((a, b) => a + b, 0);
+      individualResults.textContent = values.join(' + ');
+      totalResult.textContent = config.count > 1 ? `Total: ${total}` : `Result: ${values[0]}`;
+
+      rollHistory.unshift({ values, total, mode: currentMode });
+      if (rollHistory.length > MAX_HISTORY) rollHistory.pop();
+
+      rollHistoryEl.innerHTML = rollHistory.map(r => `<div>${r.values.join(', ')} → ${r.total}</div>`).join('') || '<p class="text-gray-400">No rolls yet</p>';
+
+      updateStats();
+      renderDice(values, config);
+
+      if (soundEnabled) playBounce();
+      trackGameStart('dice-roller');
+    }
+
+    function updateStats() {
+      const total = Object.values(frequency).reduce((a, b) => a + b, 0);
+      const max = Math.max(...Object.values(frequency), 1);
+      for (let i = 1; i <= 6; i++) {
+        const c = frequency[i] || 0;
+        document.getElementById(`count-${i}`).textContent = c;
+        document.getElementById(`bar-${i}`).style.width = total ? `${(c / max) * 100}%` : '0%';
+      }
+    }
+
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('border-gray-600', 'bg-gray-100'));
+        btn.classList.add('border-gray-600', 'bg-gray-100');
+        currentMode = btn.dataset.mode;
+
+        diceCountSection.classList.toggle('hidden', currentMode !== 'custom');
+        dndSection.classList.toggle('hidden', currentMode !== 'dnd');
+        crapsDisclaimer.classList.toggle('hidden', currentMode !== 'craps');
+
+        if (currentMode === 'custom') diceContainer.innerHTML = '';
+        if (currentMode === 'yahtzee' || currentMode === 'craps') diceContainer.innerHTML = '';
+      });
+    });
+
+    document.querySelector('.mode-btn[data-mode="custom"]').click();
+
+    diceCountInput.addEventListener('input', () => {
+      diceCountValue.textContent = diceCountInput.value;
+    });
+
+    rollBtn.addEventListener('click', () => {
+      rollBtn.disabled = true;
+      rollDice();
+      setTimeout(() => { rollBtn.disabled = false; }, 700);
+    });
+
+    soundToggle.addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      soundToggle.textContent = soundEnabled ? '🔊 Sound On' : '🔇 Sound Off';
+      if (!soundEnabled) muteAll();
+    });
+
+    // Init audio when user interacts
+    document.body.addEventListener('click', () => initAudio(), { once: true });
+  </script>
+</body>
+</html>

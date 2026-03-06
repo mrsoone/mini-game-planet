@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Baccarat - Play Free Online Casino Card Game | Mini Game Planet</title>
+  <meta name="description" content="Play free Baccarat online. Bet on Player, Banker, or Tie. Classic casino card game with virtual credits. For entertainment only.">
+  <link rel="canonical" href="https://minigameplanet.com/games/baccarat">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="Baccarat - Free Online Casino Game">
+  <meta property="og:description" content="Play free Baccarat. Bet on Player, Banker, or Tie. Virtual credits, no real money.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/baccarat">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    .card-suit { font-size: 1.25rem; }
+    .card-suit.hearts, .card-suit.diamonds { color: #dc2626; }
+    .card-suit.clubs, .card-suit.spades { color: #1f2937; }
+  </style>
+  
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Baccarat",
+    "description": "Free online Baccarat card game. Bet on Player, Banker, or Tie. Virtual credits for entertainment only.",
+    "applicationCategory": "Game",
+    "operatingSystem": "Any",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+  
+  <!-- AdSense (commented) -->
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXX" crossorigin="anonymous"></script> -->
+</head>
+<body class="min-h-screen text-gray-800">
+  <!-- Nav -->
+  <nav id="nav-container" class="bg-white/80 backdrop-blur border-b border-gray-200 sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="font-semibold text-lg">Mini Game Planet</a>
+      <div class="flex items-center gap-3">
+        <button id="sound-toggle" class="px-3 py-1.5 rounded-lg border border-gray-300 text-sm hover:bg-gray-100" aria-label="Toggle sound">🔊 Sound</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-4xl mx-auto px-4 py-6">
+    <!-- Game Card -->
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden mb-6">
+      <div class="p-6">
+        <h1 class="text-2xl font-bold mb-1">Baccarat</h1>
+        <p class="text-sm text-gray-500 mb-4">For entertainment only. No real money.</p>
+
+        <!-- Credits & Session Stats -->
+        <div class="flex flex-wrap gap-4 mb-6">
+          <div class="font-mono bg-gray-100 px-4 py-2 rounded-lg">
+            <span class="text-gray-500 text-sm">Credits</span>
+            <div id="credits" class="text-xl font-bold text-emerald-600">500</div>
+          </div>
+          <div class="font-mono bg-gray-100 px-4 py-2 rounded-lg">
+            <span class="text-gray-500 text-sm">Session Wins</span>
+            <div id="session-wins" class="text-xl font-bold">0</div>
+          </div>
+          <div class="font-mono bg-gray-100 px-4 py-2 rounded-lg">
+            <span class="text-gray-500 text-sm">Session Losses</span>
+            <div id="session-losses" class="text-xl font-bold">0</div>
+          </div>
+        </div>
+
+        <!-- Betting -->
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Bet Amount</label>
+          <div class="flex gap-2 flex-wrap">
+            <input type="number" id="bet-amount" value="10" min="1" max="500" class="font-mono w-24 px-3 py-2 border border-gray-300 rounded-lg">
+            <button id="bet-10" class="chip-btn px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100">10</button>
+            <button id="bet-25" class="chip-btn px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100">25</button>
+            <button id="bet-50" class="chip-btn px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100">50</button>
+            <button id="bet-100" class="chip-btn px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100">100</button>
+            <button id="bet-max" class="chip-btn px-4 py-2 rounded-lg border border-amber-400 bg-amber-50 hover:bg-amber-100">Max</button>
+          </div>
+        </div>
+
+        <!-- Bet Selection -->
+        <div class="grid grid-cols-3 gap-4 mb-6">
+          <button id="bet-player" class="bet-btn p-4 rounded-xl border-2 border-blue-500 bg-blue-50 hover:bg-blue-100 font-semibold transition">
+            Player (1:1)
+          </button>
+          <button id="bet-banker" class="bet-btn p-4 rounded-xl border-2 border-gray-300 bg-gray-50 hover:bg-gray-100 font-semibold transition">
+            Banker (0.95:1)
+          </button>
+          <button id="bet-tie" class="bet-btn p-4 rounded-xl border-2 border-gray-300 bg-gray-50 hover:bg-gray-100 font-semibold transition">
+            Tie (8:1)
+          </button>
+        </div>
+
+        <button id="deal-btn" disabled class="w-full py-3 rounded-xl font-semibold bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed">
+          Place Bet & Deal
+        </button>
+
+        <!-- Game Area -->
+        <div id="game-area" class="mt-8 hidden">
+          <div class="grid grid-cols-2 gap-6 mb-6">
+            <div>
+              <h3 class="text-sm font-medium text-gray-500 mb-2">Player</h3>
+              <div id="player-cards" class="flex gap-2 min-h-[80px] flex-wrap"></div>
+              <div id="player-value" class="font-mono text-lg font-bold mt-2"></div>
+            </div>
+            <div>
+              <h3 class="text-sm font-medium text-gray-500 mb-2">Banker</h3>
+              <div id="banker-cards" class="flex gap-2 min-h-[80px] flex-wrap"></div>
+              <div id="banker-value" class="font-mono text-lg font-bold mt-2"></div>
+            </div>
+          </div>
+          <div id="result-msg" class="text-center font-semibold text-lg py-4"></div>
+          <button id="new-round-btn" class="w-full py-3 rounded-xl font-semibold bg-emerald-600 text-white hover:bg-emerald-700">
+            New Round
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEO Article -->
+    <article class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 mb-6">
+      <h2 class="text-xl font-bold mb-4">How to Play Baccarat Online</h2>
+      <p class="mb-4 text-gray-700">
+        Baccarat is one of the most elegant and straightforward casino card games. The objective is simple: predict whether the Player hand, the Banker hand, or a Tie will have the highest total value. Cards are valued differently than in blackjack: Aces count as 1, numbered cards 2 through 9 keep their face value, and 10s, Jacks, Queens, and Kings all count as zero. The hand value is the sum of the cards modulo 10—so if you have a 7 and an 8, your total is 5 (15 mod 10). The hand closest to 9 wins.
+      </p>
+      <p class="mb-4 text-gray-700">
+        Each round begins with two cards dealt to both the Player and Banker. If either hand totals 8 or 9 (a "natural"), no more cards are drawn. Otherwise, the Player draws a third card when their total is 0–5 and stands on 6 or 7. The Banker's third-card rules are more complex and depend on both the Banker's total and the Player's third card. Our game follows the standard Baccarat tableau used in casinos worldwide.
+      </p>
+      <p class="mb-4 text-gray-700">
+        Payouts differ by bet type. Betting on the Player pays 1:1 (even money). Betting on the Banker pays 0.95:1 due to a 5% commission, which reflects the Banker's slight statistical advantage. Betting on a Tie pays 8:1, the highest payout but also the rarest outcome. Many players prefer the Banker bet for its lower house edge, while Tie bets offer excitement for those seeking bigger wins.
+      </p>
+      <p class="mb-4 text-gray-700">
+        This free Baccarat game uses virtual credits—you start with 500 and can play as many rounds as you like. There is no real money involved. Use it to learn the rules, practice your strategy, or simply enjoy the game for fun. Whether you're new to Baccarat or a seasoned player, our version provides an authentic experience with clear visuals and smooth gameplay.
+      </p>
+      <p class="text-gray-700">
+        Baccarat has been a favorite in casinos for centuries, often associated with high rollers and glamour. Today, you can enjoy it anytime online. Remember: this game is for entertainment only. Play responsibly and have fun.
+      </p>
+    </article>
+
+    <!-- Related Games -->
+    <section id="related-games" class="mb-6">
+      <h2 class="text-lg font-semibold mb-3">Related Games</h2>
+      <div class="flex flex-wrap gap-3">
+        <a href="/games/blackjack.html" class="px-4 py-2 rounded-lg bg-white border border-gray-200 hover:border-gray-300 shadow-sm">Blackjack</a>
+        <a href="/games/poker.html" class="px-4 py-2 rounded-lg bg-white border border-gray-200 hover:border-gray-300 shadow-sm">Poker</a>
+        <a href="/games/slots.html" class="px-4 py-2 rounded-lg bg-white border border-gray-200 hover:border-gray-300 shadow-sm">Slots</a>
+        <a href="/games/roulette.html" class="px-4 py-2 rounded-lg bg-white border border-gray-200 hover:border-gray-300 shadow-sm">Roulette</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer id="footer-container" class="border-t border-gray-200 bg-white/50 py-6">
+    <div class="max-w-4xl mx-auto px-4 text-center text-sm text-gray-500">
+      <p>For entertainment only. No real money.</p>
+      <p class="mt-1">© Mini Game Planet</p>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playCollect } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('baccarat');
+    initConsent();
+    trackGameView('baccarat', 'Casino');
+    initAudio();
+
+    const SUITS = ['hearts', 'diamonds', 'clubs', 'spades'];
+    const RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+    const SUIT_SYMBOLS = { hearts: '♥', diamonds: '♦', clubs: '♣', spades: '♠' };
+
+    function cardValue(rank) {
+      if (rank === 'A') return 1;
+      if (['10', 'J', 'Q', 'K'].includes(rank)) return 0;
+      return parseInt(rank, 10);
+    }
+
+    function handValue(cards) {
+      const sum = cards.reduce((s, c) => s + cardValue(c.rank), 0);
+      return sum % 10;
+    }
+
+    function secureRandom(max) {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] % max;
+    }
+
+    function shuffle(deck) {
+      for (let i = deck.length - 1; i > 0; i--) {
+        const j = secureRandom(i + 1);
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+      }
+      return deck;
+    }
+
+    function createDeck() {
+      const deck = [];
+      for (const suit of SUITS) {
+        for (const rank of RANKS) {
+          deck.push({ suit, rank });
+        }
+      }
+      return shuffle(deck);
+    }
+
+    function renderCard(card, faceDown = false) {
+      const div = document.createElement('div');
+      div.className = 'inline-flex flex-col items-center justify-center w-14 h-20 rounded-lg border-2 border-gray-300 bg-white shadow';
+      if (faceDown) {
+        div.innerHTML = '<div class="w-full h-full rounded bg-gradient-to-br from-indigo-600 to-indigo-800 flex items-center justify-center"><span class="text-white text-xs">?</span></div>';
+      } else {
+        const suitClass = ['hearts', 'diamonds'].includes(card.suit) ? 'hearts' : 'clubs';
+        div.innerHTML = `
+          <span class="font-mono font-bold text-sm">${card.rank}</span>
+          <span class="card-suit ${suitClass}">${SUIT_SYMBOLS[card.suit]}</span>
+        `;
+      }
+      return div;
+    }
+
+    // Banker third-card tableau: bankerTotal -> set of player 3rd card values that trigger draw
+    const BANKER_DRAW = {
+      0: [0,1,2,3,4,5,6,7,8,9],
+      1: [0,1,2,3,4,5,6,7,8,9],
+      2: [0,1,2,3,4,5,6,7,8,9],
+      3: [0,1,2,3,4,5,6,7,9], // no 8
+      4: [2,3,4,5,6,7],
+      5: [4,5,6,7],
+      6: [6,7],
+      7: [],
+      8: [],
+      9: []
+    };
+
+    function bankerDrawsThird(bankerTotal, playerThirdCard) {
+      if (bankerTotal >= 7) return false;
+      const p3 = playerThirdCard ? cardValue(playerThirdCard.rank) : -1;
+      if (p3 < 0) return bankerTotal <= 5; // player stood, banker draws on 0-5
+      return BANKER_DRAW[bankerTotal].includes(p3);
+    }
+
+    function playerDrawsThird(playerTotal) {
+      return playerTotal >= 0 && playerTotal <= 5;
+    }
+
+    let credits = 500;
+    let sessionWins = 0;
+    let sessionLosses = 0;
+    let currentBet = 0;
+    let currentBetOn = null; // 'player' | 'banker' | 'tie'
+    let deck = [];
+    let playerCards = [];
+    let bankerCards = [];
+    let muted = false;
+
+    const creditsEl = document.getElementById('credits');
+    const sessionWinsEl = document.getElementById('session-wins');
+    const sessionLossesEl = document.getElementById('session-losses');
+    const betAmountEl = document.getElementById('bet-amount');
+    const dealBtn = document.getElementById('deal-btn');
+    const gameArea = document.getElementById('game-area');
+    const playerCardsEl = document.getElementById('player-cards');
+    const bankerCardsEl = document.getElementById('banker-cards');
+    const playerValueEl = document.getElementById('player-value');
+    const bankerValueEl = document.getElementById('banker-value');
+    const resultMsgEl = document.getElementById('result-msg');
+    const newRoundBtn = document.getElementById('new-round-btn');
+
+    function updateUI() {
+      creditsEl.textContent = credits;
+      sessionWinsEl.textContent = sessionWins;
+      sessionLossesEl.textContent = sessionLosses;
+      betAmountEl.max = credits;
+    }
+
+    function setBet(on) {
+      currentBetOn = on;
+      document.querySelectorAll('.bet-btn').forEach(btn => {
+        btn.classList.remove('border-blue-500', 'bg-blue-50', 'border-emerald-500', 'bg-emerald-50', 'border-amber-500', 'bg-amber-50');
+        btn.classList.add('border-gray-300', 'bg-gray-50');
+      });
+      const map = { player: 'bet-player', banker: 'bet-banker', tie: 'bet-tie' };
+      const btn = document.getElementById(map[on]);
+      if (btn) {
+        btn.classList.remove('border-gray-300', 'bg-gray-50');
+        if (on === 'player') btn.classList.add('border-blue-500', 'bg-blue-50');
+        else if (on === 'banker') btn.classList.add('border-emerald-500', 'bg-emerald-50');
+        else btn.classList.add('border-amber-500', 'bg-amber-50');
+      }
+      dealBtn.disabled = credits <= 0;
+      if (!muted) playClick();
+    }
+
+    document.getElementById('bet-player').addEventListener('click', () => setBet('player'));
+    document.getElementById('bet-banker').addEventListener('click', () => setBet('banker'));
+    document.getElementById('bet-tie').addEventListener('click', () => setBet('tie'));
+
+    ['bet-10','bet-25','bet-50','bet-100','bet-max'].forEach(id => {
+      document.getElementById(id).addEventListener('click', () => {
+        const amt = id === 'bet-max' ? credits : parseInt(id.replace('bet-',''), 10);
+        betAmountEl.value = Math.min(amt, credits);
+        if (!muted) playClick();
+      });
+    });
+
+    document.getElementById('sound-toggle').addEventListener('click', () => {
+      muted = !muted;
+      muteAll(muted);
+      document.getElementById('sound-toggle').textContent = muted ? '🔇 Muted' : '🔊 Sound';
+    });
+
+    function runRound() {
+      const bet = Math.min(parseInt(betAmountEl.value, 10) || 0, credits);
+      if (bet <= 0 || !currentBetOn) return;
+      currentBet = bet;
+      credits -= bet;
+      updateUI();
+      trackGameStart('baccarat');
+
+      deck = createDeck();
+      playerCards = [deck.pop(), deck.pop()];
+      bankerCards = [deck.pop(), deck.pop()];
+
+      let playerTotal = handValue(playerCards);
+      let bankerTotal = handValue(bankerCards);
+      let playerThird = null;
+      let bankerThird = null;
+
+      const pNatural = playerTotal >= 8;
+      const bNatural = bankerTotal >= 8;
+
+      if (!pNatural && !bNatural) {
+        if (playerDrawsThird(playerTotal)) {
+          playerThird = deck.pop();
+          playerCards.push(playerThird);
+          playerTotal = handValue(playerCards);
+        }
+        if (bankerDrawsThird(bankerTotal, playerThird)) {
+          bankerThird = deck.pop();
+          bankerCards.push(bankerThird);
+          bankerTotal = handValue(bankerCards);
+        }
+      }
+
+      gameArea.classList.remove('hidden');
+      playerCardsEl.innerHTML = '';
+      bankerCardsEl.innerHTML = '';
+      playerCards.forEach(c => playerCardsEl.appendChild(renderCard(c)));
+      bankerCards.forEach(c => bankerCardsEl.appendChild(renderCard(c)));
+      playerValueEl.textContent = `Total: ${playerTotal}`;
+      bankerValueEl.textContent = `Total: ${bankerTotal}`;
+
+      let winner = null;
+      if (playerTotal > bankerTotal) winner = 'player';
+      else if (bankerTotal > playerTotal) winner = 'banker';
+      else winner = 'tie';
+
+      let won = false;
+      let payout = 0;
+      if (winner === currentBetOn) {
+        won = true;
+        if (winner === 'tie') payout = currentBet * 9; // 8:1 + stake
+        else if (winner === 'player') payout = currentBet * 2; // 1:1 + stake
+        else payout = Math.floor(currentBet * 1.95); // 0.95:1 + stake (5% commission)
+        credits += payout;
+        sessionWins++;
+        if (!muted) playSuccess();
+      } else {
+        sessionLosses++;
+        if (!muted) playError();
+      }
+
+      if (credits <= 0) {
+        if (!muted) playGameOver();
+        trackGameOver('baccarat', { won: false });
+      } else {
+        trackGameOver('baccarat', { won });
+      }
+
+      const msg = won
+        ? `You won! +${payout - currentBet} credits`
+        : `You lost. ${winner.charAt(0).toUpperCase() + winner.slice(1)} wins.`;
+      resultMsgEl.textContent = msg;
+      resultMsgEl.className = 'text-center font-semibold text-lg py-4 ' + (won ? 'text-emerald-600' : 'text-gray-600');
+      dealBtn.disabled = true;
+      updateUI();
+    }
+
+    dealBtn.addEventListener('click', runRound);
+
+    newRoundBtn.addEventListener('click', () => {
+      gameArea.classList.add('hidden');
+      currentBet = 0;
+      currentBetOn = null;
+      dealBtn.disabled = true;
+      document.querySelectorAll('.bet-btn').forEach(btn => {
+        btn.classList.remove('border-blue-500', 'bg-blue-50', 'border-emerald-500', 'bg-emerald-50', 'border-amber-500', 'bg-amber-50');
+        btn.classList.add('border-gray-300', 'bg-gray-50');
+      });
+      if (!muted) playClick();
+    });
+
+    updateUI();
+  </script>
+</body>
+</html>

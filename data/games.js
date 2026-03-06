@@ -480,7 +480,7 @@ export const games = [
     icon: '🎰',
     accent: '#059669',
     keywords: ['slot machine', 'slots', 'fruit machine', 'free slots'],
-    built: false
+    built: true
   },
   {
     name: 'Roulette',
@@ -490,7 +490,7 @@ export const games = [
     icon: '🎡',
     accent: '#059669',
     keywords: ['roulette', 'wheel spin', 'casino game', 'betting game'],
-    built: false
+    built: true
   },
   {
     name: 'Dice Roller',
@@ -500,7 +500,7 @@ export const games = [
     icon: '🎲',
     accent: '#059669',
     keywords: ['dice roller', 'dice game', 'roll dice', 'virtual dice'],
-    built: false
+    built: true
   },
   {
     name: 'Coin Flip',
@@ -510,7 +510,7 @@ export const games = [
     icon: '🪙',
     accent: '#059669',
     keywords: ['coin flip', 'coin toss', 'heads tails', 'random flip'],
-    built: false
+    built: true
   },
   {
     name: 'Spin the Wheel',
@@ -520,7 +520,7 @@ export const games = [
     icon: '🎯',
     accent: '#059669',
     keywords: ['spin the wheel', 'prize wheel', 'random picker', 'wheel spinner'],
-    built: false
+    built: true
   },
   {
     name: 'Scratch Card',
@@ -530,7 +530,7 @@ export const games = [
     icon: '🎫',
     accent: '#059669',
     keywords: ['scratch card', 'scratchie', 'lottery', 'scratch off'],
-    built: false
+    built: true
   },
   {
     name: 'Keno',
@@ -540,7 +540,7 @@ export const games = [
     icon: '🔢',
     accent: '#059669',
     keywords: ['keno', 'lottery game', 'number pick', 'casino game'],
-    built: false
+    built: true
   },
   {
     name: 'Baccarat',
@@ -550,7 +550,7 @@ export const games = [
     icon: '🂠',
     accent: '#059669',
     keywords: ['baccarat', 'punto banco', 'casino card', 'card game'],
-    built: false
+    built: true
   },
 
   // ─── STRATEGY (10) ────────────────────────────────────────────

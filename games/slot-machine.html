@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slot Machine - Free Casino Game | Mini Game Planet</title>
+  <meta name="description" content="Play our free 3-reel and 5-reel slot machine online. Cherry, lemon, orange, bar, seven, diamond symbols. Virtual credits, no real money. For entertainment only.">
+  <link rel="canonical" href="https://minigameplanet.com/games/slot-machine.html">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="Slot Machine - Free Casino Game | Mini Game Planet">
+  <meta property="og:description" content="Spin the reels! Free slot machine with 3 and 5-reel modes. Virtual credits, no real money.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/slot-machine.html">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background-color: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    .reel-symbol { font-size: 2.5rem; line-height: 80px; flex-shrink: 0; height: 80px; display: flex; align-items: center; justify-content: center; }
+    .reel-spinning .reel-strip { animation: spinReel 0.05s linear infinite; }
+    @keyframes spinReel { from { transform: translateY(0); } to { transform: translateY(-80px); } }
+    .reel-strip { display: flex; flex-direction: column; align-items: center; transition: transform 0.8s cubic-bezier(0.22, 0.61, 0.36, 1); }
+    .win-flash { animation: winFlash 0.3s ease-in-out 3; }
+    @keyframes winFlash { 0%, 100% { box-shadow: 0 0 0 0 transparent; } 50% { box-shadow: 0 0 30px 10px rgba(34, 197, 94, 0.6); } }
+    .slot-window { overflow: hidden; height: 80px; width: 80px; }
+  </style>
+  
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Slot Machine",
+    "description": "Free online slot machine game with 3 and 5-reel modes. Virtual credits, no real money. For entertainment only.",
+    "applicationCategory": "Game",
+    "operatingSystem": "Any",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+</head>
+<body class="min-h-screen text-gray-800 antialiased">
+  <!-- GA4 Consent (defaults) - initConsent() from consent.js -->
+  <!-- AdSense placeholder - uncomment when ready
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXX" crossorigin="anonymous"></script>
+  -->
+
+  <div id="nav-container"></div>
+
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    <article class="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-8">
+      <header class="mb-6">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Slot Machine</h1>
+        <p class="text-lg text-gray-600">Spin the reels and test your luck. Free virtual credits—no real money.</p>
+      </header>
+
+      <!-- Gambling Disclaimer -->
+      <div class="bg-amber-50 border-2 border-amber-200 rounded-xl p-4 mb-6">
+        <p class="font-semibold text-amber-800 text-center text-lg">⚠️ For entertainment only. No real money.</p>
+        <p class="text-amber-700 text-sm text-center mt-1">This is a free game using virtual credits. No gambling, no cash prizes.</p>
+      </div>
+
+      <!-- Sound Toggle -->
+      <div class="flex justify-end mb-4">
+        <button id="sound-toggle" class="px-3 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 font-mono text-sm" aria-label="Toggle sound">🔊 Sound On</button>
+      </div>
+
+      <!-- Game Area -->
+      <div class="flex flex-col items-center">
+        <!-- Credits & Bet -->
+        <div class="flex gap-6 mb-4 font-mono text-lg">
+          <span>Credits: <strong id="credits">100</strong></span>
+          <span>Bet: <select id="bet-select" class="border rounded px-2 py-1 bg-white">
+            <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+            <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+            <option value="7">7</option><option value="8">8</option><option value="9">9</option>
+            <option value="10">10</option>
+          </select></span>
+        </div>
+
+        <!-- Reel Mode Toggle -->
+        <div class="flex gap-2 mb-4">
+          <button id="mode-3" class="mode-btn px-4 py-2 rounded-lg font-medium bg-emerald-600 text-white">3 Reels</button>
+          <button id="mode-5" class="mode-btn px-4 py-2 rounded-lg font-medium bg-gray-200 text-gray-700 hover:bg-gray-300">5 Reels</button>
+        </div>
+
+        <!-- Slot Machine -->
+        <div id="slot-machine" class="bg-gradient-to-b from-gray-700 to-gray-900 rounded-2xl p-6 shadow-2xl border-4 border-amber-600">
+          <div id="reels-container" class="flex gap-2 justify-center items-center"></div>
+          <div class="flex justify-center mt-4">
+            <button id="spin-btn" class="px-8 py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xl shadow-lg transition">SPIN</button>
+          </div>
+        </div>
+
+        <!-- Result -->
+        <p id="result-msg" class="mt-4 text-xl font-semibold min-h-[2rem]"></p>
+
+        <!-- Session Stats -->
+        <div class="mt-6 p-4 bg-gray-100 rounded-xl font-mono text-sm">
+          <p>Session: Wins <span id="stat-wins">0</span> | Losses <span id="stat-losses">0</span> | Streak <span id="stat-streak">0</span></p>
+        </div>
+      </div>
+
+      <!-- SEO Article (500+ words) -->
+      <section class="mt-10 prose prose-gray max-w-none">
+        <h2 class="text-2xl font-bold text-gray-900">Free Slot Machine Game Online</h2>
+        <p>Welcome to our free slot machine game. Unlike real casino slots, this game uses only virtual credits—no real money is ever at risk. Whether you prefer the classic 3-reel experience or the extra excitement of 5 reels, you can spin as much as you like without spending a cent.</p>
+        
+        <h3 class="text-xl font-semibold mt-6">How to Play</h3>
+        <p>Choose your bet size (1 to 10 credits), pick 3-reel or 5-reel mode, and hit SPIN. The reels will spin with a satisfying animation and stop one by one with a smooth deceleration effect. Match three symbols in a row for a big win, or two for a small win. Your credits increase with wins and decrease with each spin. Start with 100 free credits and see how long you can keep the fun going.</p>
+        
+        <h3 class="text-xl font-semibold mt-6">Slot Symbols</h3>
+        <p>Our slot machine features six classic symbols: cherry, lemon, orange, bar, seven, and diamond. The diamond and seven typically pay the highest, while cherries offer smaller but more frequent wins. The combination of symbols and reel count creates endless variety in every spin.</p>
+        
+        <h3 class="text-xl font-semibold mt-6">Entertainment Only</h3>
+        <p>This game is designed purely for entertainment. There is no real gambling, no cash prizes, and no way to deposit or withdraw money. It's a safe way to enjoy the thrill of a slot machine from the comfort of your device. Parents can rest assured that children can play without any financial risk.</p>
+        
+        <h3 class="text-xl font-semibold mt-6">Why Play Free Slots?</h3>
+        <p>Free slot games let you experience the excitement of spinning reels, matching symbols, and watching win animations without any of the risks associated with real-money gambling. They're perfect for learning how slot mechanics work, passing time, or simply enjoying a bit of casual fun. Our slot machine uses cryptographically secure randomness for fair, unpredictable results on every spin.</p>
+        
+        <h3 class="text-xl font-semibold mt-6">3-Reel vs 5-Reel Mode</h3>
+        <p>Switch between classic 3-reel and extended 5-reel gameplay with a single click. The 3-reel mode offers quick, nostalgic spins reminiscent of vintage fruit machines. The 5-reel mode adds more symbols to match and increases the variety of winning combinations. Both modes use the same virtual credit system and payout structure.</p>
+        
+        <h3 class="text-xl font-semibold mt-6">Fair and Random</h3>
+        <p>Every spin uses the Web Crypto API's <code class="font-mono text-sm bg-gray-100 px-1 rounded">crypto.getRandomValues()</code> to generate unpredictable outcomes. This ensures that no two spins are alike and that the results cannot be predicted or manipulated. You get a genuine, fair gaming experience every time.</p>
+        
+        <h3 class="text-xl font-semibold mt-6">Session Stats and Streaks</h3>
+        <p>Track your performance with built-in session statistics. See your total wins, losses, and current winning streak. A streak increases each time you land a matching combination and resets when you miss. Try to beat your personal best streak!</p>
+      </section>
+    </article>
+
+    <div id="related-games" class="mb-8"></div>
+  </main>
+
+  <div id="footer-container"></div>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playCollect } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('slot-machine');
+    initConsent();
+    trackGameView('slot-machine', 'Casino');
+
+    const SYMBOLS = ['🍒', '🍋', '🟠', '📊', '7️⃣', '💎'];
+    const PAYOUTS = { '🍒': [0, 2, 5, 15, 40], '🍋': [0, 3, 8, 25, 60], '🟠': [0, 4, 12, 35, 90], '📊': [0, 6, 20, 55, 150], '7️⃣': [0, 10, 50, 120, 300], '💎': [0, 15, 100, 250, 500] };
+
+    let credits = 100;
+    let reelCount = 3;
+    let spinning = false;
+    let sessionWins = 0, sessionLosses = 0, streak = 0;
+    let soundOn = true;
+
+    function secureRandom() {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] / (0xFFFFFFFF + 1);
+    }
+
+    function getRandomSymbol() {
+      return SYMBOLS[Math.floor(secureRandom() * SYMBOLS.length)];
+    }
+
+    function initReels() {
+      const container = document.getElementById('reels-container');
+      container.innerHTML = '';
+      container.className = 'flex gap-2 justify-center items-center';
+      for (let i = 0; i < reelCount; i++) {
+        const reel = document.createElement('div');
+        reel.className = 'slot-window w-16 md:w-20 bg-gray-800 rounded-lg flex items-center justify-center';
+        reel.dataset.reel = i;
+        reel.innerHTML = `<div class="reel-strip" data-strip="${i}">${SYMBOLS.map(s => `<span class="reel-symbol">${s}</span>`).join('')}</div>`;
+        container.appendChild(reel);
+      }
+    }
+
+    function spinReel(reelIdx, onStop) {
+      const reel = document.querySelector(`[data-reel="${reelIdx}"]`);
+      const strip = reel.querySelector('[data-strip]');
+      const result = getRandomSymbol();
+      const SYM_HEIGHT = 80;
+      const SPIN_LEN = 10 + Math.floor(secureRandom() * 6);
+      const stripSymbols = [];
+      for (let i = 0; i < SPIN_LEN; i++) stripSymbols.push(getRandomSymbol());
+      stripSymbols.push(result);
+      strip.innerHTML = stripSymbols.map(s => `<span class="reel-symbol">${s}</span>`).join('');
+      strip.style.transition = 'none';
+      strip.style.transform = 'translateY(0)';
+      strip.offsetHeight;
+      reel.classList.add('reel-spinning');
+      const spinDuration = 350 + reelIdx * 120;
+      setTimeout(() => {
+        reel.classList.remove('reel-spinning');
+        const endY = -(stripSymbols.length - 1) * SYM_HEIGHT;
+        strip.style.transition = 'transform 0.8s cubic-bezier(0.22, 0.61, 0.36, 1)';
+        strip.style.transform = `translateY(${endY}px)`;
+        setTimeout(() => {
+          strip.innerHTML = `<span class="reel-symbol">${result}</span>`;
+          strip.style.transition = '';
+          strip.style.transform = '';
+          onStop(result);
+        }, 800);
+      }, spinDuration);
+    }
+
+    function evaluate(results) {
+      const counts = {};
+      for (const s of results) counts[s] = (counts[s] || 0) + 1;
+      let best = { sym: null, n: 0 };
+      for (const [sym, n] of Object.entries(counts)) if (n > best.n) best = { sym, n };
+      if (best.n >= 2) return { sym: best.sym, match: best.n };
+      return null;
+    }
+
+    function getWinAmount(sym, match) {
+      const arr = PAYOUTS[sym] || [0, 0, 0, 0, 0];
+      return arr[Math.min(match - 1, arr.length - 1)] || 0;
+    }
+
+    async function doSpin() {
+      if (spinning) return;
+      const bet = parseInt(document.getElementById('bet-select').value, 10);
+      if (credits < bet) {
+        if (soundOn) playError();
+        document.getElementById('result-msg').textContent = 'Not enough credits!';
+        return;
+      }
+      spinning = true;
+      credits -= bet;
+      document.getElementById('credits').textContent = credits;
+      document.getElementById('spin-btn').disabled = true;
+      document.getElementById('result-msg').textContent = '';
+      document.getElementById('bet-select').disabled = true;
+      if (soundOn) playClick();
+      trackGameStart('slot-machine');
+
+      const results = [];
+      for (let i = 0; i < reelCount; i++) {
+        await new Promise(res => spinReel(i, r => { results.push(r); res(); }));
+      }
+
+      const ev = evaluate(results);
+      let win = 0;
+      if (ev) win = getWinAmount(ev.sym, ev.match) * bet;
+      credits += win;
+
+      document.getElementById('credits').textContent = credits;
+      document.getElementById('spin-btn').disabled = false;
+      document.getElementById('bet-select').disabled = false;
+      spinning = false;
+
+      const slotEl = document.getElementById('slot-machine');
+      const msgEl = document.getElementById('result-msg');
+
+      if (win > 0) {
+        sessionWins++;
+        streak++;
+        if (soundOn) {
+          if (ev.match >= 3) playPerfect();
+          else playScoreUp();
+        }
+        msgEl.textContent = ev.match >= 3 ? `🎉 BIG WIN! +${win}` : `Win! +${win}`;
+        slotEl.classList.add('win-flash');
+        setTimeout(() => slotEl.classList.remove('win-flash'), 1000);
+      } else {
+        sessionLosses++;
+        streak = 0;
+        if (soundOn) playError();
+        msgEl.textContent = 'No match. Try again!';
+      }
+
+      document.getElementById('stat-wins').textContent = sessionWins;
+      document.getElementById('stat-losses').textContent = sessionLosses;
+      document.getElementById('stat-streak').textContent = streak;
+
+      if (credits <= 0) {
+        if (soundOn) playGameOver();
+        trackGameOver('slot-machine', { score: sessionWins });
+        msgEl.textContent = 'Game Over! Refresh to play again.';
+      }
+    }
+
+    function setMode(n) {
+      if (spinning) return;
+      reelCount = n;
+      document.querySelectorAll('.mode-btn').forEach((b, i) => {
+        const is3 = b.id === 'mode-3';
+        b.className = `mode-btn px-4 py-2 rounded-lg font-medium ${(n === 3 && is3) || (n === 5 && !is3) ? 'bg-emerald-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`;
+      });
+      initReels();
+    }
+
+    document.getElementById('spin-btn').addEventListener('click', doSpin);
+    document.getElementById('mode-3').addEventListener('click', () => setMode(3));
+    document.getElementById('mode-5').addEventListener('click', () => setMode(5));
+
+    document.getElementById('sound-toggle').addEventListener('click', () => {
+      soundOn = !soundOn;
+      if (!soundOn) muteAll();
+      document.getElementById('sound-toggle').textContent = soundOn ? '🔊 Sound On' : '🔇 Sound Off';
+    });
+
+    initReels();
+  </script>
+</body>
+</html>

@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spin the Wheel - Prize Wheel Game | Mini Game Planet</title>
+  <meta name="description" content="Spin the wheel and win! A customizable prize wheel game with realistic physics, confetti celebrations, and endless fun. Free to play online.">
+  <link rel="canonical" href="https://minigameplanet.com/games/spin-the-wheel.html">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="Spin the Wheel - Prize Wheel Game">
+  <meta property="og:description" content="Spin the wheel and win! A customizable prize wheel game with realistic physics and confetti celebrations.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/spin-the-wheel.html">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Spin the Wheel",
+    "description": "A customizable prize wheel game with realistic physics, confetti celebrations, and customizable segments.",
+    "applicationCategory": "Game",
+    "operatingSystem": "Any",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+  
+  <!-- AdSense (commented) -->
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXX" crossorigin="anonymous"></script> -->
+  
+  <style>
+    :root { font-family: 'Space Grotesk', sans-serif; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    body { background-color: #F5F5F4; }
+  </style>
+</head>
+<body class="min-h-screen bg-[#F5F5F4] text-gray-900 antialiased">
+  <!-- GA4 Consent Banner (defaults) -->
+  <div id="consent-banner" class="hidden fixed bottom-0 left-0 right-0 z-50 p-4 bg-white shadow-lg border-t border-gray-200">
+    <p class="text-sm text-gray-600 mb-3">We use cookies for analytics. By continuing, you accept our use of cookies.</p>
+    <div class="flex gap-2">
+      <button id="consent-accept" class="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-medium">Accept</button>
+      <button id="consent-decline" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm">Decline</button>
+    </div>
+  </div>
+
+  <!-- Nav -->
+  <nav id="nav-container" class="bg-white border-b border-gray-200 px-4 py-3">
+    <div class="max-w-4xl mx-auto flex items-center justify-between">
+      <a href="/" class="font-semibold text-lg text-gray-900">Mini Game Planet</a>
+      <div class="flex items-center gap-2">
+        <button id="sound-toggle" class="p-2 rounded-lg hover:bg-gray-100" title="Toggle sound" aria-label="Toggle sound">
+          <svg id="sound-on" class="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20"><path d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.076l-2.889-3.333A1 1 0 014 12H2a2 2 0 01-2-2V6a2 2 0 012-2h2a1 1 0 01.494-.134l2.889-3.333zM14.657 5.34a1 1 0 011.414 0A8 8 0 0117 10a8 8 0 01-.929 3.657 1 1 0 01-1.414-1.414 6 6 0 00.929-2.243 6 6 0 00-.929-2.243 1 1 0 010-1.414z"/></svg>
+          <svg id="sound-off" class="w-5 h-5 text-gray-400 hidden" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.076l-2.889-3.333A1 1 0 014 12H2a2 2 0 01-2-2V6a2 2 0 012-2h2a1 1 0 01.494-.134l2.889-3.333zM14.657 5.34a1 1 0 011.414 0A8 8 0 0117 10a8 8 0 01-.929 3.657 1 1 0 01-1.414-1.414 6 6 0 00.929-2.243 6 6 0 00-.929-2.243 1 1 0 010-1.414z" clip-rule="evenodd"/><path d="M4 4l12 12"/></svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    <!-- White Card -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+      <div class="p-6 md:p-8">
+        <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Spin the Wheel</h1>
+        <p class="text-gray-600 mb-6">Customize your wheel, spin, and celebrate your win!</p>
+
+        <!-- Wheel Container -->
+        <div class="flex flex-col items-center mb-6">
+          <div class="relative">
+            <!-- Pointer -->
+            <div class="absolute -top-2 left-1/2 -translate-x-1/2 z-10 w-0 h-0 border-l-[16px] border-r-[16px] border-t-[24px] border-l-transparent border-r-transparent border-t-red-500 drop-shadow-md"></div>
+            <canvas id="wheel-canvas" width="320" height="320" class="rounded-full shadow-lg"></canvas>
+          </div>
+          <button id="spin-btn" class="mt-6 px-8 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl shadow-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+            SPIN
+          </button>
+        </div>
+
+        <!-- Result Display -->
+        <div id="result-display" class="hidden text-center py-4 px-4 bg-emerald-50 rounded-xl border border-emerald-200 mb-6">
+          <p class="text-sm text-emerald-700 font-medium">You won:</p>
+          <p id="result-text" class="text-xl font-bold text-emerald-900"></p>
+        </div>
+
+        <!-- Confetti Container -->
+        <div id="confetti-container" class="fixed inset-0 pointer-events-none overflow-hidden z-40"></div>
+
+        <!-- Segment Editor -->
+        <div class="border-t border-gray-200 pt-6">
+          <h2 class="text-lg font-semibold text-gray-900 mb-3">Edit Segments</h2>
+          <div id="segment-editor" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEO Article -->
+    <article class="mt-8 bg-white rounded-2xl shadow-sm border border-gray-200 p-6 md:p-8">
+      <h2 class="text-xl font-bold text-gray-900 mb-4">Spin the Wheel: The Ultimate Prize Wheel Game</h2>
+      <div class="prose prose-gray max-w-none text-gray-600 space-y-4">
+        <p>
+          Spin the Wheel is a classic casino-style game that brings excitement and anticipation to every spin. Whether you're hosting a party, running a promotion, or simply looking for a fun way to make decisions, our customizable prize wheel delivers a premium experience right in your browser. No downloads required—just load the page and start spinning.
+        </p>
+        <p>
+          Our wheel features eight colorful segments by default, each with its own label and distinct color. You can personalize every segment to match your theme: prizes, challenges, rewards, or even silly dares. The intuitive editor lets you change labels with a single click, making it perfect for birthdays, office events, classroom activities, or virtual game nights.
+        </p>
+        <p>
+          What sets our Spin the Wheel apart is its realistic physics engine. When you hit the spin button, the wheel accelerates quickly before gradually slowing down with a satisfying tick-tick-tick sound as it passes each segment. The deceleration curve mimics a real carnival wheel, so every spin feels authentic and suspenseful. You never know exactly where it will stop until the final moment.
+        </p>
+        <p>
+          When the wheel comes to rest, the result is displayed prominently, and a burst of confetti celebrates your win. The confetti effect adds a touch of joy and makes every outcome feel special. Combined with optional sound effects—clicks, success chimes, and celebration sounds—the game creates an immersive, engaging experience that keeps players coming back.
+        </p>
+        <p>
+          Under the hood, we use <code class="font-mono text-sm bg-gray-100 px-1 rounded">crypto.getRandomValues()</code> for true randomness. This ensures that each spin is cryptographically secure and unpredictable, so the outcome is fair and cannot be manipulated. Whether you're playing for fun or using the wheel for legitimate decision-making, you can trust the results.
+        </p>
+        <p>
+          The game is fully responsive and works on desktop, tablet, and mobile devices. The canvas-based wheel renders smoothly, and the clean white card design on a warm gray background keeps the focus on the action. With Space Grotesk for headings and DM Mono for technical elements, the typography is modern and readable. Best of all, Spin the Wheel is free to play—no registration, no ads blocking the experience. Spin, win, and enjoy!
+        </p>
+      </div>
+    </article>
+
+    <!-- Related Games -->
+    <section id="related-games" class="mt-8">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Related Games</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <a href="/games/coin-flip.html" class="block p-4 bg-white rounded-xl border border-gray-200 hover:border-emerald-300 hover:shadow-md transition-all">Coin Flip</a>
+        <a href="/games/dice-roller.html" class="block p-4 bg-white rounded-xl border border-gray-200 hover:border-emerald-300 hover:shadow-md transition-all">Dice Roller</a>
+        <a href="/games/random-picker.html" class="block p-4 bg-white rounded-xl border border-gray-200 hover:border-emerald-300 hover:shadow-md transition-all">Random Picker</a>
+        <a href="/games/lucky-wheel.html" class="block p-4 bg-white rounded-xl border border-gray-200 hover:border-emerald-300 hover:shadow-md transition-all">Lucky Wheel</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer id="footer-container" class="mt-12 py-6 border-t border-gray-200 bg-white">
+    <div class="max-w-4xl mx-auto px-4 text-center text-sm text-gray-500">
+      <p>&copy; Mini Game Planet. All games are for entertainment only.</p>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playPerfect, playCollect } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart } from '/js/analytics.js';
+
+    initToolPage('spin-the-wheel');
+    initConsent();
+    trackGameView('spin-the-wheel', 'Casino');
+
+    // Default segments
+    const DEFAULT_SEGMENTS = [
+      { label: 'Free Spin', color: '#EF4444' },
+      { label: '10 Points', color: '#F59E0B' },
+      { label: 'Jackpot!', color: '#10B981' },
+      { label: 'Try Again', color: '#3B82F6' },
+      { label: 'Bonus', color: '#8B5CF6' },
+      { label: '5 Points', color: '#EC4899' },
+      { label: 'Double', color: '#06B6D4' },
+      { label: 'Lucky!', color: '#84CC16' },
+    ];
+
+    let segments = JSON.parse(JSON.stringify(DEFAULT_SEGMENTS));
+    let currentRotation = 0;
+    let isSpinning = false;
+    let spinVelocity = 0;
+    let lastTime = 0;
+    let tickSoundInterval = null;
+
+    const canvas = document.getElementById('wheel-canvas');
+    const ctx = canvas.getContext('2d');
+    const spinBtn = document.getElementById('spin-btn');
+    const resultDisplay = document.getElementById('result-display');
+    const resultText = document.getElementById('result-text');
+    const segmentEditor = document.getElementById('segment-editor');
+    const confettiContainer = document.getElementById('confetti-container');
+    const soundToggle = document.getElementById('sound-toggle');
+    const soundOn = document.getElementById('sound-on');
+    const soundOff = document.getElementById('sound-off');
+
+    // Secure random
+    function secureRandom() {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] / (0xFFFFFFFF + 1);
+    }
+
+    function drawWheel() {
+      const size = canvas.width;
+      const cx = size / 2;
+      const cy = size / 2;
+      const radius = cx - 10;
+      const sliceAngle = (2 * Math.PI) / segments.length;
+
+      ctx.clearRect(0, 0, size, size);
+
+      segments.forEach((seg, i) => {
+        const startAngle = -Math.PI / 2 + i * sliceAngle + currentRotation;
+        const endAngle = startAngle + sliceAngle;
+
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, radius, startAngle, endAngle);
+        ctx.closePath();
+        ctx.fillStyle = seg.color;
+        ctx.fill();
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(startAngle + sliceAngle / 2);
+        ctx.textAlign = 'right';
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 12px "Space Grotesk", sans-serif';
+        ctx.fillText(seg.label, radius - 12, 4);
+        ctx.restore();
+      });
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, 15, 0, 2 * Math.PI);
+      ctx.fillStyle = '#1f2937';
+      ctx.fill();
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+    }
+
+    function getSegmentAtPointer() {
+      const sliceAngle = (2 * Math.PI) / segments.length;
+      const normRot = ((currentRotation % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+      const idx = Math.floor((2 * Math.PI - normRot) / sliceAngle) % segments.length;
+      return segments[idx];
+    }
+
+    function playTick() {
+      try { playClick(); } catch (_) {}
+    }
+
+    function spin() {
+      if (isSpinning) return;
+      isSpinning = true;
+      spinBtn.disabled = true;
+      resultDisplay.classList.add('hidden');
+      trackGameStart('spin-the-wheel');
+
+      try { playClick(); } catch (_) {}
+
+      const targetSegments = 5 + Math.floor(secureRandom() * 4);
+      const sliceAngle = (2 * Math.PI) / segments.length;
+      const randomOffset = secureRandom() * sliceAngle;
+      const targetAngle = targetSegments * (2 * Math.PI) + randomOffset;
+      spinVelocity = 0.5 + secureRandom() * 0.3;
+
+      let lastSegment = -1;
+      tickSoundInterval = setInterval(() => {
+        if (spinVelocity < 0.02) return;
+        const sliceAngle = (2 * Math.PI) / segments.length;
+        const normRot = ((currentRotation % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+        const idx = Math.floor((2 * Math.PI - normRot) / sliceAngle) % segments.length;
+        if (idx !== lastSegment) {
+          lastSegment = idx;
+          playTick();
+        }
+      }, 80);
+
+      function animate(time) {
+        if (!lastTime) lastTime = time;
+        const dt = (time - lastTime) / 1000;
+        lastTime = time;
+
+        spinVelocity *= 0.985;
+        currentRotation += spinVelocity * dt * 8;
+
+        if (spinVelocity < 0.005) {
+          spinVelocity = 0;
+          clearInterval(tickSoundInterval);
+          isSpinning = false;
+          spinBtn.disabled = false;
+          lastTime = 0;
+
+          const won = getSegmentAtPointer();
+          resultText.textContent = won.label;
+          resultDisplay.classList.remove('hidden');
+
+          try { playSuccess(); playCollect(); } catch (_) {}
+          showConfetti();
+          return;
+        }
+
+        drawWheel();
+        requestAnimationFrame(animate);
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    function showConfetti() {
+      const colors = ['#EF4444', '#F59E0B', '#10B981', '#3B82F6', '#8B5CF6', '#EC4899'];
+      const count = 80;
+      for (let i = 0; i < count; i++) {
+        const el = document.createElement('div');
+        el.className = 'confetti';
+        el.style.cssText = `
+          position: absolute; width: 10px; height: 10px;
+          left: ${50 + (secureRandom() - 0.5) * 20}%; top: 50%;
+          background: ${colors[Math.floor(secureRandom() * colors.length)]};
+          border-radius: ${secureRandom() > 0.5 ? '50%' : '0'};
+          animation: confetti-fall ${1.5 + secureRandom()}s ease-out forwards;
+          --tx: ${(secureRandom() - 0.5) * 200}px;
+          --ty: ${300 + secureRandom() * 200}px;
+        `;
+        confettiContainer.appendChild(el);
+        setTimeout(() => el.remove(), 2500);
+      }
+
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes confetti-fall {
+          to { transform: translate(var(--tx), var(--ty)) rotate(720deg); opacity: 0; }
+        }
+      `;
+      document.head.appendChild(style);
+      setTimeout(() => style.remove(), 3000);
+    }
+
+    function renderSegmentEditor() {
+      segmentEditor.innerHTML = segments.map((seg, i) => `
+        <div class="flex flex-col gap-1">
+          <input type="color" value="${seg.color}" data-idx="${i}" class="segment-color w-full h-8 rounded cursor-pointer border border-gray-200">
+          <input type="text" value="${seg.label}" data-idx="${i}" class="segment-label px-2 py-1.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" maxlength="20">
+        </div>
+      `).join('');
+
+      segmentEditor.querySelectorAll('.segment-color').forEach(inp => {
+        inp.addEventListener('input', (e) => {
+          segments[+e.target.dataset.idx].color = e.target.value;
+          drawWheel();
+        });
+      });
+      segmentEditor.querySelectorAll('.segment-label').forEach(inp => {
+        inp.addEventListener('change', (e) => {
+          segments[+e.target.dataset.idx].label = e.target.value || 'Prize';
+          drawWheel();
+        });
+      });
+    }
+
+    spinBtn.addEventListener('click', spin);
+
+    soundToggle.addEventListener('click', () => {
+      const muted = soundOn.classList.contains('hidden');
+      if (muted) {
+        soundOn.classList.remove('hidden');
+        soundOff.classList.add('hidden');
+        try { muteAll(false); } catch (_) {}
+      } else {
+        soundOn.classList.add('hidden');
+        soundOff.classList.remove('hidden');
+        try { muteAll(true); } catch (_) {}
+      }
+    });
+
+    try { initAudio(); } catch (_) {}
+    renderSegmentEditor();
+    drawWheel();
+  </script>
+</body>
+</html>
