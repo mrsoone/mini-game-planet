@@ -1,19 +1,50 @@
 // MiniGamePlanet — Cookie Consent Banner + Google Consent Mode v2
-// GDPR/CCPA-compliant. Saves preference to localStorage.
+// GDPR/CCPA-compliant. Saves preference to both a cookie (365 days) and localStorage.
 // Upgrades GA4 consent on accept. Loads AdSense only after ad consent.
 
 const STORAGE_KEY = 'mgp_cookie_consent';
+const COOKIE_NAME = 'mgp_consent';
+const COOKIE_DAYS = 365;
 let bannerEl = null;
+
+function setCookie(name, value, days) {
+  const d = new Date();
+  d.setTime(d.getTime() + days * 86400000);
+  document.cookie = `${name}=${encodeURIComponent(value)};expires=${d.toUTCString()};path=/;SameSite=Lax;Secure`;
+}
+
+function getCookie(name) {
+  const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+  return match ? decodeURIComponent(match[1]) : null;
+}
 
 function getConsent() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch { return null; }
+    const cookieVal = getCookie(COOKIE_NAME);
+    if (cookieVal) {
+      const parsed = JSON.parse(cookieVal);
+      if (parsed && typeof parsed.analytics === 'boolean') return parsed;
+    }
+  } catch {}
+
+  try {
+    const lsVal = localStorage.getItem(STORAGE_KEY);
+    if (lsVal) {
+      const parsed = JSON.parse(lsVal);
+      if (parsed && typeof parsed.analytics === 'boolean') {
+        setCookie(COOKIE_NAME, lsVal, COOKIE_DAYS);
+        return parsed;
+      }
+    }
+  } catch {}
+
+  return null;
 }
 
 function saveConsent(prefs) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
+  const json = JSON.stringify(prefs);
+  try { setCookie(COOKIE_NAME, json, COOKIE_DAYS); } catch {}
+  try { localStorage.setItem(STORAGE_KEY, json); } catch {}
 }
 
 function applyConsent(prefs) {
@@ -67,8 +98,9 @@ function buildBanner() {
     transition: 'transform 0.3s ease', transform: 'translateY(100%)'
   });
 
-  let analyticsOn = false;
-  let advertisingOn = false;
+  const saved = getConsent();
+  let analyticsOn = saved?.analytics ?? false;
+  let advertisingOn = saved?.advertising ?? false;
   let customizeOpen = false;
 
   function render() {
