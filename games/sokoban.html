@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sokoban - Box Pusher Puzzle Game | Mini Game Planet</title>
+  <meta name="description" content="Play Sokoban, the classic box-pushing puzzle game. Push boxes onto target squares across 10+ levels. Free online puzzle game with undo, level select, and personal best tracking.">
+  <link rel="canonical" href="https://minigameplanet.com/games/sokoban.html">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="Sokoban - Box Pusher Puzzle Game">
+  <meta property="og:description" content="Push boxes onto targets in this classic puzzle game. 10+ levels, undo, and personal best tracking.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/sokoban.html">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- GA4 consent defaults -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+  window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+  gtag('js',new Date());
+  gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500});
+  gtag('config','G-XXXXXXXXXX');
+  </script>
+  <!-- AdSense (commented - uncomment with your publisher ID) -->
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXX" crossorigin="anonymous"></script> -->
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    .cell { width: 36px; height: 36px; }
+    @media (min-width: 640px) { .cell { width: 44px; height: 44px; } }
+  </style>
+  
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoGame",
+    "name": "Sokoban - Box Pusher",
+    "description": "Classic Sokoban puzzle game. Push boxes onto target squares. 10+ levels with increasing difficulty.",
+    "genre": "Puzzle",
+    "gamePlatform": "Web Browser",
+    "url": "https://minigameplanet.com/games/sokoban.html"
+  }
+  </script>
+</head>
+<body class="min-h-screen text-gray-800 antialiased">
+  <div id="nav-container"></div>
+
+  <main class="max-w-4xl mx-auto px-4 py-6">
+    <!-- Game Card -->
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+      <div class="p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">Sokoban</h1>
+            <p class="text-gray-500 text-sm">Push all boxes onto the target squares</p>
+          </div>
+          <button id="sound-toggle" class="p-2 rounded-lg hover:bg-gray-100 transition" title="Sound">🔊</button>
+        </div>
+        
+        <!-- Controls -->
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+          <div class="flex items-center gap-2">
+            <span class="text-sm text-gray-500">Level:</span>
+            <select id="level-select" class="font-mono text-sm border rounded-lg px-3 py-1.5 bg-gray-50">
+              <!-- Populated by JS -->
+            </select>
+          </div>
+          <div class="font-mono text-sm text-gray-600">
+            Moves: <span id="moves-count">0</span>
+          </div>
+          <div class="font-mono text-sm text-gray-600">
+            Best: <span id="best-count">—</span>
+          </div>
+          <button id="undo-btn" class="ml-auto px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium transition disabled:opacity-50 disabled:cursor-not-allowed">
+            Undo
+          </button>
+        </div>
+
+        <!-- Game Board -->
+        <div id="game-container" class="inline-block p-4 bg-gray-100 rounded-xl overflow-auto max-w-full">
+          <div id="game-board" class="inline-grid gap-0" style="grid-template-columns: repeat(var(--cols, 8), 1fr);"></div>
+        </div>
+
+        <!-- Win overlay -->
+        <div id="win-overlay" class="hidden fixed inset-0 bg-black/40 z-40 flex items-center justify-center p-4">
+          <div class="bg-white rounded-2xl p-6 max-w-sm text-center shadow-xl">
+            <h2 class="text-xl font-bold text-green-600 mb-2">Level Complete!</h2>
+            <p class="text-gray-600 mb-4">Moves: <span id="win-moves" class="font-mono font-semibold"></span></p>
+            <div class="flex gap-3 justify-center">
+              <button id="next-level-btn" class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition">Next Level</button>
+              <button id="close-win-btn" class="px-4 py-2 bg-gray-200 rounded-lg font-medium hover:bg-gray-300 transition">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEO Article -->
+    <article class="mt-8 bg-white rounded-2xl shadow-lg border border-gray-100 p-6 sm:p-8">
+      <h2 class="text-xl font-bold text-gray-900 mb-4">What is Sokoban?</h2>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        Sokoban, also known as "Box Pusher" or "Warehouse Keeper," is one of the most beloved puzzle games ever created. Originally designed in 1982 by Hiroyuki Imabayashi in Japan, Sokoban challenges players to push crates or boxes onto designated target squares within a warehouse-like grid. The name itself comes from Japanese: "soko" means warehouse and "ban" means keeper.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        The rules are elegantly simple: you can only push boxes, never pull them. You move one box at a time, and once a box is against a wall or another box, you cannot push it in that direction. This creates a fascinating spatial reasoning challenge where every move matters. A single wrong push can trap a box in an unreachable corner, forcing you to restart the level.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        Our Sokoban game features over 10 levels of increasing difficulty. Early levels introduce the basic mechanics with small grids and few boxes. As you progress, you'll encounter larger warehouses, more boxes, tighter corridors, and layouts that require careful planning. The undo button lets you experiment without fear, while the moves counter and personal best tracking encourage optimization and replay.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        Sokoban has influenced countless puzzle games and remains a staple of logic puzzle design. Its mechanics appear in games like Baba Is You, Stephen's Sausage Roll, and many mobile puzzle titles. Playing Sokoban sharpens your spatial reasoning, planning skills, and patience. Whether you're a puzzle veteran or new to the genre, Sokoban offers timeless, brain-teasing fun.
+      </p>
+      <p class="text-gray-600 leading-relaxed">
+        Use arrow keys or WASD to move, or swipe on touch devices. Select levels from the dropdown, track your best moves per level, and enjoy this classic puzzle experience. Good luck, warehouse keeper!
+      </p>
+    </article>
+
+    <div id="related-games" class="mt-8"></div>
+  </main>
+
+  <div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, isMuted, playSuccess } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView } from '/js/analytics.js';
+
+  document.addEventListener('click', () => initAudio(), { once: true });
+  initToolPage('sokoban');
+  initConsent();
+  trackGameView('sokoban', 'Puzzle');
+
+  const soundBtn = document.getElementById('sound-toggle');
+  if (soundBtn) {
+    soundBtn.addEventListener('click', () => {
+      initAudio();
+      const nowMuted = muteAll();
+      soundBtn.textContent = nowMuted ? '🔇' : '🔊';
+    });
+    if (isMuted()) soundBtn.textContent = '🔇';
+  }
+
+  const CELL = { EMPTY: 0, WALL: 1, TARGET: 2, BOX: 3, BOX_ON_TARGET: 4, PLAYER: 5 };
+  const KEYS = { 37: 'L', 38: 'U', 39: 'R', 40: 'D', 65: 'L', 87: 'U', 68: 'R', 83: 'D' };
+
+  const LEVELS = [
+      { w: 6, h: 5, data: '111111120001103001100501111111' },
+      { w: 7, h: 6, data: '111111112000011030001100500110000011111111' },
+      { w: 8, h: 6, data: '111111111200000110300001100500011000000111111111' },
+      { w: 8, h: 7, data: '11111111120000011030000110050001100000011000000111111111' },
+      { w: 9, h: 7, data: '111111111120000001103000001100500001100000001100000001111111111' },
+      { w: 9, h: 8, data: '111111111120000001103000001100500001100000001100000001100000001111111111' },
+      { w: 10, h: 8, data: '11111111111200000001103000000110050000011000000001100000000110000000011111111111' },
+      { w: 10, h: 9, data: '111111111112000000011030000001100500000110000000011000000001100000000110000000011111111111' },
+      { w: 11, h: 9, data: '111111111111200000000110300000001100500000011000000000110000000001100000000011000000000111111111111' },
+      { w: 12, h: 10, data: '111111111111120000000001103000000001100500000001100000000001100000000001100000000001100000000001100000000001111111111111' },
+    ];
+
+    let state = { grid: [], player: { x: 0, y: 0 }, underPlayer: CELL.EMPTY, moves: 0, history: [], level: 0 };
+    const STORAGE_KEY = 'sokoban_best';
+
+    function parseLevel(idx) {
+      const l = LEVELS[idx];
+      const g = [];
+      let px = 0, py = 0, under = CELL.EMPTY;
+      for (let i = 0; i < l.data.length; i++) {
+        const v = +l.data[i];
+        const x = i % l.w, y = Math.floor(i / l.w);
+        if (v === 5) { px = x; py = y; under = CELL.EMPTY; g.push(CELL.EMPTY); }
+        else if (v === 8) { px = x; py = y; under = CELL.TARGET; g.push(CELL.TARGET); }
+        else g.push(v);
+      }
+      return { grid: g, player: { x: px, y: py }, underPlayer: under, w: l.w, h: l.h };
+    }
+
+    function getBest(level) {
+      try {
+        const b = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+        return b[level] ?? null;
+      } catch { return null; }
+    }
+
+    function setBest(level, moves) {
+      try {
+        const b = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+        const cur = b[level];
+        if (cur == null || moves < cur) { b[level] = moves; localStorage.setItem(STORAGE_KEY, JSON.stringify(b)); }
+      } catch {}
+    }
+
+    function idx(x, y, w) { return y * w + x; }
+
+    function canPush(g, w, h, dx, dy) {
+      const { x, y } = state.player;
+      const nx = x + dx, ny = y + dy;
+      if (nx < 0 || nx >= w || ny < 0 || ny >= h) return false;
+      const nv = g[idx(nx, ny, w)];
+      if (nv === CELL.WALL) return false;
+      if (nv === CELL.EMPTY || nv === CELL.TARGET) return true;
+      if (nv === CELL.BOX || nv === CELL.BOX_ON_TARGET) {
+        const nnx = nx + dx, nny = ny + dy;
+        if (nnx < 0 || nnx >= w || nny < 0 || nny >= h) return false;
+        const nnv = g[idx(nnx, nny, w)];
+        return nnv === CELL.EMPTY || nnv === CELL.TARGET;
+      }
+      return false;
+    }
+
+    function doMove(g, w, h, dx, dy) {
+      const ng = g.map(c => c);
+      const { x, y } = state.player;
+      const nx = x + dx, ny = y + dy;
+      const nv = ng[idx(nx, ny, w)];
+      const oldUnder = state.underPlayer;
+
+      ng[idx(x, y, w)] = oldUnder;
+
+      if (nv === CELL.BOX || nv === CELL.BOX_ON_TARGET) {
+        const nnx = nx + dx, nny = ny + dy;
+        const nnv = ng[idx(nnx, nny, w)];
+        ng[idx(nnx, nny, w)] = (nnv === CELL.TARGET) ? CELL.BOX_ON_TARGET : CELL.BOX;
+        ng[idx(nx, ny, w)] = (nv === CELL.BOX_ON_TARGET) ? CELL.TARGET : CELL.EMPTY;
+        state.player = { x: nx, y: ny };
+        state.underPlayer = (nv === CELL.BOX_ON_TARGET) ? CELL.TARGET : CELL.EMPTY;
+      } else {
+        state.player = { x: nx, y: ny };
+        state.underPlayer = (nv === CELL.TARGET) ? CELL.TARGET : CELL.EMPTY;
+      }
+
+      state.grid = ng;
+      state.moves++;
+      state.history.push({ grid: g.map(c => c), player: { x, y }, underPlayer: oldUnder });
+    }
+
+    function move(dx, dy) {
+      const l = LEVELS[state.level];
+      if (!canPush(state.grid, l.w, l.h, dx, dy)) return;
+      doMove(state.grid, l.w, l.h, dx, dy);
+      render();
+      updateUI();
+      if (checkWin()) showWin();
+    }
+
+    function checkWin() {
+      return state.grid.every(c => c !== CELL.BOX);
+    }
+
+    function undo() {
+      if (state.history.length === 0) return;
+      const h = state.history.pop();
+      state.grid = h.grid;
+      state.player = h.player;
+      state.underPlayer = h.underPlayer;
+      state.moves = Math.max(0, state.moves - 1);
+      render();
+      updateUI();
+    }
+
+    function render() {
+      const l = LEVELS[state.level];
+      const board = document.getElementById('game-board');
+      board.style.setProperty('--cols', l.w);
+      board.innerHTML = '';
+      for (let y = 0; y < l.h; y++) {
+        for (let x = 0; x < l.w; x++) {
+          const i = idx(x, y, l.w);
+          let v = state.grid[i];
+          if (x === state.player.x && y === state.player.y) v = CELL.PLAYER;
+          const cell = document.createElement('div');
+          cell.className = 'cell flex items-center justify-center text-lg sm:text-xl';
+          const classes = {
+            [CELL.EMPTY]: 'bg-gray-200',
+            [CELL.WALL]: 'bg-gray-700',
+            [CELL.TARGET]: 'bg-amber-100 border-2 border-amber-300 border-dashed',
+            [CELL.BOX]: 'bg-amber-600 text-white font-bold',
+            [CELL.BOX_ON_TARGET]: 'bg-green-500 text-white font-bold',
+            [CELL.PLAYER]: 'bg-indigo-600 text-white font-bold',
+          };
+          cell.className += ' ' + (classes[v] || 'bg-gray-200');
+          cell.textContent = { [CELL.BOX]: '▢', [CELL.BOX_ON_TARGET]: '✓', [CELL.PLAYER]: '●' }[v] || '';
+          board.appendChild(cell);
+        }
+      }
+    }
+
+    function updateUI() {
+      document.getElementById('moves-count').textContent = state.moves;
+      const best = getBest(state.level);
+      document.getElementById('best-count').textContent = best != null ? best : '—';
+      document.getElementById('undo-btn').disabled = state.history.length === 0;
+    }
+
+    function showWin() {
+      setBest(state.level, state.moves);
+      document.getElementById('win-moves').textContent = state.moves;
+      document.getElementById('win-overlay').classList.remove('hidden');
+      playSuccess();
+    }
+
+    function loadLevel(idx) {
+      state.level = idx;
+      const p = parseLevel(idx);
+      state.grid = p.grid;
+      state.player = p.player;
+      state.underPlayer = p.underPlayer;
+      state.moves = 0;
+      state.history = [];
+      render();
+      updateUI();
+      document.getElementById('level-select').value = idx;
+    }
+
+    function initLevelSelect() {
+      const sel = document.getElementById('level-select');
+      sel.innerHTML = LEVELS.map((_, i) => `<option value="${i}">Level ${i + 1}</option>`).join('');
+      sel.addEventListener('change', () => loadLevel(+sel.value));
+    }
+
+    let touchStart = { x: 0, y: 0 };
+    document.addEventListener('touchstart', e => { touchStart = { x: e.touches[0].clientX, y: e.touches[0].clientY }; }, { passive: true });
+    document.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - touchStart.x;
+      const dy = e.changedTouches[0].clientY - touchStart.y;
+      const th = 30;
+      if (Math.abs(dx) > th || Math.abs(dy) > th) {
+        if (Math.abs(dx) > Math.abs(dy)) move(dx > 0 ? 1 : -1, 0);
+        else move(0, dy > 0 ? 1 : -1);
+      }
+    }, { passive: true });
+
+    document.addEventListener('keydown', e => {
+      const d = KEYS[e.keyCode];
+      if (d) { e.preventDefault(); const m = { L: [-1,0], U: [0,-1], R: [1,0], D: [0,1] }[d]; move(m[0], m[1]); }
+    });
+
+    document.getElementById('undo-btn').addEventListener('click', undo);
+    document.getElementById('next-level-btn').addEventListener('click', () => {
+      document.getElementById('win-overlay').classList.add('hidden');
+      if (state.level < LEVELS.length - 1) loadLevel(state.level + 1);
+    });
+    document.getElementById('close-win-btn').addEventListener('click', () => document.getElementById('win-overlay').classList.add('hidden'));
+
+    initLevelSelect();
+    loadLevel(0);
+  </script>
+</body>
+</html>

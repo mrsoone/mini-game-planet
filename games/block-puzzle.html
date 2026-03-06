@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Block Puzzle Online — Play Instantly | MiniGamePlanet</title>
+  <meta name="description" content="Play Block Puzzle free online. Classic Tetris-style falling blocks. Rotate, move, and hold pieces. Clear rows for points. Ghost piece, next preview, and increasing speed.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/block-puzzle">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+  window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+  gtag('js',new Date());
+  gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500});
+  gtag('config','G-XXXXXXXXXX');
+  </script>
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Free Block Puzzle Online | MiniGamePlanet">
+  <meta property="og:description" content="Play Block Puzzle free online. Tetris-style falling blocks, rotate, hold, ghost piece.">
+  <meta property="og:url" content="https://minigameplanet.com/games/block-puzzle">
+  <meta property="og:site_name" content="MiniGamePlanet">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"VideoGame","name":"Block Puzzle","url":"https://minigameplanet.com/games/block-puzzle","description":"Play Block Puzzle free online. Tetris-style falling blocks with rotate, hold, and ghost piece.","genre":"Puzzle","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+  </script>
+  <style>
+    .hero-grad{background:linear-gradient(135deg,#0891B2 0%,#2563EB 22%,#7C3AED 44%,#E11D48 66%,#EA580C 82%,#D97706 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:heroShift 8s ease-in-out infinite}
+    @keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+    #gameCanvas{display:block;margin:0 auto;border-radius:8px;background:#1a1a2e;touch-action:none}
+    .touch-btn{width:48px;height:48px;border-radius:8px;border:2px solid #E5E7EB;background:#fff;color:#334155;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit;user-select:none;-webkit-tap-highlight-color:transparent}
+    .touch-btn:active{background:#F1F5F9;transform:scale(0.95)}
+    .touch-btn.hold{background:#F8FAFC;border-color:#94A3B8}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;position:relative;" id="game-wrap">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <div>
+          <h1 style="font-size:22px;font-weight:700;margin:0;">🧱 Block Puzzle</h1>
+          <p style="font-size:12px;color:#94A3B8;margin:2px 0 0;">Arrow keys · WASD · Touch</p>
+        </div>
+        <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊 Sound</button>
+      </div>
+      <div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:80px;padding:8px 12px;background:#F8FAFC;border-radius:8px;text-align:center;">
+          <div style="font-size:10px;color:#94A3B8;font-weight:600;text-transform:uppercase;">Score</div>
+          <div id="score" style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:#2563EB;">0</div>
+        </div>
+        <div style="flex:1;min-width:80px;padding:8px 12px;background:#F8FAFC;border-radius:8px;text-align:center;">
+          <div style="font-size:10px;color:#94A3B8;font-weight:600;text-transform:uppercase;">Best</div>
+          <div id="best" style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:#D97706;">0</div>
+        </div>
+        <div style="flex:1;min-width:80px;padding:8px 12px;background:#F8FAFC;border-radius:8px;text-align:center;">
+          <div style="font-size:10px;color:#94A3B8;font-weight:600;text-transform:uppercase;">Level</div>
+          <div id="level" style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:#334155;">1</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;align-items:flex-start;">
+        <div style="flex:1;min-width:200px;">
+          <canvas id="gameCanvas" width="300" height="480"></canvas>
+        </div>
+        <div style="flex:0 0 100px;display:flex;flex-direction:column;gap:8px;align-items:center;">
+          <div style="font-size:10px;color:#94A3B8;font-weight:600;text-transform:uppercase;">Hold</div>
+          <canvas id="holdCanvas" width="80" height="80" style="background:#1a1a2e;border-radius:8px;"></canvas>
+          <div style="font-size:10px;color:#94A3B8;font-weight:600;text-transform:uppercase;">Next</div>
+          <canvas id="nextCanvas" width="80" height="80" style="background:#1a1a2e;border-radius:8px;"></canvas>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:center;gap:12px;margin-top:12px;flex-wrap:wrap;">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:180px;">
+          <div></div>
+        <button class="touch-btn" id="btn-up" aria-label="Rotate">↻</button>
+        <div></div>
+        <button class="touch-btn" id="btn-left" aria-label="Left">←</button>
+        <button class="touch-btn" id="btn-down" aria-label="Down">↓</button>
+        <button class="touch-btn" id="btn-right" aria-label="Right">→</button>
+        <div></div>
+        <button class="touch-btn" id="btn-hold" aria-label="Hold">↔</button>
+        <div></div>
+        </div>
+      </div>
+      <div id="game-over" style="display:none;text-align:center;padding:20px;margin-top:12px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;">
+        <div id="go-title" style="font-size:24px;font-weight:700;margin-bottom:4px;"></div>
+        <div id="go-sub" style="font-size:14px;color:#64748B;margin-bottom:12px;"></div>
+        <div id="session-stats" style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;text-align:left;max-width:220px;margin:0 auto 16px;padding:12px;background:#fff;border-radius:8px;"></div>
+        <button id="play-again" style="padding:10px 28px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">▶ Play Again</button>
+        <p style="font-size:11px;color:#94A3B8;margin-top:6px;">Press Enter or Space to restart</p>
+      </div>
+    </div>
+  </main>
+
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play Block Puzzle</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>Block Puzzle is a classic falling-block puzzle game inspired by Tetris. Colored tetrominoes drop from the top of the playfield. Your job is to rotate and move each piece as it falls so that when it lands, it completes full horizontal rows. Completed rows disappear, gems above fall down, and you earn points. The game gets faster as you level up, making it increasingly challenging to place pieces quickly and strategically.</p>
+
+      <h3 class="text-lg font-bold text-slate-900 mt-6">How to Play</h3>
+      <p>Use the arrow keys or WASD to move and rotate pieces. Left and right arrows move the block horizontally. Down arrow speeds up the fall. Up arrow or W rotates the piece clockwise. On mobile, use the on-screen touch buttons. A ghost piece shows exactly where your block will land, making it easier to line up perfect drops. The Hold button lets you store your current piece and swap it later — useful for saving a strong piece like the I-block for a Tetris (four-line clear).</p>
+      <p>Clear rows to score: a single row is 100 points, two rows 300, three rows 500, and a Tetris (four rows at once) is 800 points. Each 10 rows cleared advances you to the next level, and the game speed increases. The game ends when a new piece cannot spawn because the top of the board is blocked.</p>
+
+      <h3 class="text-lg font-bold text-slate-900 mt-6">History &amp; Origin</h3>
+      <p>Block Puzzle games trace their roots to Tetris, created by Russian designer Alexey Pajitnov in 1984. The Soviet-era game became a global phenomenon, appearing on virtually every gaming platform since. Tetris popularized the falling-block puzzle genre, and countless variants have followed — Block Puzzle, Tetris 99, Puyo Puyo Tetris, and many mobile clones. The core mechanic — rotate, move, clear rows — remains timeless. The simplicity of the rules combined with the depth of strategic play has kept players engaged for decades.</p>
+
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Strategy &amp; Tips</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Keep the center flat.</strong> Avoid building a tower in the middle. Leave a flat area so you can place pieces easily.</li>
+        <li><strong>Save the I-piece for Tetris.</strong> The long I-piece is the only one that clears four rows at once. Hold it until you have a full row of gaps.</li>
+        <li><strong>Use the ghost piece.</strong> The semi-transparent preview shows where your block will land. Use it to align drops precisely.</li>
+        <li><strong>Build a well on one side.</strong> Some players prefer a single column on the left or right edge. This lets you drop I-pieces for Tetris clears.</li>
+        <li><strong>Don't panic at high speed.</strong> At higher levels, think one move ahead. Rotate before you move, and use soft drops (down) to save time.</li>
+      </ul>
+
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Frequently Asked Questions</h3>
+      <h4 class="font-semibold text-slate-800">What is a Tetris?</h4>
+      <p>A Tetris is when you clear four rows at once using the I-piece (the long straight block). It's worth 800 points per level and is the most efficient way to score.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">Can I hold more than one piece?</h4>
+      <p>No. You can hold only one piece at a time. Once you use your held piece, you must wait for another piece to hold again.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">Does the game save my progress?</h4>
+      <p>Your personal best score is stored in your browser. The game itself does not save mid-game progress — each game is a single session.</p>
+
+      <p class="mt-6">Play Block Puzzle free in your browser — no download, no account needed. Rotate, drop, and clear rows to beat your best score.</p>
+    </div>
+  </article>
+
+  <div id="related-games"></div>
+  <div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, isMuted, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playDrop, playLock } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+  document.addEventListener('click', () => initAudio(), { once: true });
+  initToolPage('block-puzzle');
+  initConsent();
+  trackGameView('block-puzzle', 'Puzzle');
+
+  const COLS = 10, ROWS = 20;
+  const TETROMINOES = [
+    { shape: [[1,1,1,1]], color: '#00D4FF' }, // I
+    { shape: [[1,1],[1,1]], color: '#FFE135' }, // O
+    { shape: [[0,1,0],[1,1,1]], color: '#A855F7' }, // T
+    { shape: [[1,0,0],[1,1,1]], color: '#3B82F6' }, // L
+    { shape: [[0,0,1],[1,1,1]], color: '#F97316' }, // J
+    { shape: [[0,1,1],[1,1,0]], color: '#22C55E' }, // S
+    { shape: [[1,1,0],[0,1,1]], color: '#EF4444' }  // Z
+  ];
+
+  const ROW_SCORES = { 1: 100, 2: 300, 3: 500, 4: 800 };
+
+  function rng() {
+    const a = new Uint32Array(1);
+    crypto.getRandomValues(a);
+    return a[0];
+  }
+
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = rng() % (i + 1);
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  let bag = [];
+  function getNextPiece() {
+    if (bag.length === 0) bag = shuffle([0,1,2,3,4,5,6]);
+    return bag.pop();
+  }
+
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
+  const holdCtx = document.getElementById('holdCanvas').getContext('2d');
+  const nextCtx = document.getElementById('nextCanvas').getContext('2d');
+
+  const CELL = Math.min(24, Math.floor((canvas.width - 4) / COLS));
+  const BOARD_W = CELL * COLS + 4;
+  const BOARD_H = CELL * ROWS + 4;
+
+  let board = [];
+  let current = null;
+  let nextIdx = getNextPiece();
+  let heldIdx = null;
+  let canHold = true;
+  let score = 0;
+  let level = 1;
+  let lines = 0;
+  let bestScore = parseInt(localStorage.getItem('blockPuzzleBest') || '0', 10);
+  let gameActive = false;
+  let gameStarted = false;
+  let lastDrop = 0;
+  let dropInterval = 1000;
+  let animId = null;
+  let session = { rounds: 0, bestScore: 0, totalScore: 0, startTime: Date.now() };
+
+  const scoreEl = document.getElementById('score');
+  const bestEl = document.getElementById('best');
+  const levelEl = document.getElementById('level');
+  const goEl = document.getElementById('game-over');
+
+  document.getElementById('sound-btn').addEventListener('click', () => {
+    initAudio();
+    const m = muteAll();
+    document.getElementById('sound-btn').textContent = m ? '🔇 Sound' : '🔊 Sound';
+  });
+
+  function initBoard() {
+    board = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+  }
+
+  function createPiece(idx) {
+    const t = TETROMINOES[idx];
+    return {
+      shape: t.shape.map(r => [...r]),
+      color: t.color,
+      x: Math.floor((COLS - t.shape[0].length) / 2),
+      y: 0,
+      idx
+    };
+  }
+
+  function spawnPiece() {
+    current = createPiece(nextIdx);
+    nextIdx = getNextPiece();
+    canHold = true;
+    renderNext();
+    if (collides(current)) {
+      gameOver();
+    }
+  }
+
+  function collides(p, dx = 0, dy = 0) {
+    for (let r = 0; r < p.shape.length; r++) {
+      for (let c = 0; c < p.shape[r].length; c++) {
+        if (!p.shape[r][c]) continue;
+        const ny = p.y + r + dy;
+        const nx = p.x + c + dx;
+        if (nx < 0 || nx >= COLS || ny >= ROWS) return true;
+        if (ny >= 0 && board[ny][nx]) return true;
+      }
+    }
+    return false;
+  }
+
+  function lockPiece() {
+    if (!current || !gameActive) return;
+    for (let r = 0; r < current.shape.length; r++) {
+      for (let c = 0; c < current.shape[r].length; c++) {
+        if (current.shape[r][c]) {
+          const ny = current.y + r;
+          const nx = current.x + c;
+          if (ny >= 0) board[ny][nx] = current.color;
+        }
+      }
+    }
+    playLock();
+    const cleared = clearRows();
+    if (cleared > 0) {
+      score += ROW_SCORES[cleared] * level;
+      lines += cleared;
+      if (lines >= level * 10) {
+        level++;
+        dropInterval = Math.max(100, 1000 - (level - 1) * 80);
+        playLevelUp();
+      }
+      if (cleared === 4) playPerfect();
+      else if (cleared >= 2) playSuccess();
+      else playScoreUp(50);
+    }
+    scoreEl.textContent = score;
+    levelEl.textContent = level;
+    if (score > bestScore) {
+      bestScore = score;
+      bestEl.textContent = bestScore;
+      localStorage.setItem('blockPuzzleBest', String(bestScore));
+    }
+    current = null;
+    spawnPiece();
+  }
+
+  function clearRows() {
+    let count = 0;
+    for (let r = ROWS - 1; r >= 0; r--) {
+      if (board[r].every(c => c)) {
+        board.splice(r, 1);
+        board.unshift(Array(COLS).fill(0));
+        count++;
+        r++;
+      }
+    }
+    return count;
+  }
+
+  function getGhostY() {
+    if (!current) return 0;
+    const origY = current.y;
+    while (!collides(current, 0, 1)) current.y++;
+    const ghostY = current.y;
+    current.y = origY;
+    return ghostY;
+  }
+
+  function drawGhost() {
+    if (!current || !gameActive) return;
+    const ghostY = getGhostY();
+    ctx.save();
+    ctx.globalAlpha = 0.35;
+    for (let r = 0; r < current.shape.length; r++) {
+      for (let c = 0; c < current.shape[r].length; c++) {
+        if (current.shape[r][c]) {
+          ctx.fillStyle = current.color;
+          ctx.fillRect(
+            2 + (current.x + c) * CELL,
+            2 + (ghostY + r) * CELL,
+            CELL - 2,
+            CELL - 2
+          );
+        }
+      }
+    }
+    ctx.restore();
+  }
+
+  function drawBoard() {
+    const ox = (canvas.width - BOARD_W) / 2 + 2;
+    const oy = 2;
+    ctx.fillStyle = '#1a1a2e';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(ox - 2, oy - 2, BOARD_W, BOARD_H);
+
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        const cell = board[r][c];
+        if (cell) {
+          ctx.fillStyle = cell;
+          ctx.fillRect(ox + c * CELL, oy + r * CELL, CELL - 2, CELL - 2);
+          ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(ox + c * CELL, oy + r * CELL, CELL - 2, CELL - 2);
+        }
+      }
+    }
+
+    if (current) {
+      drawGhost();
+      ctx.globalAlpha = 1;
+      for (let r = 0; r < current.shape.length; r++) {
+        for (let c = 0; c < current.shape[r].length; c++) {
+          if (current.shape[r][c]) {
+            ctx.fillStyle = current.color;
+            ctx.fillRect(
+              ox + (current.x + c) * CELL,
+              oy + (current.y + r) * CELL,
+              CELL - 2,
+              CELL - 2
+            );
+            ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+            ctx.strokeRect(ox + (current.x + c) * CELL, oy + (current.y + r) * CELL, CELL - 2, CELL - 2);
+          }
+        }
+      }
+    }
+  }
+
+  function renderHold() {
+    holdCtx.fillStyle = '#1a1a2e';
+    holdCtx.fillRect(0, 0, 80, 80);
+    if (heldIdx === null) return;
+    const t = TETROMINOES[heldIdx];
+    const sz = 16;
+    const ox = (80 - t.shape[0].length * sz) / 2;
+    const oy = (80 - t.shape.length * sz) / 2;
+    for (let r = 0; r < t.shape.length; r++) {
+      for (let c = 0; c < t.shape[r].length; c++) {
+        if (t.shape[r][c]) {
+          holdCtx.fillStyle = t.color;
+          holdCtx.fillRect(ox + c * sz, oy + r * sz, sz - 2, sz - 2);
+        }
+      }
+    }
+  }
+
+  function renderNext() {
+    nextCtx.fillStyle = '#1a1a2e';
+    nextCtx.fillRect(0, 0, 80, 80);
+    const t = TETROMINOES[nextIdx];
+    const sz = 16;
+    const ox = (80 - t.shape[0].length * sz) / 2;
+    const oy = (80 - t.shape.length * sz) / 2;
+    for (let r = 0; r < t.shape.length; r++) {
+      for (let c = 0; c < t.shape[r].length; c++) {
+        if (t.shape[r][c]) {
+          nextCtx.fillStyle = t.color;
+          nextCtx.fillRect(ox + c * sz, oy + r * sz, sz - 2, sz - 2);
+        }
+      }
+    }
+  }
+
+  function move(dir) {
+    if (!gameActive || !current) return;
+    if (dir === 'left' && !collides(current, -1, 0)) {
+      current.x--;
+      playClick();
+    } else if (dir === 'right' && !collides(current, 1, 0)) {
+      current.x++;
+      playClick();
+    } else if (dir === 'down') {
+      if (!collides(current, 0, 1)) {
+        current.y++;
+        score += 1;
+        scoreEl.textContent = score;
+        playDrop();
+      } else {
+        lockPiece();
+      }
+    }
+  }
+
+  function rotate() {
+    if (!gameActive || !current) return;
+    const rotated = current.shape[0].map((_, i) => current.shape.map((r) => r[i]).reverse());
+    const prev = current.shape;
+    current.shape = rotated;
+    if (collides(current)) {
+      current.shape = prev;
+    } else {
+      playClick();
+    }
+  }
+
+  function hold() {
+    if (!gameActive || !current || !canHold) return;
+    playClick();
+    if (heldIdx === null) {
+      heldIdx = current.idx;
+      current = createPiece(nextIdx);
+      nextIdx = getNextPiece();
+    } else {
+      const temp = heldIdx;
+      heldIdx = current.idx;
+      current = createPiece(temp);
+    }
+    canHold = false;
+    renderNext();
+    renderHold();
+  }
+
+  function hardDrop() {
+    if (!gameActive || !current) return;
+    while (!collides(current, 0, 1)) {
+      current.y++;
+      score += 2;
+    }
+    scoreEl.textContent = score;
+    lockPiece();
+  }
+
+  function gameLoop(now) {
+    if (!gameActive) return;
+    if (now - lastDrop >= dropInterval) {
+      lastDrop = now;
+      if (!collides(current, 0, 1)) {
+        current.y++;
+      } else {
+        lockPiece();
+      }
+    }
+    drawBoard();
+    renderHold();
+    animId = requestAnimationFrame(gameLoop);
+  }
+
+  function startGame() {
+    initBoard();
+    bag = [];
+    nextIdx = getNextPiece();
+    heldIdx = null;
+    canHold = true;
+    score = 0;
+    level = 1;
+    lines = 0;
+    gameActive = true;
+    gameStarted = false;
+    dropInterval = 1000;
+    lastDrop = performance.now();
+    goEl.style.display = 'none';
+    scoreEl.textContent = '0';
+    levelEl.textContent = '1';
+    bestEl.textContent = bestScore;
+    if (!gameStarted) { gameStarted = true; trackGameStart('block-puzzle', 'Puzzle'); }
+    spawnPiece();
+    renderNext();
+    renderHold();
+    gameLoop(performance.now());
+  }
+
+  function gameOver() {
+    gameActive = false;
+    cancelAnimationFrame(animId);
+    session.rounds++;
+    session.totalScore += score;
+    if (score > session.bestScore) session.bestScore = score;
+    playGameOver();
+    trackGameOver('block-puzzle', 'Puzzle', score, lines);
+    if (!gameStarted) gameStarted = true;
+    document.getElementById('go-title').textContent = score >= session.bestScore && session.rounds > 1 ? '🏆 NEW PERSONAL BEST!' : '🧱 Game Over';
+    document.getElementById('go-title').style.color = score >= session.bestScore && session.rounds > 1 ? '#D97706' : '#DC2626';
+    document.getElementById('go-sub').textContent = `Score: ${score} · Level ${level} · ${lines} lines`;
+    const elapsed = Math.round((Date.now() - session.startTime) / 1000);
+    const mins = Math.floor(elapsed / 60), secs = elapsed % 60;
+    document.getElementById('session-stats').innerHTML = `
+      🎮 This Session<br>
+      ─────────────────────<br>
+      Rounds played&nbsp;&nbsp;&nbsp;${session.rounds}<br>
+      Best score&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${session.bestScore}<br>
+      Average score&nbsp;&nbsp;${Math.round(session.totalScore / session.rounds)}<br>
+      Time played&nbsp;&nbsp;&nbsp;&nbsp;${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}
+    `;
+    goEl.style.display = 'block';
+    document.getElementById('play-again').focus();
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      if (!gameActive) { e.preventDefault(); playClick(); startGame(); return; }
+    }
+    if (!gameActive) return;
+    const map = { ArrowLeft: 'left', ArrowRight: 'right', ArrowDown: 'down', ArrowUp: 'rotate', a: 'left', d: 'right', s: 'down', w: 'rotate' };
+    if (map[e.key]) {
+      e.preventDefault();
+      if (map[e.key] === 'rotate') rotate();
+      else if (map[e.key] === 'down') move('down');
+      else move(map[e.key]);
+    }
+    if (e.key === ' ') { e.preventDefault(); hardDrop(); }
+    if (e.key === 'c' || e.key === 'Shift') { e.preventDefault(); hold(); }
+  });
+
+  document.getElementById('btn-up').addEventListener('click', () => { if (gameActive) rotate(); else playClick(); });
+  document.getElementById('btn-left').addEventListener('click', () => { if (gameActive) move('left'); else playClick(); });
+  document.getElementById('btn-down').addEventListener('click', () => { if (gameActive) move('down'); else playClick(); });
+  document.getElementById('btn-right').addEventListener('click', () => { if (gameActive) move('right'); else playClick(); });
+  document.getElementById('btn-hold').addEventListener('click', () => { if (gameActive) hold(); else playClick(); });
+
+  document.getElementById('play-again').addEventListener('click', () => { playClick(); startGame(); });
+
+  startGame();
+  </script>
+</body>
+</html>

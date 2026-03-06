@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Binary Game — Decimal & Binary Conversion Challenge | MiniGamePlanet</title>
+  <meta name="description" content="Master binary conversion in 60 seconds. Convert decimal to binary or binary to decimal. 4-bit and 8-bit modes, streak bonuses, visual bit display. Free online math game.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/binary-game">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500});gtag('config','G-XXXXXXXXXX');</script>
+  <!-- GA4 Consent defaults handled by initConsent() -->
+  <!-- AdSense — uncomment after approval -->
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Binary Game — Decimal & Binary Conversion Challenge | MiniGamePlanet">
+  <meta property="og:description" content="Master binary conversion in 60 seconds. Decimal↔Binary, 4-bit & 8-bit, streak bonuses.">
+  <meta property="og:url" content="https://minigameplanet.com/games/binary-game">
+  <meta property="og:site_name" content="MiniGamePlanet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Binary Game","url":"https://minigameplanet.com/games/binary-game","description":"60-second binary conversion challenge. Convert decimal to binary or binary to decimal. 4-bit and 8-bit modes, streak multipliers, visual bit display.","genre":"Math","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <style>
+    .bg-problem{font-family:'DM Mono',monospace;font-size:clamp(2rem,8vw,3.5rem);font-weight:700;letter-spacing:0.05em;color:#0F172A;text-align:center;min-height:60px;display:flex;align-items:center;justify-content:center;user-select:none}
+    .bg-input{font-family:'DM Mono',monospace;font-size:clamp(1.25rem,4vw,2rem);text-align:center;padding:14px 20px;border:2px solid #E5E7EB;border-radius:12px;width:100%;max-width:320px;margin:0 auto;transition:background 0.2s,border-color 0.2s}
+    .bg-input:focus{outline:none;border-color:#2563EB;box-shadow:0 0 0 3px rgba(37,99,235,0.2)}
+    .bg-input.flash-correct{border-color:#059669;background:#D1FAE5}
+    .bg-input.flash-wrong{border-color:#DC2626;background:#FEE2E2}
+    .bg-timer{font-family:'DM Mono',monospace;font-size:clamp(1.25rem,4vw,1.75rem);font-weight:700;color:#0F172A}
+    .bg-bit-row{display:flex;justify-content:center;gap:4px;flex-wrap:wrap;margin:12px 0}
+    .bg-bit-cell{width:clamp(32px,8vw,44px);height:clamp(36px,9vw,48px);border:2px solid #E5E7EB;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:10px;font-weight:600;color:#64748B;background:#F8FAFC}
+    .bg-bit-cell.filled{background:#2563EB;color:#fff;border-color:#2563EB}
+    .bg-bit-cell .val{font-size:clamp(14px,3vw,18px);font-weight:700;color:#0F172A;margin-top:2px}
+    .bg-bit-cell.filled .val{color:#fff}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-2xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:24px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+        <h1 style="font-size:22px;font-weight:700;margin:0;">🔢 Binary Game</h1>
+        <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊</button>
+      </div>
+
+      <div id="phase-start" style="text-align:center;padding:24px 0;">
+        <p style="font-size:15px;color:#64748B;margin-bottom:20px;">60 seconds. Convert numbers between decimal and binary. Start with 4-bit (0–15), then 8-bit (0–255). Build streaks for bonus points!</p>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:20px;">
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:14px;"><input type="radio" name="mode" value="d2b" checked> Decimal → Binary</label>
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:14px;"><input type="radio" name="mode" value="b2d"> Binary → Decimal</label>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;justify-content:center;margin-bottom:20px;padding:12px 16px;background:#F8FAFC;border-radius:8px;flex-wrap:wrap;">
+          <span style="font-family:'DM Mono',monospace;font-size:14px;font-weight:600;">🏆 Best: <span id="best">—</span></span>
+          <span style="font-family:'DM Mono',monospace;font-size:14px;color:#64748B;">Session: <span id="session-score">0</span> correct</span>
+        </div>
+        <button id="start-btn" style="padding:12px 32px;background:#2563EB;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;">▶ Start</button>
+      </div>
+
+      <div id="phase-play" style="display:none;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;padding:12px 16px;background:#F8FAFC;border-radius:8px;">
+          <span class="bg-timer">⏱ <span id="timer">60</span>s</span>
+          <span style="font-family:'DM Mono',monospace;font-size:14px;font-weight:600;">Score: <span id="score">0</span></span>
+          <span style="font-family:'DM Mono',monospace;font-size:14px;color:#2563EB;">Streak: <span id="streak">0</span>×</span>
+          <span style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;"><span id="bit-mode">4-bit</span></span>
+        </div>
+        <div id="problem-label" style="font-size:14px;color:#64748B;text-align:center;margin-bottom:4px;">Convert to binary:</div>
+        <div class="bg-problem" id="problem-display">—</div>
+        <div id="bit-display" class="bg-bit-row"></div>
+        <div style="text-align:center;padding:16px 0;">
+          <input type="text" id="answer-input" class="bg-input" inputmode="numeric" autocomplete="off" placeholder="Type answer..." maxlength="12">
+        </div>
+      </div>
+
+      <div id="phase-gameover" style="display:none;text-align:center;padding:24px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;">
+        <div id="go-title" style="font-size:22px;font-weight:700;margin-bottom:8px;color:#DC2626;">Time's Up!</div>
+        <div id="go-sub" style="font-size:14px;color:#64748B;margin-bottom:12px;"></div>
+        <div id="go-stats" style="font-family:'DM Mono',monospace;font-size:16px;font-weight:600;color:#059669;margin-bottom:16px;padding:12px;background:#F0FDF4;border-radius:8px;"></div>
+        <div id="session-stats" style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;text-align:left;max-width:260px;margin:0 auto 16px;padding:12px;background:#fff;border-radius:8px;"></div>
+        <button id="play-again" style="padding:10px 28px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">▶ Play Again</button>
+      </div>
+    </div>
+  </main>
+
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">What Is the Binary Game?</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>The Binary Game is a fast-paced conversion challenge that tests your understanding of binary numbers. You have 60 seconds to convert as many numbers as possible between decimal (base 10) and binary (base 2). The game starts with 4-bit numbers (0–15) to warm you up, then progresses to 8-bit numbers (0–255) for a tougher challenge. Each correct conversion earns points, and consecutive correct answers build a streak multiplier that boosts your score. A visual bit display shows the place values (128, 64, 32, 16, 8, 4, 2, 1) so you can see exactly how each binary digit contributes to the total.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">How It Works</h3>
+      <p>Choose your mode before starting: <strong>Decimal to Binary</strong> or <strong>Binary to Decimal</strong>. In Decimal-to-Binary mode, you'll see a decimal number like 13 and must type its binary representation—1101. In Binary-to-Decimal mode, you'll see a binary number like 1101 and must type the decimal equivalent—13. Type your answer and press Enter to submit. The game uses <strong>crypto.getRandomValues()</strong> to generate every number, ensuring fair, unpredictable challenges. No patterns, no repetition bias—just pure random conversion practice.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">4-Bit and 8-Bit Modes</h3>
+      <p>For the first 30 seconds, the game uses 4-bit numbers. In binary, 4 bits can represent values from 0 to 15. The bit positions are 8, 4, 2, and 1. For example, the decimal number 13 equals 8 + 4 + 1, so in binary it's 1101. After 30 seconds, the game switches to 8-bit mode. Eight bits can represent 0 to 255, with place values 128, 64, 32, 16, 8, 4, 2, and 1. The decimal number 255 is 11111111 in binary—every bit is 1. The visual display shows these place values so you can quickly see which bits are set.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Scoring and Streaks</h3>
+      <p>Each correct answer earns base points. Your streak multiplier starts at 1× and increases by 1 for every consecutive correct answer. A 5-question streak means 5× points per correct answer. Miss one and the streak drops back to 1. This rewards both speed and consistency. Your personal best score is saved in your browser's localStorage, so you can track improvement over time. Session statistics show how many conversions you solved correctly in the current browsing session.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Why Learn Binary?</h3>
+      <p>Binary is the language of computers. Every piece of data—text, images, sound—is ultimately stored as sequences of 0s and 1s. Understanding binary conversion helps you grasp how computers work, how memory is addressed, and how colors and numbers are encoded. Programmers, computer science students, and anyone curious about technology benefit from fluency in binary. The Binary Game turns this essential skill into a timed challenge that sharpens your mental conversion speed.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Conversion Tips</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Memorize powers of 2.</strong> 1, 2, 4, 8, 16, 32, 64, 128—these are your building blocks. Decimal 13 = 8 + 4 + 1, so binary 1101.</li>
+        <li><strong>Work from largest to smallest.</strong> For decimal to binary, subtract the largest power of 2 that fits, mark that bit as 1, repeat.</li>
+        <li><strong>Binary to decimal is addition.</strong> For 1101, add 8 + 4 + 0 + 1 = 13. Only add the place values where the bit is 1.</li>
+        <li><strong>Leading zeros don't matter.</strong> 1101 and 00001101 both equal 13. The game accepts either format.</li>
+      </ul>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Free and Private</h3>
+      <p>The Binary Game runs entirely in your browser. No account required, no data sent to servers. Your personal best is stored locally. The game works offline once loaded. Perfect for a quick brain break, computer science warm-up, or competitive practice with friends. Give it a try and see how many conversions you can complete in 60 seconds.</p>
+    </div>
+  </article>
+  <div id="related-games"></div>
+  <div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playError } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+  document.addEventListener('click',()=>initAudio(),{once:true});
+  initToolPage('binary-game'); initConsent(); trackGameView('binary-game','Math');
+
+  const STORAGE_KEY = 'mgp_binary_game_best';
+  const BIT_4 = [8, 4, 2, 1];
+  const BIT_8 = [128, 64, 32, 16, 8, 4, 2, 1];
+
+  function rng(min, max) {
+    const a = new Uint32Array(1);
+    crypto.getRandomValues(a);
+    return min + (a[0] % (max - min + 1));
+  }
+
+  function toBinary(n, bits) {
+    const arr = bits === 4 ? BIT_4 : BIT_8;
+    let s = '';
+    for (const b of arr) {
+      s += (n & b) ? '1' : '0';
+    }
+    return s;
+  }
+
+  function parseBinary(s) {
+    s = String(s).replace(/\s/g, '').replace(/^0+/, '') || '0';
+    return parseInt(s, 2);
+  }
+
+  function getBest() {
+    try {
+      const s = localStorage.getItem(STORAGE_KEY);
+      return s ? parseInt(s, 10) : 0;
+    } catch (e) { return 0; }
+  }
+
+  function setBest(score) {
+    try { localStorage.setItem(STORAGE_KEY, String(score)); } catch (e) {}
+  }
+
+  let timerId = null;
+  let timeLeft = 60;
+  let score = 0;
+  let streak = 1;
+  let sessionCorrect = 0;
+  let currentProblem = null;
+  let mode = 'd2b';
+  let bits = 4;
+  let session = { rounds: 0, totalCorrect: 0, startTime: Date.now() };
+
+  const phaseStart = document.getElementById('phase-start');
+  const phasePlay = document.getElementById('phase-play');
+  const phaseGameover = document.getElementById('phase-gameover');
+  const problemDisplay = document.getElementById('problem-display');
+  const problemLabel = document.getElementById('problem-label');
+  const bitDisplay = document.getElementById('bit-display');
+  const answerInput = document.getElementById('answer-input');
+  const timerEl = document.getElementById('timer');
+  const scoreEl = document.getElementById('score');
+  const streakEl = document.getElementById('streak');
+  const bitModeEl = document.getElementById('bit-mode');
+  const bestEl = document.getElementById('best');
+  const sessionEl = document.getElementById('session-score');
+
+  function showPhase(id) {
+    phaseStart.style.display = id === 'start' ? 'block' : 'none';
+    phasePlay.style.display = id === 'play' ? 'block' : 'none';
+    phaseGameover.style.display = id === 'gameover' ? 'block' : 'none';
+  }
+
+  function updateUI() {
+    bestEl.textContent = getBest() > 0 ? getBest() : '—';
+    sessionEl.textContent = sessionCorrect;
+  }
+
+  function renderBitDisplay(bitsArr, userBits) {
+    let html = '';
+    for (let i = 0; i < bitsArr.length; i++) {
+      const filled = userBits && userBits[i] === '1';
+      html += `<div class="bg-bit-cell ${filled ? 'filled' : ''}"><span>${bitsArr[i]}</span><span class="val">${userBits ? userBits[i] : '?'}</span></div>`;
+    }
+    bitDisplay.innerHTML = html;
+  }
+
+  function flashInput(correct) {
+    answerInput.classList.remove('flash-correct','flash-wrong');
+    answerInput.classList.add(correct ? 'flash-correct' : 'flash-wrong');
+    setTimeout(() => answerInput.classList.remove('flash-correct','flash-wrong'), 300);
+  }
+
+  function genProblem() {
+    const max = bits === 4 ? 15 : 255;
+    const n = rng(0, max);
+    if (mode === 'd2b') {
+      return { prompt: String(n), answer: toBinary(n, bits), decimal: n };
+    } else {
+      const bin = toBinary(n, bits);
+      return { prompt: bin, answer: String(n), decimal: n };
+    }
+  }
+
+  function nextProblem() {
+    currentProblem = genProblem();
+    problemDisplay.textContent = currentProblem.prompt;
+    if (mode === 'd2b') {
+      problemLabel.textContent = 'Convert to binary:';
+      problemLabel.style.display = 'block';
+    } else {
+      problemLabel.textContent = 'Convert to decimal:';
+      problemLabel.style.display = 'block';
+    }
+    const bitsArr = bits === 4 ? BIT_4 : BIT_8;
+    renderBitDisplay(bitsArr, mode === 'b2d' ? currentProblem.prompt.split('') : null);
+    answerInput.value = '';
+    answerInput.placeholder = mode === 'd2b' ? 'e.g. 1101' : 'e.g. 13';
+    answerInput.focus();
+  }
+
+  function updateBitDisplayFromInput(val) {
+    const bitsArr = bits === 4 ? BIT_4 : BIT_8;
+    let userBits = null;
+    if (mode === 'd2b' && /^[01]+$/.test(val)) {
+      const padded = val.padStart(bitsArr.length, '0').slice(-bitsArr.length);
+      userBits = padded.split('');
+    }
+    renderBitDisplay(bitsArr, userBits);
+  }
+
+  function tick() {
+    timeLeft--;
+    if (timeLeft === 30 && bits === 4) {
+      bits = 8;
+      bitModeEl.textContent = '8-bit';
+    }
+    timerEl.textContent = timeLeft;
+    if (timeLeft <= 0) endGame();
+    else timerId = setTimeout(tick, 1000);
+  }
+
+  function normalizeAnswer(raw, expectedIsBinary) {
+    const s = raw.trim().replace(/\s/g, '');
+    if (expectedIsBinary) {
+      const cleaned = s.replace(/^0+/, '') || '0';
+      const padded = cleaned.padStart(bits === 4 ? 4 : 8, '0');
+      return padded;
+    }
+    return s;
+  }
+
+  function submitAnswer() {
+    const raw = answerInput.value.trim();
+    if (raw === '') return;
+    playClick();
+    let correct = false;
+    if (mode === 'd2b') {
+      const userBin = normalizeAnswer(raw, true);
+      correct = userBin === currentProblem.answer;
+    } else {
+      const userNum = parseInt(raw, 10);
+      correct = !isNaN(userNum) && userNum === currentProblem.decimal;
+    }
+    if (correct) {
+      flashInput(true);
+      playSuccess();
+      const pts = 10 * streak;
+      score += pts;
+      streak++;
+      sessionCorrect++;
+      scoreEl.textContent = score;
+      streakEl.textContent = streak;
+      nextProblem();
+    } else {
+      flashInput(false);
+      playError();
+      streak = 1;
+      streakEl.textContent = streak;
+      nextProblem();
+    }
+  }
+
+  function endGame() {
+    if (timerId) clearTimeout(timerId);
+    timerId = null;
+    session.rounds++;
+    session.totalCorrect += sessionCorrect;
+    const b = getBest();
+    if (score > b) {
+      setBest(score);
+      document.getElementById('go-title').textContent = '🏆 New Best!';
+      document.getElementById('go-title').style.color = '#059669';
+    } else {
+      document.getElementById('go-title').textContent = "Time's Up!";
+      document.getElementById('go-title').style.color = '#DC2626';
+    }
+    document.getElementById('go-sub').textContent = `Final score: ${score} points`;
+    document.getElementById('go-stats').textContent = `${sessionCorrect} correct conversions`;
+    const elapsed = Math.round((Date.now() - session.startTime) / 1000);
+    const em = Math.floor(elapsed / 60), es = elapsed % 60;
+    document.getElementById('session-stats').innerHTML = `
+      🎮 This Session<br>
+      ─────────────────────<br>
+      Rounds played&nbsp;&nbsp;&nbsp;${session.rounds}<br>
+      Total correct&nbsp;&nbsp;&nbsp;${session.totalCorrect}<br>
+      Best score&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${getBest() > 0 ? getBest() : '—'}<br>
+      Time played&nbsp;&nbsp;&nbsp;&nbsp;${String(em).padStart(2, '0')}:${String(es).padStart(2, '0')}
+    `;
+    showPhase('gameover');
+    updateUI();
+    trackGameOver('binary-game', 'Math', score);
+  }
+
+  function startGame() {
+    mode = document.querySelector('input[name="mode"]:checked')?.value || 'd2b';
+    timeLeft = 60;
+    score = 0;
+    streak = 1;
+    bits = 4;
+    bitModeEl.textContent = '4-bit';
+    timerEl.textContent = timeLeft;
+    scoreEl.textContent = score;
+    streakEl.textContent = streak;
+    showPhase('play');
+    nextProblem();
+    timerId = setTimeout(tick, 1000);
+    trackGameStart('binary-game', 'Math');
+  }
+
+  document.getElementById('sound-btn').addEventListener('click', () => {
+    initAudio();
+    const m = muteAll();
+    document.getElementById('sound-btn').textContent = m ? '🔇' : '🔊';
+  });
+
+  document.getElementById('start-btn').addEventListener('click', () => {
+    playClick();
+    startGame();
+  });
+
+  document.getElementById('play-again').addEventListener('click', () => {
+    playClick();
+    startGame();
+  });
+
+  answerInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') submitAnswer();
+  });
+
+  answerInput.addEventListener('input', (e) => {
+    const v = e.target.value;
+    if (mode === 'd2b') {
+      e.target.value = v.replace(/[^01]/g, '');
+      updateBitDisplayFromInput(e.target.value);
+    } else {
+      e.target.value = v.replace(/[^\d]/g, '');
+    }
+  });
+
+  updateUI();
+  </script>
+</body>
+</html>

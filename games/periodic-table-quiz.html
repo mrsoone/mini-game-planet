@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Periodic Table Quiz - Test Your Chemistry Knowledge | Mini Game Planet</title>
+  <meta name="description" content="Master the periodic table! Three quiz modes: find elements by name on the table, type symbol from atomic number, or type name from symbol. 20 questions, streak bonuses, personal best. All 118 elements.">
+  <link rel="canonical" href="https://minigameplanet.com/games/periodic-table-quiz.html">
+  <!-- Open Graph -->
+  <meta property="og:title" content="Periodic Table Quiz - Test Your Chemistry Knowledge | Mini Game Planet">
+  <meta property="og:description" content="Interactive periodic table quiz. Find elements, type symbols, or name elements. 20 questions, streak bonuses, personal best. All 118 elements.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/periodic-table-quiz.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background-color: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    .pt-grid { display: grid; grid-template-columns: repeat(18, 1fr); gap: 2px; max-width: 100%; }
+    .pt-cell { aspect-ratio: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: clamp(8px, 1.8vw, 12px); border-radius: 4px; cursor: pointer; transition: transform 0.1s, box-shadow 0.1s; border: 1px solid rgba(0,0,0,0.1); }
+    .pt-cell:hover { transform: scale(1.05); box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+    .pt-cell.correct { animation: flash-green 0.5s ease; }
+    .pt-cell.wrong { animation: flash-red 0.5s ease; }
+    @keyframes flash-green { 0% { background-color: inherit; } 50% { background-color: #22c55e !important; } 100% { background-color: inherit; } }
+    @keyframes flash-red { 0% { background-color: inherit; } 50% { background-color: #ef4444 !important; } 100% { background-color: inherit; } }
+    .pt-cell.empty { visibility: hidden; pointer-events: none; }
+    .pt-num { font-size: 0.6em; opacity: 0.8; }
+    .pt-symbol { font-weight: 700; }
+    .pt-name { font-size: 0.5em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+    .answer-correct { background-color: #22c55e !important; color: white !important; border-color: #16a34a !important; }
+    .answer-wrong { background-color: #ef4444 !important; color: white !important; border-color: #dc2626 !important; opacity: 0.8; }
+  </style>
+  <!-- GA4 Consent Defaults -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    window.gaConsent = { analytics: true, ads: false };
+  </script>
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Periodic Table Quiz",
+    "description": "Free periodic table trivia game. Three modes: find element on table, type symbol from atomic number, type name from symbol. All 118 elements, 20 questions, streak bonuses, personal best.",
+    "applicationCategory": "Game",
+    "operatingSystem": "Any",
+    "url": "https://minigameplanet.com/games/periodic-table-quiz.html",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+  <!-- AdSense (commented) -->
+  <!--
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXX" crossorigin="anonymous"></script>
+  -->
+</head>
+<body class="min-h-screen text-gray-800 antialiased">
+  <nav id="nav-container" class="bg-white/80 backdrop-blur border-b border-gray-200 sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="font-semibold text-lg text-gray-800 hover:text-indigo-600 transition">Mini Game Planet</a>
+      <div class="flex items-center gap-3">
+        <button id="sound-toggle" class="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-sm font-medium transition" aria-label="Toggle sound">🔊 Sound</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    <article class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 mb-8">
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Periodic Table Quiz</h1>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        How well do you know the periodic table of elements? Our interactive chemistry quiz challenges you in three different ways. Whether you're a student preparing for an exam, a teacher looking for classroom activities, or a science enthusiast who loves trivia, this game offers a fun way to master all 118 elements.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        In <strong>Find on Table</strong> mode, you're given an element name and must click its correct position on the interactive periodic table. The table is rendered with an 18-column CSS grid, matching the standard IUPAC layout. Each element is color-coded by category: alkali metals, alkaline earth metals, transition metals, lanthanides, actinides, post-transition metals, metalloids, nonmetals, halogens, and noble gases. Hover over cells to see symbols and atomic numbers.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        In <strong>Symbol from Number</strong> mode, you see an atomic number and must type the correct element symbol. For example, "79" should be answered with "Au" for gold. In <strong>Name from Symbol</strong> mode, you see a symbol like "Fe" and must type the full element name—"Iron". Answers are matched flexibly: case doesn't matter, and minor spelling variations are accepted. Each round has 20 questions, with score, streak multiplier, and personal best tracking.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        The periodic table organizes elements by atomic number and electron configuration. Rows are periods, columns are groups. Alkali metals (group 1) are highly reactive; noble gases (group 18) are stable and unreactive. Transition metals fill the d-block; lanthanides and actinides fill the f-block. Understanding this structure helps predict chemical behavior and is essential for chemistry, physics, and materials science. Dmitri Mendeleev's 1869 table predicted undiscovered elements; today we know all 118, from hydrogen (1) to oganesson (118).
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        Scoring rewards accuracy and consistency. Correct answers earn base points; consecutive correct answers build a streak multiplier that boosts your score. Miss one and the streak resets. Your personal best is saved locally in your browser, so you can track progress over time. The game uses <code class="font-mono text-sm bg-gray-100 px-1 rounded">crypto.getRandomValues()</code> for fair, unpredictable question selection—no two rounds are alike.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        Sound effects can be toggled on or off. No sign-up required—just pick a mode, hit Start, and begin. Perfect for a quick study session, a classroom review, or a casual chemistry challenge. The periodic table is one of the most important tools in science, organizing matter by fundamental properties. From hydrogen to oganesson, every element has a story. Ready to prove your element expertise? Choose your mode and see how high you can score!
+      </p>
+    </article>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+      <div id="game-start" class="text-center">
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">Ready to Play?</h2>
+        <p class="text-gray-600 mb-4">20 questions per round · Score · Streak · Personal Best</p>
+        <div class="flex flex-wrap justify-center gap-4 mb-6">
+          <div class="bg-gray-50 rounded-xl px-4 py-3 text-center">
+            <span class="font-mono text-2xl font-bold text-indigo-600" id="pb-display">0</span>
+            <p class="text-xs text-gray-500">Personal Best</p>
+          </div>
+        </div>
+        <div class="flex flex-wrap justify-center gap-3 mb-6">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="radio" name="mode" value="find" checked class="rounded-full">
+            <span>Find on Table</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="radio" name="mode" value="symbol" class="rounded-full">
+            <span>Symbol from Number</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="radio" name="mode" value="name" class="rounded-full">
+            <span>Name from Symbol</span>
+          </label>
+        </div>
+        <button id="btn-start" class="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition shadow-md hover:shadow-lg">
+          Start Quiz
+        </button>
+      </div>
+
+      <div id="game-play" class="hidden">
+        <div class="flex justify-between items-center mb-4">
+          <div class="flex gap-4">
+            <span class="font-mono font-semibold">Score: <span id="score-display">0</span></span>
+            <span class="font-mono text-indigo-600">Streak: <span id="streak-display">0</span>×</span>
+          </div>
+          <span class="text-sm text-gray-500">Question <span id="q-num">1</span>/20</span>
+        </div>
+        <p id="question-text" class="text-xl font-semibold text-gray-900 mb-4 min-h-[3rem]"></p>
+
+        <div id="mode-find" class="hidden">
+          <p class="text-sm text-gray-500 mb-2">Click the correct element on the table.</p>
+          <div id="periodic-table" class="pt-grid mb-4 overflow-x-auto"></div>
+        </div>
+
+        <div id="mode-type" class="hidden">
+          <div class="flex gap-2 mb-4">
+            <input type="text" id="answer-input" class="flex-1 px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 font-mono text-lg" placeholder="Type your answer..." autocomplete="off" autocapitalize="off">
+            <button id="btn-submit" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition">Submit</button>
+          </div>
+        </div>
+
+        <p id="round-feedback" class="text-sm font-medium text-gray-600 min-h-[1.5rem]"></p>
+      </div>
+
+      <div id="game-over" class="hidden text-center">
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">Round Complete!</h2>
+        <p class="text-4xl font-mono font-bold text-indigo-600 mb-2" id="final-score">0</p>
+        <p class="text-gray-600 mb-6" id="final-message"></p>
+        <button id="btn-replay" class="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition shadow-md hover:shadow-lg">
+          Play Again
+        </button>
+      </div>
+    </div>
+
+    <section id="related-games" class="mt-12">
+      <h2 class="text-xl font-bold text-gray-900 mb-4">Related Games</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <a href="/games/geography-quiz.html" class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:border-indigo-200 hover:shadow transition">Geography Quiz</a>
+        <a href="/games/capital-quiz.html" class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:border-indigo-200 hover:shadow transition">Capital Quiz</a>
+        <a href="/games/trivia-quiz.html" class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:border-indigo-200 hover:shadow transition">Trivia Quiz</a>
+        <a href="/games/flag-quiz.html" class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:border-indigo-200 hover:shadow transition">Flag Quiz</a>
+      </div>
+    </section>
+  </main>
+
+  <footer id="footer-container" class="border-t border-gray-200 mt-12 py-8">
+    <div class="max-w-4xl mx-auto px-4 text-center text-gray-500 text-sm">
+      <p>© Mini Game Planet. Free casual games for everyone.</p>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('periodic-table-quiz');
+    initConsent();
+    trackGameView('periodic-table-quiz', 'Trivia');
+
+    const CATEGORY_COLORS = {
+      alkali: '#f59e0b',
+      alkaline: '#eab308',
+      transition: '#3b82f6',
+      lanthanide: '#06b6d4',
+      actinide: '#8b5cf6',
+      postTransition: '#64748b',
+      metalloid: '#14b8a6',
+      nonmetal: '#22c55e',
+      halogen: '#f97316',
+      noble: '#6366f1',
+    };
+
+    const ELEMENTS = [
+      { num: 1, symbol: 'H', name: 'Hydrogen', row: 1, col: 1, cat: 'nonmetal' },
+      { num: 2, symbol: 'He', name: 'Helium', row: 1, col: 18, cat: 'noble' },
+      { num: 3, symbol: 'Li', name: 'Lithium', row: 2, col: 1, cat: 'alkali' },
+      { num: 4, symbol: 'Be', name: 'Beryllium', row: 2, col: 2, cat: 'alkaline' },
+      { num: 5, symbol: 'B', name: 'Boron', row: 2, col: 13, cat: 'metalloid' },
+      { num: 6, symbol: 'C', name: 'Carbon', row: 2, col: 14, cat: 'nonmetal' },
+      { num: 7, symbol: 'N', name: 'Nitrogen', row: 2, col: 15, cat: 'nonmetal' },
+      { num: 8, symbol: 'O', name: 'Oxygen', row: 2, col: 16, cat: 'nonmetal' },
+      { num: 9, symbol: 'F', name: 'Fluorine', row: 2, col: 17, cat: 'halogen' },
+      { num: 10, symbol: 'Ne', name: 'Neon', row: 2, col: 18, cat: 'noble' },
+      { num: 11, symbol: 'Na', name: 'Sodium', row: 3, col: 1, cat: 'alkali' },
+      { num: 12, symbol: 'Mg', name: 'Magnesium', row: 3, col: 2, cat: 'alkaline' },
+      { num: 13, symbol: 'Al', name: 'Aluminum', row: 3, col: 13, cat: 'postTransition' },
+      { num: 14, symbol: 'Si', name: 'Silicon', row: 3, col: 14, cat: 'metalloid' },
+      { num: 15, symbol: 'P', name: 'Phosphorus', row: 3, col: 15, cat: 'nonmetal' },
+      { num: 16, symbol: 'S', name: 'Sulfur', row: 3, col: 16, cat: 'nonmetal' },
+      { num: 17, symbol: 'Cl', name: 'Chlorine', row: 3, col: 17, cat: 'halogen' },
+      { num: 18, symbol: 'Ar', name: 'Argon', row: 3, col: 18, cat: 'noble' },
+      { num: 19, symbol: 'K', name: 'Potassium', row: 4, col: 1, cat: 'alkali' },
+      { num: 20, symbol: 'Ca', name: 'Calcium', row: 4, col: 2, cat: 'alkaline' },
+      { num: 21, symbol: 'Sc', name: 'Scandium', row: 4, col: 3, cat: 'transition' },
+      { num: 22, symbol: 'Ti', name: 'Titanium', row: 4, col: 4, cat: 'transition' },
+      { num: 23, symbol: 'V', name: 'Vanadium', row: 4, col: 5, cat: 'transition' },
+      { num: 24, symbol: 'Cr', name: 'Chromium', row: 4, col: 6, cat: 'transition' },
+      { num: 25, symbol: 'Mn', name: 'Manganese', row: 4, col: 7, cat: 'transition' },
+      { num: 26, symbol: 'Fe', name: 'Iron', row: 4, col: 8, cat: 'transition' },
+      { num: 27, symbol: 'Co', name: 'Cobalt', row: 4, col: 9, cat: 'transition' },
+      { num: 28, symbol: 'Ni', name: 'Nickel', row: 4, col: 10, cat: 'transition' },
+      { num: 29, symbol: 'Cu', name: 'Copper', row: 4, col: 11, cat: 'transition' },
+      { num: 30, symbol: 'Zn', name: 'Zinc', row: 4, col: 12, cat: 'transition' },
+      { num: 31, symbol: 'Ga', name: 'Gallium', row: 4, col: 13, cat: 'postTransition' },
+      { num: 32, symbol: 'Ge', name: 'Germanium', row: 4, col: 14, cat: 'metalloid' },
+      { num: 33, symbol: 'As', name: 'Arsenic', row: 4, col: 15, cat: 'metalloid' },
+      { num: 34, symbol: 'Se', name: 'Selenium', row: 4, col: 16, cat: 'nonmetal' },
+      { num: 35, symbol: 'Br', name: 'Bromine', row: 4, col: 17, cat: 'halogen' },
+      { num: 36, symbol: 'Kr', name: 'Krypton', row: 4, col: 18, cat: 'noble' },
+      { num: 37, symbol: 'Rb', name: 'Rubidium', row: 5, col: 1, cat: 'alkali' },
+      { num: 38, symbol: 'Sr', name: 'Strontium', row: 5, col: 2, cat: 'alkaline' },
+      { num: 39, symbol: 'Y', name: 'Yttrium', row: 5, col: 3, cat: 'transition' },
+      { num: 40, symbol: 'Zr', name: 'Zirconium', row: 5, col: 4, cat: 'transition' },
+      { num: 41, symbol: 'Nb', name: 'Niobium', row: 5, col: 5, cat: 'transition' },
+      { num: 42, symbol: 'Mo', name: 'Molybdenum', row: 5, col: 6, cat: 'transition' },
+      { num: 43, symbol: 'Tc', name: 'Technetium', row: 5, col: 7, cat: 'transition' },
+      { num: 44, symbol: 'Ru', name: 'Ruthenium', row: 5, col: 8, cat: 'transition' },
+      { num: 45, symbol: 'Rh', name: 'Rhodium', row: 5, col: 9, cat: 'transition' },
+      { num: 46, symbol: 'Pd', name: 'Palladium', row: 5, col: 10, cat: 'transition' },
+      { num: 47, symbol: 'Ag', name: 'Silver', row: 5, col: 11, cat: 'transition' },
+      { num: 48, symbol: 'Cd', name: 'Cadmium', row: 5, col: 12, cat: 'transition' },
+      { num: 49, symbol: 'In', name: 'Indium', row: 5, col: 13, cat: 'postTransition' },
+      { num: 50, symbol: 'Sn', name: 'Tin', row: 5, col: 14, cat: 'postTransition' },
+      { num: 51, symbol: 'Sb', name: 'Antimony', row: 5, col: 15, cat: 'metalloid' },
+      { num: 52, symbol: 'Te', name: 'Tellurium', row: 5, col: 16, cat: 'metalloid' },
+      { num: 53, symbol: 'I', name: 'Iodine', row: 5, col: 17, cat: 'halogen' },
+      { num: 54, symbol: 'Xe', name: 'Xenon', row: 5, col: 18, cat: 'noble' },
+      { num: 55, symbol: 'Cs', name: 'Cesium', row: 6, col: 1, cat: 'alkali' },
+      { num: 56, symbol: 'Ba', name: 'Barium', row: 6, col: 2, cat: 'alkaline' },
+      { num: 57, symbol: 'La', name: 'Lanthanum', row: 6, col: 3, cat: 'lanthanide' },
+      { num: 58, symbol: 'Ce', name: 'Cerium', row: 8, col: 4, cat: 'lanthanide' },
+      { num: 59, symbol: 'Pr', name: 'Praseodymium', row: 8, col: 5, cat: 'lanthanide' },
+      { num: 60, symbol: 'Nd', name: 'Neodymium', row: 8, col: 6, cat: 'lanthanide' },
+      { num: 61, symbol: 'Pm', name: 'Promethium', row: 8, col: 7, cat: 'lanthanide' },
+      { num: 62, symbol: 'Sm', name: 'Samarium', row: 8, col: 8, cat: 'lanthanide' },
+      { num: 63, symbol: 'Eu', name: 'Europium', row: 8, col: 9, cat: 'lanthanide' },
+      { num: 64, symbol: 'Gd', name: 'Gadolinium', row: 8, col: 10, cat: 'lanthanide' },
+      { num: 65, symbol: 'Tb', name: 'Terbium', row: 8, col: 11, cat: 'lanthanide' },
+      { num: 66, symbol: 'Dy', name: 'Dysprosium', row: 8, col: 12, cat: 'lanthanide' },
+      { num: 67, symbol: 'Ho', name: 'Holmium', row: 8, col: 13, cat: 'lanthanide' },
+      { num: 68, symbol: 'Er', name: 'Erbium', row: 8, col: 14, cat: 'lanthanide' },
+      { num: 69, symbol: 'Tm', name: 'Thulium', row: 8, col: 15, cat: 'lanthanide' },
+      { num: 70, symbol: 'Yb', name: 'Ytterbium', row: 8, col: 16, cat: 'lanthanide' },
+      { num: 71, symbol: 'Lu', name: 'Lutetium', row: 8, col: 17, cat: 'lanthanide' },
+      { num: 72, symbol: 'Hf', name: 'Hafnium', row: 6, col: 4, cat: 'transition' },
+      { num: 73, symbol: 'Ta', name: 'Tantalum', row: 6, col: 5, cat: 'transition' },
+      { num: 74, symbol: 'W', name: 'Tungsten', row: 6, col: 6, cat: 'transition' },
+      { num: 75, symbol: 'Re', name: 'Rhenium', row: 6, col: 7, cat: 'transition' },
+      { num: 76, symbol: 'Os', name: 'Osmium', row: 6, col: 8, cat: 'transition' },
+      { num: 77, symbol: 'Ir', name: 'Iridium', row: 6, col: 9, cat: 'transition' },
+      { num: 78, symbol: 'Pt', name: 'Platinum', row: 6, col: 10, cat: 'transition' },
+      { num: 79, symbol: 'Au', name: 'Gold', row: 6, col: 11, cat: 'transition' },
+      { num: 80, symbol: 'Hg', name: 'Mercury', row: 6, col: 12, cat: 'transition' },
+      { num: 81, symbol: 'Tl', name: 'Thallium', row: 6, col: 13, cat: 'postTransition' },
+      { num: 82, symbol: 'Pb', name: 'Lead', row: 6, col: 14, cat: 'postTransition' },
+      { num: 83, symbol: 'Bi', name: 'Bismuth', row: 6, col: 15, cat: 'postTransition' },
+      { num: 84, symbol: 'Po', name: 'Polonium', row: 6, col: 16, cat: 'postTransition' },
+      { num: 85, symbol: 'At', name: 'Astatine', row: 6, col: 17, cat: 'halogen' },
+      { num: 86, symbol: 'Rn', name: 'Radon', row: 6, col: 18, cat: 'noble' },
+      { num: 87, symbol: 'Fr', name: 'Francium', row: 7, col: 1, cat: 'alkali' },
+      { num: 88, symbol: 'Ra', name: 'Radium', row: 7, col: 2, cat: 'alkaline' },
+      { num: 89, symbol: 'Ac', name: 'Actinium', row: 7, col: 3, cat: 'actinide' },
+      { num: 90, symbol: 'Th', name: 'Thorium', row: 9, col: 4, cat: 'actinide' },
+      { num: 91, symbol: 'Pa', name: 'Protactinium', row: 9, col: 5, cat: 'actinide' },
+      { num: 92, symbol: 'U', name: 'Uranium', row: 9, col: 6, cat: 'actinide' },
+      { num: 93, symbol: 'Np', name: 'Neptunium', row: 9, col: 7, cat: 'actinide' },
+      { num: 94, symbol: 'Pu', name: 'Plutonium', row: 9, col: 8, cat: 'actinide' },
+      { num: 95, symbol: 'Am', name: 'Americium', row: 9, col: 9, cat: 'actinide' },
+      { num: 96, symbol: 'Cm', name: 'Curium', row: 9, col: 10, cat: 'actinide' },
+      { num: 97, symbol: 'Bk', name: 'Berkelium', row: 9, col: 11, cat: 'actinide' },
+      { num: 98, symbol: 'Cf', name: 'Californium', row: 9, col: 12, cat: 'actinide' },
+      { num: 99, symbol: 'Es', name: 'Einsteinium', row: 9, col: 13, cat: 'actinide' },
+      { num: 100, symbol: 'Fm', name: 'Fermium', row: 9, col: 14, cat: 'actinide' },
+      { num: 101, symbol: 'Md', name: 'Mendelevium', row: 9, col: 15, cat: 'actinide' },
+      { num: 102, symbol: 'No', name: 'Nobelium', row: 9, col: 16, cat: 'actinide' },
+      { num: 103, symbol: 'Lr', name: 'Lawrencium', row: 9, col: 17, cat: 'actinide' },
+      { num: 104, symbol: 'Rf', name: 'Rutherfordium', row: 7, col: 4, cat: 'transition' },
+      { num: 105, symbol: 'Db', name: 'Dubnium', row: 7, col: 5, cat: 'transition' },
+      { num: 106, symbol: 'Sg', name: 'Seaborgium', row: 7, col: 6, cat: 'transition' },
+      { num: 107, symbol: 'Bh', name: 'Bohrium', row: 7, col: 7, cat: 'transition' },
+      { num: 108, symbol: 'Hs', name: 'Hassium', row: 7, col: 8, cat: 'transition' },
+      { num: 109, symbol: 'Mt', name: 'Meitnerium', row: 7, col: 9, cat: 'transition' },
+      { num: 110, symbol: 'Ds', name: 'Darmstadtium', row: 7, col: 10, cat: 'transition' },
+      { num: 111, symbol: 'Rg', name: 'Roentgenium', row: 7, col: 11, cat: 'transition' },
+      { num: 112, symbol: 'Cn', name: 'Copernicium', row: 7, col: 12, cat: 'transition' },
+      { num: 113, symbol: 'Nh', name: 'Nihonium', row: 7, col: 13, cat: 'postTransition' },
+      { num: 114, symbol: 'Fl', name: 'Flerovium', row: 7, col: 14, cat: 'postTransition' },
+      { num: 115, symbol: 'Mc', name: 'Moscovium', row: 7, col: 15, cat: 'postTransition' },
+      { num: 116, symbol: 'Lv', name: 'Livermorium', row: 7, col: 16, cat: 'postTransition' },
+      { num: 117, symbol: 'Ts', name: 'Tennessine', row: 7, col: 17, cat: 'halogen' },
+      { num: 118, symbol: 'Og', name: 'Oganesson', row: 7, col: 18, cat: 'noble' },
+    ];
+
+    const BASE_POINTS = 100;
+    const STREAK_MULTIPLIER = 0.15;
+    const QUESTIONS_PER_ROUND = 20;
+    const PB_KEY = 'periodic-table-quiz-pb';
+
+    function secureRandom(max) {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] % max;
+    }
+
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = secureRandom(i + 1);
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function getRandomQuestions() {
+      const shuffled = shuffle(ELEMENTS);
+      return shuffled.slice(0, QUESTIONS_PER_ROUND);
+    }
+
+    function normalizeAnswer(s) {
+      return String(s || '').trim().toLowerCase().replace(/\s+/g, ' ');
+    }
+
+    function matchAnswer(user, correct) {
+      const u = normalizeAnswer(user);
+      const c = normalizeAnswer(correct);
+      if (u === c) return true;
+      if (c === 'aluminum' && (u === 'aluminium' || u === 'al')) return true;
+      if (c === 'aluminium' && (u === 'aluminum' || u === 'al')) return true;
+      if (c === 'cesium' && u === 'caesium') return true;
+      if (c === 'caesium' && u === 'cesium') return true;
+      if (c === 'sulfur' && u === 'sulphur') return true;
+      if (c === 'sulphur' && u === 'sulfur') return true;
+      return false;
+    }
+
+    let audioMuted = false;
+    let currentMode = 'find';
+    let currentRound = [];
+    let qIndex = 0;
+    let score = 0;
+    let streak = 0;
+    let answered = false;
+
+    function getPB() {
+      try {
+        return parseInt(localStorage.getItem(PB_KEY) || '0', 10);
+      } catch { return 0; }
+    }
+
+    function setPB(val) {
+      try { localStorage.setItem(PB_KEY, String(val)); } catch (_) {}
+    }
+
+    const startScreen = document.getElementById('game-start');
+    const playScreen = document.getElementById('game-play');
+    const overScreen = document.getElementById('game-over');
+    const modeFind = document.getElementById('mode-find');
+    const modeType = document.getElementById('mode-type');
+    const answerInput = document.getElementById('answer-input');
+
+    document.getElementById('sound-toggle').addEventListener('click', () => {
+      audioMuted = !audioMuted;
+      muteAll(audioMuted);
+      document.getElementById('sound-toggle').textContent = audioMuted ? '🔇 Muted' : '🔊 Sound';
+      playClick();
+    });
+
+    function showScreen(id) {
+      startScreen.classList.add('hidden');
+      playScreen.classList.add('hidden');
+      overScreen.classList.add('hidden');
+      document.getElementById(id).classList.remove('hidden');
+    }
+
+    function buildPeriodicTable() {
+      const grid = document.getElementById('periodic-table');
+      grid.innerHTML = '';
+      const cellMap = {};
+      ELEMENTS.forEach(el => {
+        cellMap[`${el.row}-${el.col}`] = el;
+      });
+      const maxRow = 9;
+      for (let r = 1; r <= maxRow; r++) {
+        for (let c = 1; c <= 18; c++) {
+          const el = cellMap[`${r}-${c}`];
+          const cell = document.createElement('div');
+          if (el) {
+            cell.className = 'pt-cell';
+            cell.style.backgroundColor = CATEGORY_COLORS[el.cat] || '#94a3b8';
+            cell.style.color = ['noble','halogen','nonmetal','transition','actinide'].includes(el.cat) ? '#fff' : '#1e293b';
+            cell.dataset.num = String(el.num);
+            cell.dataset.row = String(r);
+            cell.dataset.col = String(c);
+            cell.innerHTML = `<span class="pt-num">${el.num}</span><span class="pt-symbol">${el.symbol}</span><span class="pt-name">${el.name}</span>`;
+            cell.addEventListener('click', () => handleCellClick(cell, el));
+          } else {
+            cell.className = 'pt-cell empty';
+          }
+          grid.appendChild(cell);
+        }
+      }
+    }
+
+    function handleCellClick(cell, el) {
+      if (answered) return;
+      answered = true;
+      const q = currentRound[qIndex];
+      const correct = el.num === q.num;
+      if (correct) {
+        streak++;
+        const mult = 1 + streak * STREAK_MULTIPLIER;
+        const pts = Math.round(BASE_POINTS * mult);
+        score += pts;
+        cell.classList.add('correct');
+        playSuccess();
+        document.getElementById('round-feedback').textContent = `Correct! +${pts} points`;
+      } else {
+        streak = 0;
+        cell.classList.add('wrong');
+        const correctCell = document.querySelector(`.pt-cell[data-num="${q.num}"]`);
+        if (correctCell) correctCell.classList.add('correct');
+        playError();
+        document.getElementById('round-feedback').textContent = `Wrong. Correct: ${q.name} (${q.symbol})`;
+      }
+      document.getElementById('score-display').textContent = score;
+      document.getElementById('streak-display').textContent = streak;
+      setTimeout(nextQuestion, 1200);
+    }
+
+    function handleTypeSubmit() {
+      if (answered) return;
+      const user = answerInput.value;
+      const q = currentRound[qIndex];
+      let correct = false;
+      if (currentMode === 'symbol') {
+        correct = matchAnswer(user, q.symbol);
+      } else {
+        correct = matchAnswer(user, q.name);
+      }
+      answered = true;
+      if (correct) {
+        streak++;
+        const mult = 1 + streak * STREAK_MULTIPLIER;
+        const pts = Math.round(BASE_POINTS * mult);
+        score += pts;
+        document.getElementById('round-feedback').textContent = `Correct! +${pts} points`;
+        playSuccess();
+      } else {
+        streak = 0;
+        const expected = currentMode === 'symbol' ? q.symbol : q.name;
+        document.getElementById('round-feedback').textContent = `Wrong. Correct: ${expected}`;
+        playError();
+      }
+      document.getElementById('score-display').textContent = score;
+      document.getElementById('streak-display').textContent = streak;
+      answerInput.value = '';
+      setTimeout(nextQuestion, 1200);
+    }
+
+    function nextQuestion() {
+      qIndex++;
+      document.getElementById('round-feedback').textContent = '';
+      if (qIndex < currentRound.length) {
+        loadQuestion();
+        answered = false;
+      } else {
+        endGame();
+      }
+    }
+
+    function loadQuestion() {
+      answered = false;
+      document.querySelectorAll('.pt-cell.correct, .pt-cell.wrong').forEach(c => { c.classList.remove('correct', 'wrong'); });
+      const q = currentRound[qIndex];
+      document.getElementById('q-num').textContent = qIndex + 1;
+      document.getElementById('score-display').textContent = score;
+      document.getElementById('streak-display').textContent = streak;
+
+      if (currentMode === 'find') {
+        modeFind.classList.remove('hidden');
+        modeType.classList.add('hidden');
+        document.getElementById('question-text').textContent = `Find: ${q.name}`;
+      } else {
+        modeFind.classList.add('hidden');
+        modeType.classList.remove('hidden');
+        answerInput.focus();
+        if (currentMode === 'symbol') {
+          document.getElementById('question-text').textContent = `Atomic number ${q.num} — type the symbol:`;
+        } else {
+          document.getElementById('question-text').textContent = `Symbol ${q.symbol} — type the element name:`;
+        }
+      }
+    }
+
+    function startGame() {
+      initAudio();
+      trackGameStart('periodic-table-quiz');
+      currentMode = document.querySelector('input[name="mode"]:checked')?.value || 'find';
+      currentRound = getRandomQuestions();
+      qIndex = 0;
+      score = 0;
+      streak = 0;
+      showScreen('game-play');
+      document.getElementById('pb-display').textContent = getPB();
+      if (currentMode === 'find') {
+        buildPeriodicTable();
+      }
+      loadQuestion();
+    }
+
+    function endGame() {
+      showScreen('game-over');
+      document.getElementById('final-score').textContent = score;
+      const pb = getPB();
+      if (score > pb) {
+        setPB(score);
+        document.getElementById('final-message').textContent = 'New personal best! 🎉';
+      } else {
+        document.getElementById('final-message').textContent = 'Great effort! Try again to beat your best.';
+      }
+      playGameOver();
+      trackGameOver('periodic-table-quiz', score);
+    }
+
+    document.getElementById('btn-start').addEventListener('click', () => {
+      playClick();
+      startGame();
+    });
+
+    document.getElementById('btn-replay').addEventListener('click', () => {
+      playClick();
+      showScreen('game-start');
+      document.getElementById('pb-display').textContent = getPB();
+    });
+
+    document.getElementById('btn-submit').addEventListener('click', handleTypeSubmit);
+    answerInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') handleTypeSubmit();
+    });
+
+    document.getElementById('pb-display').textContent = getPB();
+  </script>
+</body>
+</html>

@@ -344,7 +344,7 @@ export const games = [
     icon: '🧩',
     accent: '#2563EB',
     keywords: ['jigsaw puzzle', 'drag puzzle', 'picture puzzle', 'relaxing game'],
-    built: false
+    built: true
   },
   {
     name: 'Maze Runner',
@@ -354,7 +354,7 @@ export const games = [
     icon: '🌀',
     accent: '#2563EB',
     keywords: ['maze game', 'maze runner', 'labyrinth', 'maze puzzle'],
-    built: false
+    built: true
   },
   {
     name: 'Box Pusher',
@@ -364,7 +364,7 @@ export const games = [
     icon: '📦',
     accent: '#2563EB',
     keywords: ['sokoban', 'box pusher', 'push puzzle', 'warehouse game'],
-    built: false
+    built: true
   },
   {
     name: 'Block Puzzle',
@@ -374,7 +374,7 @@ export const games = [
     icon: '🟦',
     accent: '#2563EB',
     keywords: ['block puzzle', 'falling blocks', 'row clear', 'tile game'],
-    built: false
+    built: true
   },
   {
     name: 'Match Three',
@@ -384,7 +384,7 @@ export const games = [
     icon: '💎',
     accent: '#2563EB',
     keywords: ['match three', 'gem game', 'swap puzzle', 'jewel game'],
-    built: false
+    built: true
   },
 
   // ─── WORD (8) ─────────────────────────────────────────────────
@@ -958,7 +958,7 @@ export const games = [
     icon: '➕',
     accent: '#0284C7',
     keywords: ['math sprint', 'arithmetic', 'math game', 'speed math'],
-    built: false
+    built: true
   },
   {
     name: 'Number Puzzle',
@@ -968,7 +968,7 @@ export const games = [
     icon: '🔢',
     accent: '#0284C7',
     keywords: ['number puzzle', 'sum puzzle', 'grid math', 'logic puzzle'],
-    built: false
+    built: true
   },
   {
     name: 'Binary Game',
@@ -978,7 +978,7 @@ export const games = [
     icon: '💻',
     accent: '#0284C7',
     keywords: ['binary game', 'binary conversion', 'computer science', 'number base'],
-    built: false
+    built: true
   },
   {
     name: 'Equation Builder',
@@ -988,7 +988,7 @@ export const games = [
     icon: '🧮',
     accent: '#0284C7',
     keywords: ['equation builder', 'math puzzle', 'number equation', 'arithmetic puzzle'],
-    built: false
+    built: true
   },
   {
     name: 'Logic Grid Puzzle',
@@ -998,7 +998,7 @@ export const games = [
     icon: '🧠',
     accent: '#0284C7',
     keywords: ['logic grid', 'einstein puzzle', 'deduction', 'logic game'],
-    built: false
+    built: true
   },
 
   // ─── TRIVIA & KNOWLEDGE (5) ──────────────────────────────────
@@ -1011,7 +1011,7 @@ export const games = [
     icon: '🏳',
     accent: '#6D28D9',
     keywords: ['flag quiz', 'world flags', 'country quiz', 'geography game'],
-    built: false
+    built: true
   },
   {
     name: 'Capital City Quiz',
@@ -1021,7 +1021,7 @@ export const games = [
     icon: '🏛',
     accent: '#6D28D9',
     keywords: ['capital quiz', 'city quiz', 'geography', 'world capitals'],
-    built: false
+    built: true
   },
   {
     name: 'Geography Quiz',
@@ -1031,7 +1031,7 @@ export const games = [
     icon: '🌍',
     accent: '#6D28D9',
     keywords: ['geography quiz', 'map game', 'world quiz', 'country location'],
-    built: false
+    built: true
   },
   {
     name: 'History Timeline',
@@ -1041,7 +1041,7 @@ export const games = [
     icon: '📜',
     accent: '#6D28D9',
     keywords: ['history timeline', 'history game', 'timeline quiz', 'date game'],
-    built: false
+    built: true
   },
   {
     name: 'Periodic Table Quiz',
@@ -1051,6 +1051,6 @@ export const games = [
     icon: '⚗',
     accent: '#6D28D9',
     keywords: ['periodic table', 'chemistry quiz', 'elements quiz', 'science game'],
-    built: false
+    built: true
   },
 ];

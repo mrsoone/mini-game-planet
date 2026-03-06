@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Geography Quiz - Locate Countries on the World Map | Mini Game Planet</title>
+  <meta name="description" content="Test your geography skills! Click on the world map to locate countries. Score based on how close your guess is. 20 rounds, running score, personal best. Free geography trivia game.">
+  <link rel="canonical" href="https://minigameplanet.com/games/geography-quiz.html">
+  <!-- Open Graph -->
+  <meta property="og:title" content="Geography Quiz - Locate Countries on the World Map | Mini Game Planet">
+  <meta property="og:description" content="Click on the map to locate countries. Score based on distance—closer guesses earn more points. 20 rounds, personal best tracking.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/geography-quiz.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background-color: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    .map-clickable { cursor: crosshair; }
+    .map-clickable:active { cursor: crosshair; }
+  </style>
+  <!-- GA4 Consent Defaults -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    window.gaConsent = { analytics: true, ads: false };
+  </script>
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Geography Quiz",
+    "description": "Free geography trivia game. Locate countries on a world map by clicking. Score based on distance from correct location. 20 rounds, personal best tracking.",
+    "applicationCategory": "Game",
+    "operatingSystem": "Any",
+    "url": "https://minigameplanet.com/games/geography-quiz.html",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+  <!-- AdSense (commented) -->
+  <!--
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXX" crossorigin="anonymous"></script>
+  -->
+</head>
+<body class="min-h-screen text-gray-800 antialiased">
+  <nav id="nav-container" class="bg-white/80 backdrop-blur border-b border-gray-200 sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="font-semibold text-lg text-gray-800 hover:text-indigo-600 transition">Mini Game Planet</a>
+      <div class="flex items-center gap-3">
+        <button id="sound-toggle" class="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-sm font-medium transition" aria-label="Toggle sound">🔊 Sound</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    <article class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 mb-8">
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Geography Quiz</h1>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        How well do you know where countries are located on the world map? Our geography quiz challenges you to pinpoint countries by clicking on a simplified world map. Each round shows a country name—your job is to click where you think that country is located. The closer your guess, the more points you earn. It's a fun way to improve your mental map of the world while testing your geographic knowledge.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        The game uses a simplified SVG world map with continent outlines and clickable areas. When you click, a line appears showing the distance between your guess and the correct location. A green marker indicates the right spot, so you learn as you play. Scoring rewards precision: a perfect or near-perfect click can earn up to 100 points, while guesses farther away earn fewer points. Twenty rounds per game keep sessions engaging without being overwhelming.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        Your running score is displayed throughout the round, and your personal best is saved locally in your browser. Challenge yourself to beat your high score over time. The game uses cryptographically secure random number generation via <code class="font-mono text-sm bg-gray-100 px-1 rounded">crypto.getRandomValues()</code> to ensure fair, unpredictable country selection. No two games are alike.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        Geography literacy matters. Understanding where countries are located helps with travel planning, news comprehension, and cultural awareness. Many people can name capitals but struggle to place countries on a map. This quiz bridges that gap by making location practice interactive and rewarding. From Brazil and Japan to Egypt and Australia, you'll encounter countries from every inhabited continent.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        The simplified map uses an equirectangular projection—a common way to flatten the globe onto a 2D surface. Latitude and longitude lines are implied by the layout: the top of the map is the Arctic, the bottom is Antarctica, and the horizontal span covers 360 degrees of longitude. Major landmasses are outlined so you can orient yourself quickly. Whether you're a geography buff or a casual learner, the quiz adapts to your pace.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        Sound effects can be toggled on or off for a personalized experience. No sign-up required—just hit Start and begin clicking. Perfect for a quick brain break, classroom use, or brushing up before a trip. Ready to prove your geographic expertise? Locate 20 countries and see how high you can score!
+      </p>
+    </article>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+      <div id="game-start" class="text-center">
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">Ready to Play?</h2>
+        <p class="text-gray-600 mb-4">20 rounds · Click on the map to locate each country · Closer = more points</p>
+        <div class="flex flex-wrap justify-center gap-4 mb-6">
+          <div class="bg-gray-50 rounded-xl px-4 py-3 text-center">
+            <span class="font-mono text-2xl font-bold text-indigo-600" id="pb-display">0</span>
+            <p class="text-xs text-gray-500">Personal Best</p>
+          </div>
+        </div>
+        <button id="btn-start" class="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition shadow-md hover:shadow-lg">
+          Start Quiz
+        </button>
+      </div>
+
+      <div id="game-play" class="hidden">
+        <div class="flex justify-between items-center mb-4">
+          <div class="flex gap-4">
+            <span class="font-mono font-semibold">Score: <span id="score-display">0</span></span>
+          </div>
+          <span class="text-sm text-gray-500">Round <span id="q-num">1</span>/20</span>
+        </div>
+        <p id="question-text" class="text-xl font-semibold text-gray-900 mb-4">Where is <span id="country-name"></span>?</p>
+        <p class="text-sm text-gray-500 mb-2">Click on the map to place your guess.</p>
+        <div class="relative bg-gray-100 rounded-xl overflow-hidden mb-4">
+          <svg id="world-map" class="w-full max-h-[400px] map-clickable" viewBox="0 0 360 180" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <linearGradient id="ocean" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color:#bae6fd"/>
+                <stop offset="100%" style="stop-color:#7dd3fc"/>
+              </linearGradient>
+            </defs>
+            <rect width="360" height="180" fill="url(#ocean)"/>
+            <!-- Simplified continent outlines -->
+            <path d="M 50 25 L 120 20 L 180 35 L 220 50 L 250 45 L 280 55 L 300 50 L 320 60 L 340 55 L 355 70 L 350 95 L 340 110 L 320 120 L 300 115 L 280 125 L 250 130 L 220 120 L 180 110 L 140 95 L 100 85 L 60 70 L 45 50 Z" fill="#86efac" stroke="#22c55e" stroke-width="0.5" opacity="0.9"/>
+            <path d="M 30 95 L 80 85 L 130 95 L 160 110 L 175 130 L 170 155 L 150 170 L 120 175 L 90 168 L 60 155 L 40 130 Z" fill="#86efac" stroke="#22c55e" stroke-width="0.5" opacity="0.9"/>
+            <path d="M 175 35 L 250 30 L 290 45 L 310 65 L 315 90 L 305 115 L 280 130 L 250 135 L 220 125 L 195 110 L 180 85 Z" fill="#86efac" stroke="#22c55e" stroke-width="0.5" opacity="0.9"/>
+            <path d="M 50 55 L 120 50 L 200 55 L 260 60 L 310 70 L 340 85 L 355 100 L 350 120 L 330 140 L 300 150 L 260 155 L 220 150 L 180 140 L 140 130 L 100 115 L 70 95 Z" fill="#86efac" stroke="#22c55e" stroke-width="0.5" opacity="0.9"/>
+            <path d="M 0 70 L 50 65 L 100 75 L 130 90 L 140 110 L 130 135 L 100 150 L 60 155 L 30 145 L 10 120 L 0 95 Z" fill="#86efac" stroke="#22c55e" stroke-width="0.5" opacity="0.9"/>
+            <path d="M 100 140 L 180 130 L 260 140 L 310 150 L 350 145 L 360 160 L 340 175 L 280 178 L 220 170 L 160 165 L 110 160 Z" fill="#86efac" stroke="#22c55e" stroke-width="0.5" opacity="0.9"/>
+            <path d="M 250 155 L 320 150 L 358 165 L 355 178 L 300 178 L 250 172 Z" fill="#86efac" stroke="#22c55e" stroke-width="0.5" opacity="0.9"/>
+            <!-- Guess line and markers (drawn by JS) -->
+            <g id="map-overlay">
+              <line id="distance-line" x1="0" y1="0" x2="0" y2="0" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4 2" opacity="0"/>
+              <circle id="guess-marker" cx="0" cy="0" r="3" fill="#6366f1" opacity="0"/>
+              <circle id="correct-marker" cx="0" cy="0" r="4" fill="#22c55e" stroke="#15803d" stroke-width="1" opacity="0"/>
+            </g>
+          </svg>
+        </div>
+        <p id="round-feedback" class="text-sm font-medium text-gray-600 min-h-[1.5rem]"></p>
+      </div>
+
+      <div id="game-over" class="hidden text-center">
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">Round Complete!</h2>
+        <p class="text-4xl font-mono font-bold text-indigo-600 mb-2" id="final-score">0</p>
+        <p class="text-gray-600 mb-6" id="final-message"></p>
+        <button id="btn-replay" class="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition shadow-md hover:shadow-lg">
+          Play Again
+        </button>
+      </div>
+    </div>
+
+    <section id="related-games" class="mt-12">
+      <h2 class="text-xl font-bold text-gray-900 mb-4">Related Games</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <a href="/games/capital-quiz.html" class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:border-indigo-200 hover:shadow transition">Capital Quiz</a>
+        <a href="/games/flag-quiz.html" class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:border-indigo-200 hover:shadow transition">Flag Quiz</a>
+        <a href="/games/trivia-quiz.html" class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:border-indigo-200 hover:shadow transition">Trivia Quiz</a>
+        <a href="/games/word-search.html" class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:border-indigo-200 hover:shadow transition">Word Search</a>
+      </div>
+    </section>
+  </main>
+
+  <footer id="footer-container" class="border-t border-gray-200 mt-12 py-8">
+    <div class="max-w-4xl mx-auto px-4 text-center text-gray-500 text-sm">
+      <p>© Mini Game Planet. Free casual games for everyone.</p>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('geography-quiz');
+    initConsent();
+    trackGameView('geography-quiz', 'Trivia');
+
+    const COUNTRIES = [
+      { name: "Afghanistan", lat: 33.9, lon: 67.7, region: "asia" },
+      { name: "Algeria", lat: 28.0, lon: 3.0, region: "africa" },
+      { name: "Argentina", lat: -34.6, lon: -58.4, region: "americas" },
+      { name: "Australia", lat: -25.3, lon: 133.8, region: "oceania" },
+      { name: "Brazil", lat: -14.2, lon: -51.9, region: "americas" },
+      { name: "Canada", lat: 56.1, lon: -106.3, region: "americas" },
+      { name: "Chile", lat: -33.4, lon: -70.7, region: "americas" },
+      { name: "China", lat: 35.9, lon: 104.2, region: "asia" },
+      { name: "Colombia", lat: 4.6, lon: -74.1, region: "americas" },
+      { name: "Egypt", lat: 26.8, lon: 30.8, region: "africa" },
+      { name: "Ethiopia", lat: 9.0, lon: 38.7, region: "africa" },
+      { name: "France", lat: 46.2, lon: 2.2, region: "europe" },
+      { name: "Germany", lat: 51.2, lon: 10.5, region: "europe" },
+      { name: "India", lat: 20.6, lon: 78.9, region: "asia" },
+      { name: "Indonesia", lat: -0.8, lon: 113.9, region: "asia" },
+      { name: "Iran", lat: 32.4, lon: 53.7, region: "asia" },
+      { name: "Italy", lat: 41.9, lon: 12.6, region: "europe" },
+      { name: "Japan", lat: 36.2, lon: 138.3, region: "asia" },
+      { name: "Kenya", lat: -0.0, lon: 37.9, region: "africa" },
+      { name: "Mexico", lat: 23.6, lon: -102.6, region: "americas" },
+      { name: "Morocco", lat: 31.8, lon: -7.1, region: "africa" },
+      { name: "Nigeria", lat: 9.1, lon: 8.7, region: "africa" },
+      { name: "Norway", lat: 60.5, lon: 8.5, region: "europe" },
+      { name: "Pakistan", lat: 30.4, lon: 69.3, region: "asia" },
+      { name: "Peru", lat: -9.2, lon: -75.0, region: "americas" },
+      { name: "Philippines", lat: 12.9, lon: 121.8, region: "asia" },
+      { name: "Poland", lat: 52.0, lon: 19.4, region: "europe" },
+      { name: "Russia", lat: 61.5, lon: 105.3, region: "europe" },
+      { name: "Saudi Arabia", lat: 24.0, lon: 45.0, region: "asia" },
+      { name: "South Africa", lat: -29.0, lon: 24.0, region: "africa" },
+      { name: "South Korea", lat: 36.0, lon: 128.0, region: "asia" },
+      { name: "Spain", lat: 40.5, lon: -3.7, region: "europe" },
+      { name: "Thailand", lat: 15.9, lon: 100.9, region: "asia" },
+      { name: "Turkey", lat: 39.0, lon: 35.0, region: "asia" },
+      { name: "Ukraine", lat: 49.0, lon: 32.0, region: "europe" },
+      { name: "United Kingdom", lat: 54.0, lon: -2.0, region: "europe" },
+      { name: "United States", lat: 39.8, lon: -98.6, region: "americas" },
+      { name: "Vietnam", lat: 14.1, lon: 108.3, region: "asia" },
+      { name: "New Zealand", lat: -40.9, lon: 174.9, region: "oceania" },
+      { name: "Sweden", lat: 62.2, lon: 17.6, region: "europe" },
+      { name: "Iraq", lat: 33.2, lon: 43.7, region: "asia" },
+      { name: "Malaysia", lat: 4.2, lon: 101.9, region: "asia" },
+      { name: "Venezuela", lat: 6.4, lon: -66.6, region: "americas" },
+      { name: "Sudan", lat: 12.9, lon: 30.2, region: "africa" },
+      { name: "Mongolia", lat: 46.9, lon: 103.8, region: "asia" },
+      { name: "Kazakhstan", lat: 48.0, lon: 67.0, region: "asia" },
+    ];
+
+    const MAX_POINTS = 100;
+    const MAX_DISTANCE = 80;
+    const QUESTIONS_PER_ROUND = 20;
+    const PB_KEY = 'geography-quiz-pb';
+
+    function secureRandom(max) {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] % max;
+    }
+
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = secureRandom(i + 1);
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function latLonToSvg(lat, lon) {
+      const x = (lon + 180) / 360 * 360;
+      const y = (90 - lat) / 180 * 180;
+      return { x, y };
+    }
+
+    function getDistance(x1, y1, x2, y2) {
+      return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+    }
+
+    function getScore(distance) {
+      if (distance <= 0) return MAX_POINTS;
+      const ratio = Math.min(1, distance / MAX_DISTANCE);
+      return Math.max(0, Math.round(MAX_POINTS * (1 - ratio)));
+    }
+
+    function getRandomQuestions() {
+      const shuffled = shuffle(COUNTRIES);
+      return shuffled.slice(0, QUESTIONS_PER_ROUND);
+    }
+
+    let audioMuted = false;
+    let currentRound = [];
+    let qIndex = 0;
+    let score = 0;
+    let answered = false;
+
+    function getPB() {
+      try {
+        return parseInt(localStorage.getItem(PB_KEY) || '0', 10);
+      } catch { return 0; }
+    }
+
+    function setPB(val) {
+      try { localStorage.setItem(PB_KEY, String(val)); } catch (_) {}
+    }
+
+    const startScreen = document.getElementById('game-start');
+    const playScreen = document.getElementById('game-play');
+    const overScreen = document.getElementById('game-over');
+    const mapSvg = document.getElementById('world-map');
+    const distanceLine = document.getElementById('distance-line');
+    const guessMarker = document.getElementById('guess-marker');
+    const correctMarker = document.getElementById('correct-marker');
+
+    document.getElementById('sound-toggle').addEventListener('click', () => {
+      audioMuted = !audioMuted;
+      muteAll(audioMuted);
+      document.getElementById('sound-toggle').textContent = audioMuted ? '🔇 Muted' : '🔊 Sound';
+      playClick();
+    });
+
+    function showScreen(id) {
+      startScreen.classList.add('hidden');
+      playScreen.classList.add('hidden');
+      overScreen.classList.add('hidden');
+      document.getElementById(id).classList.remove('hidden');
+    }
+
+    function getSvgPoint(evt) {
+      const pt = mapSvg.createSVGPoint();
+      pt.x = evt.clientX;
+      pt.y = evt.clientY;
+      const svgP = pt.matrixTransform(mapSvg.getScreenCTM().inverse());
+      return { x: svgP.x, y: svgP.y };
+    }
+
+    function showGuessResult(guessX, guessY, correctX, correctY, pts) {
+      distanceLine.setAttribute('x1', guessX);
+      distanceLine.setAttribute('y1', guessY);
+      distanceLine.setAttribute('x2', correctX);
+      distanceLine.setAttribute('y2', correctY);
+      distanceLine.setAttribute('opacity', '1');
+      guessMarker.setAttribute('cx', guessX);
+      guessMarker.setAttribute('cy', guessY);
+      guessMarker.setAttribute('opacity', '1');
+      correctMarker.setAttribute('cx', correctX);
+      correctMarker.setAttribute('cy', correctY);
+      correctMarker.setAttribute('opacity', '1');
+      document.getElementById('round-feedback').textContent = `+${pts} points (distance: ${Math.round(getDistance(guessX, guessY, correctX, correctY))} units)`;
+    }
+
+    function hideOverlay() {
+      distanceLine.setAttribute('opacity', '0');
+      guessMarker.setAttribute('opacity', '0');
+      correctMarker.setAttribute('opacity', '0');
+      document.getElementById('round-feedback').textContent = '';
+    }
+
+    function handleMapClick(evt) {
+      if (answered) return;
+      answered = true;
+      const q = currentRound[qIndex];
+      const correct = latLonToSvg(q.lat, q.lon);
+      const pt = getSvgPoint(evt);
+      const dist = getDistance(pt.x, pt.y, correct.x, correct.y);
+      const pts = getScore(dist);
+      score += pts;
+      document.getElementById('score-display').textContent = score;
+      showGuessResult(pt.x, pt.y, correct.x, correct.y, pts);
+      if (pts >= 80) playSuccess();
+      else if (pts >= 40) playClick();
+      else playError();
+      setTimeout(() => {
+        qIndex++;
+        hideOverlay();
+        if (qIndex < currentRound.length) {
+          loadQuestion();
+          answered = false;
+        } else {
+          endGame();
+        }
+      }, 1500);
+    }
+
+    function startGame() {
+      initAudio();
+      trackGameStart('geography-quiz');
+      currentRound = getRandomQuestions();
+      qIndex = 0;
+      score = 0;
+      showScreen('game-play');
+      document.getElementById('pb-display').textContent = getPB();
+      hideOverlay();
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      answered = false;
+      const q = currentRound[qIndex];
+      document.getElementById('country-name').textContent = q.name;
+      document.getElementById('q-num').textContent = qIndex + 1;
+      document.getElementById('score-display').textContent = score;
+    }
+
+    function endGame() {
+      showScreen('game-over');
+      document.getElementById('final-score').textContent = score;
+      const pb = getPB();
+      if (score > pb) {
+        setPB(score);
+        document.getElementById('final-message').textContent = 'New personal best! 🎉';
+      } else {
+        document.getElementById('final-message').textContent = 'Great effort! Try again to beat your best.';
+      }
+      playGameOver();
+      trackGameOver('geography-quiz', score);
+    }
+
+    mapSvg.addEventListener('click', handleMapClick);
+
+    document.getElementById('btn-start').addEventListener('click', () => {
+      playClick();
+      startGame();
+    });
+
+    document.getElementById('btn-replay').addEventListener('click', () => {
+      playClick();
+      showScreen('game-start');
+      document.getElementById('pb-display').textContent = getPB();
+    });
+
+    document.getElementById('pb-display').textContent = getPB();
+  </script>
+</body>
+</html>

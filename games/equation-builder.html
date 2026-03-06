@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Equation Builder — Math Puzzle Game | MiniGamePlanet</title>
+  <meta name="description" content="Arrange numbers and operators to hit the target. Equation Builder is a drag-and-drop math puzzle with 50+ puzzles, timer, hints, and personal best tracking. Free online math game.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/equation-builder">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500});gtag('config','G-XXXXXXXXXX');</script>
+  <!-- GA4 Consent defaults handled by initConsent() -->
+  <!-- AdSense — uncomment after approval -->
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Equation Builder — Math Puzzle Game | MiniGamePlanet">
+  <meta property="og:description" content="Arrange numbers and operators to hit the target. Drag-and-drop math puzzle with 50+ puzzles, timer, hints.">
+  <meta property="og:url" content="https://minigameplanet.com/games/equation-builder">
+  <meta property="og:site_name" content="MiniGamePlanet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Equation Builder","url":"https://minigameplanet.com/games/equation-builder","description":"Drag-and-drop math puzzle. Arrange numbers and operators to form equations that equal the target. 50+ puzzles, timer, hints, personal best.","genre":"Math","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <style>
+    .eb-target{font-family:'DM Mono',monospace;font-size:clamp(1.75rem,6vw,2.5rem);font-weight:700;color:#0F172A;text-align:center;padding:12px 20px;background:#F8FAFC;border-radius:10px;border:2px solid #E5E7EB}
+    .eb-slot{min-width:clamp(44px,12vw,56px);height:clamp(44px,12vw,56px);border:2px dashed #CBD5E1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:clamp(18px,5vw,24px);font-weight:700;background:#fff;transition:all 0.15s}
+    .eb-slot.filled{border-style:solid;border-color:#E5E7EB;background:#fff}
+    .eb-slot.drag-over{border-color:#2563EB;background:#EFF6FF}
+    .eb-slot.hint-reveal{border-color:#059669;background:#D1FAE5;animation:eb-pulse 0.5s ease}
+    .eb-tile{min-width:clamp(40px,10vw,52px);height:clamp(40px,10vw,52px);border:2px solid #0F172A;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:clamp(16px,4vw,20px);font-weight:700;background:#fff;cursor:grab;user-select:none;transition:transform 0.1s}
+    .eb-tile:active{cursor:grabbing}
+    .eb-tile.dragging{opacity:0.6;transform:scale(1.05)}
+    .eb-tile.op{background:#0F172A;color:#fff;min-width:clamp(36px,9vw,48px)}
+    @keyframes eb-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+    .eb-timer{font-family:'DM Mono',monospace;font-size:clamp(1rem,3vw,1.25rem);font-weight:700;color:#0F172A}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-2xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:24px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+        <h1 style="font-size:22px;font-weight:700;margin:0;">🧮 Equation Builder</h1>
+        <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊</button>
+      </div>
+
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+        <button class="diff-btn" data-diff="easy" style="padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;border:2px solid #2563EB;background:#2563EB;color:#fff;cursor:pointer;font-family:inherit;">Easy</button>
+        <button class="diff-btn" data-diff="medium" style="padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">Medium</button>
+        <button class="diff-btn" data-diff="hard" style="padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">Hard</button>
+        <button id="new-puzzle" style="padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">🔄 New</button>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:16px;padding:12px 16px;background:#F8FAFC;border-radius:8px;">
+        <span class="eb-timer">⏱ <span id="timer">0:00</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:14px;font-weight:600;">Puzzle <span id="puzzle-num">1</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:14px;color:#64748B;">🏆 Best: <span id="best-time">—</span></span>
+      </div>
+
+      <div style="text-align:center;margin-bottom:12px;">
+        <p style="font-size:13px;color:#64748B;margin-bottom:6px;">Reach the target:</p>
+        <div class="eb-target" id="target-display">—</div>
+      </div>
+
+      <div style="margin-bottom:12px;">
+        <p style="font-size:12px;color:#64748B;margin-bottom:6px;">Drag tiles into slots:</p>
+        <div id="slots-row" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;min-height:60px;padding:12px;background:#F8FAFC;border-radius:10px;"></div>
+      </div>
+
+      <div style="margin-bottom:12px;">
+        <p style="font-size:12px;color:#64748B;margin-bottom:6px;">Tiles (drag to slots or back here):</p>
+        <div id="tiles-row" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;min-height:60px;padding:12px;background:#F1F5F9;border-radius:10px;border:2px dashed #CBD5E1;"></div>
+      </div>
+
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;">
+        <button id="validate-btn" style="padding:10px 24px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">✓ Validate</button>
+        <button id="hint-btn" style="padding:10px 24px;background:#0F172A;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">💡 Hint</button>
+      </div>
+
+      <div id="feedback" style="text-align:center;font-family:'DM Mono',monospace;font-size:14px;font-weight:600;min-height:24px;"></div>
+
+      <div id="game-over" style="display:none;text-align:center;padding:24px;margin-top:16px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;">
+        <div id="go-title" style="font-size:22px;font-weight:700;margin-bottom:8px;color:#059669;">✅ Correct!</div>
+        <div id="go-sub" style="font-size:14px;color:#64748B;margin-bottom:12px;"></div>
+        <div id="session-stats" style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;text-align:left;max-width:280px;margin:0 auto 16px;padding:12px;background:#fff;border-radius:8px;"></div>
+        <button id="next-puzzle" style="padding:10px 28px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">▶ Next Puzzle</button>
+      </div>
+    </div>
+  </main>
+
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">What Is Equation Builder?</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>Equation Builder is a math puzzle game where you arrange numbers and operators to form an equation that equals a target number. You're given a target—say, 24—and a set of tiles: numbers like 4, 6, 2, and 3, plus operators (+, −, ×, ÷). Your job is to drag these tiles into the correct order so that when evaluated, the expression equals the target. It's like the classic 24 Game, but with a clean drag-and-drop interface, 50+ hand-crafted puzzles, and difficulty levels from easy to hard.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">How to Play</h3>
+      <p>Select a difficulty level (Easy, Medium, or Hard) and click New to load a puzzle. The target number appears at the top. Below it are empty slots where you'll build your equation. The tiles—numbers and operators—appear in a row beneath. Drag each tile into a slot. The equation must read left to right: number, operator, number, operator, number, and so on. Standard order of operations applies: multiplication and division happen before addition and subtraction. When you think you've got it, click Validate. If correct, you'll see a success message and can move to the next puzzle. If not, try rearranging and validate again.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Difficulty Levels</h3>
+      <p><strong>Easy</strong> puzzles use small numbers and only addition and subtraction. Examples: 5 + 3 = 8, or 10 − 4 − 2 = 4. Perfect for warming up or younger players. <strong>Medium</strong> puzzles introduce multiplication with 3–4 numbers. You might see 4 × 3 + 2 = 14 or 8 − 2 × 3 = 2. <strong>Hard</strong> puzzles use all four operations with larger numbers and longer expressions. Think 8 × 2 + 12 ÷ 3 = 20 or 15 ÷ 3 + 4 × 2 = 13. Division always yields whole numbers in our puzzles—no fractions.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Timer and Hints</h3>
+      <p>The timer starts when a puzzle loads and stops when you validate correctly. Your personal best time per difficulty is saved in your browser. Stuck? Click the Hint button to reveal one correct placement. The game will place one tile in its correct slot for you. Use hints sparingly—they're there to nudge you without giving away the whole solution. Each puzzle can be solved with the given tiles; there's always at least one valid arrangement.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Session Stats and Personal Best</h3>
+      <p>Session statistics track how many puzzles you've solved in the current browsing session and your total solve time. Your personal best time—the fastest you've ever solved a puzzle at each difficulty—is stored in localStorage. Beat your best to see it update. The game uses <strong>crypto.getRandomValues()</strong> to select puzzles fairly, so you'll get a good mix across difficulty levels.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Why Equation Builder Matters</h3>
+      <p>Mental math and number sense improve with practice. Equation Builder trains you to think about how numbers combine—which operations to apply first, how to reach a target efficiently, and how to spot patterns. Teachers use similar puzzles in classrooms; adults enjoy them as a quick brain workout. The drag-and-drop interface makes it accessible on touch devices and desktops alike. No account required, no data sent to servers. Everything runs in your browser.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Tips for Faster Solving</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Start with multiplication and division.</strong> They have higher precedence. If you see 4 × 5 and 20 as target, that's a good anchor.</li>
+        <li><strong>Work backwards from the target.</strong> If the target is 24, think: 6 × 4, 8 × 3, 12 + 12, 30 − 6.</li>
+        <li><strong>Use the hint strategically.</strong> If you're confident about most tiles, one hint can confirm your last guess.</li>
+        <li><strong>Practice order of operations.</strong> 3 + 4 × 2 = 11, not 14. Getting this right is key.</li>
+      </ul>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Free and Private</h3>
+      <p>Equation Builder runs entirely in your browser. No downloads, no signups, no data sent to servers. Your personal best times are stored locally. Perfect for a coffee break, classroom activity, or competitive challenge with friends. Give it a try and see how fast you can build the perfect equation.</p>
+    </div>
+  </article>
+  <div id="related-games"></div>
+  <div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playError } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+  document.addEventListener('click',()=>initAudio(),{once:true});
+  initToolPage('equation-builder'); initConsent(); trackGameView('equation-builder','Math');
+
+  const STORAGE_KEY = 'mgp_equation_builder_best';
+
+  const PUZZLES = [
+    { diff:'easy', target:8, tokens:[5,'+',3] },
+    { diff:'easy', target:5, tokens:[9,'-',4] },
+    { diff:'easy', target:12, tokens:[6,'+',6] },
+    { diff:'easy', target:7, tokens:[11,'-',4] },
+    { diff:'easy', target:15, tokens:[6,'+',7,'+',2] },
+    { diff:'easy', target:5, tokens:[10,'-',3,'-',2] },
+    { diff:'easy', target:14, tokens:[8,'+',4,'+',2] },
+    { diff:'easy', target:3, tokens:[12,'-',5,'-',4] },
+    { diff:'easy', target:18, tokens:[9,'+',5,'+',4] },
+    { diff:'easy', target:6, tokens:[15,'-',6,'-',3] },
+    { diff:'easy', target:20, tokens:[7,'+',8,'+',5] },
+    { diff:'easy', target:4, tokens:[14,'-',7,'-',3] },
+    { diff:'easy', target:11, tokens:[3,'+',5,'+',3] },
+    { diff:'easy', target:9, tokens:[18,'-',6,'-',3] },
+    { diff:'easy', target:16, tokens:[4,'+',6,'+',6] },
+    { diff:'easy', target:2, tokens:[9,'-',4,'-',3] },
+    { diff:'easy', target:13, tokens:[5,'+',4,'+',4] },
+    { diff:'easy', target:10, tokens:[20,'-',7,'-',3] },
+    { diff:'easy', target:17, tokens:[8,'+',5,'+',4] },
+    { diff:'easy', target:1, tokens:[10,'-',5,'-',4] },
+    { diff:'medium', target:14, tokens:[4,'*',3,'+',2] },
+    { diff:'medium', target:13, tokens:[5,'*',2,'+',3] },
+    { diff:'medium', target:9, tokens:[6,'*',2,'-',3] },
+    { diff:'medium', target:2, tokens:[8,'-',2,'*',3] },
+    { diff:'medium', target:11, tokens:[5,'+',3,'*',2] },
+    { diff:'medium', target:16, tokens:[10,'+',2,'*',3] },
+    { diff:'medium', target:6, tokens:[12,'-',3,'*',2] },
+    { diff:'medium', target:11, tokens:[4,'*',4,'-',5] },
+    { diff:'medium', target:19, tokens:[3,'*',5,'+',4] },
+    { diff:'medium', target:11, tokens:[9,'*',2,'-',7] },
+    { diff:'medium', target:18, tokens:[4,'*',4,'+',2] },
+    { diff:'medium', target:7, tokens:[5,'*',2,'-',3] },
+    { diff:'medium', target:21, tokens:[6,'*',3,'+',3] },
+    { diff:'medium', target:4, tokens:[10,'-',2,'*',3] },
+    { diff:'medium', target:17, tokens:[3,'*',4,'+',5] },
+    { diff:'medium', target:10, tokens:[8,'*',2,'-',6] },
+    { diff:'medium', target:22, tokens:[5,'*',4,'+',2] },
+    { diff:'medium', target:8, tokens:[12,'-',2,'*',2] },
+    { diff:'medium', target:20, tokens:[4,'*',5] },
+    { diff:'medium', target:15, tokens:[7,'*',2,'+',1] },
+    { diff:'medium', target:12, tokens:[3,'*',3,'+',3] },
+    { diff:'hard', target:18, tokens:[8,'*',2,'+',12,'/',6] },
+    { diff:'hard', target:15, tokens:[6,'*',3,'-',9,'/',3] },
+    { diff:'hard', target:12, tokens:[12,'/',3,'+',4,'*',2] },
+    { diff:'hard', target:11, tokens:[20,'/',4,'+',3,'*',2] },
+    { diff:'hard', target:12, tokens:[9,'*',2,'-',18,'/',3] },
+    { diff:'hard', target:13, tokens:[15,'/',3,'+',2,'*',4] },
+    { diff:'hard', target:18, tokens:[8,'*',2,'-',4,'+',6] },
+    { diff:'hard', target:12, tokens:[6,'+',12,'/',4,'*',2] },
+    { diff:'hard', target:11, tokens:[10,'-',4,'/',2,'+',3] },
+    { diff:'hard', target:14, tokens:[24,'/',6,'+',5,'*',2] },
+    { diff:'hard', target:20, tokens:[4,'*',5] },
+    { diff:'hard', target:16, tokens:[8,'/',2,'*',4] },
+    { diff:'hard', target:10, tokens:[18,'/',3,'-',2,'*',2] },
+    { diff:'hard', target:19, tokens:[5,'*',3,'+',12,'/',3] },
+    { diff:'hard', target:8, tokens:[24,'/',4,'-',4,'/',2] },
+    { diff:'hard', target:22, tokens:[6,'*',4,'-',8,'/',4] },
+    { diff:'hard', target:17, tokens:[4,'*',4,'+',6,'/',6] },
+    { diff:'hard', target:9, tokens:[27,'/',3,'-',6,'/',2] },
+    { diff:'hard', target:21, tokens:[6,'*',3,'+',9,'/',3] },
+    { diff:'hard', target:24, tokens:[6,'*',4] },
+  ];
+
+  function rng(min, max) {
+    const a = new Uint32Array(1);
+    crypto.getRandomValues(a);
+    return min + (a[0] % (max - min + 1));
+  }
+
+  function shuffle(arr) {
+    const out = [...arr];
+    for (let i = out.length - 1; i > 0; i--) {
+      const j = rng(0, i);
+      [out[i], out[j]] = [out[j], out[i]];
+    }
+    return out;
+  }
+
+  function evalExpr(tokens) {
+    const arr = tokens.filter(t => t !== null && t !== undefined);
+    if (arr.length < 3 || arr.length % 2 === 0) return null;
+    const a = [...arr];
+    for (let i = 1; i < a.length; i += 2) {
+      if (a[i] === '*') {
+        const v = a[i-1] * a[i+1];
+        a.splice(i-1, 3, v);
+        i -= 2;
+      } else if (a[i] === '/') {
+        if (a[i+1] === 0) return null;
+        const v = Math.floor(a[i-1] / a[i+1]);
+        a.splice(i-1, 3, v);
+        i -= 2;
+      }
+    }
+    let r = a[0];
+    for (let i = 1; i < a.length; i += 2) {
+      if (a[i] === '+') r += a[i+1];
+      else r -= a[i+1];
+    }
+    return r;
+  }
+
+  function getBest(diff) {
+    try {
+      const s = localStorage.getItem(STORAGE_KEY);
+      const data = s ? JSON.parse(s) : {};
+      return data[diff] != null ? data[diff] : null;
+    } catch (e) { return null; }
+  }
+
+  function setBest(diff, sec) {
+    try {
+      const s = localStorage.getItem(STORAGE_KEY);
+      const data = s ? JSON.parse(s) : {};
+      const prev = data[diff];
+      if (prev == null || sec < prev) {
+        data[diff] = sec;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      }
+    } catch (e) {}
+  }
+
+  let currentPuzzle = null;
+  let slots = [];
+  let tiles = [];
+  let diff = 'easy';
+  let seconds = 0;
+  let timerInterval = null;
+  let gameActive = false;
+  let puzzleIndex = 0;
+  let session = { solved: 0, totalTime: 0, startTime: Date.now() };
+  let hintUsed = false;
+
+  const slotsRow = document.getElementById('slots-row');
+  const tilesRow = document.getElementById('tiles-row');
+  const targetEl = document.getElementById('target-display');
+  const timerEl = document.getElementById('timer');
+  const bestEl = document.getElementById('best-time');
+  const puzzleNumEl = document.getElementById('puzzle-num');
+  const feedbackEl = document.getElementById('feedback');
+  const goEl = document.getElementById('game-over');
+
+  function getPuzzlesForDiff(d) {
+    return PUZZLES.filter(p => p.diff === d);
+  }
+
+  function formatTime(sec) {
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return m > 0 ? `${m}:${String(s).padStart(2,'0')}` : `0:${String(s).padStart(2,'0')}`;
+  }
+
+  function startTimer() {
+    seconds = 0;
+    timerEl.textContent = formatTime(0);
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+      seconds++;
+      timerEl.textContent = formatTime(seconds);
+    }, 1000);
+  }
+
+  function stopTimer() {
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = null;
+  }
+
+  function createTile(val, isOp) {
+    const el = document.createElement('div');
+    el.className = 'eb-tile' + (isOp ? ' op' : '');
+    el.textContent = val;
+    el.dataset.value = String(val);
+    el.dataset.isOp = isOp ? '1' : '0';
+    el.draggable = true;
+    return el;
+  }
+
+  function createSlot(idx) {
+    const el = document.createElement('div');
+    el.className = 'eb-slot';
+    el.dataset.slotIdx = String(idx);
+    return el;
+  }
+
+  function render() {
+    slotsRow.innerHTML = '';
+    tilesRow.innerHTML = '';
+    const len = currentPuzzle.tokens.length;
+    for (let i = 0; i < len; i++) {
+      const slot = createSlot(i);
+      if (slots[i] != null) {
+        const v = slots[i];
+        const isOp = typeof v === 'string';
+        const tile = createTile(v, isOp);
+        slot.appendChild(tile);
+        slot.classList.add('filled');
+        setupTileDrag(tile, i);
+      }
+      setupSlotDrop(slot, i);
+      slotsRow.appendChild(slot);
+    }
+    for (let i = 0; i < tiles.length; i++) {
+      const v = tiles[i];
+      if (v == null) continue;
+      const isOp = typeof v === 'string';
+      const tile = createTile(v, isOp);
+      tilesRow.appendChild(tile);
+      setupTileDrag(tile, -1);
+    }
+  }
+
+  function setupTileDrag(tileEl, slotIdx) {
+    tileEl.addEventListener('dragstart', (e) => {
+      e.dataTransfer.setData('text/plain', JSON.stringify({ slotIdx, value: tileEl.dataset.value, isOp: tileEl.dataset.isOp }));
+      e.dataTransfer.effectAllowed = 'move';
+      tileEl.classList.add('dragging');
+    });
+    tileEl.addEventListener('dragend', () => tileEl.classList.remove('dragging'));
+  }
+
+  function setupSlotDrop(slotEl, idx) {
+    slotEl.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      slotEl.classList.add('drag-over');
+    });
+    slotEl.addEventListener('dragleave', () => slotEl.classList.remove('drag-over'));
+    slotEl.addEventListener('drop', (e) => {
+      e.preventDefault();
+      slotEl.classList.remove('drag-over');
+      const raw = e.dataTransfer.getData('text/plain');
+      if (!raw) return;
+      const { slotIdx: fromSlot, value, isOp } = JSON.parse(raw);
+      const val = isOp === '1' ? value : parseInt(value, 10);
+      const existingInSlot = slots[idx];
+      if (fromSlot >= 0) {
+        slots[fromSlot] = existingInSlot;
+      } else {
+        const ti = tiles.findIndex(t => t !== null && (typeof t === 'string' ? t : String(t)) === value);
+        if (ti >= 0) tiles[ti] = existingInSlot;
+      }
+      slots[idx] = val;
+      render();
+      playClick();
+    });
+  }
+
+  function loadPuzzle() {
+    const list = getPuzzlesForDiff(diff);
+    const idx = rng(0, list.length - 1);
+    currentPuzzle = list[idx];
+    targetEl.textContent = currentPuzzle.target;
+    slots = Array(currentPuzzle.tokens.length).fill(null);
+    tiles = shuffle([...currentPuzzle.tokens]);
+    hintUsed = false;
+    gameActive = true;
+    goEl.style.display = 'none';
+    feedbackEl.textContent = '';
+    puzzleIndex++;
+    puzzleNumEl.textContent = puzzleIndex;
+    startTimer();
+    render();
+  }
+
+  function validate() {
+    if (!gameActive || !currentPuzzle) return;
+    const expr = slots.map(s => s);
+    const hasNull = expr.some(x => x == null);
+    if (hasNull) {
+      feedbackEl.textContent = 'Fill all slots first.';
+      feedbackEl.style.color = '#DC2626';
+      playError();
+      return;
+    }
+    const result = evalExpr(expr);
+    if (result === currentPuzzle.target) {
+      stopTimer();
+      gameActive = false;
+      feedbackEl.textContent = '✓ Correct!';
+      feedbackEl.style.color = '#059669';
+      playSuccess();
+      session.solved++;
+      session.totalTime += seconds;
+      const best = getBest(diff);
+      if (best == null || seconds < best) setBest(diff, seconds);
+      const bestSec = getBest(diff);
+      bestEl.textContent = bestSec != null ? formatTime(bestSec) : '—';
+      goEl.style.display = 'block';
+      document.getElementById('go-sub').textContent = `Solved in ${formatTime(seconds)}`;
+      document.getElementById('session-stats').innerHTML = `Session: ${session.solved} solved<br>Total time: ${formatTime(session.totalTime)}<br>Best (${diff}): ${bestSec != null ? formatTime(bestSec) : '—'}`;
+      trackGameOver('equation-builder', 'Math', session.solved);
+    } else {
+      feedbackEl.textContent = `= ${result} (target: ${currentPuzzle.target})`;
+      feedbackEl.style.color = '#DC2626';
+      playError();
+    }
+  }
+
+  function giveHint() {
+    if (!gameActive || !currentPuzzle || hintUsed) return;
+    const solution = currentPuzzle.tokens;
+    for (let i = 0; i < slots.length; i++) {
+      if (slots[i] == null) {
+        const correct = solution[i];
+        const val = typeof correct === 'number' ? correct : correct;
+        const tileIdx = tiles.findIndex(t => t !== null && (typeof t === 'string' ? t : String(t)) === String(val));
+        if (tileIdx >= 0) {
+          slots[i] = correct;
+          tiles[tileIdx] = null;
+          hintUsed = true;
+          const slotEl = slotsRow.children[i];
+          slotEl.classList.add('hint-reveal');
+          setTimeout(() => slotEl.classList.remove('hint-reveal'), 600);
+          playClick();
+          render();
+        }
+        break;
+      }
+    }
+  }
+
+  function nextPuzzle() {
+    playClick();
+    loadPuzzle();
+  }
+
+  function setDiff(d) {
+    diff = d;
+    document.querySelectorAll('.diff-btn').forEach(btn => {
+      const active = btn.dataset.diff === d;
+      btn.style.background = active ? '#2563EB' : '#fff';
+      btn.style.color = active ? '#fff' : '#334155';
+      btn.style.borderColor = active ? '#2563EB' : '#E5E7EB';
+    });
+    bestEl.textContent = getBest(diff) != null ? formatTime(getBest(diff)) : '—';
+  }
+
+  document.getElementById('sound-btn').addEventListener('click', () => {
+    initAudio();
+    const m = muteAll();
+    document.getElementById('sound-btn').textContent = m ? '🔇' : '🔊';
+  });
+
+  document.querySelectorAll('.diff-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      playClick();
+      setDiff(btn.dataset.diff);
+      loadPuzzle();
+      trackGameStart('equation-builder', 'Math');
+    });
+  });
+
+  document.getElementById('new-puzzle').addEventListener('click', () => {
+    playClick();
+    loadPuzzle();
+    trackGameStart('equation-builder', 'Math');
+  });
+
+  document.getElementById('validate-btn').addEventListener('click', () => {
+    playClick();
+    validate();
+  });
+
+  document.getElementById('hint-btn').addEventListener('click', () => {
+    playClick();
+    giveHint();
+  });
+
+  document.getElementById('next-puzzle').addEventListener('click', nextPuzzle);
+
+  tilesRow.addEventListener('dragover', (e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; });
+  tilesRow.addEventListener('drop', (e) => {
+    e.preventDefault();
+    const raw = e.dataTransfer.getData('text/plain');
+    if (!raw) return;
+    const { slotIdx: fromSlot, value, isOp } = JSON.parse(raw);
+    if (fromSlot < 0) return;
+    const val = isOp === '1' ? value : parseInt(value, 10);
+    slots[fromSlot] = null;
+    tiles.push(val);
+    render();
+    playClick();
+  });
+
+  setDiff('easy');
+  loadPuzzle();
+  bestEl.textContent = getBest(diff) != null ? formatTime(getBest(diff)) : '—';
+  trackGameStart('equation-builder', 'Math');
+  </script>
+</body>
+</html>

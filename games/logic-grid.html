@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logic Grid — Einstein-Style Deduction Puzzles | MiniGamePlanet</title>
+  <meta name="description" content="Solve Einstein-style logic grid puzzles. Use clues like 'The red house is next to the green house' to deduce who owns what. 5 puzzles, checkmarks and X marks, check solution. Free online math puzzle.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/logic-grid">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500});gtag('config','G-XXXXXXXXXX');</script>
+  <!-- GA4 Consent defaults handled by initConsent() -->
+  <!-- AdSense — uncomment after approval -->
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Logic Grid — Einstein-Style Deduction Puzzles | MiniGamePlanet">
+  <meta property="og:description" content="Solve Einstein-style logic grid puzzles. Use clues to deduce who owns what. 5 puzzles, checkmarks and X marks.">
+  <meta property="og:url" content="https://minigameplanet.com/games/logic-grid">
+  <meta property="og:site_name" content="MiniGamePlanet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Logic Grid","url":"https://minigameplanet.com/games/logic-grid","description":"Einstein-style logic grid puzzles. Use clues to fill a grid with checkmarks and X marks. Deduce who owns what. 5 puzzles of increasing difficulty.","genre":"Math","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <style>
+    .lg-grid{display:inline-grid;gap:0;border:2px solid #0F172A;border-radius:8px;overflow:hidden;background:#0F172A}
+    .lg-cell{width:clamp(32px,8vw,44px);height:clamp(32px,8vw,44px);border:1px solid #CBD5E1;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:clamp(14px,3.5vw,18px);font-weight:700;background:#fff;cursor:pointer;transition:background 0.15s,color 0.15s;user-select:none}
+    .lg-cell:hover{background:#F1F5F9}
+    .lg-cell.yes{background:#D1FAE5;color:#059669}
+    .lg-cell.no{background:#FEE2E2;color:#DC2626}
+    .lg-cell.header{background:#0F172A;color:#fff;cursor:default;font-size:clamp(10px,2.5vw,12px)}
+    .lg-cell.header:hover{background:#0F172A}
+    .lg-cell.corner{background:#334155;cursor:default}
+    .lg-cell.corner:hover{background:#334155}
+    .lg-clues{max-height:200px;overflow-y:auto;padding:12px;background:#F8FAFC;border-radius:8px;border:1px solid #E5E7EB;font-size:13px;line-height:1.6;color:#334155}
+    .lg-clues li{margin-bottom:6px}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-4xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:24px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+        <h1 style="font-size:22px;font-weight:700;margin:0;">🧩 Logic Grid</h1>
+        <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊</button>
+      </div>
+
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;">
+        <button class="puzzle-btn" data-idx="0" style="padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;border:2px solid #2563EB;background:#2563EB;color:#fff;cursor:pointer;font-family:inherit;">1</button>
+        <button class="puzzle-btn" data-idx="1" style="padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">2</button>
+        <button class="puzzle-btn" data-idx="2" style="padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">3</button>
+        <button class="puzzle-btn" data-idx="3" style="padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">4</button>
+        <button class="puzzle-btn" data-idx="4" style="padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">5</button>
+        <button id="reset-btn" style="padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">🔄 Reset</button>
+      </div>
+
+      <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start;">
+        <div id="grid-wrap" style="flex-shrink:0;"></div>
+        <div style="flex:1;min-width:220px;">
+          <h3 style="font-size:14px;font-weight:700;margin-bottom:8px;color:#0F172A;">Clues</h3>
+          <div id="clues-panel" class="lg-clues"></div>
+          <button id="check-btn" style="margin-top:16px;padding:10px 24px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;width:100%;">✓ Check Solution</button>
+          <div id="feedback" style="margin-top:12px;font-family:'DM Mono',monospace;font-size:14px;font-weight:600;min-height:24px;"></div>
+        </div>
+      </div>
+
+      <div id="game-over" style="display:none;text-align:center;padding:24px;margin-top:20px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;">
+        <div id="go-title" style="font-size:22px;font-weight:700;margin-bottom:8px;color:#059669;">✅ Correct!</div>
+        <div id="go-sub" style="font-size:14px;color:#64748B;margin-bottom:12px;"></div>
+        <button id="next-puzzle" style="padding:10px 28px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">▶ Next Puzzle</button>
+      </div>
+    </div>
+  </main>
+
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">What Are Logic Grid Puzzles?</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>Logic grid puzzles—sometimes called Einstein puzzles, Zebra puzzles, or logic matrix puzzles—are deductive reasoning games where you use a set of clues to fill in a grid and determine who owns what, lives where, or has which attribute. The classic version asks you to figure out who owns the zebra and who drinks water in a row of five differently colored houses. Each clue narrows the possibilities until only one arrangement satisfies every constraint. Our Logic Grid game brings this timeless brain teaser to your browser with five hand-crafted puzzles of increasing difficulty.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">How to Play</h3>
+      <p>Select a puzzle (1 through 5) from the buttons at the top. Each puzzle displays a grid with categories as rows and columns—for example, houses on the left and colors across the top. Read the clues in the panel on the right. They might say things like "The red house is next to the green house" or "The person in house 2 owns the dog." Your job is to mark each cell as yes (✓), no (✗), or leave it empty if you're unsure. Click a cell to cycle through: empty → yes → no → empty. Each row and each column must have exactly one yes. When you've filled the grid, click Check Solution to see if you're correct.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Understanding the Grid</h3>
+      <p>The grid is a matrix of possibilities. A cell at the intersection of "House 1" and "Red" means: Is House 1 red? If you mark it yes, House 1 is red and no other house can be red. If you mark it no, House 1 is definitely not red. Use the clues to eliminate impossibilities. For instance, if a clue says "House 3 is blue," you can put a yes in the House 3–Blue cell and no in every other cell in that row and column. Adjacency clues like "next to" require you to reason about positions: if Red is next to Green, they occupy adjacent houses.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Difficulty Levels</h3>
+      <p><strong>Puzzle 1</strong> uses a small 3×3 grid with three houses and three colors. The clues are direct and few—ideal for learning the format. <strong>Puzzle 2</strong> expands to 4×4 with more attributes and slightly trickier clues. <strong>Puzzle 3</strong> introduces more indirect reasoning: you'll need to combine multiple clues to deduce some cells. <strong>Puzzle 4</strong> uses a 5×5 grid with five houses and five colors, requiring careful tracking of eliminations. <strong>Puzzle 5</strong> is the hardest: a 5×5 grid with more complex clues that depend on each other. Work through them in order to build your deductive skills.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Strategy Tips</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Start with direct clues.</strong> If a clue says "House 2 is green," mark that cell yes and all other cells in that row and column no immediately.</li>
+        <li><strong>Use process of elimination.</strong> When a row has only one empty cell left, that cell must be yes. Same for columns.</li>
+        <li><strong>Chain your reasoning.</strong> "A is next to B" and "B is next to C" means A, B, and C occupy three consecutive positions. Use that to narrow options.</li>
+        <li><strong>Mark no confidently.</strong> When you know something is impossible, mark it no. Those X marks prevent you from second-guessing later.</li>
+        <li><strong>Re-read clues.</strong> Easy to miss "not" or "neither"—double-check each clue as you apply it.</li>
+      </ul>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Why Logic Grids Matter</h3>
+      <p>Logic grid puzzles strengthen deductive reasoning, attention to detail, and systematic thinking. They require no math beyond counting—just careful reading and logical inference. Teachers use them to teach formal logic and proof techniques; puzzle enthusiasts enjoy them as a satisfying mental workout. The format is universal: once you learn to read the grid and apply clues, you can tackle logic puzzles in books, apps, or newspapers. Our game uses five unique puzzles with verified single solutions, so you always know there's a path to the answer.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Free and Private</h3>
+      <p>Logic Grid runs entirely in your browser. No account, no downloads, no data sent to servers. Your progress is stored locally so you can return and pick up where you left off. Perfect for a coffee break, classroom activity, or competitive challenge with friends. Give it a try and see how quickly you can deduce the solution.</p>
+    </div>
+  </article>
+  <div id="related-games"></div>
+  <div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playError } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+  document.addEventListener('click', () => initAudio(), { once: true });
+  initToolPage('logic-grid'); initConsent(); trackGameView('logic-grid', 'Math');
+
+  const PUZZLES = [
+    {
+      rows: ['House 1', 'House 2', 'House 3'],
+      cols: ['Red', 'Blue', 'Green'],
+      clues: [
+        'House 1 is not blue.',
+        'House 2 is not green.',
+        'The green house is not in the middle.',
+        'House 3 is red.'
+      ],
+      solution: [[0,0,1],[0,1,0],[1,0,0]]
+    },
+    {
+      rows: ['House 1', 'House 2', 'House 3', 'House 4'],
+      cols: ['Red', 'Blue', 'Green', 'Yellow'],
+      clues: [
+        'House 1 is not blue or yellow.',
+        'House 2 is not red.',
+        'House 3 is green.',
+        'House 4 is not red.',
+        'The red house is next to the blue house.',
+        'The yellow house is at an end.'
+      ],
+      solution: [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]]
+    },
+    {
+      rows: ['House 1', 'House 2', 'House 3', 'House 4'],
+      cols: ['Dog', 'Cat', 'Bird', 'Fish'],
+      clues: [
+        'The dog owner lives in house 2.',
+        'The cat is not in house 2 or house 3.',
+        'The bird owner lives next to the fish owner.',
+        'House 3 does not have the dog or the cat.',
+        'The fish is in house 1 or house 4.'
+      ],
+      solution: [[0,1,0,0],[1,0,0,0],[0,0,1,0],[0,0,0,1]]
+    },
+    {
+      rows: ['House 1', 'House 2', 'House 3', 'House 4', 'House 5'],
+      cols: ['Red', 'Blue', 'Green', 'Yellow', 'White'],
+      clues: [
+        'House 1 is not blue or white.',
+        'House 2 is not red.',
+        'House 3 is green.',
+        'House 4 is not yellow.',
+        'House 5 is not red or green.',
+        'The red house is next to the blue house.',
+        'The white house is at an end.'
+      ],
+      solution: [[1,0,0,0,0],[0,1,0,0,0],[0,0,1,0,0],[0,0,0,0,1],[0,0,0,1,0]]
+    },
+    {
+      rows: ['House 1', 'House 2', 'House 3', 'House 4', 'House 5'],
+      cols: ['Tea', 'Coffee', 'Milk', 'Juice', 'Water'],
+      clues: [
+        'House 1 does not drink tea or coffee.',
+        'House 2 drinks coffee.',
+        'House 3 is not milk or juice.',
+        'House 4 does not drink tea.',
+        'House 5 does not drink coffee or milk.',
+        'The milk drinker lives next to the juice drinker.',
+        'The water drinker is at an end.',
+        'The tea drinker is in the middle.'
+      ],
+      solution: [[0,0,0,0,1],[0,1,0,0,0],[1,0,0,0,0],[0,0,1,0,0],[0,0,0,1,0]]
+    }
+  ];
+
+  let currentIdx = 0;
+  let gridState = [];
+  let startTime = null;
+
+  const gridWrap = document.getElementById('grid-wrap');
+  const cluesPanel = document.getElementById('clues-panel');
+  const feedbackEl = document.getElementById('feedback');
+  const goEl = document.getElementById('game-over');
+
+  function initGrid() {
+    const p = PUZZLES[currentIdx];
+    const rows = p.rows.length;
+    const cols = p.cols.length;
+    if (!gridState.length || gridState.length !== rows || gridState[0].length !== cols) {
+      gridState = Array(rows).fill(null).map(() => Array(cols).fill(0));
+    }
+  }
+
+  function render() {
+    const p = PUZZLES[currentIdx];
+    const rows = p.rows;
+    const cols = p.cols;
+    const R = rows.length;
+    const C = cols.length;
+
+    cluesPanel.innerHTML = '<ol start="1">' + p.clues.map(c => `<li>${c}</li>`).join('') + '</ol>';
+
+    let html = '<div class="lg-grid" style="grid-template-rows:auto repeat(' + R + ',1fr);grid-template-columns:auto repeat(' + C + ',1fr);">';
+    html += '<div class="lg-cell corner"></div>';
+    for (let c = 0; c < C; c++) {
+      html += '<div class="lg-cell header">' + cols[c] + '</div>';
+    }
+    for (let r = 0; r < R; r++) {
+      html += '<div class="lg-cell header">' + rows[r] + '</div>';
+      for (let c = 0; c < C; c++) {
+        const v = gridState[r][c];
+        let cls = 'lg-cell';
+        if (v === 1) cls += ' yes';
+        else if (v === -1) cls += ' no';
+        html += '<div class="lg-cell ' + (v === 1 ? 'yes' : v === -1 ? 'no' : '') + '" data-r="' + r + '" data-c="' + c + '">' + (v === 1 ? '✓' : v === -1 ? '✗' : '') + '</div>';
+      }
+    }
+    html += '</div>';
+    gridWrap.innerHTML = html;
+
+    gridWrap.querySelectorAll('.lg-cell[data-r]').forEach(cell => {
+      cell.addEventListener('click', () => {
+        const r = parseInt(cell.dataset.r);
+        const c = parseInt(cell.dataset.c);
+        gridState[r][c] = gridState[r][c] === 0 ? 1 : gridState[r][c] === 1 ? -1 : 0;
+        playClick();
+        render();
+      });
+    });
+  }
+
+  function checkSolution() {
+    const p = PUZZLES[currentIdx];
+    const sol = p.solution;
+    const R = sol.length;
+    const C = sol[0].length;
+
+    for (let r = 0; r < R; r++) {
+      for (let c = 0; c < C; c++) {
+        const user = gridState[r][c];
+        const correct = sol[r][c];
+        if (user !== correct) {
+          feedbackEl.textContent = 'Not quite. Keep deducing!';
+          feedbackEl.style.color = '#DC2626';
+          playError();
+          return;
+        }
+      }
+    }
+    feedbackEl.textContent = 'Correct!';
+    feedbackEl.style.color = '#059669';
+    playSuccess();
+    goEl.style.display = 'block';
+    const elapsed = startTime ? Math.round((Date.now() - startTime) / 1000) : 0;
+    document.getElementById('go-sub').textContent = 'Solved in ' + (elapsed ? Math.floor(elapsed / 60) + ':' + String(elapsed % 60).padStart(2, '0') : '—');
+    trackGameOver('logic-grid', 'Math', currentIdx + 1);
+  }
+
+  function loadPuzzle(idx) {
+    currentIdx = idx;
+    initGrid();
+    gridState = Array(PUZZLES[idx].rows.length).fill(null).map(() => Array(PUZZLES[idx].cols.length).fill(0));
+    startTime = Date.now();
+    feedbackEl.textContent = '';
+    feedbackEl.style.color = '';
+    goEl.style.display = 'none';
+    render();
+    document.querySelectorAll('.puzzle-btn').forEach(btn => {
+      const active = parseInt(btn.dataset.idx) === idx;
+      btn.style.background = active ? '#2563EB' : '#fff';
+      btn.style.color = active ? '#fff' : '#334155';
+      btn.style.borderColor = active ? '#2563EB' : '#E5E7EB';
+    });
+  }
+
+  document.getElementById('sound-btn').addEventListener('click', () => {
+    initAudio();
+    const m = muteAll();
+    document.getElementById('sound-btn').textContent = m ? '🔇' : '🔊';
+  });
+
+  document.querySelectorAll('.puzzle-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      playClick();
+      loadPuzzle(parseInt(btn.dataset.idx));
+      trackGameStart('logic-grid', 'Math');
+    });
+  });
+
+  document.getElementById('reset-btn').addEventListener('click', () => {
+    playClick();
+    loadPuzzle(currentIdx);
+  });
+
+  document.getElementById('check-btn').addEventListener('click', () => {
+    playClick();
+    checkSolution();
+  });
+
+  document.getElementById('next-puzzle').addEventListener('click', () => {
+    playClick();
+    if (currentIdx < PUZZLES.length - 1) {
+      loadPuzzle(currentIdx + 1);
+      trackGameStart('logic-grid', 'Math');
+    } else {
+      goEl.style.display = 'none';
+      loadPuzzle(0);
+      trackGameStart('logic-grid', 'Math');
+    }
+  });
+
+  loadPuzzle(0);
+  trackGameStart('logic-grid', 'Math');
+  </script>
+</body>
+</html>

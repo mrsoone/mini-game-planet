@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Match Three Online — Play Instantly | MiniGamePlanet</title>
+  <meta name="description" content="Play Match Three free online. Swap adjacent gems to make 3+ in a row. Chain reactions, Timed and Endless modes. Classic gem-matching puzzle.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/match-three">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+  window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+  gtag('js',new Date());
+  gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500});
+  gtag('config','G-XXXXXXXXXX');
+  </script>
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Free Match Three Online | MiniGamePlanet">
+  <meta property="og:description" content="Play Match Three free online. Swap gems to make 3+ in a row. Chain reactions and bonus scoring.">
+  <meta property="og:url" content="https://minigameplanet.com/games/match-three">
+  <meta property="og:site_name" content="MiniGamePlanet">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"VideoGame","name":"Match Three","url":"https://minigameplanet.com/games/match-three","description":"Play Match Three free online. Swap adjacent gems to make 3+ in a row. Chain reactions score bonus.","genre":"Puzzle","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+  </script>
+  <style>
+    .hero-grad{background:linear-gradient(135deg,#0891B2 0%,#2563EB 22%,#7C3AED 44%,#E11D48 66%,#EA580C 82%,#D97706 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:heroShift 8s ease-in-out infinite}
+    @keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+    .gem{width:100%;aspect-ratio:1;border-radius:50%;cursor:pointer;transition:transform 0.1s,box-shadow 0.1s;display:flex;align-items:center;justify-content:center;font-size:1.2em;user-select:none;-webkit-tap-highlight-color:transparent}
+    .gem:hover{transform:scale(1.08);box-shadow:0 2px 8px rgba(0,0,0,0.2)}
+    .gem.selected{transform:scale(1.15);box-shadow:0 0 0 3px #0F172A}
+    .gem.matching{animation:pop 0.2s ease}
+    @keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.2)}100%{transform:scale(0);opacity:0}}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;position:relative;" id="game-wrap">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <div>
+          <h1 style="font-size:22px;font-weight:700;margin:0;">💎 Match Three</h1>
+          <p style="font-size:12px;color:#94A3B8;margin:2px 0 0;">Click two adjacent gems to swap</p>
+        </div>
+        <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊 Sound</button>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;align-items:center;">
+        <button class="mode-btn" data-mode="timed" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #2563EB;background:#2563EB;color:#fff;cursor:pointer;font-family:inherit;">⏱ Timed (60s)</button>
+        <button class="mode-btn" data-mode="endless" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">∞ Endless</button>
+        <button id="new-game" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">🔄 New Game</button>
+      </div>
+      <div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:80px;padding:8px 12px;background:#F8FAFC;border-radius:8px;text-align:center;">
+          <div style="font-size:10px;color:#94A3B8;font-weight:600;text-transform:uppercase;">Score</div>
+          <div id="score" style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:#2563EB;">0</div>
+        </div>
+        <div style="flex:1;min-width:80px;padding:8px 12px;background:#F8FAFC;border-radius:8px;text-align:center;">
+          <div style="font-size:10px;color:#94A3B8;font-weight:600;text-transform:uppercase;">Best</div>
+          <div id="best" style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:#D97706;">0</div>
+        </div>
+        <div id="timer-wrap" style="flex:1;min-width:80px;padding:8px 12px;background:#F8FAFC;border-radius:8px;text-align:center;">
+          <div style="font-size:10px;color:#94A3B8;font-weight:600;text-transform:uppercase;">Time</div>
+          <div id="timer" style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:#334155;">60</div>
+        </div>
+        <div style="flex:1;min-width:80px;padding:8px 12px;background:#F8FAFC;border-radius:8px;text-align:center;">
+          <div style="font-size:10px;color:#94A3B8;font-weight:600;text-transform:uppercase;">Chain</div>
+          <div id="chain" style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:#7C3AED;">0</div>
+        </div>
+      </div>
+      <div id="board" style="display:grid;grid-template-columns:repeat(8,1fr);gap:4px;max-width:360px;margin:0 auto;padding:8px;background:#F1F5F9;border-radius:10px;"></div>
+      <div id="game-over" style="display:none;text-align:center;padding:20px;margin-top:12px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;">
+        <div id="go-title" style="font-size:24px;font-weight:700;margin-bottom:4px;"></div>
+        <div id="go-sub" style="font-size:14px;color:#64748B;margin-bottom:12px;"></div>
+        <div id="session-stats" style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;text-align:left;max-width:220px;margin:0 auto 16px;padding:12px;background:#fff;border-radius:8px;"></div>
+        <button id="play-again" style="padding:10px 28px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">▶ Play Again</button>
+        <p style="font-size:11px;color:#94A3B8;margin-top:6px;">Press Enter or Space to restart</p>
+      </div>
+    </div>
+  </main>
+
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play Match Three</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>Match Three is a classic gem-matching puzzle where you swap adjacent gems to create rows or columns of three or more of the same color. When gems match, they disappear, gems above fall down, and new gems fill from the top. Chain reactions — when new matches form from falling gems — earn bonus points. The game offers two modes: Timed (60 seconds to score as high as possible) and Endless (play until you run out of moves or choose to stop).</p>
+
+      <h3 class="text-lg font-bold text-slate-900 mt-6">How to Play</h3>
+      <p>Click or tap a gem to select it. Then click an adjacent gem (up, down, left, or right) to swap them. The swap only happens if it creates at least one match of three or more. If no match is made, the gems swap back. Matched gems disappear, and gems above fall to fill the gaps. New gems drop from the top. If the falling gems create new matches, you get a chain reaction and bonus points. Each chain multiplies your score.</p>
+      <p>In Timed mode, you have 60 seconds to score as many points as possible. In Endless mode, there is no time limit — play at your own pace and try to beat your personal best.</p>
+
+      <h3 class="text-lg font-bold text-slate-900 mt-6">History &amp; Origin</h3>
+      <p>Match-three games trace their roots to Shariki (1994), a Russian DOS game, and the genre exploded with Bejeweled (2001) by PopCap Games. Bejeweled became one of the first viral casual games, spawning countless clones and inspiring Candy Crush Saga, which has generated billions in revenue. The core mechanic — swap two adjacent items to make three in a row — is simple to learn but offers deep strategic play. Players must look ahead for chain reactions and plan swaps that set up cascading matches.</p>
+
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Strategy &amp; Tips</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Look for chain setups.</strong> A match that causes gems to fall into another match scores a chain bonus. Try to create matches at the bottom so falling gems can form new matches.</li>
+        <li><strong>Prioritize the bottom.</strong> Matches near the bottom of the grid create more opportunities for cascades as gems fall.</li>
+        <li><strong>Don't rush in Timed mode.</strong> A well-planned swap that triggers a chain is worth more than several quick single matches.</li>
+        <li><strong>Watch the whole board.</strong> Sometimes a swap in one area sets up a match elsewhere. Scan before you click.</li>
+        <li><strong>Four and five matches.</strong> Longer matches (four or five in a row) typically score more. Look for L or T shapes.</li>
+      </ul>
+
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Frequently Asked Questions</h3>
+      <h4 class="font-semibold text-slate-800">What is a chain reaction?</h4>
+      <p>When matched gems disappear and new gems fall, sometimes the falling gems create new matches. Each consecutive match from a single swap is a chain. Chains score bonus points.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">How many colors are there?</h4>
+      <p>Six colors. This provides enough variety for interesting matches without making the board too chaotic.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">Can I undo a swap?</h4>
+      <p>No. Once you swap, the move is final. If the swap doesn't create a match, the gems swap back automatically.</p>
+
+      <p class="mt-6">Play Match Three free in your browser — no download, no account needed. Swap gems, build chains, and beat your best score.</p>
+    </div>
+  </article>
+
+  <div id="related-games"></div>
+  <div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playCollect } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+  document.addEventListener('click', () => initAudio(), { once: true });
+  initToolPage('match-three');
+  initConsent();
+  trackGameView('match-three', 'Puzzle');
+
+  const COLS = 8, ROWS = 8;
+  const GEM_COLORS = [
+    { emoji: '🔴', color: '#EF4444' },
+    { emoji: '🟠', color: '#F97316' },
+    { emoji: '🟡', color: '#EAB308' },
+    { emoji: '🟢', color: '#22C55E' },
+    { emoji: '🔵', color: '#3B82F6' },
+    { emoji: '🟣', color: '#A855F7' }
+  ];
+
+  function rng(min, max) {
+    const a = new Uint32Array(1);
+    crypto.getRandomValues(a);
+    return min + (a[0] % (max - min + 1));
+  }
+
+  let grid = [];
+  let selected = null;
+  let score = 0;
+  let bestScore = parseInt(localStorage.getItem('matchThreeBest') || '0', 10);
+  let gameActive = false;
+  let gameStarted = false;
+  let mode = 'timed';
+  let timeLeft = 60;
+  let timerInterval = null;
+  let chainCount = 0;
+  let session = { rounds: 0, bestScore: 0, totalScore: 0, startTime: Date.now() };
+
+  const boardEl = document.getElementById('board');
+  const scoreEl = document.getElementById('score');
+  const bestEl = document.getElementById('best');
+  const timerEl = document.getElementById('timer');
+  const timerWrap = document.getElementById('timer-wrap');
+  const chainEl = document.getElementById('chain');
+  const goEl = document.getElementById('game-over');
+
+  document.getElementById('sound-btn').addEventListener('click', () => {
+    initAudio();
+    const m = muteAll();
+    document.getElementById('sound-btn').textContent = m ? '🔇 Sound' : '🔊 Sound';
+  });
+
+  document.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      mode = btn.dataset.mode;
+      document.querySelectorAll('.mode-btn').forEach(b => {
+        b.style.background = '#fff';
+        b.style.color = '#334155';
+        b.style.borderColor = '#E5E7EB';
+      });
+      btn.style.background = '#2563EB';
+      btn.style.color = '#fff';
+      btn.style.borderColor = '#2563EB';
+      newGame();
+    });
+  });
+  document.getElementById('new-game').addEventListener('click', () => { playClick(); newGame(); });
+
+  function initGrid() {
+    grid = [];
+    for (let r = 0; r < ROWS; r++) {
+      const row = [];
+      for (let c = 0; c < COLS; c++) {
+        row.push(rng(0, GEM_COLORS.length - 1));
+      }
+      grid.push(row);
+    }
+    while (findMatches().length > 0) {
+      for (const [r, c] of findMatches()) {
+        grid[r][c] = rng(0, GEM_COLORS.length - 1);
+      }
+    }
+  }
+
+  function findMatches() {
+    const matches = new Set();
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        const v = grid[r][c];
+        if (v < 0) continue;
+        let h = 1, vc = 1;
+        while (c + h < COLS && grid[r][c + h] === v) h++;
+        while (r + vc < ROWS && grid[r + vc][c] === v) vc++;
+        if (h >= 3) for (let i = 0; i < h; i++) matches.add(`${r},${c + i}`);
+        if (vc >= 3) for (let i = 0; i < vc; i++) matches.add(`${r + i},${c}`);
+      }
+    }
+    return [...matches].map(s => s.split(',').map(Number));
+  }
+
+  function areAdjacent(r1, c1, r2, c2) {
+    return (Math.abs(r1 - r2) === 1 && c1 === c2) || (Math.abs(c1 - c2) === 1 && r1 === r2);
+  }
+
+  function swap(r1, c1, r2, c2) {
+    [grid[r1][c1], grid[r2][c2]] = [grid[r2][c2], grid[r1][c1]];
+  }
+
+  function processMatches() {
+    const matches = findMatches();
+    if (matches.length === 0) return 0;
+    let pts = matches.length * 10;
+    if (chainCount > 0) pts = Math.floor(pts * (1 + chainCount * 0.5));
+    for (const [r, c] of matches) grid[r][c] = -1;
+    return pts;
+  }
+
+  function gravity() {
+    let moved = false;
+    for (let c = 0; c < COLS; c++) {
+      let write = ROWS - 1;
+      for (let r = ROWS - 1; r >= 0; r--) {
+        if (grid[r][c] >= 0) {
+          if (r !== write) {
+            grid[write][c] = grid[r][c];
+            grid[r][c] = -1;
+            moved = true;
+          }
+          write--;
+        }
+      }
+      for (let r = write; r >= 0; r--) {
+        grid[r][c] = rng(0, GEM_COLORS.length - 1);
+        moved = true;
+      }
+    }
+    return moved;
+  }
+
+  function tick() {
+    let totalPts = 0;
+    chainCount = 0;
+    while (true) {
+      const pts = processMatches();
+      if (pts === 0) break;
+      totalPts += pts;
+      chainCount++;
+      gravity();
+      render();
+      if (chainCount >= 3) playPerfect();
+      else if (chainCount >= 2) playSuccess();
+      else playCollect();
+    }
+    return totalPts;
+  }
+
+  function handleClick(r, c) {
+    if (!gameActive) return;
+    if (!gameStarted) {
+      gameStarted = true;
+      trackGameStart('match-three', 'Puzzle');
+      if (mode === 'timed') {
+        timeLeft = 60;
+        timerInterval = setInterval(() => {
+          timeLeft--;
+          timerEl.textContent = timeLeft;
+          if (timeLeft <= 0) endGame();
+        }, 1000);
+      }
+    }
+
+    if (selected === null) {
+      selected = [r, c];
+      render();
+      return;
+    }
+
+    const [sr, sc] = selected;
+    if (sr === r && sc === c) {
+      selected = null;
+      render();
+      return;
+    }
+
+    if (!areAdjacent(sr, sc, r, c)) {
+      selected = [r, c];
+      render();
+      return;
+    }
+
+    swap(sr, sc, r, c);
+    const pts = tick();
+    if (pts === 0) {
+      swap(sr, sc, r, c);
+      playError();
+    } else {
+      score += pts;
+      scoreEl.textContent = score;
+      chainEl.textContent = chainCount;
+      if (score > bestScore) {
+        bestScore = score;
+        bestEl.textContent = bestScore;
+        localStorage.setItem('matchThreeBest', String(bestScore));
+      }
+      if (chainCount >= 4) playPerfect();
+      else if (chainCount >= 2) playLevelUp();
+      else playScoreUp(pts);
+    }
+    selected = null;
+    render();
+  }
+
+  function render() {
+    boardEl.innerHTML = '';
+    const cellSize = Math.min(40, Math.floor((window.innerWidth - 80) / COLS));
+    boardEl.style.gridTemplateColumns = `repeat(${COLS}, ${cellSize}px)`;
+    boardEl.style.gridTemplateRows = `repeat(${ROWS}, ${cellSize}px)`;
+    boardEl.style.gap = '4px';
+
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        const v = grid[r][c];
+        const cell = document.createElement('div');
+        cell.className = 'gem';
+        cell.style.width = `${cellSize}px`;
+        cell.style.height = `${cellSize}px`;
+        if (v >= 0) {
+          const g = GEM_COLORS[v];
+          cell.style.background = g.color;
+          cell.textContent = g.emoji;
+          cell.dataset.r = r;
+          cell.dataset.c = c;
+          if (selected && selected[0] === r && selected[1] === c) cell.classList.add('selected');
+          cell.addEventListener('click', () => handleClick(r, c));
+        } else {
+          cell.style.background = '#E2E8F0';
+          cell.style.opacity = '0.5';
+        }
+        boardEl.appendChild(cell);
+      }
+    }
+  }
+
+  function newGame() {
+    clearInterval(timerInterval);
+    initGrid();
+    selected = null;
+    score = 0;
+    timeLeft = 60;
+    chainCount = 0;
+    gameActive = true;
+    gameStarted = false;
+    goEl.style.display = 'none';
+    scoreEl.textContent = '0';
+    chainEl.textContent = '0';
+    bestEl.textContent = bestScore;
+    timerEl.textContent = '60';
+    timerWrap.style.display = mode === 'timed' ? 'block' : 'none';
+    render();
+  }
+
+  function endGame() {
+    gameActive = false;
+    clearInterval(timerInterval);
+    session.rounds++;
+    session.totalScore += score;
+    if (score > session.bestScore) session.bestScore = score;
+    playGameOver();
+    trackGameOver('match-three', 'Puzzle', score, 0);
+
+    const isBest = score >= session.bestScore && session.rounds > 1;
+    document.getElementById('go-title').textContent = isBest ? '🏆 NEW PERSONAL BEST!' : '💎 Time\'s Up!';
+    document.getElementById('go-title').style.color = isBest ? '#D97706' : '#DC2626';
+    document.getElementById('go-sub').textContent = `Score: ${score}`;
+
+    const elapsed = Math.round((Date.now() - session.startTime) / 1000);
+    const mins = Math.floor(elapsed / 60), secs = elapsed % 60;
+    document.getElementById('session-stats').innerHTML = `
+      🎮 This Session<br>
+      ─────────────────────<br>
+      Rounds played&nbsp;&nbsp;&nbsp;${session.rounds}<br>
+      Best score&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${session.bestScore}<br>
+      Average score&nbsp;&nbsp;${Math.round(session.totalScore / session.rounds)}<br>
+      Time played&nbsp;&nbsp;&nbsp;&nbsp;${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}
+    `;
+    goEl.style.display = 'block';
+    document.getElementById('play-again').focus();
+  }
+
+  document.getElementById('play-again').addEventListener('click', () => { playClick(); newGame(); });
+  document.addEventListener('keydown', e => {
+    if (!gameActive && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); playClick(); newGame(); }
+  });
+
+  newGame();
+  </script>
+</body>
+</html>

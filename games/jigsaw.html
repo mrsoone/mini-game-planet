@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Jigsaw Puzzle Online — Play Instantly | MiniGamePlanet</title>
+  <meta name="description" content="Play Jigsaw Puzzle free online. Drag and snap geometric art pieces into place. Choose 3×3, 4×4, or 5×5 grids. Timer, moves counter, and celebration on completion.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/jigsaw">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <!-- GA4 Consent defaults handled by initConsent() -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+  window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+  gtag('js',new Date());
+  gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500});
+  gtag('config','G-XXXXXXXXXX');
+  </script>
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Free Jigsaw Puzzle Online | MiniGamePlanet">
+  <meta property="og:description" content="Play Jigsaw Puzzle free online. Drag and snap geometric art pieces into place on 3×3, 4×4, or 5×5 grids.">
+  <meta property="og:url" content="https://minigameplanet.com/games/jigsaw">
+  <meta property="og:site_name" content="MiniGamePlanet">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"VideoGame","name":"Jigsaw Puzzle","url":"https://minigameplanet.com/games/jigsaw","description":"Play Jigsaw Puzzle free online. Drag and snap geometric art pieces into place.","genre":"Puzzle","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+  </script>
+  <style>
+    .piece{cursor:grab;user-select:none;position:absolute;border-radius:4px;transition:box-shadow 0.15s ease;border:1px solid rgba(0,0,0,0.08)}
+    .piece:hover{box-shadow:0 4px 12px rgba(0,0,0,0.15)}
+    .piece:active,.piece.dragging{cursor:grabbing;z-index:100;box-shadow:0 8px 24px rgba(0,0,0,0.25)}
+    .piece.placed{cursor:default;pointer-events:none;border-color:rgba(5,150,105,0.4);box-shadow:inset 0 0 0 2px rgba(5,150,105,0.3)}
+    .slot{position:absolute;background:#E2E8F0;border-radius:4px;border:2px dashed #94A3B8}
+    @keyframes celebrate{0%{opacity:1;transform:scale(1)}50%{opacity:1;transform:scale(1.05)}100%{opacity:0;transform:scale(1.2)}}
+    .confetti{position:fixed;pointer-events:none;z-index:9999;animation:celebrate 1.5s ease forwards}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;position:relative;" id="game-wrap">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <div>
+          <h1 style="font-size:22px;font-weight:700;margin:0;">🧩 Jigsaw Puzzle</h1>
+          <p style="font-size:12px;color:#94A3B8;margin:2px 0 0;">Drag pieces into place — they snap when close</p>
+        </div>
+        <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊 Sound</button>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+        <button class="size-btn" data-size="3" style="padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">3×3</button>
+        <button class="size-btn active" data-size="4" style="padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;border:2px solid #2563EB;background:#2563EB;color:#fff;cursor:pointer;font-family:inherit;">4×4</button>
+        <button class="size-btn" data-size="5" style="padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">5×5</button>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding:8px 12px;background:#F8FAFC;border-radius:8px;flex-wrap:wrap;gap:8px;">
+        <div style="display:flex;align-items:center;gap:16px;">
+          <span style="font-family:'DM Mono',monospace;font-size:14px;font-weight:600;">🔢 Moves: <span id="moves">0</span></span>
+          <span style="font-family:'DM Mono',monospace;font-size:14px;font-weight:600;">⏱ <span id="timer">0:00</span></span>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;">
+          <span style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;">🔥 Streak: <span id="streak">0</span></span>
+          <span style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;">🏆 Best: <span id="best">---</span></span>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:center;margin-bottom:12px;">
+        <div id="board" style="position:relative;background:#E2E8F0;border-radius:10px;"></div>
+      </div>
+      <div id="game-over" style="display:none;text-align:center;padding:20px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;">
+        <div id="go-title" style="font-size:24px;font-weight:700;margin-bottom:4px;"></div>
+        <div id="go-sub" style="font-size:14px;color:#64748B;margin-bottom:12px;"></div>
+        <div id="session-stats" style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;text-align:left;max-width:220px;margin:0 auto 16px;padding:12px;background:#fff;border-radius:8px;"></div>
+        <button id="play-again" style="padding:10px 28px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">▶ Play Again</button>
+        <p style="font-size:11px;color:#94A3B8;margin-top:6px;">Press Enter or Space to restart</p>
+      </div>
+    </div>
+  </main>
+
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play the Jigsaw Puzzle</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>The Jigsaw Puzzle is one of the world's most beloved pastimes. Originally invented in the 1760s by John Spilsbury, a London mapmaker who mounted maps on wood and cut them along national borders to teach geography, jigsaw puzzles have evolved into a universal form of entertainment. Today, millions of people enjoy piecing together images — from landscapes and artwork to photographs and abstract designs. This free online version brings the classic experience to your browser with a twist: the image is a unique geometric artwork, drawn entirely with shapes and gradients, so every puzzle feels fresh and visually striking.</p>
+
+      <h3 class="text-lg font-bold text-slate-900 mt-6">How to Play</h3>
+      <p>Click and hold any piece, then drag it toward its correct position on the board. When a piece is close enough to its target slot — typically within about a quarter of the piece size — it will automatically snap into place. You'll hear a satisfying click and the piece will lock. Continue until all pieces are correctly positioned. The game tracks your moves (each time you drop a piece counts as one move) and elapsed time. Choose from three grid sizes: 3×3 (9 pieces — ideal for beginners), 4×4 (16 pieces — a balanced challenge), or 5×5 (25 pieces — for puzzle enthusiasts).</p>
+
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Strategy &amp; Tips</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Start with the edges.</strong> Identify pieces that belong to the border — they have at least one straight edge. Building the frame first gives you a clear structure to work within.</li>
+        <li><strong>Use color and shape cues.</strong> The geometric art uses distinct regions of color and pattern. Group pieces by similar hues or shapes before placing them.</li>
+        <li><strong>Work in sections.</strong> Complete one quadrant or region before moving to the next. This reduces cognitive load and makes progress feel tangible.</li>
+        <li><strong>Minimize moves.</strong> Think before you drag. Each drop counts as a move, so planning your placement can help you beat your personal best.</li>
+        <li><strong>Practice with 3×3 first.</strong> Get familiar with the snap behavior and the image layout on the smallest grid before tackling larger sizes.</li>
+      </ul>
+
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Benefits of Jigsaw Puzzles</h3>
+      <p>Jigsaw puzzles offer more than entertainment. They exercise visual-spatial reasoning, improve short-term memory, and encourage patience and persistence. Studies suggest that regular puzzle-solving can help maintain cognitive function and reduce stress. The meditative quality of fitting pieces together — combined with the satisfaction of completing an image — makes jigsaws a rewarding activity for all ages.</p>
+
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Frequently Asked Questions</h3>
+      <h4 class="font-semibold text-slate-800">What counts as a move in this Jigsaw Puzzle?</h4>
+      <p>Each time you release (drop) a piece, it counts as one move — whether the piece snaps into the correct position or not. Try to place pieces correctly on the first try to minimize your move count.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">Can I change the puzzle image?</h4>
+      <p>This version uses a procedurally generated geometric artwork. Starting a new game or changing the grid size will give you the same base image, but the piece arrangement will be freshly scrambled each time.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">Is the Jigsaw Puzzle good for kids?</h4>
+      <p>Yes. The 3×3 grid is perfect for young children, while 4×4 and 5×5 offer increasing challenge for older kids and adults. The drag-and-drop interface works on both desktop and touch devices.</p>
+
+      <p class="mt-6">Play the Jigsaw Puzzle free right here in your browser — no downloads, no accounts. Pick a grid size, drag the pieces, and enjoy the satisfaction of completing the image.</p>
+    </div>
+  </article>
+
+  <div id="related-games"></div>
+  <div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playError, playLock, playDrop, playPerfect, playLevelUp } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+  document.addEventListener('click', () => initAudio(), { once: true });
+  initToolPage('jigsaw');
+  initConsent();
+  trackGameView('jigsaw', 'Puzzle');
+
+  let size = 4, pieceSize = 0, boardSize = 0, gap = 6;
+  let piecePositions = [], slots = [], imageDataUrl = '';
+  let moveCount = 0, timerInterval, seconds = 0, gameActive = true, gameStarted = false;
+  let streak = 0, best = { 3: null, 4: null, 5: null };
+  let session = { rounds: 0, wins: 0, bestMoves: null, totalMoves: 0, startTime: Date.now() };
+  let draggedEl = null, dragOffsetX = 0, dragOffsetY = 0;
+
+  const boardEl = document.getElementById('board');
+  const movesEl = document.getElementById('moves');
+  const timerEl = document.getElementById('timer');
+  const streakEl = document.getElementById('streak');
+  const bestEl = document.getElementById('best');
+  const goEl = document.getElementById('game-over');
+
+  document.getElementById('sound-btn').addEventListener('click', () => {
+    initAudio(); const m = muteAll();
+    document.getElementById('sound-btn').textContent = m ? '🔇 Sound' : '🔊 Sound';
+  });
+
+  document.querySelectorAll('.size-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      size = parseInt(btn.dataset.size);
+      document.querySelectorAll('.size-btn').forEach(b => {
+        b.style.background = '#fff'; b.style.color = '#334155'; b.style.borderColor = '#E5E7EB';
+      });
+      btn.style.background = '#2563EB'; btn.style.color = '#fff'; btn.style.borderColor = '#2563EB';
+      newGame();
+    });
+  });
+
+  function drawGeometricArt(w, h) {
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d');
+
+    const grad = ctx.createLinearGradient(0, 0, w, h);
+    grad.addColorStop(0, '#1e3a5f');
+    grad.addColorStop(0.3, '#2563eb');
+    grad.addColorStop(0.5, '#7c3aed');
+    grad.addColorStop(0.7, '#db2777');
+    grad.addColorStop(1, '#ea580c');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.globalAlpha = 0.9;
+    for (let i = 0; i < 12; i++) {
+      const x = (i % 4) * (w / 4) + w / 8 + (i * 17) % 40;
+      const y = Math.floor(i / 4) * (h / 3) + h / 6 + (i * 23) % 50;
+      const r = 30 + (i * 11) % 60;
+      const g = ctx.createRadialGradient(x - r/4, y - r/4, 0, x, y, r);
+      g.addColorStop(0, `hsl(${200 + i * 30}, 80%, 70%)`);
+      g.addColorStop(1, `hsl(${220 + i * 20}, 70%, 40%)`);
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.globalAlpha = 0.7;
+    for (let i = 0; i < 8; i++) {
+      const x = (i % 4) * (w / 4) + w / 8 + 20;
+      const y = Math.floor(i / 4) * (h / 2) + h / 4;
+      ctx.fillStyle = `hsl(${280 + i * 15}, 60%, 50%)`;
+      ctx.beginPath();
+      ctx.moveTo(x, y - 25);
+      ctx.lineTo(x + 25, y + 20);
+      ctx.lineTo(x - 25, y + 20);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    ctx.globalAlpha = 0.5;
+    ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+    ctx.lineWidth = 2;
+    for (let i = 0; i < 20; i++) {
+      const x1 = (i * 37) % w;
+      const y1 = (i * 53) % h;
+      const x2 = (i * 61) % w;
+      const y2 = (i * 41) % h;
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+    }
+
+    return canvas.toDataURL('image/png');
+  }
+
+  function shuffleArray(arr) {
+    const rand = new Uint32Array(arr.length);
+    crypto.getRandomValues(rand);
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = rand[i] % (i + 1);
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+  }
+
+  function newGame() {
+    boardSize = Math.min(360, window.innerWidth - 64);
+    pieceSize = (boardSize - gap * (size + 1)) / size;
+    const imgW = Math.round(pieceSize * size * 2);
+    const imgH = Math.round(pieceSize * size * 2);
+    imageDataUrl = drawGeometricArt(imgW, imgH);
+
+    const total = size * size;
+    piecePositions = Array.from({ length: total }, (_, i) => i);
+    shuffleArray(piecePositions);
+
+    moveCount = 0;
+    seconds = 0;
+    gameActive = true;
+    gameStarted = false;
+    clearInterval(timerInterval);
+    movesEl.textContent = '0';
+    timerEl.textContent = '0:00';
+    goEl.style.display = 'none';
+    updateBest();
+    render();
+  }
+
+  function render() {
+    boardEl.style.width = boardSize + 'px';
+    boardEl.style.height = boardSize + 'px';
+    boardEl.innerHTML = '';
+
+    slots = [];
+    for (let row = 0; row < size; row++) {
+      for (let col = 0; col < size; col++) {
+        const idx = row * size + col;
+        const slot = document.createElement('div');
+        slot.className = 'slot';
+        slot.style.width = pieceSize + 'px';
+        slot.style.height = pieceSize + 'px';
+        slot.style.left = (gap + col * (pieceSize + gap)) + 'px';
+        slot.style.top = (gap + row * (pieceSize + gap)) + 'px';
+        slot.dataset.row = row;
+        slot.dataset.col = col;
+        slot.dataset.idx = idx;
+        boardEl.appendChild(slot);
+        slots.push({ el: slot, row, col, idx });
+      }
+    }
+
+    const pool = document.createElement('div');
+    pool.style.cssText = 'position:absolute;left:0;top:0;width:100%;height:100%;';
+    pool.id = 'piece-pool';
+
+    for (let pieceId = 0; pieceId < size * size; pieceId++) {
+      const slotIdx = piecePositions[pieceId];
+      const placed = slotIdx === pieceId;
+      const imgRow = Math.floor(pieceId / size);
+      const imgCol = pieceId % size;
+      const left = gap + (slotIdx % size) * (pieceSize + gap);
+      const top = gap + Math.floor(slotIdx / size) * (pieceSize + gap);
+
+      const div = document.createElement('div');
+      div.className = 'piece' + (placed ? ' placed' : '');
+      div.style.width = pieceSize + 'px';
+      div.style.height = pieceSize + 'px';
+      div.style.left = left + 'px';
+      div.style.top = top + 'px';
+      div.style.backgroundImage = `url(${imageDataUrl})`;
+      div.style.backgroundSize = `${pieceSize * size}px ${pieceSize * size}px`;
+      div.style.backgroundPosition = `-${imgCol * pieceSize}px -${imgRow * pieceSize}px`;
+      div.dataset.pieceIdx = pieceId;
+      div.dataset.correctSlot = pieceId;
+
+      if (!placed) {
+        div.addEventListener('mousedown', onDragStart);
+        div.addEventListener('touchstart', onTouchStart, { passive: false });
+      }
+      pool.appendChild(div);
+    }
+    boardEl.appendChild(pool);
+
+    document.querySelectorAll('.slot').forEach(s => s.style.pointerEvents = 'none');
+  }
+
+  function onTouchStart(e) {
+    e.preventDefault();
+    const el = e.target.closest('.piece');
+    if (!el || el.classList.contains('placed')) return;
+    startDrag(el, e.touches[0].clientX, e.touches[0].clientY);
+    document.addEventListener('touchmove', onTouchMove, { passive: false });
+    document.addEventListener('touchend', onTouchEnd);
+  }
+
+  function onTouchMove(e) {
+    if (!draggedEl) return;
+    e.preventDefault();
+    onDragMove({ clientX: e.touches[0].clientX, clientY: e.touches[0].clientY });
+  }
+
+  function onTouchEnd(e) {
+    document.removeEventListener('touchmove', onTouchMove);
+    document.removeEventListener('touchend', onTouchEnd);
+    if (draggedEl) onDragEnd(e.changedTouches?.[0] || {});
+  }
+
+  function startDrag(el, clientX, clientY) {
+    if (!gameStarted) {
+      gameStarted = true;
+      trackGameStart('jigsaw', 'Puzzle');
+      timerInterval = setInterval(() => {
+        seconds++;
+        const m = Math.floor(seconds / 60), s = seconds % 60;
+        timerEl.textContent = `${m}:${String(s).padStart(2, '0')}`;
+      }, 1000);
+    }
+    draggedEl = el;
+    el.classList.add('dragging');
+    const rect = el.getBoundingClientRect();
+    dragOffsetX = clientX - rect.left;
+    dragOffsetY = clientY - rect.top;
+    document.addEventListener('mousemove', onDragMove);
+    document.addEventListener('mouseup', onDragEnd);
+  }
+
+  function onDragStart(e) {
+    if (!gameActive || e.button !== 0) return;
+    const el = e.target.closest('.piece');
+    if (!el || el.classList.contains('placed')) return;
+    startDrag(el, e.clientX, e.clientY);
+    e.preventDefault();
+  }
+
+  function onDragMove(e) {
+    if (!draggedEl) return;
+    const boardRect = boardEl.getBoundingClientRect();
+    let x = e.clientX - boardRect.left - dragOffsetX;
+    let y = e.clientY - boardRect.top - dragOffsetY;
+    x = Math.max(0, Math.min(boardSize - pieceSize, x));
+    y = Math.max(0, Math.min(boardSize - pieceSize, y));
+    draggedEl.style.left = x + 'px';
+    draggedEl.style.top = y + 'px';
+  }
+
+  function onDragEnd(e) {
+    if (!draggedEl) return;
+    document.removeEventListener('mousemove', onDragMove);
+    document.removeEventListener('mouseup', onDragEnd);
+    draggedEl.classList.remove('dragging');
+
+    const pieceId = parseInt(draggedEl.dataset.pieceIdx);
+    const correctSlot = pieceId;
+    const slotLeft = gap + (correctSlot % size) * (pieceSize + gap);
+    const slotTop = gap + Math.floor(correctSlot / size) * (pieceSize + gap);
+    const snapThreshold = pieceSize * 0.35;
+
+    const elLeft = parseFloat(draggedEl.style.left) || 0;
+    const elTop = parseFloat(draggedEl.style.top) || 0;
+    const dist = Math.sqrt((elLeft - slotLeft) ** 2 + (elTop - slotTop) ** 2);
+
+    if (dist <= snapThreshold) {
+      const oldSlot = piecePositions[pieceId];
+      const pieceInTarget = piecePositions.findIndex((s, p) => s === pieceId && p !== pieceId);
+      if (pieceInTarget >= 0) piecePositions[pieceInTarget] = oldSlot;
+      piecePositions[pieceId] = pieceId;
+      moveCount++;
+      movesEl.textContent = moveCount;
+      playLock();
+      render();
+      checkWin();
+    } else {
+      const oldSlot = piecePositions[pieceId];
+      const oldLeft = gap + (oldSlot % size) * (pieceSize + gap);
+      const oldTop = gap + Math.floor(oldSlot / size) * (pieceSize + gap);
+      draggedEl.style.left = oldLeft + 'px';
+      draggedEl.style.top = oldTop + 'px';
+      playDrop();
+    }
+    draggedEl = null;
+  }
+
+  function checkWin() {
+    const allPlaced = piecePositions.every((slot, pieceId) => slot === pieceId);
+    if (allPlaced) endGame();
+  }
+
+  function endGame() {
+    gameActive = false;
+    clearInterval(timerInterval);
+    session.rounds++;
+    session.wins++;
+    session.totalMoves += moveCount;
+    streak++;
+    streakEl.textContent = streak;
+
+    if (best[size] === null || moveCount < best[size]) {
+      best[size] = moveCount;
+      document.getElementById('go-title').textContent = '🏆 NEW PERSONAL BEST!';
+      document.getElementById('go-title').style.color = '#D97706';
+      document.getElementById('go-sub').textContent = `Completed in ${moveCount} moves, ${seconds}s! New record!`;
+      playPerfect();
+      setTimeout(() => playLevelUp(), 300);
+    } else {
+      document.getElementById('go-title').textContent = '🧩 Puzzle Complete!';
+      document.getElementById('go-title').style.color = '#059669';
+      const delta = moveCount - best[size];
+      document.getElementById('go-sub').textContent = `Completed in ${moveCount} moves, ${seconds}s — ${delta} moves from your best of ${best[size]}`;
+      playSuccess();
+    }
+    updateBest();
+    trackGameOver('jigsaw', 'Puzzle', moveCount, seconds);
+
+    const elapsed = Math.round((Date.now() - session.startTime) / 1000);
+    const mins = Math.floor(elapsed / 60), secs = elapsed % 60;
+    const avgMoves = session.rounds > 0 ? Math.round(session.totalMoves / session.rounds) : 0;
+    document.getElementById('session-stats').innerHTML = `
+      🎮 This Session<br>
+      ─────────────────────<br>
+      Rounds played&nbsp;&nbsp;&nbsp;${session.rounds}<br>
+      Wins&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${session.wins}<br>
+      Best moves&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${best[size] || '---'}<br>
+      Average moves&nbsp;&nbsp;${avgMoves}<br>
+      Current streak&nbsp;${streak} ${streak >= 3 ? '🔥' : ''}<br>
+      Time played&nbsp;&nbsp;&nbsp;&nbsp;${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}
+    `;
+
+    goEl.style.display = 'block';
+    document.getElementById('play-again').focus();
+
+    const colors = ['#2563eb', '#7c3aed', '#db2777', '#ea580c', '#059669', '#0891b2'];
+    for (let i = 0; i < 50; i++) {
+      const c = document.createElement('div');
+      c.className = 'confetti';
+      c.style.width = '10px';
+      c.style.height = '10px';
+      c.style.background = colors[i % colors.length];
+      c.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+      c.style.left = Math.random() * 100 + 'vw';
+      c.style.top = Math.random() * 100 + 'vh';
+      c.style.animationDelay = Math.random() * 0.5 + 's';
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 1600);
+    }
+  }
+
+  function updateBest() {
+    bestEl.textContent = best[size] !== null ? best[size] + ' moves' : '---';
+  }
+
+  document.getElementById('play-again').addEventListener('click', () => {
+    playClick();
+    newGame();
+  });
+
+  document.addEventListener('keydown', e => {
+    if (!gameActive && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault();
+      playClick();
+      newGame();
+    }
+  });
+
+  window.addEventListener('resize', () => {
+    if (gameActive && boardEl.children.length) newGame();
+  });
+
+  newGame();
+  </script>
+</body>
+</html>

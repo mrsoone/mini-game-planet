@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Capital Quiz - Test Your World Capitals Knowledge | Mini Game Planet</title>
+  <meta name="description" content="Challenge yourself with our free capital city quiz. Identify 100+ country capitals from Europe, Asia, Americas, Africa, and Oceania. Multiple choice or type-in mode, 15-second timer, streak bonuses.">
+  <link rel="canonical" href="https://minigameplanet.com/games/capital-quiz.html">
+  <!-- Open Graph -->
+  <meta property="og:title" content="Capital Quiz - Test Your World Capitals Knowledge | Mini Game Planet">
+  <meta property="og:description" content="Free capital city trivia quiz. 100+ countries, region filters, multiple choice or type-in mode, 15-second timer, streak bonuses.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/capital-quiz.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background-color: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    .timer-ring { transition: stroke-dashoffset 0.1s linear; }
+    .answer-correct { background-color: #22c55e !important; color: white !important; border-color: #16a34a !important; }
+    .answer-wrong { background-color: #ef4444 !important; color: white !important; border-color: #dc2626 !important; opacity: 0.8; }
+  </style>
+  <!-- GA4 Consent Defaults -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    window.gaConsent = { analytics: true, ads: false };
+  </script>
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Capital Quiz",
+    "description": "Free capital city trivia game. 100+ country-capital pairs, region filters, multiple choice or type-in mode, 15-second timer, streak bonuses, and personal best tracking.",
+    "applicationCategory": "Game",
+    "operatingSystem": "Any",
+    "url": "https://minigameplanet.com/games/capital-quiz.html",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+  <!-- AdSense (commented) -->
+  <!--
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXX" crossorigin="anonymous"></script>
+  -->
+</head>
+<body class="min-h-screen text-gray-800 antialiased">
+  <nav id="nav-container" class="bg-white/80 backdrop-blur border-b border-gray-200 sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="font-semibold text-lg text-gray-800 hover:text-indigo-600 transition">Mini Game Planet</a>
+      <div class="flex items-center gap-3">
+        <button id="sound-toggle" class="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-sm font-medium transition" aria-label="Toggle sound">🔊 Sound</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    <article class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 mb-8">
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Capital Quiz</h1>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        How well do you know the capitals of the world? Our free capital city quiz challenges you to match countries with their capital cities. Whether you're a geography buff preparing for a test, a traveler planning your next adventure, or simply curious about world capitals, this trivia game offers an engaging way to learn and test your knowledge.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        Each round consists of 20 questions, with 15 seconds to answer each one. Correct answers earn points, and consecutive correct answers build a streak bonus—so stay focused! You can filter questions by region: play globally or focus on Europe, Asia, the Americas, Africa, or Oceania. Over 100 country-capital pairs are included, from Tokyo and Paris to Brasília and Canberra.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        Choose your preferred play mode: Multiple Choice shows four options for each country, while Type-In mode lets you type the capital name yourself for a tougher challenge. Your personal best score is saved locally, so you can track your progress and compete against yourself over time. The game uses cryptographically secure random number generation via <code class="font-mono text-sm bg-gray-100 px-1 rounded">crypto.getRandomValues()</code> to ensure fair, unpredictable question selection.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        Learning world capitals builds geographic literacy and cultural awareness. Many capitals are ancient cities with rich histories—Rome, Athens, and Cairo have been centers of civilization for millennia. Others, like Washington D.C., Brasília, and Canberra, were purpose-built as capital cities. Our quiz covers capitals from every inhabited continent, including European classics like London and Berlin, Asian megacities such as Tokyo and Beijing, African capitals from Cairo to Pretoria, and island nations across Oceania.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        Scoring rewards both accuracy and speed. Each correct answer earns base points plus a bonus that decreases as the timer runs down. String together correct answers to build a streak—every consecutive correct answer increases your multiplier. A five-question streak can nearly double your points per question. Miss one or run out of time and the streak resets. In Type-In mode, answers are matched flexibly: minor spelling variations and common alternate names (e.g., "Colombo" for Sri Lanka) are accepted.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        Whether you're preparing for a geography exam, brushing up before a trip, or just enjoy a quick mental challenge, our capital quiz delivers. No sign-up required—just select your region, choose your mode, hit Start, and begin. Sound effects can be toggled on or off for a personalized experience. Your session statistics track total correct answers and best streak across rounds. Ready to prove your capital expertise? Start a round and see how many you can identify!
+      </p>
+    </article>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+      <div id="game-start" class="text-center">
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">Ready to Play?</h2>
+        <p class="text-gray-600 mb-4">20 questions · 15 seconds each · Streak bonuses</p>
+        <div class="flex flex-wrap justify-center gap-4 mb-6">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Region</label>
+            <div class="flex flex-wrap justify-center gap-2">
+              <button data-region="all" class="region-btn px-3 py-2 rounded-lg bg-indigo-600 text-white font-medium text-sm">All</button>
+              <button data-region="europe" class="region-btn px-3 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-sm">Europe</button>
+              <button data-region="asia" class="region-btn px-3 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-sm">Asia</button>
+              <button data-region="americas" class="region-btn px-3 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-sm">Americas</button>
+              <button data-region="africa" class="region-btn px-3 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-sm">Africa</button>
+              <button data-region="oceania" class="region-btn px-3 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-sm">Oceania</button>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Mode</label>
+            <div class="flex justify-center gap-2">
+              <button data-mode="choice" class="mode-btn px-3 py-2 rounded-lg bg-indigo-600 text-white font-medium text-sm">Multiple Choice</button>
+              <button data-mode="type" class="mode-btn px-3 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-sm">Type-In</button>
+            </div>
+          </div>
+        </div>
+        <div class="flex flex-wrap justify-center gap-4 mb-6">
+          <div class="bg-gray-50 rounded-xl px-4 py-3 text-center">
+            <span class="font-mono text-2xl font-bold text-indigo-600" id="pb-display">0</span>
+            <p class="text-xs text-gray-500">Personal Best</p>
+          </div>
+          <div class="bg-gray-50 rounded-xl px-4 py-3 text-center">
+            <span class="font-mono text-2xl font-bold text-gray-700" id="session-correct">0</span>
+            <p class="text-xs text-gray-500">Session Correct</p>
+          </div>
+          <div class="bg-gray-50 rounded-xl px-4 py-3 text-center">
+            <span class="font-mono text-2xl font-bold text-gray-700" id="session-streak">0</span>
+            <p class="text-xs text-gray-500">Best Streak</p>
+          </div>
+        </div>
+        <button id="btn-start" class="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition shadow-md hover:shadow-lg">
+          Start Quiz
+        </button>
+      </div>
+
+      <div id="game-play" class="hidden">
+        <div class="flex justify-between items-center mb-6">
+          <div class="flex gap-4">
+            <span class="font-mono font-semibold">Score: <span id="score-display">0</span></span>
+            <span class="font-mono text-indigo-600">Streak: <span id="streak-display">0</span>×</span>
+          </div>
+          <span class="text-sm text-gray-500">Question <span id="q-num">1</span>/20</span>
+        </div>
+        <div class="relative mb-6">
+          <svg class="w-16 h-16 -rotate-90" viewBox="0 0 64 64">
+            <circle cx="32" cy="32" r="28" fill="none" stroke="#e5e7eb" stroke-width="6"/>
+            <circle id="timer-ring" cx="32" cy="32" r="28" fill="none" stroke="#6366f1" stroke-width="6" stroke-dasharray="176" stroke-dashoffset="0" stroke-linecap="round" class="timer-ring"/>
+          </svg>
+          <span id="timer-text" class="absolute inset-0 flex items-center justify-center font-mono text-xl font-bold">15</span>
+        </div>
+        <p id="question-text" class="text-xl font-semibold text-gray-900 mb-6 min-h-[3rem]">What is the capital of <span id="country-name"></span>?</p>
+        <div id="answers" class="grid gap-3">
+          <!-- Answers injected by JS -->
+        </div>
+        <div id="type-in-area" class="hidden">
+          <input type="text" id="type-input" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none font-mono text-lg" placeholder="Type the capital..." autocomplete="off">
+          <p id="type-feedback" class="hidden mt-2 text-sm font-medium"></p>
+          <button id="type-submit" class="mt-3 w-full px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition">Submit</button>
+        </div>
+      </div>
+
+      <div id="game-over" class="hidden text-center">
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">Round Complete!</h2>
+        <p class="text-4xl font-mono font-bold text-indigo-600 mb-2" id="final-score">0</p>
+        <p class="text-gray-600 mb-6" id="final-message"></p>
+        <div class="flex flex-wrap justify-center gap-4 mb-6">
+          <div class="bg-gray-50 rounded-xl px-4 py-3 text-center">
+            <span class="font-mono text-xl font-bold" id="final-correct">0</span>
+            <p class="text-xs text-gray-500">Correct</p>
+          </div>
+          <div class="bg-gray-50 rounded-xl px-4 py-3 text-center">
+            <span class="font-mono text-xl font-bold" id="final-streak">0</span>
+            <p class="text-xs text-gray-500">Best Streak</p>
+          </div>
+        </div>
+        <button id="btn-replay" class="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition shadow-md hover:shadow-lg">
+          Play Again
+        </button>
+      </div>
+    </div>
+
+    <section id="related-games" class="mt-12">
+      <h2 class="text-xl font-bold text-gray-900 mb-4">Related Games</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <a href="/games/flag-quiz.html" class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:border-indigo-200 hover:shadow transition">Flag Quiz</a>
+        <a href="/games/trivia-quiz.html" class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:border-indigo-200 hover:shadow transition">Trivia Quiz</a>
+        <a href="/games/word-search.html" class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:border-indigo-200 hover:shadow transition">Word Search</a>
+        <a href="/games/memory-match.html" class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:border-indigo-200 hover:shadow transition">Memory Match</a>
+      </div>
+    </section>
+  </main>
+
+  <footer id="footer-container" class="border-t border-gray-200 mt-12 py-8">
+    <div class="max-w-4xl mx-auto px-4 text-center text-gray-500 text-sm">
+      <p>© Mini Game Planet. Free casual games for everyone.</p>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playPerfect } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('capital-quiz');
+    initConsent();
+    trackGameView('capital-quiz', 'Trivia');
+
+    const CAPITALS = [
+      { country: "Afghanistan", capital: "Kabul", region: "asia" },
+      { country: "Albania", capital: "Tirana", region: "europe" },
+      { country: "Algeria", capital: "Algiers", region: "africa" },
+      { country: "Andorra", capital: "Andorra la Vella", region: "europe" },
+      { country: "Angola", capital: "Luanda", region: "africa" },
+      { country: "Argentina", capital: "Buenos Aires", region: "americas" },
+      { country: "Armenia", capital: "Yerevan", region: "asia" },
+      { country: "Australia", capital: "Canberra", region: "oceania" },
+      { country: "Austria", capital: "Vienna", region: "europe" },
+      { country: "Azerbaijan", capital: "Baku", region: "asia" },
+      { country: "Bahrain", capital: "Manama", region: "asia" },
+      { country: "Bangladesh", capital: "Dhaka", region: "asia" },
+      { country: "Belarus", capital: "Minsk", region: "europe" },
+      { country: "Belgium", capital: "Brussels", region: "europe" },
+      { country: "Belize", capital: "Belmopan", region: "americas" },
+      { country: "Benin", capital: "Porto-Novo", region: "africa" },
+      { country: "Bhutan", capital: "Thimphu", region: "asia" },
+      { country: "Bolivia", capital: "Sucre", region: "americas" },
+      { country: "Bosnia and Herzegovina", capital: "Sarajevo", region: "europe" },
+      { country: "Botswana", capital: "Gaborone", region: "africa" },
+      { country: "Brazil", capital: "Brasília", region: "americas" },
+      { country: "Brunei", capital: "Bandar Seri Begawan", region: "asia" },
+      { country: "Bulgaria", capital: "Sofia", region: "europe" },
+      { country: "Burkina Faso", capital: "Ouagadougou", region: "africa" },
+      { country: "Cambodia", capital: "Phnom Penh", region: "asia" },
+      { country: "Cameroon", capital: "Yaoundé", region: "africa" },
+      { country: "Canada", capital: "Ottawa", region: "americas" },
+      { country: "Chad", capital: "N'Djamena", region: "africa" },
+      { country: "Chile", capital: "Santiago", region: "americas" },
+      { country: "China", capital: "Beijing", region: "asia" },
+      { country: "Colombia", capital: "Bogotá", region: "americas" },
+      { country: "Costa Rica", capital: "San José", region: "americas" },
+      { country: "Croatia", capital: "Zagreb", region: "europe" },
+      { country: "Cuba", capital: "Havana", region: "americas" },
+      { country: "Cyprus", capital: "Nicosia", region: "europe" },
+      { country: "Czech Republic", capital: "Prague", region: "europe" },
+      { country: "Denmark", capital: "Copenhagen", region: "europe" },
+      { country: "Dominican Republic", capital: "Santo Domingo", region: "americas" },
+      { country: "Ecuador", capital: "Quito", region: "americas" },
+      { country: "Egypt", capital: "Cairo", region: "africa" },
+      { country: "El Salvador", capital: "San Salvador", region: "americas" },
+      { country: "Estonia", capital: "Tallinn", region: "europe" },
+      { country: "Ethiopia", capital: "Addis Ababa", region: "africa" },
+      { country: "Fiji", capital: "Suva", region: "oceania" },
+      { country: "Finland", capital: "Helsinki", region: "europe" },
+      { country: "France", capital: "Paris", region: "europe" },
+      { country: "Gabon", capital: "Libreville", region: "africa" },
+      { country: "Georgia", capital: "Tbilisi", region: "asia" },
+      { country: "Germany", capital: "Berlin", region: "europe" },
+      { country: "Ghana", capital: "Accra", region: "africa" },
+      { country: "Greece", capital: "Athens", region: "europe" },
+      { country: "Guatemala", capital: "Guatemala City", region: "americas" },
+      { country: "Guinea", capital: "Conakry", region: "africa" },
+      { country: "Haiti", capital: "Port-au-Prince", region: "americas" },
+      { country: "Honduras", capital: "Tegucigalpa", region: "americas" },
+      { country: "Hungary", capital: "Budapest", region: "europe" },
+      { country: "Iceland", capital: "Reykjavik", region: "europe" },
+      { country: "India", capital: "New Delhi", region: "asia" },
+      { country: "Indonesia", capital: "Jakarta", region: "asia" },
+      { country: "Iran", capital: "Tehran", region: "asia" },
+      { country: "Iraq", capital: "Baghdad", region: "asia" },
+      { country: "Ireland", capital: "Dublin", region: "europe" },
+      { country: "Israel", capital: "Jerusalem", region: "asia" },
+      { country: "Italy", capital: "Rome", region: "europe" },
+      { country: "Jamaica", capital: "Kingston", region: "americas" },
+      { country: "Japan", capital: "Tokyo", region: "asia" },
+      { country: "Jordan", capital: "Amman", region: "asia" },
+      { country: "Kazakhstan", capital: "Astana", region: "asia" },
+      { country: "Kenya", capital: "Nairobi", region: "africa" },
+      { country: "Kuwait", capital: "Kuwait City", region: "asia" },
+      { country: "Kyrgyzstan", capital: "Bishkek", region: "asia" },
+      { country: "Laos", capital: "Vientiane", region: "asia" },
+      { country: "Latvia", capital: "Riga", region: "europe" },
+      { country: "Lebanon", capital: "Beirut", region: "asia" },
+      { country: "Libya", capital: "Tripoli", region: "africa" },
+      { country: "Lithuania", capital: "Vilnius", region: "europe" },
+      { country: "Luxembourg", capital: "Luxembourg", region: "europe" },
+      { country: "Madagascar", capital: "Antananarivo", region: "africa" },
+      { country: "Malaysia", capital: "Kuala Lumpur", region: "asia" },
+      { country: "Mali", capital: "Bamako", region: "africa" },
+      { country: "Malta", capital: "Valletta", region: "europe" },
+      { country: "Mexico", capital: "Mexico City", region: "americas" },
+      { country: "Moldova", capital: "Chișinău", region: "europe" },
+      { country: "Mongolia", capital: "Ulaanbaatar", region: "asia" },
+      { country: "Montenegro", capital: "Podgorica", region: "europe" },
+      { country: "Morocco", capital: "Rabat", region: "africa" },
+      { country: "Mozambique", capital: "Maputo", region: "africa" },
+      { country: "Myanmar", capital: "Naypyidaw", region: "asia" },
+      { country: "Nepal", capital: "Kathmandu", region: "asia" },
+      { country: "Netherlands", capital: "Amsterdam", region: "europe" },
+      { country: "New Zealand", capital: "Wellington", region: "oceania" },
+      { country: "Nicaragua", capital: "Managua", region: "americas" },
+      { country: "Nigeria", capital: "Abuja", region: "africa" },
+      { country: "North Korea", capital: "Pyongyang", region: "asia" },
+      { country: "North Macedonia", capital: "Skopje", region: "europe" },
+      { country: "Norway", capital: "Oslo", region: "europe" },
+      { country: "Oman", capital: "Muscat", region: "asia" },
+      { country: "Pakistan", capital: "Islamabad", region: "asia" },
+      { country: "Panama", capital: "Panama City", region: "americas" },
+      { country: "Papua New Guinea", capital: "Port Moresby", region: "oceania" },
+      { country: "Paraguay", capital: "Asunción", region: "americas" },
+      { country: "Peru", capital: "Lima", region: "americas" },
+      { country: "Philippines", capital: "Manila", region: "asia" },
+      { country: "Poland", capital: "Warsaw", region: "europe" },
+      { country: "Portugal", capital: "Lisbon", region: "europe" },
+      { country: "Qatar", capital: "Doha", region: "asia" },
+      { country: "Romania", capital: "Bucharest", region: "europe" },
+      { country: "Russia", capital: "Moscow", region: "europe" },
+      { country: "Rwanda", capital: "Kigali", region: "africa" },
+      { country: "Saudi Arabia", capital: "Riyadh", region: "asia" },
+      { country: "Senegal", capital: "Dakar", region: "africa" },
+      { country: "Serbia", capital: "Belgrade", region: "europe" },
+      { country: "Singapore", capital: "Singapore", region: "asia" },
+      { country: "Slovakia", capital: "Bratislava", region: "europe" },
+      { country: "Slovenia", capital: "Ljubljana", region: "europe" },
+      { country: "South Africa", capital: "Pretoria", region: "africa" },
+      { country: "South Korea", capital: "Seoul", region: "asia" },
+      { country: "Spain", capital: "Madrid", region: "europe" },
+      { country: "Sri Lanka", capital: "Sri Jayawardenepura Kotte", region: "asia" },
+      { country: "Sudan", capital: "Khartoum", region: "africa" },
+      { country: "Sweden", capital: "Stockholm", region: "europe" },
+      { country: "Switzerland", capital: "Bern", region: "europe" },
+      { country: "Syria", capital: "Damascus", region: "asia" },
+      { country: "Taiwan", capital: "Taipei", region: "asia" },
+      { country: "Tajikistan", capital: "Dushanbe", region: "asia" },
+      { country: "Tanzania", capital: "Dodoma", region: "africa" },
+      { country: "Thailand", capital: "Bangkok", region: "asia" },
+      { country: "Tunisia", capital: "Tunis", region: "africa" },
+      { country: "Turkey", capital: "Ankara", region: "asia" },
+      { country: "Turkmenistan", capital: "Ashgabat", region: "asia" },
+      { country: "Uganda", capital: "Kampala", region: "africa" },
+      { country: "Ukraine", capital: "Kyiv", region: "europe" },
+      { country: "United Arab Emirates", capital: "Abu Dhabi", region: "asia" },
+      { country: "United Kingdom", capital: "London", region: "europe" },
+      { country: "United States", capital: "Washington, D.C.", region: "americas" },
+      { country: "Uruguay", capital: "Montevideo", region: "americas" },
+      { country: "Uzbekistan", capital: "Tashkent", region: "asia" },
+      { country: "Venezuela", capital: "Caracas", region: "americas" },
+      { country: "Vietnam", capital: "Hanoi", region: "asia" },
+      { country: "Yemen", capital: "Sana'a", region: "asia" },
+      { country: "Zambia", capital: "Lusaka", region: "africa" },
+      { country: "Zimbabwe", capital: "Harare", region: "africa" },
+    ];
+
+    const ALIASES = {
+      "brasilia": "Brasília", "brasil": "Brasília",
+      "ndjamena": "N'Djamena", "n'djamena": "N'Djamena",
+      "bogota": "Bogotá", "bogota": "Bogotá",
+      "lima": "Lima", "quito": "Quito", "santiago": "Santiago",
+      "colombo": "Sri Jayawardenepura Kotte", "sri jayawardenepura": "Sri Jayawardenepura Kotte", "kotte": "Sri Jayawardenepura Kotte",
+      "washington": "Washington, D.C.", "washington dc": "Washington, D.C.", "washington d.c.": "Washington, D.C.",
+      "asuncion": "Asunción", "asuncion": "Asunción",
+      "san jose": "San José", "sanjose": "San José",
+      "ulaanbaatar": "Ulaanbaatar", "ulan bator": "Ulaanbaatar",
+      "chisinau": "Chișinău", "kishinev": "Chișinău",
+      "yaounde": "Yaoundé", "yaounde": "Yaoundé",
+      "porto novo": "Porto-Novo", "portonovo": "Porto-Novo",
+      "addis abeba": "Addis Ababa", "addis abeba": "Addis Ababa",
+      "naypyitaw": "Naypyidaw", "nay pyi taw": "Naypyidaw",
+      "bandar seri begawan": "Bandar Seri Begawan",
+      "belmopan": "Belmopan", "andorra la vella": "Andorra la Vella",
+      "guatemala city": "Guatemala City", "kuwait city": "Kuwait City",
+      "panama city": "Panama City", "mexico city": "Mexico City",
+      "port au prince": "Port-au-Prince", "port-au-prince": "Port-au-Prince",
+      "santo domingo": "Santo Domingo", "sanaa": "Sana'a", "sana'a": "Sana'a",
+    };
+
+    const BASE_POINTS = 100;
+    const SPEED_BONUS_MAX = 50;
+    const STREAK_MULTIPLIER = 0.1;
+    const TIME_PER_QUESTION = 15;
+    const QUESTIONS_PER_ROUND = 20;
+
+    function secureRandom(max) {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] % max;
+    }
+
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = secureRandom(i + 1);
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function normalizeAnswer(s) {
+      return String(s || "").toLowerCase().trim().replace(/\s+/g, " ");
+    }
+
+    function normalizeForCompare(s) {
+      return normalizeAnswer(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    }
+
+    function answersMatch(user, correct) {
+      const u = normalizeAnswer(user);
+      const c = normalizeAnswer(correct);
+      if (normalizeForCompare(u) === normalizeForCompare(c)) return true;
+      const alias = ALIASES[u];
+      if (alias) return normalizeForCompare(normalizeAnswer(alias)) === normalizeForCompare(c);
+      if (c.includes(",")) {
+        const parts = c.split(",").map(p => p.trim());
+        return parts.some(p => normalizeForCompare(normalizeAnswer(p)) === normalizeForCompare(u));
+      }
+      return false;
+    }
+
+    function getFilteredCapitals() {
+      const region = selectedRegion;
+      if (region === "all") return CAPITALS;
+      return CAPITALS.filter(c => c.region === region);
+    }
+
+    function getRandomQuestions() {
+      const filtered = getFilteredCapitals();
+      if (filtered.length < 4) return filtered;
+      const shuffled = shuffle(filtered);
+      return shuffled.slice(0, QUESTIONS_PER_ROUND);
+    }
+
+    function getWrongOptions(correctCapital, count) {
+      const allCapitals = [...new Set(CAPITALS.map(c => c.capital))];
+      const wrong = allCapitals.filter(c => !answersMatch(c, correctCapital));
+      const shuffled = shuffle(wrong);
+      return shuffled.slice(0, count - 1);
+    }
+
+    let audioMuted = false;
+    let selectedRegion = "all";
+    let gameMode = "choice";
+    let currentRound = [];
+    let qIndex = 0;
+    let score = 0;
+    let streak = 0;
+    let timerId = null;
+    let startTime = 0;
+    let answered = false;
+    let sessionCorrect = 0;
+    let sessionBestStreak = 0;
+    let roundCorrect = 0;
+    let roundBestStreak = 0;
+    const PB_KEY = 'capital-quiz-pb';
+
+    function getPB() {
+      try {
+        return parseInt(localStorage.getItem(PB_KEY) || '0', 10);
+      } catch { return 0; }
+    }
+
+    function setPB(val) {
+      try { localStorage.setItem(PB_KEY, String(val)); } catch (_) {}
+    }
+
+    function updateSessionStats() {
+      document.getElementById('session-correct').textContent = sessionCorrect;
+      document.getElementById('session-streak').textContent = sessionBestStreak;
+      document.getElementById('pb-display').textContent = getPB();
+    }
+
+    const startScreen = document.getElementById('game-start');
+    const playScreen = document.getElementById('game-play');
+    const overScreen = document.getElementById('game-over');
+    const answersEl = document.getElementById('answers');
+    const typeInArea = document.getElementById('type-in-area');
+    const typeInput = document.getElementById('type-input');
+    const typeSubmit = document.getElementById('type-submit');
+
+    document.getElementById('sound-toggle').addEventListener('click', () => {
+      audioMuted = !audioMuted;
+      muteAll(audioMuted);
+      document.getElementById('sound-toggle').textContent = audioMuted ? '🔇 Muted' : '🔊 Sound';
+      playClick();
+    });
+
+    document.querySelectorAll('.region-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.region-btn').forEach(b => {
+          b.classList.remove('bg-indigo-600', 'text-white');
+          b.classList.add('bg-gray-200');
+        });
+        btn.classList.remove('bg-gray-200');
+        btn.classList.add('bg-indigo-600', 'text-white');
+        selectedRegion = btn.dataset.region;
+      });
+    });
+
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.mode-btn').forEach(b => {
+          b.classList.remove('bg-indigo-600', 'text-white');
+          b.classList.add('bg-gray-200');
+        });
+        btn.classList.remove('bg-gray-200');
+        btn.classList.add('bg-indigo-600', 'text-white');
+        gameMode = btn.dataset.mode;
+      });
+    });
+
+    function showScreen(id) {
+      startScreen.classList.add('hidden');
+      playScreen.classList.add('hidden');
+      overScreen.classList.add('hidden');
+      document.getElementById(id).classList.remove('hidden');
+    }
+
+    function startGame() {
+      initAudio();
+      trackGameStart('capital-quiz');
+      currentRound = getRandomQuestions();
+      if (currentRound.length < 4 && gameMode === "choice") {
+        alert("Need at least 4 countries in this region. Try 'All'.");
+        return;
+      }
+      if (currentRound.length < 1) {
+        alert("No countries in this region. Try 'All'.");
+        return;
+      }
+      qIndex = 0;
+      score = 0;
+      streak = 0;
+      roundCorrect = 0;
+      roundBestStreak = 0;
+      showScreen('game-play');
+      updateSessionStats();
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      answered = false;
+      const q = currentRound[qIndex];
+      document.getElementById('country-name').textContent = q.country;
+      document.getElementById('q-num').textContent = qIndex + 1;
+      document.getElementById('score-display').textContent = score;
+      document.getElementById('streak-display').textContent = streak;
+
+      const isChoice = gameMode === "choice";
+      answersEl.classList.toggle('hidden', !isChoice);
+      typeInArea.classList.toggle('hidden', isChoice);
+      typeInput.value = '';
+      typeInput.disabled = false;
+      typeSubmit.disabled = false;
+      document.getElementById('type-feedback').classList.add('hidden');
+
+      if (isChoice) {
+        answersEl.innerHTML = '';
+        const wrong = getWrongOptions(q.capital, 4);
+        const options = shuffle([q.capital, ...wrong]);
+        options.forEach((cap) => {
+          const btn = document.createElement('button');
+          btn.className = 'w-full text-left px-4 py-3 rounded-xl border-2 border-gray-200 hover:border-indigo-300 hover:bg-indigo-50 transition font-medium';
+          btn.textContent = cap;
+          btn.dataset.capital = cap;
+          btn.addEventListener('click', () => handleChoiceAnswer(btn, answersMatch(cap, q.capital)));
+          answersEl.appendChild(btn);
+        });
+      } else {
+        typeInput.focus();
+      }
+
+      startTimer();
+    }
+
+    function startTimer() {
+      const ring = document.getElementById('timer-ring');
+      const text = document.getElementById('timer-text');
+      const circumference = 2 * Math.PI * 28;
+      let elapsed = 0;
+      startTime = Date.now();
+
+      const tick = () => {
+        if (answered) return;
+        elapsed += 0.1;
+        const remaining = Math.max(0, TIME_PER_QUESTION - elapsed);
+        text.textContent = Math.ceil(remaining);
+        ring.style.strokeDashoffset = circumference - (elapsed / TIME_PER_QUESTION) * circumference;
+        if (remaining <= 0) {
+          clearInterval(timerId);
+          handleTimeout();
+        }
+      };
+      tick();
+      timerId = setInterval(tick, 100);
+    }
+
+    function stopTimer() {
+      if (timerId) clearInterval(timerId);
+      timerId = null;
+    }
+
+    function processAnswer(correct) {
+      if (answered) return;
+      answered = true;
+      stopTimer();
+
+      const q = currentRound[qIndex];
+
+      if (correct) {
+        const elapsed = (Date.now() - startTime) / 1000;
+        const speedBonus = Math.max(0, Math.round(SPEED_BONUS_MAX * (1 - elapsed / TIME_PER_QUESTION)));
+        streak++;
+        sessionBestStreak = Math.max(sessionBestStreak, streak);
+        roundBestStreak = Math.max(roundBestStreak, streak);
+        const mult = 1 + streak * STREAK_MULTIPLIER;
+        const pts = Math.round((BASE_POINTS + speedBonus) * mult);
+        score += pts;
+        sessionCorrect++;
+        roundCorrect++;
+        if (streak >= 5) playPerfect();
+        else if (streak > 1) playScoreUp();
+        else playSuccess();
+      } else {
+        streak = 0;
+        if (gameMode === "choice") {
+          const buttons = document.querySelectorAll('#answers button');
+          buttons.forEach((b) => b.disabled = true);
+          const correctBtn = Array.from(buttons).find(b => answersMatch(b.dataset.capital, q.capital));
+          if (correctBtn) correctBtn.classList.add('answer-correct');
+        }
+        playError();
+      }
+
+      document.getElementById('score-display').textContent = score;
+      document.getElementById('streak-display').textContent = streak;
+      updateSessionStats();
+
+      setTimeout(() => {
+        qIndex++;
+        if (qIndex < currentRound.length) loadQuestion();
+        else endGame();
+      }, gameMode === "choice" ? 1500 : 800);
+    }
+
+    function handleChoiceAnswer(btn, correct) {
+      if (answered) return;
+      const q = currentRound[qIndex];
+      const buttons = document.querySelectorAll('#answers button');
+      buttons.forEach((b) => b.disabled = true);
+
+      if (correct) {
+        btn.classList.add('answer-correct');
+      } else {
+        btn.classList.add('answer-wrong');
+        const correctBtn = Array.from(buttons).find(b => answersMatch(b.dataset.capital, q.capital));
+        if (correctBtn) correctBtn.classList.add('answer-correct');
+      }
+      processAnswer(correct);
+    }
+
+    function handleTypeSubmit() {
+      if (answered) return;
+      const q = currentRound[qIndex];
+      const userAnswer = typeInput.value.trim();
+      const correct = answersMatch(userAnswer, q.capital);
+      typeInput.disabled = true;
+      typeSubmit.disabled = true;
+      if (!correct) {
+        const fb = document.getElementById('type-feedback');
+        fb.textContent = 'Correct answer: ' + q.capital;
+        fb.classList.remove('hidden');
+        fb.classList.add('text-red-600');
+      }
+      processAnswer(correct);
+    }
+
+    function handleTimeout() {
+      if (answered) return;
+      answered = true;
+      stopTimer();
+      streak = 0;
+      const q = currentRound[qIndex];
+      if (gameMode === "choice") {
+        const buttons = document.querySelectorAll('#answers button');
+        buttons.forEach((b) => b.disabled = true);
+        const correctBtn = Array.from(buttons).find(b => answersMatch(b.dataset.capital, q.capital));
+        if (correctBtn) correctBtn.classList.add('answer-correct');
+      } else {
+        typeInput.disabled = true;
+        typeSubmit.disabled = true;
+        const fb = document.getElementById('type-feedback');
+        fb.textContent = 'Time\'s up! Correct answer: ' + q.capital;
+        fb.classList.remove('hidden');
+        fb.classList.add('text-red-600');
+      }
+      playError();
+
+      document.getElementById('streak-display').textContent = '0';
+      updateSessionStats();
+
+      setTimeout(() => {
+        qIndex++;
+        if (qIndex < currentRound.length) loadQuestion();
+        else endGame();
+      }, 800);
+    }
+
+    function endGame() {
+      stopTimer();
+      showScreen('game-over');
+      document.getElementById('final-score').textContent = score;
+      document.getElementById('final-correct').textContent = roundCorrect;
+      document.getElementById('final-streak').textContent = roundBestStreak;
+
+      const pb = getPB();
+      if (score > pb) {
+        setPB(score);
+        document.getElementById('final-message').textContent = 'New personal best! 🎉';
+      } else if (roundCorrect === currentRound.length) {
+        document.getElementById('final-message').textContent = 'Perfect round! Amazing!';
+      } else {
+        document.getElementById('final-message').textContent = 'Great effort! Try again to beat your best.';
+      }
+
+      playGameOver();
+      trackGameOver('capital-quiz', score);
+    }
+
+    typeSubmit.addEventListener('click', handleTypeSubmit);
+    typeInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') handleTypeSubmit();
+    });
+
+    document.getElementById('btn-start').addEventListener('click', () => {
+      playClick();
+      startGame();
+    });
+
+    document.getElementById('btn-replay').addEventListener('click', () => {
+      playClick();
+      showScreen('game-start');
+      updateSessionStats();
+    });
+
+    updateSessionStats();
+  </script>
+</body>
+</html>

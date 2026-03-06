@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>History Timeline - Order Events Chronologically | Mini Game Planet</title>
+  <meta name="description" content="Test your history knowledge! Drag 5-8 historical events into chronological order on a timeline. 100+ events from ancient to modern. 10 rounds, score by correct placements, personal best.">
+  <link rel="canonical" href="https://minigameplanet.com/games/history-timeline.html">
+  <!-- Open Graph -->
+  <meta property="og:title" content="History Timeline - Order Events Chronologically | Mini Game Planet">
+  <meta property="og:description" content="Drag historical events into chronological order. 100+ events, 10 rounds, personal best tracking. Free history trivia game.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/history-timeline.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background-color: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    .timeline-track { display: flex; align-items: stretch; gap: 0.5rem; min-height: 120px; overflow-x: auto; padding: 0.5rem 0; }
+    .drop-zone { flex: 1; min-width: 140px; border: 2px dashed #d1d5db; border-radius: 12px; background: #f9fafb; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+    .drop-zone.drag-over { border-color: #6366f1; background: #eef2ff; }
+    .drop-zone.filled { border-style: solid; border-color: #e5e7eb; background: #fff; }
+    .event-card { cursor: grab; user-select: none; padding: 0.75rem 1rem; border-radius: 10px; background: white; border: 2px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.08); transition: transform 0.15s, box-shadow 0.15s; }
+    .event-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+    .event-card.dragging { opacity: 0.8; cursor: grabbing; transform: scale(1.02); }
+    .event-card.correct { border-color: #22c55e; background: #f0fdf4; }
+    .event-card.wrong { border-color: #ef4444; background: #fef2f2; }
+    .event-year { font-family: 'DM Mono', monospace; font-weight: 600; color: #6366f1; font-size: 0.9rem; }
+    .event-name { font-weight: 600; color: #111827; margin-top: 0.25rem; }
+    .event-desc { font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem; line-height: 1.3; }
+  </style>
+  <!-- GA4 Consent Defaults -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    window.gaConsent = { analytics: true, ads: false };
+  </script>
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "History Timeline",
+    "description": "Free history trivia game. Drag 5-8 historical events into chronological order on a timeline. 100+ events from ancient to modern. 10 rounds, personal best tracking.",
+    "applicationCategory": "Game",
+    "operatingSystem": "Any",
+    "url": "https://minigameplanet.com/games/history-timeline.html",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+  <!-- AdSense (commented) -->
+  <!--
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXX" crossorigin="anonymous"></script>
+  -->
+</head>
+<body class="min-h-screen text-gray-800 antialiased">
+  <nav id="nav-container" class="bg-white/80 backdrop-blur border-b border-gray-200 sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="font-semibold text-lg text-gray-800 hover:text-indigo-600 transition">Mini Game Planet</a>
+      <div class="flex items-center gap-3">
+        <button id="sound-toggle" class="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-sm font-medium transition" aria-label="Toggle sound">🔊 Sound</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    <article class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 mb-8">
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">History Timeline</h1>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        How well do you know the order of historical events? Our History Timeline game challenges you to drag events into chronological order on a horizontal timeline. Each round presents 5–8 events from world history—ancient civilizations, medieval kingdoms, revolutions, world wars, and modern milestones. Your job is to place them in the correct sequence from earliest to latest. It's a fun way to test and improve your sense of when things happened in history.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        The game uses a pool of 100+ events spanning from around 3000 BCE to the present day. Events include the construction of the Great Pyramid, the fall of Rome, the signing of the Magna Carta, the invention of the printing press, the American Revolution, the Industrial Revolution, both World Wars, the moon landing, and the rise of the internet. Each event shows a date, a name, and a brief description to help you recall or reason about its place in history.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        Scoring rewards accuracy. For each event you place in the correct position relative to the others, you earn 100 points. A round with 6 events perfectly ordered earns 600 points. Over 10 rounds, your total score can reach thousands. Your personal best is saved in your browser using localStorage, so you can challenge yourself to beat your own record over time. The game uses <code class="font-mono text-sm bg-gray-100 px-1 rounded">crypto.getRandomValues()</code> for secure randomness, ensuring fair and unpredictable event selection each game.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        The drag-and-drop interface is designed for clarity. Events appear as cards you can grab and drop into slots on the timeline. Drop zones highlight when you drag over them, and after you submit your answer, correct placements turn green and incorrect ones turn red so you learn as you play. No timers—take your time to think through the sequence. History buffs will find some rounds easy; others will require careful reasoning about centuries and eras.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        Understanding chronology is fundamental to history. Knowing that the Renaissance came after the Black Death, or that the Cold War followed World War II, helps you make sense of cause and effect. This game reinforces that mental timeline. Whether you're a student studying for exams, a teacher looking for a classroom activity, or a casual learner curious about the past, the History Timeline game offers an engaging way to practice ordering events.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        The game is fully standalone—no account, no downloads. Sound effects can be toggled on or off. Related games like Trivia Quiz, Geography Quiz, and Capital Quiz offer more ways to test your knowledge. Ready to prove your grasp of history? Drag, drop, and order your way through 10 rounds of chronological challenges!
+      </p>
+    </article>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+      <div id="game-start" class="text-center">
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">Ready to Play?</h2>
+        <p class="text-gray-600 mb-4">10 rounds · 5–8 events per round · Drag into chronological order</p>
+        <div class="flex flex-wrap justify-center gap-4 mb-6">
+          <div class="bg-gray-50 rounded-xl px-4 py-3 text-center">
+            <span class="font-mono text-2xl font-bold text-indigo-600" id="pb-display">0</span>
+            <p class="text-xs text-gray-500">Personal Best</p>
+          </div>
+        </div>
+        <button id="btn-start" class="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition shadow-md hover:shadow-lg">
+          Start Game
+        </button>
+      </div>
+
+      <div id="game-play" class="hidden">
+        <div class="flex justify-between items-center mb-4">
+          <div class="flex gap-4">
+            <span class="font-mono font-semibold">Score: <span id="score-display">0</span></span>
+          </div>
+          <span class="text-sm text-gray-500">Round <span id="round-num">1</span>/10</span>
+        </div>
+        <p class="text-sm text-gray-600 mb-4">Drag events into chronological order (earliest → latest). Click Check when ready.</p>
+        <div id="timeline-container" class="mb-4">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-xs font-medium text-gray-500">Earliest</span>
+            <span class="flex-1 border-t border-dashed border-gray-300"></span>
+            <span class="text-xs font-medium text-gray-500">Latest</span>
+          </div>
+          <div id="timeline-track" class="timeline-track"></div>
+        </div>
+        <button id="btn-check" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition">
+          Check Order
+        </button>
+      </div>
+
+      <div id="game-over" class="hidden text-center">
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">Game Complete!</h2>
+        <p class="text-4xl font-mono font-bold text-indigo-600 mb-2" id="final-score">0</p>
+        <p class="text-gray-600 mb-6" id="final-message"></p>
+        <button id="btn-replay" class="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition shadow-md hover:shadow-lg">
+          Play Again
+        </button>
+      </div>
+    </div>
+
+    <section id="related-games" class="mt-12">
+      <h2 class="text-xl font-bold text-gray-900 mb-4">Related Games</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <a href="/games/trivia-quiz.html" class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:border-indigo-200 hover:shadow transition">Trivia Quiz</a>
+        <a href="/games/geography-quiz.html" class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:border-indigo-200 hover:shadow transition">Geography Quiz</a>
+        <a href="/games/capital-quiz.html" class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:border-indigo-200 hover:shadow transition">Capital Quiz</a>
+        <a href="/games/flag-quiz.html" class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:border-indigo-200 hover:shadow transition">Flag Quiz</a>
+      </div>
+    </section>
+  </main>
+
+  <footer id="footer-container" class="border-t border-gray-200 mt-12 py-8">
+    <div class="max-w-4xl mx-auto px-4 text-center text-gray-500 text-sm">
+      <p>© Mini Game Planet. Free casual games for everyone.</p>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('history-timeline');
+    initConsent();
+    trackGameView('history-timeline', 'Trivia');
+
+    const EVENTS = [
+      { year: -2560, name: "Great Pyramid of Giza built", desc: "Oldest of the Seven Wonders" },
+      { year: -221, name: "Qin Dynasty unifies China", desc: "First imperial dynasty" },
+      { year: -44, name: "Assassination of Julius Caesar", desc: "Ides of March" },
+      { year: 27, name: "Roman Empire begins", desc: "Augustus becomes first emperor" },
+      { year: 313, name: "Edict of Milan", desc: "Christianity tolerated in Roman Empire" },
+      { year: 476, name: "Fall of Western Roman Empire", desc: "Odoacer deposes Romulus Augustulus" },
+      { year: 622, name: "Hijra (Islamic calendar begins)", desc: "Muhammad's migration to Medina" },
+      { year: 732, name: "Battle of Tours", desc: "Charles Martel halts Muslim advance" },
+      { year: 800, name: "Charlemagne crowned Holy Roman Emperor", desc: "Christmas Day in Rome" },
+      { year: 1066, name: "Norman Conquest of England", desc: "Battle of Hastings" },
+      { year: 1095, name: "First Crusade launched", desc: "Pope Urban II at Clermont" },
+      { year: 1215, name: "Magna Carta signed", desc: "King John at Runnymede" },
+      { year: 1271, name: "Marco Polo begins travels", desc: "Venice to China" },
+      { year: 1347, name: "Black Death reaches Europe", desc: "Bubonic plague pandemic" },
+      { year: 1453, name: "Fall of Constantinople", desc: "Ottoman conquest ends Byzantine Empire" },
+      { year: 1455, name: "Gutenberg Bible printed", desc: "First major book with movable type" },
+      { year: 1492, name: "Columbus reaches Americas", desc: "First voyage across Atlantic" },
+      { year: 1517, name: "Martin Luther's 95 Theses", desc: "Protestant Reformation begins" },
+      { year: 1519, name: "Magellan's expedition begins", desc: "First circumnavigation of Earth" },
+      { year: 1588, name: "Spanish Armada defeated", desc: "English victory under Elizabeth I" },
+      { year: 1607, name: "Jamestown founded", desc: "First permanent English colony in America" },
+      { year: 1618, name: "Thirty Years' War begins", desc: "Conflict in Central Europe" },
+      { year: 1642, name: "English Civil War begins", desc: "Parliament vs. King Charles I" },
+      { year: 1687, name: "Newton's Principia published", desc: "Laws of motion and gravity" },
+      { year: 1776, name: "American Declaration of Independence", desc: "July 4, Continental Congress" },
+      { year: 1789, name: "French Revolution begins", desc: "Storming of the Bastille" },
+      { year: 1804, name: "Napoleon crowns himself Emperor", desc: "First French Empire" },
+      { year: 1815, name: "Battle of Waterloo", desc: "Napoleon's final defeat" },
+      { year: 1825, name: "First passenger railway", desc: "Stockton and Darlington, England" },
+      { year: 1839, name: "First Opium War begins", desc: "Britain vs. Qing China" },
+      { year: 1848, name: "Revolutions of 1848", desc: "Wave of uprisings across Europe" },
+      { year: 1859, name: "Origin of Species published", desc: "Darwin's theory of evolution" },
+      { year: 1861, name: "American Civil War begins", desc: "Fort Sumter fired upon" },
+      { year: 1865, name: "Abolition of slavery in US", desc: "13th Amendment ratified" },
+      { year: 1869, name: "Suez Canal opens", desc: "Connects Mediterranean and Red Sea" },
+      { year: 1876, name: "Alexander Graham Bell patents telephone", desc: "First practical telephone" },
+      { year: 1879, name: "Edison invents practical light bulb", desc: "Long-lasting incandescent lamp" },
+      { year: 1885, name: "Benz Patent-Motorwagen", desc: "First practical automobile" },
+      { year: 1896, name: "First modern Olympics", desc: "Athens, Greece" },
+      { year: 1903, name: "Wright brothers first flight", desc: "Kitty Hawk, North Carolina" },
+      { year: 1914, name: "World War I begins", desc: "Assassination of Archduke Franz Ferdinand" },
+      { year: 1917, name: "Russian Revolution", desc: "Bolsheviks seize power" },
+      { year: 1918, name: "World War I ends", desc: "Armistice of 11 November" },
+      { year: 1922, name: "BBC founded", desc: "British Broadcasting Corporation" },
+      { year: 1929, name: "Wall Street Crash", desc: "Start of Great Depression" },
+      { year: 1933, name: "Hitler becomes Chancellor", desc: "Nazi rise to power in Germany" },
+      { year: 1939, name: "World War II begins", desc: "Germany invades Poland" },
+      { year: 1941, name: "Pearl Harbor attacked", desc: "US enters World War II" },
+      { year: 1944, name: "D-Day landings", desc: "Allied invasion of Normandy" },
+      { year: 1945, name: "Atomic bombs on Hiroshima and Nagasaki", desc: "End of Pacific War" },
+      { year: 1945, name: "United Nations founded", desc: "San Francisco Conference" },
+      { year: 1947, name: "Indian independence", desc: "Partition of India and Pakistan" },
+      { year: 1948, name: "State of Israel declared", desc: "End of British mandate" },
+      { year: 1949, name: "NATO founded", desc: "North Atlantic Treaty Organization" },
+      { year: 1949, name: "People's Republic of China proclaimed", desc: "Mao Zedong declares victory" },
+      { year: 1955, name: "Rosa Parks bus boycott", desc: "Montgomery, Alabama" },
+      { year: 1957, name: "Sputnik 1 launched", desc: "First artificial satellite" },
+      { year: 1961, name: "Berlin Wall built", desc: "Division of East and West Berlin" },
+      { year: 1963, name: "March on Washington", desc: "I Have a Dream speech" },
+      { year: 1969, name: "Apollo 11 moon landing", desc: "First humans on the Moon" },
+      { year: 1975, name: "Fall of Saigon", desc: "End of Vietnam War" },
+      { year: 1989, name: "Berlin Wall falls", desc: "End of Cold War division" },
+      { year: 1991, name: "Soviet Union dissolves", desc: "End of Cold War" },
+      { year: 1991, name: "World Wide Web goes public", desc: "Tim Berners-Lee releases WWW" },
+      { year: 1997, name: "Hong Kong returned to China", desc: "End of British rule" },
+      { year: 2001, name: "9/11 attacks", desc: "Terrorist attacks on US" },
+      { year: 2007, name: "First iPhone released", desc: "Apple smartphone launch" },
+      { year: 2008, name: "Bitcoin whitepaper published", desc: "Satoshi Nakamoto" },
+      { year: 2016, name: "Brexit referendum", desc: "UK votes to leave EU" },
+      { year: 2020, name: "COVID-19 pandemic declared", desc: "WHO global health emergency" },
+      { year: -753, name: "Traditional founding of Rome", desc: "Romulus and Remus legend" },
+      { year: -508, name: "Athenian democracy established", desc: "Cleisthenes' reforms" },
+      { year: -490, name: "Battle of Marathon", desc: "Greeks defeat Persian invasion" },
+      { year: -431, name: "Peloponnesian War begins", desc: "Athens vs. Sparta" },
+      { year: -323, name: "Death of Alexander the Great", desc: "Empire splits among generals" },
+      { year: -44, name: "Cleopatra rules Egypt", desc: "Last Ptolemaic pharaoh" },
+      { year: 330, name: "Constantinople founded", desc: "New capital of Roman Empire" },
+      { year: 395, name: "Roman Empire splits", desc: "East and West permanently divided" },
+      { year: 570, name: "Birth of Muhammad", desc: "Mecca" },
+      { year: 793, name: "Viking raid on Lindisfarne", desc: "Start of Viking Age" },
+      { year: 1000, name: "Leif Erikson reaches North America", desc: "Vinland" },
+      { year: 1206, name: "Genghis Khan unites Mongols", desc: "Mongol Empire founded" },
+      { year: 1325, name: "Tenochtitlan founded", desc: "Aztec capital" },
+      { year: 1324, name: "Mansa Musa's pilgrimage", desc: "Malian emperor to Mecca" },
+      { year: 1431, name: "Joan of Arc burned at stake", desc: "Rouen, France" },
+      { year: 1488, name: "Bartolomeu Dias rounds Cape of Good Hope", desc: "First European to do so" },
+      { year: 1521, name: "Cortés conquers Tenochtitlan", desc: "Fall of Aztec Empire" },
+      { year: 1534, name: "Church of England established", desc: "Henry VIII breaks from Rome" },
+      { year: 1543, name: "Copernicus publishes heliocentric theory", desc: "On the Revolutions" },
+      { year: 1582, name: "Gregorian calendar introduced", desc: "Pope Gregory XIII" },
+      { year: 1600, name: "East India Company founded", desc: "British trade in Asia" },
+      { year: 1620, name: "Mayflower lands at Plymouth", desc: "Pilgrims in New England" },
+      { year: 1688, name: "Glorious Revolution", desc: "William of Orange invades England" },
+      { year: 1756, name: "Seven Years' War begins", desc: "Global conflict" },
+      { year: 1765, name: "Stamp Act passed", desc: "Taxation of American colonies" },
+      { year: 1783, name: "Treaty of Paris", desc: "US independence recognized" },
+      { year: 1799, name: "Napoleon's coup d'état", desc: "Consulate established" },
+      { year: 1831, name: "Darwin's voyage on HMS Beagle", desc: "Five-year expedition" },
+      { year: 1846, name: "Mexican-American War begins", desc: "Annexation of Texas" },
+      { year: 1861, name: "Unification of Italy", desc: "Kingdom of Italy proclaimed" },
+      { year: 1870, name: "Franco-Prussian War", desc: "Unification of Germany" },
+      { year: 1884, name: "Berlin Conference", desc: "Scramble for Africa" },
+      { year: 1898, name: "Spanish-American War", desc: "US gains overseas territories" },
+      { year: 1905, name: "Einstein's annus mirabilis", desc: "Special relativity, E=mc²" },
+      { year: 1911, name: "Chinese Revolution", desc: "Fall of Qing Dynasty" },
+      { year: 1912, name: "Titanic sinks", desc: "North Atlantic" },
+      { year: 1920, name: "League of Nations founded", desc: "First international organization" },
+      { year: 1936, name: "Spanish Civil War begins", desc: "Nationalists vs. Republicans" },
+      { year: 1940, name: "Battle of Britain", desc: "RAF vs. Luftwaffe" },
+      { year: 1942, name: "Battle of Stalingrad begins", desc: "Turning point on Eastern Front" },
+      { year: 1944, name: "Bretton Woods Conference", desc: "IMF and World Bank created" },
+      { year: 1947, name: "Marshall Plan announced", desc: "US aid to rebuild Europe" },
+      { year: 1950, name: "Korean War begins", desc: "North invades South" },
+      { year: 1954, name: "Brown v. Board of Education", desc: "School desegregation" },
+      { year: 1962, name: "Cuban Missile Crisis", desc: "US-Soviet nuclear standoff" },
+      { year: 1965, name: "Voting Rights Act", desc: "Civil rights legislation" },
+      { year: 1979, name: "Iranian Revolution", desc: "Fall of Shah" },
+      { year: 1980, name: "Solidarity founded in Poland", desc: "First non-communist union" },
+      { year: 1986, name: "Chernobyl disaster", desc: "Nuclear accident in Ukraine" },
+      { year: 1990, name: "German reunification", desc: "East and West Germany unite" },
+      { year: 1994, name: "Rwandan genocide", desc: "100 days of violence" },
+      { year: 1999, name: "Euro introduced", desc: "Single European currency" },
+      { year: 2003, name: "Iraq War begins", desc: "US-led invasion" },
+      { year: 2011, name: "Arab Spring", desc: "Pro-democracy uprisings" },
+      { year: -1754, name: "Code of Hammurabi", desc: "Babylonian law code" },
+      { year: -1200, name: "Trojan War (traditional date)", desc: "Greek siege of Troy" },
+      { year: -776, name: "First Olympic Games", desc: "Ancient Greece" },
+      { year: -586, name: "Babylonian exile", desc: "Destruction of First Temple" },
+      { year: -336, name: "Alexander becomes King of Macedon", desc: "Age 20" },
+      { year: -214, name: "Great Wall of China construction", desc: "Qin Dynasty" },
+      { year: 79, name: "Eruption of Mount Vesuvius", desc: "Destruction of Pompeii" },
+      { year: 380, name: "Christianity becomes state religion", desc: "Edict of Thessalonica" },
+      { year: 451, name: "Battle of Chalons", desc: "Huns halted in Gaul" },
+      { year: 529, name: "Justinian Code published", desc: "Roman law codified" },
+      { year: 632, name: "Death of Muhammad", desc: "End of prophethood" },
+      { year: 711, name: "Umayyad conquest of Iberia", desc: "Moors enter Spain" },
+      { year: 843, name: "Treaty of Verdun", desc: "Carolingian Empire divided" },
+      { year: 1054, name: "Great Schism", desc: "East-West Church split" },
+      { year: 1187, name: "Saladin captures Jerusalem", desc: "Third Crusade triggered" },
+      { year: 1291, name: "Fall of Acre", desc: "End of Crusader states" },
+      { year: 1348, name: "Black Death peak in Europe", desc: "Millions die" },
+      { year: 1415, name: "Battle of Agincourt", desc: "English longbow victory" },
+      { year: 1455, name: "Wars of the Roses begin", desc: "Lancaster vs. York" },
+      { year: 1513, name: "Machiavelli's The Prince", desc: "Political philosophy" },
+      { year: 1543, name: "Vesalius' De humani corporis fabrica", desc: "Human anatomy" },
+      { year: 1582, name: "Gregorian calendar adopted", desc: "October 4–15 skipped" },
+      { year: 1644, name: "Qing Dynasty begins in China", desc: "Manchu conquest" },
+      { year: 1689, name: "Peter the Great's westernization", desc: "Russian reforms" },
+      { year: 1740, name: "War of Austrian Succession", desc: "European conflict" },
+      { year: 1783, name: "Montgolfier brothers' balloon flight", desc: "First manned flight" },
+      { year: 1803, name: "Louisiana Purchase", desc: "US buys French territory" },
+      { year: 1821, name: "Greek War of Independence", desc: "From Ottoman rule" },
+      { year: 1842, name: "Treaty of Nanjing", desc: "End of First Opium War" },
+      { year: 1854, name: "Crimean War begins", desc: "Russia vs. Ottoman alliance" },
+      { year: 1869, name: "Transcontinental Railroad completed", desc: "US coast to coast" },
+      { year: 1882, name: "Triple Alliance formed", desc: "Germany, Austria, Italy" },
+      { year: 1893, name: "New Zealand grants women suffrage", desc: "First country" },
+      { year: 1905, name: "Bloody Sunday", desc: "Russian Revolution of 1905" },
+      { year: 1919, name: "Treaty of Versailles", desc: "End of WWI, League of Nations" },
+      { year: 1922, name: "Mussolini's March on Rome", desc: "Fascist takeover of Italy" },
+      { year: 1936, name: "Abyssinia Crisis", desc: "Italy invades Ethiopia" },
+      { year: 1942, name: "Manhattan Project begins", desc: "Atomic bomb development" },
+      { year: 1947, name: "Truman Doctrine", desc: "Containment policy" },
+      { year: 1956, name: "Suez Crisis", desc: "Egypt nationalizes canal" },
+      { year: 1968, name: "Prague Spring", desc: "Czechoslovak reform movement" },
+      { year: 1973, name: "Oil crisis", desc: "OPEC embargo" },
+      { year: 1984, name: "Bhopal disaster", desc: "Chemical plant accident" },
+      { year: 1992, name: "Maastricht Treaty", desc: "European Union founded" },
+      { year: 2004, name: "Facebook launched", desc: "Harvard dorm room" },
+    ];
+
+    const ROUNDS = 10;
+    const MIN_EVENTS = 5;
+    const MAX_EVENTS = 8;
+    const POINTS_PER_CORRECT = 100;
+    const PB_KEY = 'history-timeline-pb';
+
+    function secureRandom(max) {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] % max;
+    }
+
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = secureRandom(i + 1);
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function getRandomEvents(count) {
+      const shuffled = shuffle(EVENTS);
+      const selected = shuffled.slice(0, count);
+      return selected.slice().sort((a, b) => (a.year !== b.year) ? (a.year - b.year) : (a.name.localeCompare(b.name)));
+    }
+
+    function getPB() {
+      try { return parseInt(localStorage.getItem(PB_KEY) || '0', 10); } catch { return 0; }
+    }
+    function setPB(val) {
+      try { localStorage.setItem(PB_KEY, String(val)); } catch (_) {}
+    }
+
+    let audioMuted = false;
+    let currentRound = [];
+    let roundIndex = 0;
+    let score = 0;
+    let draggedCard = null;
+    let draggedFromZone = null;
+
+    const startScreen = document.getElementById('game-start');
+    const playScreen = document.getElementById('game-play');
+    const overScreen = document.getElementById('game-over');
+    const trackEl = document.getElementById('timeline-track');
+
+    document.getElementById('sound-toggle').addEventListener('click', () => {
+      audioMuted = !audioMuted;
+      muteAll(audioMuted);
+      document.getElementById('sound-toggle').textContent = audioMuted ? '🔇 Muted' : '🔊 Sound';
+      playClick();
+    });
+
+    function showScreen(id) {
+      startScreen.classList.add('hidden');
+      playScreen.classList.add('hidden');
+      overScreen.classList.add('hidden');
+      document.getElementById(id).classList.remove('hidden');
+    }
+
+    function createEventCard(event, index) {
+      const div = document.createElement('div');
+      div.className = 'event-card';
+      div.draggable = true;
+      div.dataset.index = String(index);
+      div.dataset.year = String(event.year);
+      div.innerHTML = `
+        <div class="event-year">${event.year < 0 ? event.year + ' BCE' : event.year}</div>
+        <div class="event-name">${event.name}</div>
+        <div class="event-desc">${event.desc}</div>
+      `;
+      div.addEventListener('dragstart', handleDragStart);
+      div.addEventListener('dragend', handleDragEnd);
+      return div;
+    }
+
+    function createDropZone(index) {
+      const div = document.createElement('div');
+      div.className = 'drop-zone';
+      div.dataset.index = String(index);
+      div.dataset.slot = String(index);
+      div.addEventListener('dragover', handleDragOver);
+      div.addEventListener('dragleave', handleDragLeave);
+      div.addEventListener('drop', handleDrop);
+      return div;
+    }
+
+    function handleDragStart(e) {
+      draggedCard = e.target;
+      draggedFromZone = draggedCard.closest('.drop-zone');
+      draggedCard.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/html', draggedCard.outerHTML);
+      e.dataTransfer.setData('text/plain', draggedCard.dataset.index);
+    }
+
+    function handleDragEnd(e) {
+      draggedCard.classList.remove('dragging');
+      draggedCard = null;
+      draggedFromZone = null;
+    }
+
+    function handleDragOver(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      const zone = e.target.closest('.drop-zone');
+      if (zone) zone.classList.add('drag-over');
+    }
+
+    function handleDragLeave(e) {
+      const zone = e.target.closest('.drop-zone');
+      if (zone) zone.classList.remove('drag-over');
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      const zone = e.target.closest('.drop-zone');
+      if (!zone) return;
+      zone.classList.remove('drag-over');
+      if (draggedCard && zone !== draggedFromZone) {
+        const existingCard = zone.querySelector('.event-card');
+        if (draggedFromZone) {
+          draggedFromZone.removeChild(draggedCard);
+          if (existingCard) {
+            draggedFromZone.appendChild(existingCard);
+          } else {
+            draggedFromZone.classList.remove('filled');
+            const ph = document.createElement('span');
+            ph.className = 'text-gray-400 text-sm';
+            ph.textContent = 'Drop here';
+            draggedFromZone.appendChild(ph);
+          }
+        }
+        if (existingCard) {
+          zone.removeChild(existingCard);
+        } else {
+          const ph = zone.querySelector('span');
+          if (ph) zone.removeChild(ph);
+        }
+        zone.appendChild(draggedCard);
+        zone.classList.add('filled');
+      }
+    }
+
+    function buildRound() {
+      const count = MIN_EVENTS + secureRandom(MAX_EVENTS - MIN_EVENTS + 1);
+      currentRound = getRandomEvents(count);
+      const shuffled = shuffle([...currentRound]);
+      trackEl.innerHTML = '';
+      for (let i = 0; i < count; i++) {
+        const zone = createDropZone(i);
+        const ev = shuffled[i];
+        const origIdx = currentRound.findIndex((c) => c.year === ev.year && c.name === ev.name);
+        const card = createEventCard(ev, origIdx);
+        zone.appendChild(card);
+        zone.classList.add('filled');
+        trackEl.appendChild(zone);
+      }
+    }
+
+    function getPlacedOrder() {
+      const zones = Array.from(trackEl.querySelectorAll('.drop-zone'));
+      const order = [];
+      zones.forEach((z) => {
+        const card = z.querySelector('.event-card');
+        if (card) {
+          const idx = parseInt(card.dataset.index, 10);
+          order.push(currentRound[idx]);
+        }
+      });
+      return order;
+    }
+
+    function countCorrect() {
+      const placed = getPlacedOrder();
+      if (placed.length !== currentRound.length) return 0;
+      let correct = 0;
+      for (let i = 0; i < placed.length; i++) {
+        if (placed[i].year === currentRound[i].year && placed[i].name === currentRound[i].name) correct++;
+      }
+      return correct;
+    }
+
+    function showFeedback() {
+      const zones = trackEl.querySelectorAll('.drop-zone');
+      zones.forEach((z, i) => {
+        const card = z.querySelector('.event-card');
+        if (card) {
+          const idx = parseInt(card.dataset.index, 10);
+          const correctEvent = currentRound[i];
+          const placedEvent = currentRound[idx];
+          if (placedEvent.year === correctEvent.year && placedEvent.name === correctEvent.name) {
+            card.classList.add('correct');
+          } else {
+            card.classList.add('wrong');
+          }
+        }
+      });
+    }
+
+    function loadRound() {
+      buildRound();
+      document.getElementById('round-num').textContent = roundIndex + 1;
+      document.getElementById('score-display').textContent = score;
+    }
+
+    function startGame() {
+      initAudio();
+      trackGameStart('history-timeline');
+      roundIndex = 0;
+      score = 0;
+      showScreen('game-play');
+      document.getElementById('pb-display').textContent = getPB();
+      loadRound();
+    }
+
+    function onCheck() {
+      const correct = countCorrect();
+      const pts = correct * POINTS_PER_CORRECT;
+      score += pts;
+      showFeedback();
+      document.getElementById('score-display').textContent = score;
+      document.getElementById('btn-check').disabled = true;
+      if (correct === currentRound.length) playSuccess();
+      else playClick();
+      setTimeout(() => {
+        roundIndex++;
+        if (roundIndex < ROUNDS) {
+          loadRound();
+          document.getElementById('btn-check').disabled = false;
+        } else {
+          endGame();
+        }
+      }, 2000);
+    }
+
+    function endGame() {
+      showScreen('game-over');
+      document.getElementById('final-score').textContent = score;
+      const pb = getPB();
+      if (score > pb) {
+        setPB(score);
+        document.getElementById('final-message').textContent = 'New personal best! 🎉';
+      } else {
+        document.getElementById('final-message').textContent = 'Great effort! Try again to beat your best.';
+      }
+      playGameOver();
+      trackGameOver('history-timeline', score);
+    }
+
+    document.getElementById('btn-start').addEventListener('click', () => {
+      playClick();
+      startGame();
+    });
+
+    document.getElementById('btn-check').addEventListener('click', () => {
+      playClick();
+      onCheck();
+    });
+
+    document.getElementById('btn-replay').addEventListener('click', () => {
+      playClick();
+      startGame();
+    });
+
+    document.getElementById('pb-display').textContent = getPB();
+  </script>
+</body>
+</html>

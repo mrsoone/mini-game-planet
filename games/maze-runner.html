@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Maze Runner Online — Play Instantly | MiniGamePlanet</title>
+  <meta name="description" content="Play Maze Runner free online. Navigate procedurally generated mazes from start to exit. Choose Small, Medium, or Large grids. Timer, fog of war, path trail, and personal best times.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/maze-runner">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+  window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+  gtag('js',new Date());
+  gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500});
+  gtag('config','G-XXXXXXXXXX');
+  </script>
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Free Maze Runner Online | MiniGamePlanet">
+  <meta property="og:description" content="Play Maze Runner free online. Navigate procedurally generated mazes from start to exit. Timer, fog of war, path trail, and personal best times.">
+  <meta property="og:url" content="https://minigameplanet.com/games/maze-runner">
+  <meta property="og:site_name" content="MiniGamePlanet">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"VideoGame","name":"Maze Runner","url":"https://minigameplanet.com/games/maze-runner","description":"Navigate procedurally generated mazes from start to exit. Choose Small, Medium, or Large grids. Timer, fog of war, path trail, and personal best times.","genre":"Puzzle","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+  </script>
+  <style>
+    .hero-grad{background:linear-gradient(135deg,#0891B2 0%,#2563EB 22%,#7C3AED 44%,#E11D48 66%,#EA580C 82%,#D97706 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:heroShift 8s ease-in-out infinite}
+    @keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+    #mazeCanvas{display:block;margin:0 auto;background:#1e293b;border-radius:8px;cursor:default;touch-action:none}
+    .size-btn.active{background:#2563EB;color:#fff;border-color:#2563EB}
+    .toggle-btn.active{background:#059669;color:#fff;border-color:#059669}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;position:relative;" id="game-wrap">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <div>
+          <h1 style="font-size:22px;font-weight:700;margin:0;">🏃 Maze Runner</h1>
+          <p style="font-size:12px;color:#94A3B8;margin:2px 0 0;">Arrow keys / WASD / swipe — reach the exit</p>
+        </div>
+        <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊 Sound</button>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;align-items:center;">
+        <button class="size-btn active" data-size="small" style="padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;border:2px solid #2563EB;background:#2563EB;color:#fff;cursor:pointer;font-family:inherit;">Small 15×15</button>
+        <button class="size-btn" data-size="medium" style="padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">Medium 25×25</button>
+        <button class="size-btn" data-size="large" style="padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">Large 35×35</button>
+        <button class="toggle-btn" id="fog-btn" data-on="false" style="padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">🌫️ Fog: Off</button>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding:8px 12px;background:#F8FAFC;border-radius:8px;flex-wrap:wrap;gap:8px;">
+        <div style="display:flex;align-items:center;gap:16px;">
+          <span style="font-family:'DM Mono',monospace;font-size:14px;font-weight:600;">⏱ <span id="timer">0:00</span></span>
+        </div>
+        <span style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;">🏆 Best: <span id="best">---</span></span>
+      </div>
+      <div style="display:flex;justify-content:center;margin-bottom:12px;">
+        <canvas id="mazeCanvas" width="450" height="450"></canvas>
+      </div>
+      <div id="game-over" style="display:none;text-align:center;padding:20px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;">
+        <div id="go-title" style="font-size:24px;font-weight:700;margin-bottom:4px;">You escaped!</div>
+        <div id="go-sub" style="font-size:14px;color:#64748B;margin-bottom:12px;"></div>
+        <button id="play-again" style="padding:10px 28px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">▶ Play Again</button>
+        <p style="font-size:11px;color:#94A3B8;margin-top:6px;">Press Enter or Space to restart</p>
+      </div>
+    </div>
+  </main>
+
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play Maze Runner</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>Maze Runner is a classic puzzle game that challenges your spatial awareness and pathfinding skills. Each game presents a freshly generated maze using a recursive backtracking algorithm, ensuring no two mazes are ever the same. Your goal is simple: navigate from the start cell in the top-left corner to the exit in the bottom-right corner as quickly as possible. The game tracks your time and stores your personal best for each grid size, so you can compete against yourself and steadily improve.</p>
+
+      <h3 class="text-lg font-bold text-slate-900 mt-6">How to Play</h3>
+      <p>Use the arrow keys or WASD to move your character through the maze. On touch devices, swipe in the direction you want to go. You can only move through open passages — walls block your path. The timer starts the moment you make your first move and stops when you reach the exit. Choose from three grid sizes: Small (15×15 cells), Medium (25×25), or Large (35×35). Larger mazes offer more complex paths and longer solve times.</p>
+      <p>Toggle the fog of war to add extra challenge: when enabled, you only see cells near your current position, forcing you to rely on memory and exploration. The path trail shows every cell you have visited in a subtle highlight, helping you avoid retracing your steps and find more efficient routes.</p>
+
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Maze Generation: Recursive Backtracking</h3>
+      <p>The mazes are generated using recursive backtracking, also known as the depth-first search maze algorithm. The algorithm starts with a grid where every cell is surrounded by walls. It picks a starting cell, then randomly chooses an unvisited neighbor, removes the wall between them, and recursively continues from that neighbor. When a cell has no unvisited neighbors, the algorithm backtracks to the previous cell and tries other directions. This process creates a perfect maze — one with exactly one path between any two cells — with long, winding corridors and no isolated loops. The algorithm uses <code>crypto.getRandomValues</code> for cryptographically secure randomness, ensuring fair and unpredictable maze layouts.</p>
+
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Strategy &amp; Tips</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Follow the right-hand rule.</strong> Keeping your hand on the right wall (or left) as you walk will eventually lead you through any simply connected maze. It is not always the shortest path, but it guarantees you will not get lost.</li>
+        <li><strong>Memorize dead ends.</strong> When you hit a dead end, mentally mark it and avoid retracing that path. The trail helps, but building a mental map speeds up subsequent attempts.</li>
+        <li><strong>Try fog of war for a harder challenge.</strong> With fog enabled, you must remember the layout as you explore. This mode sharpens your spatial memory.</li>
+        <li><strong>Start with Small, then scale up.</strong> Master the 15×15 grid before tackling Medium or Large. The same navigation skills apply, but larger mazes require more patience and planning.</li>
+        <li><strong>Minimize backtracking.</strong> The fastest times come from taking efficient routes. If you find yourself looping, pause and plan a better path.</li>
+      </ul>
+
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Frequently Asked Questions</h3>
+      <h4 class="font-semibold text-slate-800">Is every maze solvable?</h4>
+      <p>Yes. Recursive backtracking produces perfect mazes with exactly one path between any two cells. There is always a route from start to exit.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">How are personal best times stored?</h4>
+      <p>Your best time for each grid size (Small, Medium, Large) is saved in your browser's localStorage. It persists between sessions until you clear site data.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">What does fog of war do?</h4>
+      <p>When fog of war is on, only cells within a short distance of your current position are visible. The rest of the maze is hidden until you explore it. This adds a memory and exploration challenge.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">Can I play on mobile?</h4>
+      <p>Yes. Swipe in any direction to move. The canvas scales to fit your screen, and touch controls are fully supported.</p>
+
+      <p class="mt-6">Play Maze Runner free right here in your browser — no downloads, no accounts. Pick a grid size, enable fog of war if you dare, and race to the exit.</p>
+    </div>
+  </article>
+
+  <div id="related-games"></div>
+  <div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+  document.addEventListener('click', () => initAudio(), { once: true });
+  initToolPage('maze-runner');
+  initConsent();
+  trackGameView('maze-runner', 'Puzzle');
+
+  const SIZES = { small: 15, medium: 25, large: 35 };
+  const FOG_RADIUS = 2;
+
+  let rows, cols, walls, player, visited, pathTrail, fogOn, sizeKey, gameActive, gameStarted, timerInterval, seconds;
+  let bestTimes = { small: null, medium: null, large: null };
+
+  const canvas = document.getElementById('mazeCanvas');
+  const ctx = canvas.getContext('2d');
+  const timerEl = document.getElementById('timer');
+  const bestEl = document.getElementById('best');
+  const goEl = document.getElementById('game-over');
+  const goSub = document.getElementById('go-sub');
+
+  try {
+    const stored = localStorage.getItem('maze-runner-best');
+    if (stored) bestTimes = JSON.parse(stored);
+  } catch (_) {}
+
+  document.getElementById('sound-btn').addEventListener('click', () => {
+    initAudio();
+    const m = muteAll();
+    document.getElementById('sound-btn').textContent = m ? '🔇 Sound' : '🔊 Sound';
+  });
+
+  document.querySelectorAll('.size-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      sizeKey = btn.dataset.size;
+      document.querySelectorAll('.size-btn').forEach(b => {
+        b.style.background = '#fff'; b.style.color = '#334155'; b.style.borderColor = '#E5E7EB';
+        b.classList.remove('active');
+      });
+      btn.style.background = '#2563EB'; btn.style.color = '#fff'; btn.style.borderColor = '#2563EB';
+      btn.classList.add('active');
+      newGame();
+    });
+  });
+
+  document.getElementById('fog-btn').addEventListener('click', () => {
+    fogOn = !fogOn;
+    const btn = document.getElementById('fog-btn');
+    btn.dataset.on = fogOn;
+    btn.textContent = fogOn ? '🌫️ Fog: On' : '🌫️ Fog: Off';
+    if (fogOn) btn.classList.add('active');
+    else btn.classList.remove('active');
+    btn.style.background = fogOn ? '#059669' : '#fff';
+    btn.style.color = fogOn ? '#fff' : '#334155';
+    btn.style.borderColor = fogOn ? '#059669' : '#E5E7EB';
+    draw();
+  });
+
+  document.getElementById('play-again').addEventListener('click', newGame);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (!gameActive) newGame(); }
+  });
+
+  function shuffle(arr) {
+    const rand = new Uint32Array(arr.length);
+    crypto.getRandomValues(rand);
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = rand[i] % (i + 1);
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+  }
+
+  function generateMaze() {
+    walls = Array.from({ length: rows }, () =>
+      Array.from({ length: cols }, () => ({ n: true, s: true, e: true, w: true }))
+    );
+    const visited = Array.from({ length: rows }, () => Array(cols).fill(false));
+
+    function carve(r, c) {
+      visited[r][c] = true;
+      const dirs = [{ dr: -1, dc: 0 }, { dr: 1, dc: 0 }, { dr: 0, dc: -1 }, { dr: 0, dc: 1 }];
+      shuffle(dirs);
+      for (const d of dirs) {
+        const nr = r + d.dr, nc = c + d.dc;
+        if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && !visited[nr][nc]) {
+          if (d.dr === -1) { walls[r][c].n = false; walls[nr][nc].s = false; }
+          if (d.dr === 1) { walls[r][c].s = false; walls[nr][nc].n = false; }
+          if (d.dc === -1) { walls[r][c].w = false; walls[nr][nc].e = false; }
+          if (d.dc === 1) { walls[r][c].e = false; walls[nr][nc].w = false; }
+          carve(nr, nc);
+        }
+      }
+    }
+    carve(0, 0);
+  }
+
+  function newGame() {
+    sizeKey = sizeKey || 'small';
+    rows = cols = SIZES[sizeKey];
+    generateMaze();
+    player = { r: 0, c: 0 };
+    visited = Array.from({ length: rows }, () => Array(cols).fill(false));
+    visited[0][0] = true;
+    pathTrail = [[0, 0]];
+    fogOn = document.getElementById('fog-btn').dataset.on === 'true';
+    gameActive = true;
+    gameStarted = false;
+    seconds = 0;
+    clearInterval(timerInterval);
+    timerEl.textContent = '0:00';
+    goEl.style.display = 'none';
+    updateBest();
+    resizeCanvas();
+    draw();
+  }
+
+  function resizeCanvas() {
+    const max = Math.min(450, window.innerWidth - 48);
+    const cellSize = Math.floor(max / Math.max(rows, cols));
+    const size = cellSize * Math.max(rows, cols);
+    canvas.width = size;
+    canvas.height = size;
+  }
+
+  function cellSize() {
+    return canvas.width / Math.max(rows, cols);
+  }
+
+  function move(dr, dc) {
+    if (!gameActive) return;
+    const nr = player.r + dr, nc = player.c + dc;
+    if (nr < 0 || nr >= rows || nc < 0 || nc >= cols) return;
+    const w = walls[player.r][player.c];
+    if (dr === -1 && w.n) return;
+    if (dr === 1 && w.s) return;
+    if (dc === -1 && w.w) return;
+    if (dc === 1 && w.e) return;
+
+    if (!gameStarted) {
+      gameStarted = true;
+      trackGameStart('maze-runner', 'Puzzle');
+      timerInterval = setInterval(() => {
+        seconds++;
+        const m = Math.floor(seconds / 60), s = seconds % 60;
+        timerEl.textContent = `${m}:${String(s).padStart(2, '0')}`;
+      }, 1000);
+    }
+
+    player = { r: nr, c: nc };
+    visited[nr][nc] = true;
+    pathTrail.push([nr, nc]);
+    if (typeof playClick === 'function') playClick();
+
+    if (nr === rows - 1 && nc === cols - 1) {
+      gameActive = false;
+      clearInterval(timerInterval);
+      if (typeof playSuccess === 'function') playSuccess();
+      trackGameOver('maze-runner', 'Puzzle', { time: seconds });
+      const prev = bestTimes[sizeKey];
+      if (prev === null || seconds < prev) {
+        bestTimes[sizeKey] = seconds;
+        try { localStorage.setItem('maze-runner-best', JSON.stringify(bestTimes)); } catch (_) {}
+      }
+      goEl.style.display = 'block';
+      goSub.textContent = `Time: ${formatTime(seconds)}${prev !== null && seconds < prev ? ' — New best!' : ''}`;
+    }
+    draw();
+  }
+
+  function formatTime(s) {
+    const m = Math.floor(s / 60), sec = s % 60;
+    return `${m}:${String(sec).padStart(2, '0')}`;
+  }
+
+  function updateBest() {
+    const b = bestTimes[sizeKey || 'small'];
+    bestEl.textContent = b !== null ? formatTime(b) : '---';
+  }
+
+  function isVisible(r, c) {
+    if (!fogOn) return true;
+    return Math.abs(r - player.r) <= FOG_RADIUS && Math.abs(c - player.c) <= FOG_RADIUS;
+  }
+
+  function draw() {
+    const cs = cellSize();
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        if (!isVisible(r, c)) {
+          ctx.fillStyle = '#0f172a';
+          ctx.fillRect(c * cs, r * cs, cs + 1, cs + 1);
+          continue;
+        }
+        const w = walls[r][c];
+        if (visited[r][c]) {
+          ctx.fillStyle = '#334155';
+          ctx.fillRect(c * cs, r * cs, cs + 1, cs + 1);
+        }
+        ctx.strokeStyle = '#64748b';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        if (w.n) { ctx.moveTo(c * cs, r * cs); ctx.lineTo((c + 1) * cs, r * cs); }
+        if (w.s) { ctx.moveTo(c * cs, (r + 1) * cs); ctx.lineTo((c + 1) * cs, (r + 1) * cs); }
+        if (w.w) { ctx.moveTo(c * cs, r * cs); ctx.lineTo(c * cs, (r + 1) * cs); }
+        if (w.e) { ctx.moveTo((c + 1) * cs, r * cs); ctx.lineTo((c + 1) * cs, (r + 1) * cs); }
+        ctx.stroke();
+      }
+    }
+
+    for (const [r, c] of pathTrail) {
+      if (!isVisible(r, c)) continue;
+      ctx.fillStyle = 'rgba(59, 130, 246, 0.35)';
+      ctx.fillRect(c * cs + 2, r * cs + 2, cs - 2, cs - 2);
+    }
+
+    ctx.fillStyle = '#22c55e';
+    ctx.fillRect(0, 0, cs - 2, cs - 2);
+    ctx.fillStyle = '#ef4444';
+    ctx.fillRect((cols - 1) * cs + 2, (rows - 1) * cs + 2, cs - 2, cs - 2);
+
+    ctx.fillStyle = '#3b82f6';
+    ctx.beginPath();
+    ctx.arc((player.c + 0.5) * cs, (player.r + 0.5) * cs, cs * 0.35, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (!gameActive) return;
+    switch (e.key) {
+      case 'ArrowUp': case 'w': case 'W': e.preventDefault(); move(-1, 0); break;
+      case 'ArrowDown': case 's': case 'S': e.preventDefault(); move(1, 0); break;
+      case 'ArrowLeft': case 'a': case 'A': e.preventDefault(); move(0, -1); break;
+      case 'ArrowRight': case 'd': case 'D': e.preventDefault(); move(0, 1); break;
+    }
+  });
+
+  let touchStart = null;
+  canvas.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    touchStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  }, { passive: false });
+  canvas.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    if (!touchStart || !e.changedTouches[0]) return;
+    const end = e.changedTouches[0];
+    const dx = end.clientX - touchStart.x, dy = end.clientY - touchStart.y;
+    const thresh = 30;
+    if (Math.abs(dx) > Math.abs(dy)) {
+      if (dx > thresh) move(0, 1);
+      else if (dx < -thresh) move(0, -1);
+    } else {
+      if (dy > thresh) move(1, 0);
+      else if (dy < -thresh) move(-1, 0);
+    }
+    touchStart = null;
+  }, { passive: false });
+
+  newGame();
+  </script>
+</body>
+</html>

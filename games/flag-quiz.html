@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flag Quiz - Test Your World Flag Knowledge | Mini Game Planet</title>
+  <meta name="description" content="Challenge yourself with our free flag identification quiz. Identify 50+ country flags from Europe, Asia, Americas, Africa, and Oceania. Track your score and beat your personal best!">
+  <link rel="canonical" href="https://minigameplanet.com/games/flag-quiz.html">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="Flag Quiz - Test Your World Flag Knowledge">
+  <meta property="og:description" content="Identify country flags from around the world. 50+ flags, region filters, streak bonuses, and timed rounds.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/flag-quiz.html">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    .flag-container { aspect-ratio: 3/2; max-width: 280px; margin: 0 auto; border: 1px solid #e5e7eb; overflow: hidden; }
+    
+    /* Flag patterns - horizontal stripes */
+    .flag-france { display: flex; height: 100%; }
+    .flag-france .stripe { flex: 1; }
+    .flag-france .s1 { background: #002395; }
+    .flag-france .s2 { background: #fff; }
+    .flag-france .s3 { background: #ED2939; }
+    
+    .flag-germany { display: flex; flex-direction: column; height: 100%; }
+    .flag-germany .stripe { flex: 1; }
+    .flag-germany .s1 { background: #000; }
+    .flag-germany .s2 { background: #DD0000; }
+    .flag-germany .s3 { background: #FFCE00; }
+    
+    .flag-italy { display: flex; height: 100%; }
+    .flag-italy .stripe { flex: 1; }
+    .flag-italy .s1 { background: #009246; }
+    .flag-italy .s2 { background: #fff; }
+    .flag-italy .s3 { background: #CE2B37; }
+    
+    .flag-ireland { display: flex; height: 100%; }
+    .flag-ireland .stripe { flex: 1; }
+    .flag-ireland .s1 { background: #169B62; }
+    .flag-ireland .s2 { background: #fff; }
+    .flag-ireland .s3 { background: #FF883E; }
+    
+    .flag-netherlands { display: flex; flex-direction: column; height: 100%; }
+    .flag-netherlands .stripe { flex: 1; }
+    .flag-netherlands .s1 { background: #AE1C28; }
+    .flag-netherlands .s2 { background: #fff; }
+    .flag-netherlands .s3 { background: #21468B; }
+    
+    .flag-belgium { display: flex; height: 100%; }
+    .flag-belgium .stripe { flex: 1; }
+    .flag-belgium .s1 { background: #000; }
+    .flag-belgium .s2 { background: #FDDA24; }
+    .flag-belgium .s3 { background: #ED2939; }
+    
+    .flag-russia { display: flex; flex-direction: column; height: 100%; }
+    .flag-russia .stripe { flex: 1; }
+    .flag-russia .s1 { background: #fff; }
+    .flag-russia .s2 { background: #0039A6; }
+    .flag-russia .s3 { background: #D52B1E; }
+    
+    .flag-poland { display: flex; flex-direction: column; height: 100%; }
+    .flag-poland .stripe { flex: 1; }
+    .flag-poland .s1 { background: #fff; }
+    .flag-poland .s2 { background: #DC143C; }
+    
+    .flag-ukraine { display: flex; flex-direction: column; height: 100%; }
+    .flag-ukraine .stripe { flex: 1; }
+    .flag-ukraine .s1 { background: #0057B7; }
+    .flag-ukraine .s2 { background: #FFD700; }
+    
+    .flag-austria { display: flex; flex-direction: column; height: 100%; }
+    .flag-austria .stripe { flex: 1; }
+    .flag-austria .s1 { background: #ED2939; }
+    .flag-austria .s2 { background: #fff; }
+    .flag-austria .s3 { background: #ED2939; }
+    
+    .flag-switzerland { background: #FF0000; display: flex; align-items: center; justify-content: center; height: 100%; }
+    .flag-switzerland .cross { width: 40%; height: 40%; background: #fff; }
+    
+    .flag-sweden { background: #006AA7; position: relative; height: 100%; }
+    .flag-sweden::before { content: ''; position: absolute; left: 0; top: 0; width: 100%; height: 20%; background: #FECC00; top: 40%; }
+    .flag-sweden::after { content: ''; position: absolute; left: 0; top: 0; width: 16%; height: 100%; background: #FECC00; left: 28%; }
+    
+    .flag-norway { background: #ED2939; position: relative; height: 100%; }
+    .flag-norway::before { content: ''; position: absolute; left: 0; top: 40%; width: 100%; height: 20%; background: #fff; }
+    .flag-norway::after { content: ''; position: absolute; left: 28%; top: 0; width: 16%; height: 100%; background: #fff; }
+    .flag-norway .blue-v { position: absolute; left: 30%; top: 0; width: 8%; height: 100%; background: #00205B; z-index: 1; }
+    .flag-norway .blue-h { position: absolute; left: 0; top: 42%; width: 100%; height: 12%; background: #00205B; z-index: 1; }
+    
+    .flag-denmark { background: #C60C30; position: relative; height: 100%; }
+    .flag-denmark::before { content: ''; position: absolute; left: 0; top: 0; width: 100%; height: 18%; background: #fff; top: 41%; }
+    .flag-denmark::after { content: ''; position: absolute; left: 0; top: 0; width: 14%; height: 100%; background: #fff; left: 28%; }
+    
+    .flag-finland { background: #fff; position: relative; height: 100%; }
+    .flag-finland::before { content: ''; position: absolute; left: 0; top: 0; width: 100%; height: 18%; background: #003580; top: 41%; }
+    .flag-finland::after { content: ''; position: absolute; left: 0; top: 0; width: 14%; height: 100%; background: #003580; left: 28%; }
+    
+    .flag-spain { display: flex; flex-direction: column; height: 100%; }
+    .flag-spain .red { flex: 1; background: #C60B1E; }
+    .flag-spain .yellow { flex: 2; background: #FFC400; }
+    
+    .flag-portugal { display: flex; height: 100%; }
+    .flag-portugal .green { flex: 2; background: #006600; }
+    .flag-portugal .red { flex: 3; background: #FF0000; position: relative; }
+    .flag-portugal .red::before { content: ''; position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); width: 60%; height: 60%; background: #FFD900; border-radius: 50%; }
+    
+    .flag-uk { background: #012169; position: relative; height: 100%; }
+    .flag-uk .white-diag { position: absolute; width: 100%; height: 100%; background: linear-gradient(45deg, transparent 45%, #fff 45%, #fff 55%, transparent 55%); }
+    .flag-uk .red-diag { position: absolute; width: 100%; height: 100%; background: linear-gradient(45deg, transparent 48%, #C8102E 48%, #C8102E 52%, transparent 52%); }
+    
+    .flag-greece { display: flex; flex-direction: column; height: 100%; }
+    .flag-greece .stripe { flex: 1; }
+    .flag-greece .blue { background: #0D5EAF; }
+    .flag-greece .white { background: #fff; }
+    
+    .flag-czech { display: flex; height: 100%; }
+    .flag-czech .white { flex: 1; background: #fff; }
+    .flag-czech .red { flex: 1; background: #D7141A; }
+    
+    .flag-romania { display: flex; height: 100%; }
+    .flag-romania .stripe { flex: 1; }
+    .flag-romania .s1 { background: #002B7F; }
+    .flag-romania .s2 { background: #FCD116; }
+    .flag-romania .s3 { background: #CE1126; }
+    
+    .flag-hungary { display: flex; flex-direction: column; height: 100%; }
+    .flag-hungary .stripe { flex: 1; }
+    .flag-hungary .s1 { background: #477050; }
+    .flag-hungary .s2 { background: #fff; }
+    .flag-hungary .s3 { background: #CE1126; }
+    
+    .flag-japan { background: #fff; display: flex; align-items: center; justify-content: center; height: 100%; }
+    .flag-japan .circle { width: 36%; height: 36%; background: #BC002D; border-radius: 50%; }
+    
+    .flag-china { background: #DE2910; position: relative; height: 100%; }
+    .flag-china .star { position: absolute; color: #FFDE00; font-size: 24px; top: 8%; left: 15%; }
+    
+    .flag-south-korea { background: #fff; display: flex; align-items: center; justify-content: center; height: 100%; position: relative; }
+    .flag-south-korea .center { width: 50%; height: 50%; background: linear-gradient(135deg, #CD2E3A 50%, #0047A0 50%); border-radius: 50%; }
+    
+    .flag-india { display: flex; flex-direction: column; height: 100%; }
+    .flag-india .saffron { flex: 1; background: #FF9933; }
+    .flag-india .white { flex: 1; background: #fff; }
+    .flag-india .green { flex: 1; background: #138808; }
+    
+    .flag-thailand { display: flex; flex-direction: column; height: 100%; }
+    .flag-thailand .stripe { flex: 1; }
+    .flag-thailand .s1 { background: #A51931; }
+    .flag-thailand .s2 { background: #fff; }
+    .flag-thailand .s3 { background: #002D62; }
+    
+    .flag-indonesia { display: flex; flex-direction: column; height: 100%; }
+    .flag-indonesia .stripe { flex: 1; }
+    .flag-indonesia .s1 { background: #CE1126; }
+    .flag-indonesia .s2 { background: #fff; }
+    
+    .flag-vietnam { background: #DA251D; display: flex; align-items: center; justify-content: center; height: 100%; }
+    .flag-vietnam .star { color: #FFFF00; font-size: 48px; }
+    
+    .flag-malaysia { display: flex; flex-direction: column; height: 100%; }
+    .flag-malaysia .canton { flex: 0 0 35%; background: #010066; }
+    .flag-malaysia .stripes { flex: 1; display: flex; flex-direction: column; }
+    .flag-malaysia .stripe { flex: 1; }
+    .flag-malaysia .red { background: #C00; }
+    .flag-malaysia .white { background: #fff; }
+    
+    .flag-singapore { display: flex; flex-direction: column; height: 100%; }
+    .flag-singapore .red { flex: 1; background: #ED2939; }
+    .flag-singapore .white { flex: 1; background: #fff; }
+    
+    .flag-philippines { display: flex; height: 100%; }
+    .flag-philippines .blue { flex: 1; background: #0038A8; }
+    .flag-philippines .red { flex: 1; background: #CE1126; }
+    .flag-philippines .white { flex: 1; background: #fff; }
+    
+    .flag-bangladesh { background: #006A4E; display: flex; align-items: center; justify-content: center; height: 100%; }
+    .flag-bangladesh .circle { width: 40%; height: 40%; background: #F42A41; border-radius: 50%; margin-left: -8%; }
+    
+    .flag-pakistan { background: #01411C; display: flex; align-items: center; justify-content: flex-start; height: 100%; padding-left: 25%; }
+    .flag-pakistan .moon { width: 25%; height: 25%; border-radius: 50%; background: #fff; }
+    
+    .flag-sri-lanka { background: #FFB700; position: relative; height: 100%; }
+    .flag-sri-lanka .green { position: absolute; right: 0; top: 0; width: 33%; height: 100%; background: #005F34; }
+    
+    .flag-israel { background: #fff; border: 1px solid #0038B8; display: flex; align-items: center; justify-content: center; height: 100%; }
+    .flag-israel .star { color: #0038B8; font-size: 32px; }
+    
+    .flag-saudi-arabia { background: #006C35; display: flex; align-items: center; justify-content: center; height: 100%; }
+    .flag-saudi-arabia .text { color: #fff; font-size: 14px; font-weight: bold; }
+    
+    .flag-uae { display: flex; height: 100%; }
+    .flag-uae .red { flex: 0 0 25%; background: #FF0000; }
+    .flag-uae .stripes { flex: 1; display: flex; flex-direction: column; }
+    .flag-uae .green { flex: 1; background: #00732F; }
+    .flag-uae .white { flex: 1; background: #fff; }
+    .flag-uae .black { flex: 1; background: #000; }
+    
+    .flag-usa { display: flex; flex-direction: column; height: 100%; }
+    .flag-usa .stars { flex: 7; background: #3C3B6E; display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(5, 1fr); }
+    .flag-usa .stars span { color: #fff; font-size: 8px; display: flex; align-items: center; justify-content: center; }
+    .flag-usa .stripes { flex: 6; display: flex; flex-direction: column; }
+    .flag-usa .red { flex: 1; background: #B22234; }
+    .flag-usa .white { flex: 1; background: #fff; }
+    
+    .flag-canada { background: #FF0000; display: flex; align-items: center; justify-content: center; height: 100%; }
+    .flag-canada .white { width: 30%; height: 50%; background: #fff; }
+    
+    .flag-mexico { display: flex; height: 100%; }
+    .flag-mexico .green { flex: 1; background: #006847; }
+    .flag-mexico .white { flex: 1; background: #fff; display: flex; align-items: center; justify-content: center; }
+    .flag-mexico .red { flex: 1; background: #CE1126; }
+    
+    .flag-brazil { background: #009739; display: flex; align-items: center; justify-content: center; height: 100%; }
+    .flag-brazil .diamond { width: 60%; height: 60%; background: #FEDD00; clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
+    
+    .flag-argentina { display: flex; flex-direction: column; height: 100%; }
+    .flag-argentina .light-blue { flex: 1; background: #75AADB; }
+    .flag-argentina .white { flex: 1; background: #fff; display: flex; align-items: center; justify-content: center; }
+    .flag-argentina .sun { width: 20%; height: 20%; background: #F6B600; border-radius: 50%; }
+    
+    .flag-chile { display: flex; height: 100%; }
+    .flag-chile .blue { flex: 0 0 33%; background: #0039A6; }
+    .flag-chile .white { flex: 1; background: #fff; }
+    .flag-chile .red { flex: 1; background: #D52B1E; }
+    
+    .flag-colombia { display: flex; flex-direction: column; height: 100%; }
+    .flag-colombia .yellow { flex: 2; background: #FCD116; }
+    .flag-colombia .blue { flex: 1; background: #003087; }
+    .flag-colombia .red { flex: 1; background: #CE1126; }
+    
+    .flag-peru { display: flex; height: 100%; }
+    .flag-peru .red { flex: 1; background: #D91023; }
+    .flag-peru .white { flex: 1; background: #fff; }
+    
+    .flag-venezuela { display: flex; flex-direction: column; height: 100%; }
+    .flag-venezuela .yellow { flex: 1; background: #FCD116; }
+    .flag-venezuela .blue { flex: 1; background: #00247D; }
+    .flag-venezuela .red { flex: 1; background: #CF142B; }
+    
+    .flag-cuba { display: flex; height: 100%; }
+    .flag-cuba .blue { flex: 0 0 30%; background: #002A8F; }
+    .flag-cuba .stripes { flex: 1; display: flex; flex-direction: column; }
+    .flag-cuba .stripe { flex: 1; }
+    .flag-cuba .stripe.blue { background: #002A8F; }
+    .flag-cuba .stripe.white { background: #fff; }
+    
+    .flag-jamaica { background: #000; position: relative; height: 100%; }
+    .flag-jamaica::before { content: ''; position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: linear-gradient(135deg, transparent 45%, #009B3A 45%, #009B3A 55%, transparent 55%); }
+    .flag-jamaica::after { content: ''; position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: linear-gradient(-135deg, transparent 45%, #FED100 45%, #FED100 55%, transparent 55%); }
+    
+    .flag-south-africa { display: flex; flex-direction: column; height: 100%; }
+    .flag-south-africa .stripe { flex: 1; }
+    .flag-south-africa .green { background: #007749; }
+    .flag-south-africa .yellow { background: #FFB81C; }
+    .flag-south-africa .red { background: #E03C31; }
+    .flag-south-africa .white { background: #fff; }
+    .flag-south-africa .blue { background: #001489; }
+    .flag-south-africa .black { background: #000; }
+    
+    .flag-nigeria { display: flex; height: 100%; }
+    .flag-nigeria .green { flex: 1; background: #008751; }
+    .flag-nigeria .white { flex: 1; background: #fff; }
+    
+    .flag-egypt { display: flex; flex-direction: column; height: 100%; }
+    .flag-egypt .stripe { flex: 1; }
+    .flag-egypt .red { background: #CE1126; }
+    .flag-egypt .white { background: #fff; }
+    .flag-egypt .black { background: #000; }
+    
+    .flag-kenya { display: flex; flex-direction: column; height: 100%; }
+    .flag-kenya .black { flex: 1; background: #000; }
+    .flag-kenya .red { flex: 1; background: #BB0000; }
+    .flag-kenya .green { flex: 1; background: #006600; }
+    
+    .flag-morocco { background: #C1272D; display: flex; align-items: center; justify-content: center; height: 100%; }
+    .flag-morocco .star { color: #006233; font-size: 40px; }
+    
+    .flag-ghana { display: flex; flex-direction: column; height: 100%; }
+    .flag-ghana .red { flex: 1; background: #CE1126; }
+    .flag-ghana .yellow { flex: 1; background: #FCD116; }
+    .flag-ghana .green { flex: 1; background: #006B3F; }
+    
+    .flag-ethiopia { display: flex; flex-direction: column; height: 100%; }
+    .flag-ethiopia .green { flex: 1; background: #078930; }
+    .flag-ethiopia .yellow { flex: 1; background: #FCDD09; }
+    .flag-ethiopia .red { flex: 1; background: #DA121A; }
+    
+    .flag-algeria { display: flex; height: 100%; }
+    .flag-algeria .green { flex: 1; background: #006233; }
+    .flag-algeria .white { flex: 1; background: #fff; }
+    
+    .flag-australia { background: #00008B; position: relative; height: 100%; }
+    .flag-australia .stars { position: absolute; color: #fff; font-size: 12px; }
+    
+    .flag-new-zealand { background: #00247D; position: relative; height: 100%; }
+    .flag-new-zealand .stars { position: absolute; color: #fff; font-size: 10px; }
+    
+    .flag-fiji { background: #002868; display: flex; flex-direction: column; height: 100%; }
+    .flag-fiji .canton { flex: 0 0 35%; background: #fff; }
+    .flag-fiji .blue { flex: 1; background: #002868; }
+    
+    .flag-papua-new-guinea { display: flex; height: 100%; }
+    .flag-papua-new-guinea .black { flex: 1; background: #000; }
+    .flag-papua-new-guinea .red { flex: 1; background: #CE1126; }
+  </style>
+  
+  <!-- GA4 Consent Defaults -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    window.gaConsent = { analytics: true, ads: false };
+  </script>
+  
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Flag Quiz",
+    "description": "Free flag identification trivia game. Identify 50+ country flags from around the world with region filters, streak bonuses, and timed rounds.",
+    "applicationCategory": "Game",
+    "operatingSystem": "Any",
+    "url": "https://minigameplanet.com/games/flag-quiz.html"
+  }
+  </script>
+  
+  <!-- AdSense (commented) -->
+  <!--
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXX" crossorigin="anonymous"></script>
+  -->
+</head>
+<body class="min-h-screen text-gray-800">
+  <!-- Standard imports -->
+  <script src="/js/audio.js"></script>
+  <script src="/js/shared.js"></script>
+  <script src="/js/consent.js"></script>
+  <script src="/js/analytics.js"></script>
+
+  <nav id="nav-container" class="bg-white/80 backdrop-blur border-b border-gray-200 sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="font-semibold text-lg">Mini Game Planet</a>
+      <div class="flex items-center gap-4">
+        <button id="sound-toggle" class="p-2 rounded-lg hover:bg-gray-100" title="Toggle sound" aria-label="Toggle sound">
+          <span id="sound-icon">🔊</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    <article class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 mb-8">
+      <header class="mb-6">
+        <h1 class="text-3xl md:text-4xl font-bold mb-2">Flag Quiz: Test Your World Flag Knowledge</h1>
+        <p class="text-gray-600 font-mono text-sm">Identify country flags from around the globe</p>
+      </header>
+
+      <div class="prose prose-gray max-w-none mb-8">
+        <p>How well do you know the flags of the world? Our free flag quiz challenges you to identify country flags from six continents. Whether you're a geography enthusiast or simply curious about world cultures, this trivia game offers an engaging way to learn and test your knowledge.</p>
+        
+        <p>Each round consists of 20 questions, with 10 seconds to answer each one. Correct answers earn points, and consecutive correct answers build a streak bonus—so stay focused! You can filter questions by region: play globally or focus on Europe, Asia, the Americas, Africa, or Oceania. Over 50 major country flags are included, from the iconic stars and stripes of the United States to the rising sun of Japan, the maple leaf of Canada, and the green and gold of Australia.</p>
+        
+        <p>Flags are rendered using CSS and SVG-style divs, approximating real flag designs with colored stripes, circles, and geometric patterns. This approach keeps the game lightweight and fast-loading while still providing recognizable representations. Your personal best score is saved locally, so you can track your progress and compete against yourself over time.</p>
+        
+        <p>The game uses cryptographically secure random number generation via <code class="font-mono text-sm bg-gray-100 px-1 rounded">crypto.getRandomValues()</code> to ensure fair, unpredictable question selection. Sound effects can be toggled on or off for a personalized experience.</p>
+        
+        <p>Learning to recognize national flags is more than a party trick—it builds cultural awareness and geographic literacy. Many flags tell stories: the tricolor of France reflects revolutionary ideals, Japan's hinomaru evokes the rising sun, and the stars and stripes of the USA represent states and original colonies. Our quiz covers flags from every inhabited continent, including European classics like Germany and Italy, Asian powerhouses such as China and India, African nations from Egypt to South Africa, and island nations across Oceania.</p>
+        
+        <p>Whether you're preparing for a geography test, brushing up before a trip, or just enjoy a quick mental challenge, our flag quiz delivers. No sign-up required—just click Start and begin. Ready to prove your flag expertise? Start a round and see how many you can identify!</p>
+      </div>
+
+      <!-- Game UI -->
+      <div id="game-setup" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Region</label>
+          <div class="flex flex-wrap gap-2">
+            <button data-region="all" class="region-btn px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 font-medium">All</button>
+            <button data-region="europe" class="region-btn px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300">Europe</button>
+            <button data-region="asia" class="region-btn px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300">Asia</button>
+            <button data-region="americas" class="region-btn px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300">Americas</button>
+            <button data-region="africa" class="region-btn px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300">Africa</button>
+            <button data-region="oceania" class="region-btn px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300">Oceania</button>
+          </div>
+        </div>
+        <div class="flex items-center gap-4">
+          <p class="font-mono text-sm">Personal best: <span id="personal-best">0</span></p>
+          <button id="start-btn" class="px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700">Start Quiz</button>
+        </div>
+      </div>
+
+      <div id="game-active" class="hidden space-y-6">
+        <div class="flex justify-between items-center">
+          <div class="font-mono text-sm">
+            <span>Score: <strong id="score">0</strong></span>
+            <span class="ml-4">Streak: <strong id="streak">0</strong></span>
+            <span class="ml-4">Q: <span id="q-num">1</span>/20</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div id="timer-bar" class="h-full bg-indigo-600 transition-all duration-100" style="width: 100%"></div>
+            </div>
+            <span id="timer-sec" class="font-mono text-sm">10</span>s
+          </div>
+        </div>
+        <div class="flag-container my-6" id="flag-display"></div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="options-container"></div>
+      </div>
+
+      <div id="game-results" class="hidden text-center py-8">
+        <h2 class="text-2xl font-bold mb-4">Round Complete!</h2>
+        <p class="text-xl mb-2">Final Score: <strong id="final-score">0</strong></p>
+        <p id="new-pb-msg" class="text-green-600 font-semibold hidden">New personal best!</p>
+        <button id="play-again" class="mt-4 px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700">Play Again</button>
+      </div>
+    </article>
+
+    <section id="related-games" class="mb-8">
+      <h2 class="text-xl font-semibold mb-4">Related Games</h2>
+      <div class="flex flex-wrap gap-4">
+        <a href="/games/capital-quiz.html" class="text-indigo-600 hover:underline">Capital Quiz</a>
+        <a href="/games/trivia.html" class="text-indigo-600 hover:underline">General Trivia</a>
+        <a href="/games/" class="text-indigo-600 hover:underline">All Games</a>
+      </div>
+    </section>
+  </main>
+
+  <footer id="footer-container" class="border-t border-gray-200 py-6 mt-8">
+    <div class="max-w-4xl mx-auto px-4 text-center text-sm text-gray-500">
+      <p>&copy; Mini Game Planet. Free online games.</p>
+    </div>
+  </footer>
+
+  <script>
+    (function() {
+      'use strict';
+
+      const FLAGS = [
+        { id: 'france', name: 'France', region: 'europe' },
+        { id: 'germany', name: 'Germany', region: 'europe' },
+        { id: 'italy', name: 'Italy', region: 'europe' },
+        { id: 'ireland', name: 'Ireland', region: 'europe' },
+        { id: 'netherlands', name: 'Netherlands', region: 'europe' },
+        { id: 'belgium', name: 'Belgium', region: 'europe' },
+        { id: 'russia', name: 'Russia', region: 'europe' },
+        { id: 'poland', name: 'Poland', region: 'europe' },
+        { id: 'ukraine', name: 'Ukraine', region: 'europe' },
+        { id: 'austria', name: 'Austria', region: 'europe' },
+        { id: 'switzerland', name: 'Switzerland', region: 'europe' },
+        { id: 'sweden', name: 'Sweden', region: 'europe' },
+        { id: 'norway', name: 'Norway', region: 'europe' },
+        { id: 'denmark', name: 'Denmark', region: 'europe' },
+        { id: 'finland', name: 'Finland', region: 'europe' },
+        { id: 'spain', name: 'Spain', region: 'europe' },
+        { id: 'portugal', name: 'Portugal', region: 'europe' },
+        { id: 'uk', name: 'United Kingdom', region: 'europe' },
+        { id: 'greece', name: 'Greece', region: 'europe' },
+        { id: 'czech', name: 'Czech Republic', region: 'europe' },
+        { id: 'romania', name: 'Romania', region: 'europe' },
+        { id: 'hungary', name: 'Hungary', region: 'europe' },
+        { id: 'japan', name: 'Japan', region: 'asia' },
+        { id: 'china', name: 'China', region: 'asia' },
+        { id: 'south-korea', name: 'South Korea', region: 'asia' },
+        { id: 'india', name: 'India', region: 'asia' },
+        { id: 'thailand', name: 'Thailand', region: 'asia' },
+        { id: 'indonesia', name: 'Indonesia', region: 'asia' },
+        { id: 'vietnam', name: 'Vietnam', region: 'asia' },
+        { id: 'malaysia', name: 'Malaysia', region: 'asia' },
+        { id: 'singapore', name: 'Singapore', region: 'asia' },
+        { id: 'philippines', name: 'Philippines', region: 'asia' },
+        { id: 'bangladesh', name: 'Bangladesh', region: 'asia' },
+        { id: 'pakistan', name: 'Pakistan', region: 'asia' },
+        { id: 'sri-lanka', name: 'Sri Lanka', region: 'asia' },
+        { id: 'israel', name: 'Israel', region: 'asia' },
+        { id: 'saudi-arabia', name: 'Saudi Arabia', region: 'asia' },
+        { id: 'uae', name: 'United Arab Emirates', region: 'asia' },
+        { id: 'usa', name: 'United States', region: 'americas' },
+        { id: 'canada', name: 'Canada', region: 'americas' },
+        { id: 'mexico', name: 'Mexico', region: 'americas' },
+        { id: 'brazil', name: 'Brazil', region: 'americas' },
+        { id: 'argentina', name: 'Argentina', region: 'americas' },
+        { id: 'chile', name: 'Chile', region: 'americas' },
+        { id: 'colombia', name: 'Colombia', region: 'americas' },
+        { id: 'peru', name: 'Peru', region: 'americas' },
+        { id: 'venezuela', name: 'Venezuela', region: 'americas' },
+        { id: 'cuba', name: 'Cuba', region: 'americas' },
+        { id: 'jamaica', name: 'Jamaica', region: 'americas' },
+        { id: 'south-africa', name: 'South Africa', region: 'africa' },
+        { id: 'nigeria', name: 'Nigeria', region: 'africa' },
+        { id: 'egypt', name: 'Egypt', region: 'africa' },
+        { id: 'kenya', name: 'Kenya', region: 'africa' },
+        { id: 'morocco', name: 'Morocco', region: 'africa' },
+        { id: 'ghana', name: 'Ghana', region: 'africa' },
+        { id: 'ethiopia', name: 'Ethiopia', region: 'africa' },
+        { id: 'algeria', name: 'Algeria', region: 'africa' },
+        { id: 'australia', name: 'Australia', region: 'oceania' },
+        { id: 'new-zealand', name: 'New Zealand', region: 'oceania' },
+        { id: 'fiji', name: 'Fiji', region: 'oceania' },
+        { id: 'papua-new-guinea', name: 'Papua New Guinea', region: 'oceania' },
+      ];
+
+      function secureRandom(max) {
+        const arr = new Uint32Array(1);
+        crypto.getRandomValues(arr);
+        return arr[0] % max;
+      }
+
+      function shuffle(arr) {
+        const a = [...arr];
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = secureRandom(i + 1);
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      }
+
+      function getFlagHtml(id) {
+        const map = {
+          france: '<div class="flag-france"><div class="stripe s1"></div><div class="stripe s2"></div><div class="stripe s3"></div></div>',
+          germany: '<div class="flag-germany"><div class="stripe s1"></div><div class="stripe s2"></div><div class="stripe s3"></div></div>',
+          italy: '<div class="flag-italy"><div class="stripe s1"></div><div class="stripe s2"></div><div class="stripe s3"></div></div>',
+          ireland: '<div class="flag-ireland"><div class="stripe s1"></div><div class="stripe s2"></div><div class="stripe s3"></div></div>',
+          netherlands: '<div class="flag-netherlands"><div class="stripe s1"></div><div class="stripe s2"></div><div class="stripe s3"></div></div>',
+          belgium: '<div class="flag-belgium"><div class="stripe s1"></div><div class="stripe s2"></div><div class="stripe s3"></div></div>',
+          russia: '<div class="flag-russia"><div class="stripe s1"></div><div class="stripe s2"></div><div class="stripe s3"></div></div>',
+          poland: '<div class="flag-poland"><div class="stripe s1"></div><div class="stripe s2"></div></div>',
+          ukraine: '<div class="flag-ukraine"><div class="stripe s1"></div><div class="stripe s2"></div></div>',
+          austria: '<div class="flag-austria"><div class="stripe s1"></div><div class="stripe s2"></div><div class="stripe s3"></div></div>',
+          switzerland: '<div class="flag-switzerland"><div class="cross"></div></div>',
+          sweden: '<div class="flag-sweden"></div>',
+          norway: '<div class="flag-norway"><div class="blue-v"></div><div class="blue-h"></div></div>',
+          denmark: '<div class="flag-denmark"></div>',
+          finland: '<div class="flag-finland"></div>',
+          spain: '<div class="flag-spain"><div class="red"></div><div class="yellow"></div><div class="red"></div></div>',
+          portugal: '<div class="flag-portugal"><div class="green"></div><div class="red"></div></div>',
+          uk: '<div class="flag-uk"><div class="white-diag"></div><div class="red-diag"></div></div>',
+          greece: '<div class="flag-greece"><div class="stripe blue"></div><div class="stripe white"></div><div class="stripe blue"></div><div class="stripe white"></div><div class="stripe blue"></div><div class="stripe white"></div><div class="stripe blue"></div><div class="stripe white"></div><div class="stripe blue"></div></div>',
+          czech: '<div class="flag-czech"><div class="white"></div><div class="red"></div></div>',
+          romania: '<div class="flag-romania"><div class="stripe s1"></div><div class="stripe s2"></div><div class="stripe s3"></div></div>',
+          hungary: '<div class="flag-hungary"><div class="stripe s1"></div><div class="stripe s2"></div><div class="stripe s3"></div></div>',
+          japan: '<div class="flag-japan"><div class="circle"></div></div>',
+          china: '<div class="flag-china"><span class="star">★</span></div>',
+          'south-korea': '<div class="flag-south-korea"><div class="center"></div></div>',
+          india: '<div class="flag-india"><div class="saffron"></div><div class="white"></div><div class="green"></div></div>',
+          thailand: '<div class="flag-thailand"><div class="stripe s1"></div><div class="stripe s2"></div><div class="stripe s3"></div><div class="stripe s2"></div><div class="stripe s1"></div></div>',
+          indonesia: '<div class="flag-indonesia"><div class="stripe s1"></div><div class="stripe s2"></div></div>',
+          vietnam: '<div class="flag-vietnam"><span class="star">★</span></div>',
+          malaysia: '<div class="flag-malaysia"><div class="canton"></div><div class="stripes"><div class="stripe red"></div><div class="stripe white"></div><div class="stripe red"></div><div class="stripe white"></div><div class="stripe red"></div></div></div>',
+          singapore: '<div class="flag-singapore"><div class="red"></div><div class="white"></div></div>',
+          philippines: '<div class="flag-philippines"><div class="blue"></div><div class="white"></div><div class="red"></div></div>',
+          bangladesh: '<div class="flag-bangladesh"><div class="circle"></div></div>',
+          pakistan: '<div class="flag-pakistan"><div class="moon"></div></div>',
+          'sri-lanka': '<div class="flag-sri-lanka"><div class="green"></div></div>',
+          israel: '<div class="flag-israel"><span class="star">★</span></div>',
+          'saudi-arabia': '<div class="flag-saudi-arabia"><span class="text">شهادتان</span></div>',
+          uae: '<div class="flag-uae"><div class="red"></div><div class="stripes"><div class="green"></div><div class="white"></div><div class="black"></div></div></div>',
+          usa: '<div class="flag-usa"><div class="stars"></div><div class="stripes"><div class="red"></div><div class="white"></div><div class="red"></div><div class="white"></div><div class="red"></div><div class="white"></div><div class="red"></div></div></div>',
+          canada: '<div class="flag-canada"><div class="white"></div></div>',
+          mexico: '<div class="flag-mexico"><div class="green"></div><div class="white"></div><div class="red"></div></div>',
+          brazil: '<div class="flag-brazil"><div class="diamond"></div></div>',
+          argentina: '<div class="flag-argentina"><div class="light-blue"></div><div class="white"><div class="sun"></div></div><div class="light-blue"></div></div>',
+          chile: '<div class="flag-chile"><div class="blue"></div><div class="white"></div><div class="red"></div></div>',
+          colombia: '<div class="flag-colombia"><div class="yellow"></div><div class="blue"></div><div class="red"></div></div>',
+          peru: '<div class="flag-peru"><div class="red"></div><div class="white"></div><div class="red"></div></div>',
+          venezuela: '<div class="flag-venezuela"><div class="yellow"></div><div class="blue"></div><div class="red"></div></div>',
+          cuba: '<div class="flag-cuba"><div class="blue"></div><div class="stripes"><div class="stripe blue"></div><div class="stripe white"></div><div class="stripe blue"></div><div class="stripe white"></div><div class="stripe blue"></div></div></div>',
+          jamaica: '<div class="flag-jamaica"></div>',
+          'south-africa': '<div class="flag-south-africa"><div class="stripe green"></div><div class="stripe yellow"></div><div class="stripe red"></div><div class="stripe white"></div><div class="stripe blue"></div><div class="stripe black"></div></div>',
+          nigeria: '<div class="flag-nigeria"><div class="green"></div><div class="white"></div><div class="green"></div></div>',
+          egypt: '<div class="flag-egypt"><div class="stripe red"></div><div class="stripe white"></div><div class="stripe black"></div></div>',
+          kenya: '<div class="flag-kenya"><div class="black"></div><div class="red"></div><div class="green"></div></div>',
+          morocco: '<div class="flag-morocco"><span class="star">★</span></div>',
+          ghana: '<div class="flag-ghana"><div class="red"></div><div class="yellow"></div><div class="green"></div></div>',
+          ethiopia: '<div class="flag-ethiopia"><div class="green"></div><div class="yellow"></div><div class="red"></div></div>',
+          algeria: '<div class="flag-algeria"><div class="green"></div><div class="white"></div><div class="green"></div></div>',
+          australia: '<div class="flag-australia"><span class="stars">★</span></div>',
+          'new-zealand': '<div class="flag-new-zealand"><span class="stars">★</span></div>',
+          fiji: '<div class="flag-fiji"><div class="canton"></div><div class="blue"></div></div>',
+          'papua-new-guinea': '<div class="flag-papua-new-guinea"><div class="black"></div><div class="red"></div></div>',
+        };
+        return map[id] || '<div class="bg-gray-300 h-full flex items-center justify-center">?</div>';
+      }
+
+      let state = {
+        region: 'all',
+        questions: [],
+        current: 0,
+        score: 0,
+        streak: 0,
+        timerId: null,
+        timeLeft: 10,
+      };
+
+      const PB_KEY = 'flag-quiz-pb';
+
+      function loadPB() {
+        try {
+          return parseInt(localStorage.getItem(PB_KEY) || '0', 10);
+        } catch (_) { return 0; }
+      }
+
+      function savePB(val) {
+        try { localStorage.setItem(PB_KEY, String(val)); } catch (_) {}
+      }
+
+      function updatePBDisplay() {
+        document.getElementById('personal-best').textContent = loadPB();
+      }
+
+      function getFilteredFlags() {
+        if (state.region === 'all') return FLAGS;
+        return FLAGS.filter(f => f.region === state.region);
+      }
+
+      function pickOptions(correct, count) {
+        const pool = getFilteredFlags().filter(f => f.name !== correct.name);
+        const shuffled = shuffle(pool);
+        const wrong = shuffled.slice(0, count - 1).map(f => f.name);
+        const options = shuffle([correct.name, ...wrong]);
+        return options;
+      }
+
+      function startRound() {
+        const filtered = getFilteredFlags();
+        if (filtered.length < 4) {
+          alert('Need at least 4 flags in this region. Try "All".');
+          return;
+        }
+        const shuffled = shuffle(filtered);
+        state.questions = shuffled.slice(0, 20);
+        state.current = 0;
+        state.score = 0;
+        state.streak = 0;
+        document.getElementById('game-setup').classList.add('hidden');
+        document.getElementById('game-active').classList.remove('hidden');
+        document.getElementById('game-results').classList.add('hidden');
+        showQuestion();
+      }
+
+      function showQuestion() {
+        if (state.current >= state.questions.length) {
+          endRound();
+          return;
+        }
+        const q = state.questions[state.current];
+        const options = pickOptions(q, 4);
+        document.getElementById('flag-display').innerHTML = getFlagHtml(q.id);
+        document.getElementById('score').textContent = state.score;
+        document.getElementById('streak').textContent = state.streak;
+        document.getElementById('q-num').textContent = state.current + 1;
+        document.getElementById('timer-bar').style.width = '100%';
+        state.timeLeft = 10;
+        document.getElementById('timer-sec').textContent = '10';
+
+        const container = document.getElementById('options-container');
+        container.innerHTML = '';
+        container.dataset.correct = q.name;
+        options.forEach(name => {
+          const btn = document.createElement('button');
+          btn.className = 'option-btn p-4 rounded-xl border-2 border-gray-200 hover:border-indigo-400 hover:bg-indigo-50 font-medium text-left transition-colors';
+          btn.textContent = name;
+          btn.dataset.answer = name;
+          btn.addEventListener('click', () => handleAnswer(btn));
+          container.appendChild(btn);
+        });
+
+        clearInterval(state.timerId);
+        state.timerId = setInterval(tick, 100);
+      }
+
+      function tick() {
+        state.timeLeft -= 0.1;
+        const sec = Math.ceil(state.timeLeft);
+        document.getElementById('timer-sec').textContent = Math.max(0, sec);
+        document.getElementById('timer-bar').style.width = Math.max(0, state.timeLeft * 10) + '%';
+        if (state.timeLeft <= 0) {
+          clearInterval(state.timerId);
+          handleTimeout();
+        }
+      }
+
+      function handleAnswer(btn) {
+        clearInterval(state.timerId);
+        const correct = document.getElementById('options-container').dataset.correct;
+        const chosen = btn.dataset.answer;
+        const isCorrect = chosen === correct;
+
+        document.querySelectorAll('.option-btn').forEach(b => {
+          b.disabled = true;
+          if (b.dataset.answer === correct) b.classList.add('border-green-500', 'bg-green-50');
+          else if (b === btn && !isCorrect) b.classList.add('border-red-500', 'bg-red-50');
+        });
+
+        if (isCorrect) {
+          state.streak++;
+          const base = 100;
+          const bonus = Math.min(state.streak - 1, 5) * 25;
+          const timeBonus = Math.floor(state.timeLeft) * 5;
+          const pts = base + bonus + timeBonus;
+          state.score += pts;
+        } else {
+          state.streak = 0;
+        }
+
+        document.getElementById('score').textContent = state.score;
+        document.getElementById('streak').textContent = state.streak;
+
+        setTimeout(() => {
+          state.current++;
+          showQuestion();
+        }, 800);
+      }
+
+      function handleTimeout() {
+        state.streak = 0;
+        document.querySelectorAll('.option-btn').forEach(b => {
+          b.disabled = true;
+          if (b.dataset.answer === document.getElementById('options-container').dataset.correct) {
+            b.classList.add('border-green-500', 'bg-green-50');
+          }
+        });
+        setTimeout(() => {
+          state.current++;
+          showQuestion();
+        }, 800);
+      }
+
+      function endRound() {
+        document.getElementById('game-active').classList.add('hidden');
+        document.getElementById('game-results').classList.remove('hidden');
+        document.getElementById('final-score').textContent = state.score;
+        const pb = loadPB();
+        if (state.score > pb) {
+          savePB(state.score);
+          document.getElementById('new-pb-msg').classList.remove('hidden');
+          updatePBDisplay();
+        } else {
+          document.getElementById('new-pb-msg').classList.add('hidden');
+        }
+      }
+
+      document.querySelectorAll('.region-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.region-btn').forEach(b => b.classList.remove('bg-indigo-600', 'text-white'));
+          document.querySelectorAll('.region-btn').forEach(b => b.classList.add('bg-gray-200'));
+          btn.classList.remove('bg-gray-200');
+          btn.classList.add('bg-indigo-600', 'text-white');
+          state.region = btn.dataset.region;
+        });
+      });
+
+      document.querySelector('[data-region="all"]').classList.add('bg-indigo-600', 'text-white');
+      document.querySelector('[data-region="all"]').classList.remove('bg-gray-200');
+
+      document.getElementById('start-btn').addEventListener('click', startRound);
+      document.getElementById('play-again').addEventListener('click', () => {
+        document.getElementById('game-results').classList.add('hidden');
+        document.getElementById('game-setup').classList.remove('hidden');
+        updatePBDisplay();
+      });
+
+      document.getElementById('sound-toggle').addEventListener('click', () => {
+        const icon = document.getElementById('sound-icon');
+        if (typeof window.toggleSound === 'function') {
+          window.toggleSound();
+          icon.textContent = window.soundEnabled ? '🔊' : '🔇';
+        } else {
+          icon.textContent = icon.textContent === '🔊' ? '🔇' : '🔊';
+        }
+      });
+
+      updatePBDisplay();
+
+      if (typeof initToolPage === 'function') initToolPage('flag-quiz');
+      if (typeof initConsent === 'function') initConsent();
+      if (typeof trackGameView === 'function') trackGameView('flag-quiz', 'Trivia');
+    })();
+  </script>
+</body>
+</html>
