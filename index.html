@@ -413,11 +413,11 @@
     return list;
   }
 
-  // Weekly hot rotation: pick 10 "hot" games based on week number, seeded shuffle
-  function getWeekNumber() {
+  // Hot rotation: pick 12 "hot" games, rotate every 5 days
+  function getRotationPeriod() {
     const now = new Date();
     const start = new Date(now.getFullYear(), 0, 1);
-    return Math.floor(((now - start) / 86400000 + start.getDay() + 1) / 7);
+    return Math.floor((now - start) / (5 * 86400000));
   }
   function seededShuffle(arr, seed) {
     const result = [...arr];
@@ -429,9 +429,9 @@
     }
     return result;
   }
-  const weekNum = getWeekNumber();
+  const rotationPeriod = getRotationPeriod();
   const hotSlugs = new Set(
-    seededShuffle(allDisplayGames.map(g => g.slug), weekNum * 7919).slice(0, 10)
+    seededShuffle(allDisplayGames.map(g => g.slug), rotationPeriod * 7919).slice(0, 12)
   );
 
   const hotGridEl = document.getElementById('hot-grid');

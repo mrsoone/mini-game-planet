@@ -23,9 +23,8 @@ function renderNav(gameName) {
 
   el.innerHTML = `
     <nav style="position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:2px solid #0F172A;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;max-width:100%;">
-      <a href="/" style="display:flex;align-items:center;gap:8px;text-decoration:none;">
-        <img src="/images/logo.png" alt="Mini Game Planet" style="height:32px;width:auto;">
-        <span style="font-weight:700;font-size:18px;color:#0F172A;">Mini Game Planet</span>
+      <a href="/" style="display:flex;align-items:center;text-decoration:none;">
+        <img src="/images/logo.png" alt="Mini Game Planet" style="height:36px;width:auto;">
       </a>
       <div style="display:flex;align-items:center;gap:18px;">
         <a href="/blog" style="font-size:14px;font-weight:500;color:#94A3B8;text-decoration:none;transition:color 0.15s;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">Blog</a>
@@ -60,10 +59,9 @@ function renderFooter() {
     <footer style="border-top:2px solid #0F172A;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;max-width:100%;">
       <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:#64748B;">
         <img src="/images/logo.png" alt="" style="height:20px;width:auto;">
-        <span>Mini Game Planet &copy; 2026</span>
+        <span>&copy; 2026 Jagan Worldwide Games. All rights reserved.</span>
       </div>
       <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
-        <a href="/sitemap.xml" style="font-size:13px;color:#94A3B8;text-decoration:none;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">Sitemap</a>
         <a href="/blog" style="font-size:13px;color:#94A3B8;text-decoration:none;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">Blog</a>
         <a href="/about" style="font-size:13px;color:#94A3B8;text-decoration:none;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">About</a>
         <a href="/privacy" style="font-size:13px;color:#94A3B8;text-decoration:none;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">Privacy</a>
