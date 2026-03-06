@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Browser Games — Play Instantly | MiniGamePlanet</title>
+  <meta name="description" content="Play free browser games instantly — arcade, puzzle, card, word, strategy and more. No downloads, no signups. Just pick a game and play.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+
+  <meta name="google-site-verification" content="VERIFICATION_CODE_HERE">
+  <meta name="msvalidate.01" content="BING_VERIFICATION_CODE_HERE">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          'sans': ['"Space Grotesk"', 'system-ui', 'sans-serif'],
+          'mono': ['"DM Mono"', 'monospace'],
+        }
+      }
+    }
+  }
+  </script>
+
+  <!-- GA4 Consent Mode v2 — defaults to ALL DENIED -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('consent', 'default', {
+    'analytics_storage': 'denied',
+    'ad_storage': 'denied',
+    'ad_user_data': 'denied',
+    'ad_personalization': 'denied',
+    'wait_for_update': 500
+  });
+  gtag('config', 'G-XXXXXXXXXX');
+  </script>
+
+  <!-- AdSense — uncomment after approval, loads dynamically via consent.js -->
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Free Browser Games — Play Instantly | MiniGamePlanet">
+  <meta property="og:description" content="Play free browser games instantly — arcade, puzzle, card, word, strategy and more. No downloads, no signups.">
+  <meta property="og:url" content="https://minigameplanet.com/">
+  <meta property="og:site_name" content="MiniGamePlanet">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "MiniGamePlanet",
+    "url": "https://minigameplanet.com",
+    "description": "Free browser-based games — play instantly, no downloads."
+  }
+  </script>
+
+  <style>
+    .hero-grad {
+      background: linear-gradient(135deg, #0891B2 0%, #2563EB 22%, #7C3AED 44%, #E11D48 66%, #EA580C 82%, #D97706 100%);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: heroShift 8s ease-in-out infinite;
+    }
+    @keyframes heroShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    @keyframes marqueeScroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up {
+      opacity: 0;
+      animation: fadeUp 0.3s ease forwards;
+    }
+    .fade-up-1 { animation-delay: 0ms; }
+    .fade-up-2 { animation-delay: 50ms; }
+    .fade-up-3 { animation-delay: 100ms; }
+    .fade-up-4 { animation-delay: 150ms; }
+    .fade-up-5 { animation-delay: 200ms; }
+
+    .game-tile { transition: transform 0.16s ease, box-shadow 0.16s ease; }
+    .game-tile:hover { transform: translateY(-3px); }
+    .game-tile:hover .tile-play { opacity: 1; transform: translateX(0); }
+    .game-tile:hover .tile-bg-emoji { opacity: 0.18 !important; transform: rotate(-8deg) scale(1.05) !important; }
+    .game-tile:hover .tile-emoji { transform: scale(1.1); }
+
+    .cat-pill { transition: all 0.15s ease; }
+
+    .search-box:focus-within {
+      border-color: #2563EB !important;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12), 0 8px 24px -4px rgba(0,0,0,0.06);
+    }
+
+    .clear-btn { transition: opacity 0.15s; }
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+
+  <!-- ═══ MARQUEE BAR ═══ -->
+  <div style="background:#0F172A;height:30px;overflow:hidden;display:flex;align-items:center;position:relative;">
+    <div style="display:flex;white-space:nowrap;animation:marqueeScroll 25s linear infinite;font-family:'DM Mono',monospace;font-size:11px;font-weight:500;">
+      <span style="display:flex;align-items:center;gap:0;">
+        <span style="color:#0891B2;padding:0 12px;">🕹 Arcade</span><span style="color:#DC2626;">⬥</span>
+        <span style="color:#2563EB;padding:0 12px;">🧩 Puzzle</span><span style="color:#D97706;">⬥</span>
+        <span style="color:#DC2626;padding:0 12px;">🃏 Card</span><span style="color:#0D9488;">⬥</span>
+        <span style="color:#D97706;padding:0 12px;">🔤 Word</span><span style="color:#059669;">⬥</span>
+        <span style="color:#0D9488;padding:0 12px;">♟️ Strategy</span><span style="color:#E11D48;">⬥</span>
+        <span style="color:#059669;padding:0 12px;">🎰 Casino</span><span style="color:#EA580C;">⬥</span>
+        <span style="color:#E11D48;padding:0 12px;">🎯 Casual</span><span style="color:#4F46E5;">⬥</span>
+        <span style="color:#EA580C;padding:0 12px;">🏃 Action</span><span style="color:#0891B2;">⬥</span>
+        <span style="color:#4F46E5;padding:0 12px;">🎲 Board</span><span style="color:#0284C7;">⬥</span>
+        <span style="color:#0891B2;padding:0 12px;">🏗 Builder</span><span style="color:#6D28D9;">⬥</span>
+        <span style="color:#0284C7;padding:0 12px;">📐 Math</span><span style="color:#0891B2;">⬥</span>
+        <span style="color:#6D28D9;padding:0 12px;">🌍 Trivia</span><span style="color:#DC2626;">⬥</span>
+      </span>
+      <span style="display:flex;align-items:center;gap:0;">
+        <span style="color:#0891B2;padding:0 12px;">🕹 Arcade</span><span style="color:#DC2626;">⬥</span>
+        <span style="color:#2563EB;padding:0 12px;">🧩 Puzzle</span><span style="color:#D97706;">⬥</span>
+        <span style="color:#DC2626;padding:0 12px;">🃏 Card</span><span style="color:#0D9488;">⬥</span>
+        <span style="color:#D97706;padding:0 12px;">🔤 Word</span><span style="color:#059669;">⬥</span>
+        <span style="color:#0D9488;padding:0 12px;">♟️ Strategy</span><span style="color:#E11D48;">⬥</span>
+        <span style="color:#059669;padding:0 12px;">🎰 Casino</span><span style="color:#EA580C;">⬥</span>
+        <span style="color:#E11D48;padding:0 12px;">🎯 Casual</span><span style="color:#4F46E5;">⬥</span>
+        <span style="color:#EA580C;padding:0 12px;">🏃 Action</span><span style="color:#0891B2;">⬥</span>
+        <span style="color:#4F46E5;padding:0 12px;">🎲 Board</span><span style="color:#0284C7;">⬥</span>
+        <span style="color:#0891B2;padding:0 12px;">🏗 Builder</span><span style="color:#6D28D9;">⬥</span>
+        <span style="color:#0284C7;padding:0 12px;">📐 Math</span><span style="color:#0891B2;">⬥</span>
+        <span style="color:#6D28D9;padding:0 12px;">🌍 Trivia</span><span style="color:#DC2626;">⬥</span>
+      </span>
+    </div>
+  </div>
+
+  <!-- ═══ NAV ═══ -->
+  <div id="nav-container"></div>
+
+  <!-- ═══ HERO ═══ -->
+  <section class="max-w-3xl mx-auto px-4 pt-10 pb-6 text-center">
+    <!-- Badges -->
+    <div class="flex justify-center gap-2 flex-wrap mb-5 fade-up fade-up-1">
+      <span style="background:#0F172A;color:#fff;font-size:10px;font-weight:700;padding:4px 10px;border-radius:6px;letter-spacing:0.5px;">🎮 FREE GAMES</span>
+      <span style="background:#fff;color:#334155;font-size:10px;font-weight:700;padding:4px 10px;border-radius:6px;border:2px solid #E5E7EB;letter-spacing:0.5px;">⚡ INSTANT PLAY</span>
+      <span style="background:#fff;color:#334155;font-size:10px;font-weight:700;padding:4px 10px;border-radius:6px;border:2px solid #E5E7EB;letter-spacing:0.5px;">🔒 100% PRIVATE</span>
+    </div>
+    <!-- Headline -->
+    <h1 class="hero-grad fade-up fade-up-2" style="font-size:clamp(2.2rem,7vw,4.2rem);font-weight:700;line-height:1.05;letter-spacing:-0.02em;margin:0 0 12px;">
+      Free browser games — play instantly.
+    </h1>
+    <!-- Subtitle -->
+    <p class="fade-up fade-up-3" style="color:#94A3B8;font-size:15px;max-width:420px;margin:0 auto 24px;line-height:1.6;">
+      Arcade, puzzle, card, word, strategy and more — all in your browser. No downloads. No accounts. Just play.
+    </p>
+  </section>
+
+  <!-- ═══ SEARCH BAR ═══ -->
+  <section class="max-w-xl mx-auto px-4 mb-5 fade-up fade-up-4">
+    <div class="search-box" style="position:relative;border:2px solid #E5E7EB;border-radius:14px;background:#fff;transition:border-color 0.15s,box-shadow 0.15s;">
+      <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none;">🔍</span>
+      <input id="search-input" type="text" autocomplete="off"
+        style="width:100%;padding:14px 40px 14px 42px;border:none;outline:none;background:transparent;font-family:inherit;font-size:14px;font-weight:500;color:#0F172A;"
+        placeholder="Search games...">
+      <button id="search-clear" class="clear-btn" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:16px;cursor:pointer;opacity:0;pointer-events:none;color:#94A3B8;">✕</button>
+    </div>
+  </section>
+
+  <!-- ═══ CATEGORY PILLS ═══ -->
+  <section class="max-w-3xl mx-auto px-4 mb-5 fade-up fade-up-5">
+    <div id="category-pills" class="flex justify-center flex-wrap gap-2"></div>
+  </section>
+
+  <!-- ═══ GAME COUNT + GRID ═══ -->
+  <section class="max-w-6xl mx-auto px-4 pb-10">
+    <div id="game-count" style="font-family:'DM Mono',monospace;font-size:12px;color:#94A3B8;margin-bottom:10px;"></div>
+    <div id="game-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;"></div>
+  </section>
+
+  <!-- ═══ STATS BAR ═══ -->
+  <section style="background:#0F172A;padding:32px 16px;">
+    <div class="max-w-5xl mx-auto" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;" id="stats-grid">
+      <div class="text-center">
+        <div style="font-size:18px;margin-bottom:2px;">🎮</div>
+        <div id="stat-games" style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:#fff;">0</div>
+        <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#94A3B8;">Games</div>
+      </div>
+      <div class="text-center">
+        <div style="font-size:18px;margin-bottom:2px;">📂</div>
+        <div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:#fff;">12</div>
+        <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#94A3B8;">Categories</div>
+      </div>
+      <div class="text-center">
+        <div style="font-size:18px;margin-bottom:2px;">⬇️</div>
+        <div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:#fff;">0</div>
+        <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#94A3B8;">Downloads</div>
+      </div>
+      <div class="text-center">
+        <div style="font-size:18px;margin-bottom:2px;">🚫</div>
+        <div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:#fff;">0</div>
+        <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#94A3B8;">Signups</div>
+      </div>
+      <div class="text-center">
+        <div style="font-size:18px;margin-bottom:2px;">🔒</div>
+        <div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:#fff;">0</div>
+        <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#94A3B8;">Data Sent</div>
+      </div>
+      <div class="text-center">
+        <div style="font-size:18px;margin-bottom:2px;">🔄</div>
+        <div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:#fff;">∞</div>
+        <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#94A3B8;">Replays</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ FROM THE BLOG ═══ -->
+  <section class="max-w-5xl mx-auto px-4 py-12">
+    <h2 style="font-size:22px;font-weight:700;margin-bottom:16px;">📝 From the Blog</h2>
+    <div style="display:grid;grid-template-columns:repeat(1,1fr);gap:16px;" id="blog-cards">
+      <a href="/blog/best-free-browser-games" style="text-decoration:none;display:block;background:#fff;border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.06);transition:box-shadow 0.15s,transform 0.15s;" onmouseover="this.style.boxShadow='0 4px 16px rgba(0,0,0,0.1)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='0 1px 3px rgba(0,0,0,0.06)';this.style.transform=''">
+        <div style="font-size:10px;font-weight:700;color:#2563EB;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Roundup · 8 min read</div>
+        <div style="font-size:16px;font-weight:700;color:#0F172A;margin-bottom:4px;">15 Best Free Browser Games in 2025</div>
+        <div style="font-size:13px;color:#64748B;line-height:1.5;">Our curated picks for the best free browser games you can play right now — no downloads, no signups required.</div>
+        <div style="font-size:12px;font-weight:600;color:#2563EB;margin-top:8px;">Read →</div>
+      </a>
+      <a href="/blog/how-to-win-at-2048" style="text-decoration:none;display:block;background:#fff;border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.06);transition:box-shadow 0.15s,transform 0.15s;" onmouseover="this.style.boxShadow='0 4px 16px rgba(0,0,0,0.1)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='0 1px 3px rgba(0,0,0,0.06)';this.style.transform=''">
+        <div style="font-size:10px;font-weight:700;color:#059669;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Strategy Guide · 6 min read</div>
+        <div style="font-size:16px;font-weight:700;color:#0F172A;margin-bottom:4px;">How to Win at 2048: Strategy Guide & Tips</div>
+        <div style="font-size:13px;color:#64748B;line-height:1.5;">Master the corner strategy, chain merges, and avoid common mistakes that keep you from reaching the 2048 tile.</div>
+        <div style="font-size:12px;font-weight:600;color:#059669;margin-top:8px;">Read →</div>
+      </a>
+      <a href="/blog/browser-games-vs-mobile-apps" style="text-decoration:none;display:block;background:#fff;border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.06);transition:box-shadow 0.15s,transform 0.15s;" onmouseover="this.style.boxShadow='0 4px 16px rgba(0,0,0,0.1)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='0 1px 3px rgba(0,0,0,0.06)';this.style.transform=''">
+        <div style="font-size:10px;font-weight:700;color:#EA580C;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Explainer · 5 min read</div>
+        <div style="font-size:16px;font-weight:700;color:#0F172A;margin-bottom:4px;">Browser Games vs Mobile Apps: Which Are Better?</div>
+        <div style="font-size:13px;color:#64748B;line-height:1.5;">No installs, no storage, instant play — we break down why browser games are making a comeback.</div>
+        <div style="font-size:12px;font-weight:600;color:#EA580C;margin-top:8px;">Read →</div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ═══ ABOUT SECTION (Static SEO) ═══ -->
+  <section class="max-w-5xl mx-auto px-4 py-12">
+    <div style="display:grid;grid-template-columns:repeat(1,1fr);gap:24px;" id="about-grid">
+      <div style="background:#fff;border-radius:12px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,0.06);">
+        <div style="font-size:24px;margin-bottom:8px;">🎮</div>
+        <h3 style="font-size:16px;font-weight:700;margin-bottom:8px;">What is MiniGamePlanet?</h3>
+        <p style="font-size:14px;color:#64748B;line-height:1.7;">
+          MiniGamePlanet is a growing collection of free browser games you can play instantly — no downloads, no accounts, no app store. From classic arcade games like Snake and Pong to brain-bending puzzles like Sudoku and 2048, strategy games like Chess and Checkers, card games like Solitaire and Blackjack, and everything in between. Every game runs right in your browser using standard web technology. Open a page, start playing. It's that simple.
+        </p>
+      </div>
+      <div style="background:#fff;border-radius:12px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,0.06);">
+        <div style="font-size:24px;margin-bottom:8px;">📱</div>
+        <h3 style="font-size:16px;font-weight:700;margin-bottom:8px;">Works everywhere</h3>
+        <p style="font-size:14px;color:#64748B;line-height:1.7;">
+          Every game on MiniGamePlanet is designed to work on any device with a modern browser. Phone, tablet, laptop, desktop — pick your screen and play. Touch controls for mobile, keyboard and mouse for desktop, and even gamepad support for arcade and action games. The games adapt to your screen size automatically, so you always get the best experience whether you're on a 5-inch phone or a 27-inch monitor.
+        </p>
+      </div>
+      <div style="background:#fff;border-radius:12px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,0.06);">
+        <div style="font-size:24px;margin-bottom:8px;">🔒</div>
+        <h3 style="font-size:16px;font-weight:700;margin-bottom:8px;">Your privacy, respected</h3>
+        <p style="font-size:14px;color:#64748B;line-height:1.7;">
+          MiniGamePlanet doesn't require accounts, doesn't store personal data, and doesn't send your information anywhere. All game logic runs entirely in your browser — your scores, your progress, your choices stay on your device. We use analytics cookies only with your explicit consent, and you can change your cookie preferences at any time from the footer. No tracking without permission, no dark patterns, no surprises.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ FOOTER ═══ -->
+  <div id="footer-container"></div>
+
+  <script type="module">
+  import { games, categories } from '/data/games.js';
+  import { renderNav, renderFooter } from '/js/shared.js';
+  import { initAudio, playClick, playHover } from '/js/audio.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackSearch, trackCategoryFilter } from '/js/analytics.js';
+
+  // ── Init ──
+  document.addEventListener('click', () => initAudio(), { once: true });
+  renderNav();
+  renderFooter();
+  initConsent();
+
+  const builtGames = games.filter(g => g.built);
+  const allDisplayGames = builtGames.length > 0 ? builtGames : games;
+  let activeCategory = null;
+  let searchTerm = '';
+
+  // ── Dynamic Search Placeholder ──
+  const searchInput = document.getElementById('search-input');
+  const builtCount = builtGames.length || games.length;
+  searchInput.placeholder = `Search ${builtCount} games — snake, chess, sudoku, 2048...`;
+
+  // ── Stats ──
+  document.getElementById('stat-games').textContent = builtCount;
+
+  // ── Category Pills ──
+  const pillsContainer = document.getElementById('category-pills');
+  const allPill = createPill('All', '🎮', null);
+  allPill.classList.add('active-pill');
+  pillsContainer.appendChild(allPill);
+  categories.forEach(cat => {
+    pillsContainer.appendChild(createPill(cat.name, cat.icon, cat.accent));
+  });
+
+  function createPill(name, icon, accent) {
+    const btn = document.createElement('button');
+    btn.className = 'cat-pill';
+    btn.dataset.category = name === 'All' ? '' : name;
+    btn.dataset.accent = accent || '';
+    btn.innerHTML = `${icon} ${name}`;
+    Object.assign(btn.style, {
+      padding: '6px 14px', borderRadius: '8px', fontSize: '12px', fontWeight: '700',
+      border: '2px solid #E5E7EB', background: '#fff', color: '#64748B',
+      cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap',
+      transition: 'all 0.15s ease'
+    });
+    btn.addEventListener('mouseenter', () => {
+      if (!btn.classList.contains('active-pill') && accent) {
+        btn.style.borderColor = accent;
+        btn.style.color = accent;
+      }
+    });
+    btn.addEventListener('mouseleave', () => {
+      if (!btn.classList.contains('active-pill')) {
+        btn.style.borderColor = '#E5E7EB';
+        btn.style.color = '#64748B';
+      }
+    });
+    btn.addEventListener('click', () => {
+      playClick();
+      const cat = btn.dataset.category;
+      activeCategory = cat || null;
+      if (cat) trackCategoryFilter(cat);
+      updateActivePill(btn);
+      renderGrid();
+    });
+    return btn;
+  }
+
+  function updateActivePill(activeBtn) {
+    pillsContainer.querySelectorAll('.cat-pill').forEach(btn => {
+      btn.classList.remove('active-pill');
+      btn.style.background = '#fff';
+      btn.style.color = '#64748B';
+      btn.style.borderColor = '#E5E7EB';
+      btn.style.boxShadow = 'none';
+    });
+    activeBtn.classList.add('active-pill');
+    const accent = activeBtn.dataset.accent || '#0F172A';
+    activeBtn.style.background = accent;
+    activeBtn.style.color = '#fff';
+    activeBtn.style.borderColor = accent;
+    activeBtn.style.boxShadow = `0 2px 8px ${accent}33`;
+  }
+
+  // ── Search ──
+  const clearBtn = document.getElementById('search-clear');
+  searchInput.addEventListener('input', () => {
+    searchTerm = searchInput.value.trim().toLowerCase();
+    clearBtn.style.opacity = searchTerm ? '1' : '0';
+    clearBtn.style.pointerEvents = searchTerm ? 'auto' : 'none';
+    renderGrid();
+    if (searchTerm.length >= 2) trackSearch(searchTerm, getFilteredGames().length);
+  });
+  clearBtn.addEventListener('click', () => {
+    searchInput.value = '';
+    searchTerm = '';
+    clearBtn.style.opacity = '0';
+    clearBtn.style.pointerEvents = 'none';
+    searchInput.focus();
+    renderGrid();
+  });
+
+  // ── Grid ──
+  const gridEl = document.getElementById('game-grid');
+  const countEl = document.getElementById('game-count');
+
+  function getFilteredGames() {
+    let list = allDisplayGames;
+    if (activeCategory) list = list.filter(g => g.category === activeCategory);
+    if (searchTerm) {
+      list = list.filter(g =>
+        g.name.toLowerCase().includes(searchTerm) ||
+        g.category.toLowerCase().includes(searchTerm) ||
+        g.keywords.some(k => k.toLowerCase().includes(searchTerm)) ||
+        g.description.toLowerCase().includes(searchTerm)
+      );
+    }
+    return list;
+  }
+
+  const popularSlugs = new Set([
+    'snake', 'solitaire', 'chess', 'sudoku', 'twenty-forty-eight',
+    'minesweeper', 'word-guess', 'blackjack', 'pong', 'breakout'
+  ]);
+
+  function renderGrid() {
+    const filtered = getFilteredGames();
+    countEl.textContent = `${filtered.length} game${filtered.length !== 1 ? 's' : ''}`;
+
+    if (filtered.length === 0) {
+      gridEl.innerHTML = `
+        <div style="grid-column:1/-1;text-align:center;padding:48px 16px;">
+          <div style="font-size:40px;margin-bottom:12px;">🔍</div>
+          <div style="font-size:16px;font-weight:600;color:#334155;margin-bottom:4px;">No games found</div>
+          <div style="font-size:13px;color:#94A3B8;">Try a different search term or category.</div>
+        </div>`;
+      return;
+    }
+
+    gridEl.innerHTML = filtered.map(g => {
+      const isHot = popularSlugs.has(g.slug);
+      const href = g.built ? `/games/${g.slug}` : '#';
+      const opacity = g.built ? '1' : '0.65';
+      return `
+      <a href="${href}" style="text-decoration:none;display:block;opacity:${opacity};" ${!g.built ? 'title="Coming soon"' : ''}>
+        <div class="game-tile" style="position:relative;overflow:hidden;border-radius:12px;height:160px;background:${g.accent};cursor:pointer;" onmouseover="this.style.boxShadow='0 8px 24px ${g.accent}55'" onmouseout="this.style.boxShadow=''">
+          ${isHot ? `<div style="position:absolute;top:8px;left:8px;z-index:2;background:#fff;color:${g.accent};font-size:9px;font-weight:900;padding:2px 8px;border-radius:20px;letter-spacing:0.3px;">HOT 🔥</div>` : ''}
+          <div class="tile-bg-emoji" style="position:absolute;bottom:-10px;right:-10px;font-size:120px;opacity:0.1;transform:rotate(-12deg);line-height:1;transition:opacity 0.2s,transform 0.2s;pointer-events:none;">${g.icon}</div>
+          <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,0.35) 0%, transparent 100%);pointer-events:none;"></div>
+          <div style="position:absolute;bottom:12px;left:12px;right:12px;z-index:1;">
+            <div class="tile-emoji" style="font-size:32px;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));margin-bottom:4px;transition:transform 0.15s;">${g.icon}</div>
+            <div style="color:#fff;font-weight:700;font-size:15px;text-shadow:0 1px 3px rgba(0,0,0,0.3);line-height:1.2;">${g.name}</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px;">
+              <span style="color:rgba(255,255,255,0.7);font-size:10px;">${g.category}</span>
+              <span class="tile-play" style="color:#fff;font-size:10px;font-weight:900;opacity:0;transform:translateX(-8px);transition:opacity 0.15s,transform 0.15s;">${g.built ? 'PLAY →' : 'SOON'}</span>
+            </div>
+          </div>
+        </div>
+      </a>`;
+    }).join('');
+  }
+
+  renderGrid();
+
+  // ── Responsive Grid ──
+  function updateGridCols() {
+    const w = window.innerWidth;
+    if (w >= 1200) gridEl.style.gridTemplateColumns = 'repeat(5,1fr)';
+    else if (w >= 900) gridEl.style.gridTemplateColumns = 'repeat(4,1fr)';
+    else if (w >= 640) gridEl.style.gridTemplateColumns = 'repeat(3,1fr)';
+    else gridEl.style.gridTemplateColumns = 'repeat(2,1fr)';
+  }
+  updateGridCols();
+  window.addEventListener('resize', updateGridCols);
+
+  // ── Responsive Stats Grid ──
+  function updateStatsGrid() {
+    const sg = document.getElementById('stats-grid');
+    sg.style.gridTemplateColumns = window.innerWidth >= 768 ? 'repeat(6,1fr)' : 'repeat(3,1fr)';
+  }
+  updateStatsGrid();
+  window.addEventListener('resize', updateStatsGrid);
+
+  // ── Responsive About Grid ──
+  function updateAboutGrid() {
+    const ag = document.getElementById('about-grid');
+    ag.style.gridTemplateColumns = window.innerWidth >= 768 ? 'repeat(3,1fr)' : '1fr';
+  }
+  updateAboutGrid();
+  window.addEventListener('resize', updateAboutGrid);
+
+  // ── Responsive Blog Cards ──
+  function updateBlogGrid() {
+    const bg = document.getElementById('blog-cards');
+    bg.style.gridTemplateColumns = window.innerWidth >= 768 ? 'repeat(3,1fr)' : '1fr';
+  }
+  updateBlogGrid();
+  window.addEventListener('resize', updateBlogGrid);
+  </script>
+</body>
+</html>
