@@ -155,8 +155,8 @@
     <!-- Badges -->
     <div class="flex justify-center gap-3 flex-wrap mb-6 fade-up fade-up-1">
       <span style="background:#0F172A;color:#fff;font-size:13px;font-weight:700;padding:6px 14px;border-radius:8px;letter-spacing:0.5px;">🎮 FREE GAMES</span>
-      <span style="background:#fff;color:#334155;font-size:13px;font-weight:700;padding:6px 14px;border-radius:8px;border:2px solid #E5E7EB;letter-spacing:0.5px;">⚡ INSTANT PLAY</span>
-      <span style="background:#fff;color:#334155;font-size:13px;font-weight:700;padding:6px 14px;border-radius:8px;border:2px solid #E5E7EB;letter-spacing:0.5px;">🔒 100% PRIVATE</span>
+      <span style="background:#0F172A;color:#fff;font-size:13px;font-weight:700;padding:6px 14px;border-radius:8px;letter-spacing:0.5px;">⚡ INSTANT PLAY</span>
+      <span style="background:#0F172A;color:#fff;font-size:13px;font-weight:700;padding:6px 14px;border-radius:8px;letter-spacing:0.5px;">🎯 100% FUN</span>
     </div>
     <!-- Logo -->
     <div class="fade-up fade-up-2" style="display:flex;justify-content:center;margin-bottom:16px;">
@@ -164,7 +164,7 @@
     </div>
     <!-- Headline -->
     <h1 class="hero-grad fade-up fade-up-3" style="font-size:clamp(2.8rem,8vw,5rem);font-weight:700;line-height:1.05;letter-spacing:-0.02em;margin:0 0 16px;">
-      Mini Game Planet
+      Free Online Games
     </h1>
     <!-- Subtitle -->
     <p class="fade-up fade-up-4" style="color:#64748B;font-size:clamp(1rem,2.5vw,1.25rem);max-width:600px;margin:0 auto 28px;line-height:1.6;">
@@ -188,7 +188,13 @@
     <div id="category-pills" class="flex justify-center flex-wrap gap-3"></div>
   </section>
 
-  <!-- ═══ GAME COUNT + GRID ═══ -->
+  <!-- ═══ HOT THIS WEEK ═══ -->
+  <section id="hot-section" class="max-w-7xl mx-auto px-4 pb-6">
+    <h2 id="hot-heading" style="font-size:22px;font-weight:700;margin-bottom:14px;">🔥 Hot This Week</h2>
+    <div id="hot-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;"></div>
+  </section>
+
+  <!-- ═══ ALL GAMES ═══ -->
   <section class="max-w-7xl mx-auto px-4 pb-12">
     <div id="game-count" style="font-family:'DM Mono',monospace;font-size:15px;color:#94A3B8;margin-bottom:14px;"></div>
     <div id="game-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;"></div>
@@ -428,13 +434,55 @@
     seededShuffle(allDisplayGames.map(g => g.slug), weekNum * 7919).slice(0, 10)
   );
 
-  function renderGrid() {
-    let filtered = getFilteredGames();
-    // Sort alphabetically by name
-    filtered = [...filtered].sort((a, b) => a.name.localeCompare(b.name));
-    countEl.textContent = `${filtered.length} game${filtered.length !== 1 ? 's' : ''}`;
+  const hotGridEl = document.getElementById('hot-grid');
+  const hotSection = document.getElementById('hot-section');
+  const hotHeading = document.getElementById('hot-heading');
 
-    if (filtered.length === 0) {
+  function renderGameCard(g, showHotBadge) {
+    const href = g.built ? `/games/${g.slug}` : '#';
+    const opacity = g.built ? '1' : '0.65';
+    return `
+    <a href="${href}" style="text-decoration:none;display:block;opacity:${opacity};" ${!g.built ? 'title="Coming soon"' : ''}>
+      <div class="game-tile" style="position:relative;overflow:hidden;border-radius:14px;height:200px;background:${g.accent};cursor:pointer;" onmouseover="this.style.boxShadow='0 8px 28px ${g.accent}55'" onmouseout="this.style.boxShadow=''">
+        ${showHotBadge ? `<div style="position:absolute;top:10px;left:10px;z-index:2;background:#fff;color:${g.accent};font-size:11px;font-weight:900;padding:4px 10px;border-radius:20px;letter-spacing:0.3px;">HOT 🔥</div>` : ''}
+        <div class="tile-bg-emoji" style="position:absolute;bottom:-10px;right:-10px;font-size:140px;opacity:0.1;transform:rotate(-12deg);line-height:1;transition:opacity 0.2s,transform 0.2s;pointer-events:none;">${g.icon}</div>
+        <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,0.35) 0%, transparent 100%);pointer-events:none;"></div>
+        <div style="position:absolute;bottom:14px;left:14px;right:14px;z-index:1;">
+          <div class="tile-emoji" style="font-size:40px;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));margin-bottom:6px;transition:transform 0.15s;">${g.icon}</div>
+          <div style="color:#fff;font-weight:700;font-size:18px;text-shadow:0 1px 3px rgba(0,0,0,0.3);line-height:1.2;">${g.name}</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
+            <span style="color:rgba(255,255,255,0.8);font-size:13px;">${g.category}</span>
+            <span class="tile-play" style="color:#fff;font-size:13px;font-weight:900;opacity:0;transform:translateX(-8px);transition:opacity 0.15s,transform 0.15s;">${g.built ? 'PLAY →' : 'SOON'}</span>
+          </div>
+        </div>
+      </div>
+    </a>`;
+  }
+
+  function renderGrid() {
+    const filtered = getFilteredGames();
+    const isSearching = searchTerm || activeCategory;
+
+    // Split into hot and rest
+    const hotGames = filtered.filter(g => hotSlugs.has(g.slug));
+    const restGames = filtered.filter(g => !hotSlugs.has(g.slug));
+
+    // Sort each group alphabetically
+    hotGames.sort((a, b) => a.name.localeCompare(b.name));
+    restGames.sort((a, b) => a.name.localeCompare(b.name));
+
+    const totalCount = filtered.length;
+    countEl.textContent = `${totalCount} game${totalCount !== 1 ? 's' : ''}`;
+
+    // Show/hide hot section
+    if (hotGames.length > 0 && !isSearching) {
+      hotSection.style.display = '';
+      hotGridEl.innerHTML = hotGames.map(g => renderGameCard(g, true)).join('');
+    } else {
+      hotSection.style.display = 'none';
+    }
+
+    if (totalCount === 0) {
       gridEl.innerHTML = `
         <div style="grid-column:1/-1;text-align:center;padding:56px 16px;">
           <div style="font-size:48px;margin-bottom:14px;">🔍</div>
@@ -444,27 +492,13 @@
       return;
     }
 
-    gridEl.innerHTML = filtered.map(g => {
-      const isHot = hotSlugs.has(g.slug);
-      const href = g.built ? `/games/${g.slug}` : '#';
-      const opacity = g.built ? '1' : '0.65';
-      return `
-      <a href="${href}" style="text-decoration:none;display:block;opacity:${opacity};" ${!g.built ? 'title="Coming soon"' : ''}>
-        <div class="game-tile" style="position:relative;overflow:hidden;border-radius:14px;height:200px;background:${g.accent};cursor:pointer;" onmouseover="this.style.boxShadow='0 8px 28px ${g.accent}55'" onmouseout="this.style.boxShadow=''">
-          ${isHot ? `<div style="position:absolute;top:10px;left:10px;z-index:2;background:#fff;color:${g.accent};font-size:11px;font-weight:900;padding:4px 10px;border-radius:20px;letter-spacing:0.3px;">HOT 🔥</div>` : ''}
-          <div class="tile-bg-emoji" style="position:absolute;bottom:-10px;right:-10px;font-size:140px;opacity:0.1;transform:rotate(-12deg);line-height:1;transition:opacity 0.2s,transform 0.2s;pointer-events:none;">${g.icon}</div>
-          <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,0.35) 0%, transparent 100%);pointer-events:none;"></div>
-          <div style="position:absolute;bottom:14px;left:14px;right:14px;z-index:1;">
-            <div class="tile-emoji" style="font-size:40px;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));margin-bottom:6px;transition:transform 0.15s;">${g.icon}</div>
-            <div style="color:#fff;font-weight:700;font-size:18px;text-shadow:0 1px 3px rgba(0,0,0,0.3);line-height:1.2;">${g.name}</div>
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
-              <span style="color:rgba(255,255,255,0.8);font-size:13px;">${g.category}</span>
-              <span class="tile-play" style="color:#fff;font-size:13px;font-weight:900;opacity:0;transform:translateX(-8px);transition:opacity 0.15s,transform 0.15s;">${g.built ? 'PLAY →' : 'SOON'}</span>
-            </div>
-          </div>
-        </div>
-      </a>`;
-    }).join('');
+    // When searching/filtering, show all results in the main grid (no split)
+    if (isSearching) {
+      const allSorted = [...filtered].sort((a, b) => a.name.localeCompare(b.name));
+      gridEl.innerHTML = allSorted.map(g => renderGameCard(g, hotSlugs.has(g.slug))).join('');
+    } else {
+      gridEl.innerHTML = restGames.map(g => renderGameCard(g, false)).join('');
+    }
   }
 
   renderGrid();
@@ -472,9 +506,9 @@
   // ── Responsive Grid — 4 columns on desktop ──
   function updateGridCols() {
     const w = window.innerWidth;
-    if (w >= 1024) gridEl.style.gridTemplateColumns = 'repeat(4,1fr)';
-    else if (w >= 640) gridEl.style.gridTemplateColumns = 'repeat(3,1fr)';
-    else gridEl.style.gridTemplateColumns = 'repeat(2,1fr)';
+    const cols = w >= 1024 ? 'repeat(4,1fr)' : w >= 640 ? 'repeat(3,1fr)' : 'repeat(2,1fr)';
+    gridEl.style.gridTemplateColumns = cols;
+    hotGridEl.style.gridTemplateColumns = cols;
   }
   updateGridCols();
   window.addEventListener('resize', updateGridCols);
