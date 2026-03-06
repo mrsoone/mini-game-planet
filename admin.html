@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | MiniGamePlanet</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+  tailwind.config = {
+    theme: { extend: { fontFamily: { 'sans': ['"Space Grotesk"', 'system-ui', 'sans-serif'], 'mono': ['"DM Mono"', 'monospace'] } } }
+  }
+  </script>
+  <style>
+    .hero-grad { background:linear-gradient(135deg,#0891B2 0%,#2563EB 22%,#7C3AED 44%,#E11D48 66%,#EA580C 82%,#D97706 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:heroShift 8s ease-in-out infinite; }
+    @keyframes heroShift { 0%,100%{background-position:0% 50%;}50%{background-position:100% 50%;} }
+    .card { background:#fff;border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.06); }
+    .badge { display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px; }
+    details summary { cursor:pointer;user-select:none; }
+    details summary::-webkit-details-marker { display:none; }
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+
+  <!-- Admin Nav -->
+  <nav style="background:#fff;border-bottom:2px solid #0F172A;height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span style="font-size:20px;">🔧</span>
+      <span style="font-weight:700;font-size:16px;">Admin Dashboard</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <a href="/" style="font-size:12px;color:#94A3B8;text-decoration:none;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">View Site</a>
+      <a href="/admin/logout" style="font-size:12px;color:#DC2626;font-weight:600;text-decoration:none;padding:4px 10px;border:1px solid #DC2626;border-radius:6px;" onmouseover="this.style.background='#DC2626';this.style.color='#fff'" onmouseout="this.style.background='';this.style.color='#DC2626'">Logout</a>
+    </div>
+  </nav>
+
+  <main class="max-w-6xl mx-auto px-4 py-6 space-y-6">
+
+    <!-- ═══ QUICK LINKS ═══ -->
+    <section>
+      <h2 style="font-size:18px;font-weight:700;margin-bottom:12px;">🔗 Quick Links</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;">
+        <a href="https://analytics.google.com" target="_blank" rel="noopener" class="card" style="text-decoration:none;text-align:center;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 4px 16px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='0 1px 3px rgba(0,0,0,0.06)'">
+          <div style="font-size:24px;">📊</div>
+          <div style="font-size:12px;font-weight:600;color:#0F172A;margin-top:4px;">Google Analytics</div>
+        </a>
+        <a href="https://search.google.com/search-console" target="_blank" rel="noopener" class="card" style="text-decoration:none;text-align:center;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 4px 16px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='0 1px 3px rgba(0,0,0,0.06)'">
+          <div style="font-size:24px;">🔍</div>
+          <div style="font-size:12px;font-weight:600;color:#0F172A;margin-top:4px;">Search Console</div>
+        </a>
+        <a href="https://www.bing.com/webmasters" target="_blank" rel="noopener" class="card" style="text-decoration:none;text-align:center;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 4px 16px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='0 1px 3px rgba(0,0,0,0.06)'">
+          <div style="font-size:24px;">🅱️</div>
+          <div style="font-size:12px;font-weight:600;color:#0F172A;margin-top:4px;">Bing Webmaster</div>
+        </a>
+        <a href="https://www.google.com/adsense" target="_blank" rel="noopener" class="card" style="text-decoration:none;text-align:center;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 4px 16px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='0 1px 3px rgba(0,0,0,0.06)'">
+          <div style="font-size:24px;">💰</div>
+          <div style="font-size:12px;font-weight:600;color:#0F172A;margin-top:4px;">Google AdSense</div>
+        </a>
+        <a href="https://github.com/OWNER/REPO" target="_blank" rel="noopener" class="card" style="text-decoration:none;text-align:center;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 4px 16px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='0 1px 3px rgba(0,0,0,0.06)'">
+          <div style="font-size:24px;">🐙</div>
+          <div style="font-size:12px;font-weight:600;color:#0F172A;margin-top:4px;">GitHub Repo</div>
+        </a>
+        <a href="https://dash.cloudflare.com" target="_blank" rel="noopener" class="card" style="text-decoration:none;text-align:center;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 4px 16px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='0 1px 3px rgba(0,0,0,0.06)'">
+          <div style="font-size:24px;">☁️</div>
+          <div style="font-size:12px;font-weight:600;color:#0F172A;margin-top:4px;">Cloudflare</div>
+        </a>
+      </div>
+    </section>
+
+    <!-- ═══ GAME INVENTORY ═══ -->
+    <section>
+      <h2 style="font-size:18px;font-weight:700;margin-bottom:12px;">🎮 Game Inventory</h2>
+      <div id="inventory-stats" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;"></div>
+      <div id="category-breakdown" class="card" style="margin-bottom:16px;overflow-x:auto;"></div>
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap;">
+          <input id="inv-search" type="text" placeholder="Search games..." style="flex:1;min-width:200px;padding:8px 12px;border:2px solid #E5E7EB;border-radius:8px;font-family:inherit;font-size:13px;outline:none;" onfocus="this.style.borderColor='#2563EB'" onblur="this.style.borderColor='#E5E7EB'">
+          <select id="inv-filter" style="padding:8px 12px;border:2px solid #E5E7EB;border-radius:8px;font-family:inherit;font-size:13px;outline:none;cursor:pointer;">
+            <option value="">All Categories</option>
+          </select>
+          <select id="inv-built" style="padding:8px 12px;border:2px solid #E5E7EB;border-radius:8px;font-family:inherit;font-size:13px;outline:none;cursor:pointer;">
+            <option value="">All Status</option>
+            <option value="true">Built ✅</option>
+            <option value="false">Not Built ❌</option>
+          </select>
+        </div>
+        <div id="game-list" style="max-height:400px;overflow-y:auto;"></div>
+      </div>
+    </section>
+
+    <!-- ═══ HEALTH SCANNER ═══ -->
+    <section>
+      <h2 style="font-size:18px;font-weight:700;margin-bottom:12px;">🔍 Health Scanner</h2>
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+          <button id="run-scan" style="padding:10px 20px;background:#0F172A;color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;">🔍 Run Health Scan</button>
+          <button id="copy-report" style="padding:10px 20px;background:#fff;color:#334155;border:2px solid #E5E7EB;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;display:none;">📋 Copy Report</button>
+          <span id="scan-status" style="font-size:12px;color:#94A3B8;"></span>
+        </div>
+        <div id="scan-summary" style="display:none;margin-bottom:16px;"></div>
+        <div id="scan-results"></div>
+      </div>
+    </section>
+
+    <!-- ═══ MANUAL CHECKLIST ═══ -->
+    <section>
+      <h2 style="font-size:18px;font-weight:700;margin-bottom:12px;">✅ Deployment Checklist</h2>
+      <div class="card" id="checklist"></div>
+    </section>
+
+  </main>
+
+  <script type="module">
+  import { games, categories } from '/data/games.js';
+
+  // ─── INVENTORY ───
+  const builtGames = games.filter(g => g.built);
+  const totalCount = games.length;
+  const builtCount = builtGames.length;
+  const unbuiltCount = totalCount - builtCount;
+
+  document.getElementById('inventory-stats').innerHTML = `
+    <div class="card" style="flex:1;min-width:120px;text-align:center;">
+      <div style="font-family:'DM Mono',monospace;font-size:28px;font-weight:700;color:#0F172A;">${totalCount}</div>
+      <div style="font-size:10px;color:#94A3B8;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Total Games</div>
+    </div>
+    <div class="card" style="flex:1;min-width:120px;text-align:center;">
+      <div style="font-family:'DM Mono',monospace;font-size:28px;font-weight:700;color:#059669;">${builtCount}</div>
+      <div style="font-size:10px;color:#94A3B8;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Built</div>
+    </div>
+    <div class="card" style="flex:1;min-width:120px;text-align:center;">
+      <div style="font-family:'DM Mono',monospace;font-size:28px;font-weight:700;color:#DC2626;">${unbuiltCount}</div>
+      <div style="font-size:10px;color:#94A3B8;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Not Built</div>
+    </div>
+  `;
+
+  // Category breakdown
+  const catBreakdown = categories.map(cat => {
+    const catGames = games.filter(g => g.category === cat.name);
+    const catBuilt = catGames.filter(g => g.built);
+    return { ...cat, total: catGames.length, built: catBuilt.length };
+  });
+
+  document.getElementById('category-breakdown').innerHTML = `
+    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+      <thead><tr style="border-bottom:2px solid #E5E7EB;">
+        <th style="padding:8px;text-align:left;font-weight:600;">Category</th>
+        <th style="padding:8px;text-align:center;font-weight:600;">Total</th>
+        <th style="padding:8px;text-align:center;font-weight:600;">Built</th>
+        <th style="padding:8px;text-align:center;font-weight:600;">Progress</th>
+      </tr></thead>
+      <tbody>${catBreakdown.map(c => `
+        <tr style="border-bottom:1px solid #F1F5F9;">
+          <td style="padding:8px;"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${c.accent};margin-right:6px;vertical-align:middle;"></span>${c.icon} ${c.name}</td>
+          <td style="padding:8px;text-align:center;font-family:'DM Mono',monospace;">${c.total}</td>
+          <td style="padding:8px;text-align:center;font-family:'DM Mono',monospace;">${c.built}</td>
+          <td style="padding:8px;text-align:center;">
+            <div style="background:#E5E7EB;border-radius:4px;height:6px;width:80px;display:inline-block;vertical-align:middle;">
+              <div style="background:${c.accent};border-radius:4px;height:6px;width:${c.total>0?(c.built/c.total*100):0}%;"></div>
+            </div>
+            <span style="font-size:11px;color:#94A3B8;margin-left:4px;">${c.total>0?Math.round(c.built/c.total*100):0}%</span>
+          </td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  `;
+
+  // Game list with filter
+  const filterSelect = document.getElementById('inv-filter');
+  categories.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.name;
+    opt.textContent = `${c.icon} ${c.name}`;
+    filterSelect.appendChild(opt);
+  });
+
+  function renderGameList() {
+    const search = document.getElementById('inv-search').value.toLowerCase();
+    const catFilter = filterSelect.value;
+    const builtFilter = document.getElementById('inv-built').value;
+
+    let list = games;
+    if (catFilter) list = list.filter(g => g.category === catFilter);
+    if (builtFilter) list = list.filter(g => String(g.built) === builtFilter);
+    if (search) list = list.filter(g => g.name.toLowerCase().includes(search) || g.slug.toLowerCase().includes(search));
+
+    document.getElementById('game-list').innerHTML = `
+      <table style="width:100%;border-collapse:collapse;font-size:12px;">
+        <thead><tr style="border-bottom:2px solid #E5E7EB;">
+          <th style="padding:6px 8px;text-align:left;font-weight:600;">Name</th>
+          <th style="padding:6px 8px;text-align:left;font-weight:600;">Slug</th>
+          <th style="padding:6px 8px;text-align:left;font-weight:600;">Category</th>
+          <th style="padding:6px 8px;text-align:center;font-weight:600;">Built</th>
+          <th style="padding:6px 8px;text-align:center;font-weight:600;">Color</th>
+        </tr></thead>
+        <tbody>${list.map(g => `
+          <tr style="border-bottom:1px solid #F1F5F9;">
+            <td style="padding:6px 8px;font-weight:500;">${g.icon} ${g.name}</td>
+            <td style="padding:6px 8px;font-family:'DM Mono',monospace;font-size:11px;color:#64748B;">${g.slug}</td>
+            <td style="padding:6px 8px;">${g.category}</td>
+            <td style="padding:6px 8px;text-align:center;">${g.built ? '✅' : '❌'}</td>
+            <td style="padding:6px 8px;text-align:center;"><div style="width:16px;height:16px;border-radius:4px;background:${g.accent};display:inline-block;vertical-align:middle;"></div></td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+      <div style="padding:8px;font-size:11px;color:#94A3B8;text-align:right;">${list.length} of ${games.length} games</div>
+    `;
+  }
+
+  document.getElementById('inv-search').addEventListener('input', renderGameList);
+  filterSelect.addEventListener('change', renderGameList);
+  document.getElementById('inv-built').addEventListener('change', renderGameList);
+  renderGameList();
+
+  // ─── HEALTH SCANNER ───
+  let scanReport = [];
+
+  document.getElementById('run-scan').addEventListener('click', async () => {
+    const btn = document.getElementById('run-scan');
+    const status = document.getElementById('scan-status');
+    const summary = document.getElementById('scan-summary');
+    const results = document.getElementById('scan-results');
+    const copyBtn = document.getElementById('copy-report');
+
+    btn.disabled = true;
+    btn.textContent = '⏳ Scanning...';
+    status.textContent = '';
+    summary.style.display = 'none';
+    results.innerHTML = '';
+    scanReport = [];
+
+    const builtSlugs = games.filter(g => g.built).map(g => g.slug);
+    const casinoSlugs = games.filter(g => g.category === 'Casino' && g.built).map(g => g.slug);
+
+    const pages = [
+      { url: '/', label: 'Homepage', type: 'infra' },
+      { url: '/about', label: 'About', type: 'infra' },
+      { url: '/privacy', label: 'Privacy', type: 'infra' },
+      { url: '/terms', label: 'Terms', type: 'infra' },
+      { url: '/cookies', label: 'Cookies', type: 'infra' },
+      { url: '/licenses', label: 'Licenses', type: 'infra' },
+      { url: '/sitemap.xml', label: 'Sitemap', type: 'infra' },
+      { url: '/robots.txt', label: 'Robots.txt', type: 'infra' },
+      { url: '/ads.txt', label: 'ads.txt', type: 'infra' },
+      ...builtSlugs.map(s => ({ url: `/games/${s}`, label: games.find(g=>g.slug===s).name, type: 'game', slug: s }))
+    ];
+
+    let pass = 0, warn = 0, fail = 0;
+    const total = pages.length;
+    let done = 0;
+
+    for (const page of pages) {
+      const checks = [];
+      try {
+        const resp = await fetch(page.url);
+        if (resp.ok) {
+          checks.push({ ok: true, msg: `HTTP ${resp.status}` });
+          const text = await resp.text();
+
+          if (page.type === 'game') {
+            if (text.includes('<title>')) checks.push({ ok: true, msg: 'Title present' });
+            else checks.push({ ok: false, msg: 'Missing <title>' });
+
+            if (text.includes('meta name="description"')) checks.push({ ok: true, msg: 'Meta description present' });
+            else checks.push({ ok: false, msg: 'Missing meta description' });
+
+            if (text.includes('rel="canonical"')) checks.push({ ok: true, msg: 'Canonical present' });
+            else checks.push({ ok: false, msg: 'Missing canonical' });
+
+            if (text.includes('"VideoGame"')) checks.push({ ok: true, msg: 'VideoGame JSON-LD present' });
+            else checks.push({ ok: false, msg: 'Missing VideoGame JSON-LD' });
+
+            if (text.includes('og:title')) checks.push({ ok: true, msg: 'OG tags present' });
+            else checks.push({ ok: false, msg: 'Missing OG tags' });
+
+            if (text.includes('G-XXXXXXXXXX')) checks.push({ ok: null, msg: 'GA4 placeholder (replace before launch)' });
+            else if (text.includes('googletagmanager.com')) checks.push({ ok: true, msg: 'GA4 snippet present' });
+            else checks.push({ ok: false, msg: 'Missing GA4 snippet' });
+
+            if (text.includes('consent.js')) checks.push({ ok: true, msg: 'consent.js imported' });
+            else checks.push({ ok: false, msg: 'Missing consent.js' });
+
+            if (text.includes('analytics.js')) checks.push({ ok: true, msg: 'analytics.js imported' });
+            else checks.push({ ok: false, msg: 'Missing analytics.js' });
+
+            if (text.includes('initToolPage') || text.includes('shared.js')) checks.push({ ok: true, msg: 'shared.js present' });
+            else checks.push({ ok: false, msg: 'Missing shared.js' });
+
+            if (text.includes('<article')) {
+              const articleMatch = text.match(/<article[\s\S]*?<\/article>/i);
+              if (articleMatch) {
+                const wordCount = articleMatch[0].replace(/<[^>]*>/g, '').split(/\s+/).filter(w=>w).length;
+                if (wordCount >= 400) checks.push({ ok: true, msg: `SEO content: ${wordCount} words` });
+                else checks.push({ ok: null, msg: `SEO content: ${wordCount} words (target 500-800)` });
+              }
+            } else {
+              checks.push({ ok: false, msg: 'Missing <article> SEO content' });
+            }
+
+            if (text.includes('<h2')) checks.push({ ok: true, msg: 'H2 heading present' });
+            else checks.push({ ok: false, msg: 'Missing H2 heading' });
+
+            if (text.includes('tailwindcss.com')) checks.push({ ok: true, msg: 'Tailwind CDN loaded' });
+            else checks.push({ ok: false, msg: 'Missing Tailwind CDN' });
+
+            if (casinoSlugs.includes(page.slug)) {
+              if (text.includes('entertainment purposes only')) checks.push({ ok: true, msg: 'Gambling disclaimer present' });
+              else checks.push({ ok: false, msg: 'Missing gambling disclaimer (Casino game)' });
+            }
+
+            if (text.includes('pub-XXXXXXXXXXXXXXXX')) checks.push({ ok: null, msg: 'AdSense placeholder (replace before launch)' });
+
+          } else if (page.type === 'infra') {
+            checks.push({ ok: true, msg: 'Content loaded' });
+            if (page.url === '/' && text.includes('VERIFICATION_CODE_HERE')) {
+              checks.push({ ok: null, msg: 'Search Console verification placeholder' });
+            }
+            if (page.url === '/' && text.includes('BING_VERIFICATION_CODE_HERE')) {
+              checks.push({ ok: null, msg: 'Bing verification placeholder' });
+            }
+          }
+        } else {
+          checks.push({ ok: false, msg: `HTTP ${resp.status}` });
+        }
+      } catch (e) {
+        checks.push({ ok: false, msg: `Fetch error: ${e.message}` });
+      }
+
+      const pagePass = checks.filter(c => c.ok === true).length;
+      const pageWarn = checks.filter(c => c.ok === null).length;
+      const pageFail = checks.filter(c => c.ok === false).length;
+      pass += pagePass;
+      warn += pageWarn;
+      fail += pageFail;
+
+      scanReport.push({ page, checks, pagePass, pageWarn, pageFail });
+      done++;
+      status.textContent = `${done}/${total} pages scanned...`;
+    }
+
+    const totalChecks = pass + warn + fail;
+    const score = totalChecks > 0 ? Math.round((pass / totalChecks) * 100) : 0;
+
+    summary.style.display = 'flex';
+    summary.style.gap = '12px';
+    summary.style.flexWrap = 'wrap';
+    summary.innerHTML = `
+      <div style="flex:1;min-width:100px;background:#ECFDF5;border-radius:8px;padding:12px;text-align:center;">
+        <div style="font-size:20px;font-weight:700;color:#059669;font-family:'DM Mono',monospace;">${pass}</div>
+        <div style="font-size:10px;color:#059669;font-weight:600;">✅ PASS</div>
+      </div>
+      <div style="flex:1;min-width:100px;background:#FFFBEB;border-radius:8px;padding:12px;text-align:center;">
+        <div style="font-size:20px;font-weight:700;color:#D97706;font-family:'DM Mono',monospace;">${warn}</div>
+        <div style="font-size:10px;color:#D97706;font-weight:600;">⚠️ WARN</div>
+      </div>
+      <div style="flex:1;min-width:100px;background:#FEF2F2;border-radius:8px;padding:12px;text-align:center;">
+        <div style="font-size:20px;font-weight:700;color:#DC2626;font-family:'DM Mono',monospace;">${fail}</div>
+        <div style="font-size:10px;color:#DC2626;font-weight:600;">❌ FAIL</div>
+      </div>
+      <div style="flex:1;min-width:100px;background:#EFF6FF;border-radius:8px;padding:12px;text-align:center;">
+        <div style="font-size:20px;font-weight:700;color:#2563EB;font-family:'DM Mono',monospace;">${score}%</div>
+        <div style="font-size:10px;color:#2563EB;font-weight:600;">HEALTH</div>
+      </div>
+    `;
+
+    // Sort: failures first
+    scanReport.sort((a, b) => b.pageFail - a.pageFail);
+
+    results.innerHTML = scanReport.map(r => `
+      <details style="border:1px solid #E5E7EB;border-radius:8px;margin-bottom:6px;overflow:hidden;" ${r.pageFail > 0 ? 'open' : ''}>
+        <summary style="padding:10px 14px;background:${r.pageFail > 0 ? '#FEF2F2' : r.pageWarn > 0 ? '#FFFBEB' : '#F0FDF4'};display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;">
+          <span>${r.pageFail > 0 ? '❌' : r.pageWarn > 0 ? '⚠️' : '✅'}</span>
+          <span style="flex:1;">${r.page.label}</span>
+          <span style="font-family:'DM Mono',monospace;font-size:11px;color:#94A3B8;">${r.page.url}</span>
+          <span class="badge" style="background:${r.pageFail>0?'#DC2626':r.pageWarn>0?'#D97706':'#059669'};color:#fff;">${r.pagePass}✓ ${r.pageWarn}⚠ ${r.pageFail}✗</span>
+        </summary>
+        <div style="padding:10px 14px;font-size:12px;background:#fff;">
+          ${r.checks.map(c => `
+            <div style="padding:3px 0;color:${c.ok === true ? '#059669' : c.ok === null ? '#D97706' : '#DC2626'};">
+              ${c.ok === true ? '✅' : c.ok === null ? '⚠️' : '❌'} ${c.msg}
+            </div>
+          `).join('')}
+        </div>
+      </details>
+    `).join('');
+
+    btn.disabled = false;
+    btn.textContent = '🔍 Run Health Scan';
+    status.textContent = `Scan complete. ${total} pages, ${totalChecks} checks.`;
+    copyBtn.style.display = 'inline-block';
+
+    sessionStorage.setItem('mgp_health_scan', JSON.stringify({ pass, warn, fail, score, report: scanReport.map(r => ({ label: r.page.label, url: r.page.url, checks: r.checks })) }));
+  });
+
+  document.getElementById('copy-report').addEventListener('click', () => {
+    const data = JSON.parse(sessionStorage.getItem('mgp_health_scan') || '{}');
+    if (!data.report) return;
+    let text = `MiniGamePlanet Health Scan Report\n${'='.repeat(40)}\nScore: ${data.score}%  |  Pass: ${data.pass}  |  Warn: ${data.warn}  |  Fail: ${data.fail}\n\n`;
+    data.report.forEach(r => {
+      text += `${r.label} (${r.url})\n`;
+      r.checks.forEach(c => { text += `  ${c.ok === true ? '✓' : c.ok === null ? '⚠' : '✗'} ${c.msg}\n`; });
+      text += '\n';
+    });
+    navigator.clipboard.writeText(text).then(() => {
+      document.getElementById('copy-report').textContent = '✅ Copied!';
+      setTimeout(() => { document.getElementById('copy-report').textContent = '📋 Copy Report'; }, 2000);
+    });
+  });
+
+  // Load cached scan if available
+  const cached = sessionStorage.getItem('mgp_health_scan');
+  if (cached) {
+    document.getElementById('scan-status').textContent = 'Showing cached results. Click "Run Health Scan" to refresh.';
+  }
+
+  // ─── CHECKLIST ───
+  const checklistItems = [
+    { id: 'gsc', label: 'Google Search Console verified' },
+    { id: 'sitemap', label: 'Sitemap submitted' },
+    { id: 'bing', label: 'Bing Webmaster verified' },
+    { id: 'ga4', label: 'GA4 property configured' },
+    { id: 'adsense-app', label: 'AdSense application submitted' },
+    { id: 'adsense-ok', label: 'AdSense approved' },
+    { id: 'domain', label: 'Custom domain connected' },
+    { id: 'placeholders', label: 'All placeholder IDs replaced' },
+    { id: 'admin-env', label: 'Admin env vars set (ADMIN_PASSWORD, ADMIN_PIN, AUTH_SECRET)' },
+  ];
+
+  function loadChecklist() {
+    try { return JSON.parse(localStorage.getItem('mgp_admin_checklist') || '{}'); } catch { return {}; }
+  }
+  function saveChecklist(data) {
+    localStorage.setItem('mgp_admin_checklist', JSON.stringify(data));
+  }
+
+  function renderChecklist() {
+    const data = loadChecklist();
+    document.getElementById('checklist').innerHTML = checklistItems.map(item => `
+      <label style="display:flex;align-items:center;gap:10px;padding:8px 0;cursor:pointer;border-bottom:1px solid #F1F5F9;">
+        <input type="checkbox" data-id="${item.id}" ${data[item.id] ? 'checked' : ''} style="width:18px;height:18px;accent-color:#059669;cursor:pointer;">
+        <span style="font-size:13px;${data[item.id] ? 'color:#94A3B8;text-decoration:line-through;' : ''}">${item.label}</span>
+      </label>
+    `).join('');
+
+    document.querySelectorAll('#checklist input[type=checkbox]').forEach(cb => {
+      cb.addEventListener('change', () => {
+        const d = loadChecklist();
+        d[cb.dataset.id] = cb.checked;
+        saveChecklist(d);
+        renderChecklist();
+      });
+    });
+  }
+  renderChecklist();
+  </script>
+</body>
+</html>

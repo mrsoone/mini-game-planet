@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About | MiniGamePlanet</title>
+  <meta name="description" content="MiniGamePlanet is a growing collection of free browser games. No downloads, no signups, no tracking without consent. Learn more about us.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/about">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+  tailwind.config = {
+    theme: { extend: { fontFamily: { 'sans': ['"Space Grotesk"', 'system-ui', 'sans-serif'], 'mono': ['"DM Mono"', 'monospace'] } } }
+  }
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('consent', 'default', { 'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500 });
+  gtag('config', 'G-XXXXXXXXXX');
+  </script>
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="About | MiniGamePlanet">
+  <meta property="og:url" content="https://minigameplanet.com/about">
+  <meta property="og:site_name" content="MiniGamePlanet">
+  <style>
+    .hero-grad { background:linear-gradient(135deg,#0891B2 0%,#2563EB 22%,#7C3AED 44%,#E11D48 66%,#EA580C 82%,#D97706 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:heroShift 8s ease-in-out infinite; }
+    @keyframes heroShift { 0%,100%{background-position:0% 50%;}50%{background-position:100% 50%;} }
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+
+  <main class="max-w-3xl mx-auto px-4 py-12">
+    <h1 style="font-size:28px;font-weight:700;margin-bottom:24px;">About MiniGamePlanet</h1>
+
+    <div style="font-size:15px;color:#334155;line-height:1.8;" class="space-y-6">
+
+      <p>MiniGamePlanet is a growing collection of free browser games you can play instantly — right here, right now, on whatever device you're reading this on. No app stores, no downloads, no accounts, no waiting. You open a page, you play a game. That's it.</p>
+
+      <p>We built MiniGamePlanet because we believe games should be accessible. Not locked behind paywalls, not buried in app store algorithms, not demanding your email before you can play. The web is the most universal platform in the world — every phone, tablet, and computer has a browser. So that's where we put our games.</p>
+
+      <h2 style="font-size:20px;font-weight:700;color:#0F172A;margin-top:24px;">What you'll find here</h2>
+
+      <p>Our library spans a wide range of categories: arcade classics like Snake and Pong, brain-teasing puzzles like Sudoku and 2048, beloved card games like Solitaire and Blackjack, word games, strategy games, board games, casual games, action games, creative builder tools, math challenges, and trivia quizzes. Whether you have two minutes or two hours, there's something here for you.</p>
+
+      <p>Every game is built with vanilla web technology — HTML, CSS, and JavaScript. No plugins, no frameworks, no dependencies that might break. The games are lightweight, fast, and work on any modern browser. Sound effects are generated procedurally using the Web Audio API (no audio files to download), and action games even support gamepad controllers if you have one plugged in.</p>
+
+      <h2 style="font-size:20px;font-weight:700;color:#0F172A;margin-top:24px;">Privacy first</h2>
+
+      <p>We take your privacy seriously. All game data — scores, progress, preferences — lives entirely in your browser and never touches a server. We use analytics only with your explicit consent, and you can change your cookie preferences at any time using the "Cookie Settings" button in the footer. There are no hidden trackers, no data brokers, no dark patterns. Read our <a href="/privacy" style="color:#2563EB;text-decoration:underline;">Privacy Policy</a> for the full details.</p>
+
+      <h2 style="font-size:20px;font-weight:700;color:#0F172A;margin-top:24px;">Who's behind this?</h2>
+
+      <p>MiniGamePlanet is operated by TPS Worldwide LLC, based in Phoenix, Arizona. We're a small team that believes the open web still has room for simple, fun experiences that respect the people using them.</p>
+
+      <h2 style="font-size:20px;font-weight:700;color:#0F172A;margin-top:24px;">Get in touch</h2>
+
+      <p>Have feedback, found a bug, or want to suggest a new game? We'd love to hear from you. Reach us at <strong>hello@minigameplanet.com</strong>.</p>
+
+      <div style="margin-top:24px;text-center;">
+        <a href="/" style="display:inline-block;background:#0F172A;color:#fff;padding:10px 24px;border-radius:8px;font-weight:600;font-size:14px;text-decoration:none;">← Back to Games</a>
+      </div>
+
+    </div>
+  </main>
+
+  <div id="footer-container"></div>
+
+  <script type="module">
+  import { renderNav, renderFooter } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  renderNav();
+  renderFooter();
+  initConsent();
+  </script>
+</body>
+</html>
