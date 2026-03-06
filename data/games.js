@@ -563,7 +563,7 @@ export const games = [
     icon: '❌',
     accent: '#0D9488',
     keywords: ['tic tac toe', 'noughts and crosses', 'x and o', 'strategy'],
-    built: false
+    built: true
   },
   {
     name: 'Connect Four',
@@ -573,7 +573,7 @@ export const games = [
     icon: '🔴',
     accent: '#0D9488',
     keywords: ['connect four', 'four in a row', 'drop game', 'strategy game'],
-    built: false
+    built: true
   },
   {
     name: 'Reversi',
@@ -583,7 +583,7 @@ export const games = [
     icon: '⚫',
     accent: '#0D9488',
     keywords: ['reversi', 'othello', 'flip game', 'board strategy'],
-    built: false
+    built: true
   },
   {
     name: 'Checkers',
@@ -593,7 +593,7 @@ export const games = [
     icon: '🔵',
     accent: '#0D9488',
     keywords: ['checkers', 'draughts', 'board game', 'jump game'],
-    built: false
+    built: true
   },
   {
     name: 'Chess',
@@ -603,7 +603,7 @@ export const games = [
     icon: '♟',
     accent: '#0D9488',
     keywords: ['chess', 'chess online', 'chess game', 'strategy board'],
-    built: false
+    built: true
   },
   {
     name: 'Battleship',
@@ -613,7 +613,7 @@ export const games = [
     icon: '🚢',
     accent: '#0D9488',
     keywords: ['battleship', 'naval game', 'ship hunt', 'grid strategy'],
-    built: false
+    built: true
   },
   {
     name: 'Dots and Boxes',
@@ -623,7 +623,7 @@ export const games = [
     icon: '▪',
     accent: '#0D9488',
     keywords: ['dots and boxes', 'dot game', 'line game', 'pencil game'],
-    built: false
+    built: true
   },
   {
     name: 'Gomoku',
@@ -633,7 +633,7 @@ export const games = [
     icon: '⚪',
     accent: '#0D9488',
     keywords: ['gomoku', 'five in a row', 'gobang', 'go board game'],
-    built: false
+    built: true
   },
   {
     name: 'Mancala',
@@ -643,7 +643,7 @@ export const games = [
     icon: '🥜',
     accent: '#0D9488',
     keywords: ['mancala', 'sowing game', 'kalah', 'ancient strategy'],
-    built: false
+    built: true
   },
   {
     name: 'Nim',
@@ -653,7 +653,7 @@ export const games = [
     icon: '🪨',
     accent: '#0D9488',
     keywords: ['nim', 'subtraction game', 'math strategy', 'take away game'],
-    built: false
+    built: true
   },
 
   // ─── CASUAL (10) ──────────────────────────────────────────────

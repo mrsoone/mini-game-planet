@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkers - Play Draughts Online | Mini Game Planet</title>
+  <meta name="description" content="Play Checkers (Draughts) online. Classic strategy board game with Red vs Black. Play vs AI or 2-player local. Free, no download required.">
+  <link rel="canonical" href="https://minigameplanet.com/games/checkers.html">
+  <!-- Open Graph -->
+  <meta property="og:title" content="Checkers - Play Draughts Online | Mini Game Planet">
+  <meta property="og:description" content="Play Checkers online. Classic strategy board game. Play vs AI or 2-player. Free.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/checkers.html">
+  <!-- AdSense (commented) -->
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXX" crossorigin="anonymous"></script> -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    .square-light { background: #E7E5E4; }
+    .square-dark { background: #78716C; }
+    .square-dark:hover { background: #57534E; }
+    .piece-red { background: radial-gradient(circle at 30% 30%, #EF4444, #B91C1C); }
+    .piece-black { background: radial-gradient(circle at 30% 30%, #404040, #171717); }
+    .piece-king::after { content: '♔'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: rgba(255,255,255,0.9); }
+    .valid-move { background: rgba(34, 197, 94, 0.4) !important; }
+    .valid-capture { background: rgba(239, 68, 68, 0.5) !important; }
+    .selected { box-shadow: 0 0 0 3px #3B82F6; }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Checkers",
+    "description": "Play Checkers (Draughts) online. Classic strategy board game with Red vs Black pieces.",
+    "applicationCategory": "Game",
+    "genre": "Strategy",
+    "url": "https://minigameplanet.com/games/checkers.html"
+  }
+  </script>
+</head>
+<body class="min-h-screen text-stone-800">
+  <div class="max-w-4xl mx-auto px-4 py-6">
+    <nav id="nav-container" class="mb-6 flex items-center gap-4 text-sm">
+      <a href="/" class="text-stone-600 hover:text-stone-900">Home</a>
+      <a href="/games/" class="text-stone-600 hover:text-stone-900">Games</a>
+      <span class="text-stone-400">/ Checkers</span>
+    </nav>
+
+    <main class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+      <h1 class="text-2xl md:text-3xl font-bold mb-2">Checkers</h1>
+      <p class="text-stone-600 mb-6">Classic strategy board game. Red vs Black. Click a piece, then a valid square to move.</p>
+
+      <div class="flex flex-wrap gap-4 items-center mb-6">
+        <div class="flex gap-2">
+          <select id="mode" class="px-3 py-2 rounded-lg border border-stone-300 font-mono text-sm">
+            <option value="pvp">2 Player</option>
+            <option value="ai-easy">vs AI (Easy)</option>
+            <option value="ai-medium">vs AI (Medium)</option>
+            <option value="ai-hard">vs AI (Hard)</option>
+          </select>
+          <button id="restart" class="px-4 py-2 rounded-lg bg-stone-200 hover:bg-stone-300 font-medium text-sm">Restart</button>
+        </div>
+        <button id="sound-toggle" class="px-3 py-2 rounded-lg border border-stone-300 text-sm" aria-label="Toggle sound">🔊 Sound</button>
+        <div class="font-mono text-sm text-stone-600 ml-auto">
+          <span id="session-stats">Games: 0 | Wins: 0 | Streak: 0</span>
+        </div>
+      </div>
+
+      <div class="flex flex-col md:flex-row gap-6 items-start">
+        <div class="flex-shrink-0">
+          <div id="board" class="inline-grid grid-cols-8 gap-0 w-[min(90vw,320px)] aspect-square border-2 border-stone-300 rounded-lg overflow-hidden shadow-md"></div>
+          <p id="status" class="mt-4 font-medium text-center">Red to move</p>
+        </div>
+        <div class="flex-1 min-w-0">
+          <article class="prose prose-stone max-w-none text-sm">
+            <h2 class="text-lg font-semibold mt-0">How to Play Checkers</h2>
+            <p>Checkers, also known as Draughts, is one of the oldest board games in the world. The game is played on an 8×8 board with 12 pieces per side. Red moves first, and players take turns moving their pieces diagonally forward.</p>
+            <h3 class="text-base font-semibold">Basic Rules</h3>
+            <p>Pieces move one square diagonally forward. If an opponent's piece is adjacent and the square beyond it is empty, you must jump over it and capture the piece. Captures are mandatory—if you can jump, you must. Multiple jumps in a single turn are allowed when landing on a square that enables another capture.</p>
+            <h3 class="text-base font-semibold">Kings</h3>
+            <p>When a piece reaches the opposite back row, it becomes a king. Kings can move and capture both forward and backward diagonally, making them powerful pieces. The game ends when one player has no pieces left or no valid moves available.</p>
+            <h3 class="text-base font-semibold">Strategy Tips</h3>
+            <p>Control the center of the board, protect your back row to prevent your opponent from making kings, and try to force your opponent into positions where they must give up pieces. Setting up double or triple jumps can turn the tide of the game. Sacrificing a piece to gain a positional advantage is a classic tactic in advanced play.</p>
+            <h3 class="text-base font-semibold">Play Online</h3>
+            <p>This free online Checkers game runs in your browser with no download required. Choose 2-player mode to play with a friend on the same device, or challenge the AI at Easy, Medium, or Hard difficulty. Track your session stats and build winning streaks as you improve your strategy.</p>
+          </article>
+        </div>
+      </div>
+
+      <div id="related-games" class="mt-8 pt-6 border-t border-stone-200">
+        <h3 class="text-sm font-semibold text-stone-600 mb-3">Related Games</h3>
+        <div class="flex flex-wrap gap-2">
+          <a href="/games/chess.html" class="px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-sm">Chess</a>
+          <a href="/games/connect4.html" class="px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-sm">Connect 4</a>
+          <a href="/games/tic-tac-toe.html" class="px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-sm">Tic-Tac-Toe</a>
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer-container" class="mt-6 text-center text-sm text-stone-500">
+      <p>© Mini Game Planet. Play Checkers and other strategy games free online.</p>
+    </footer>
+  </div>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playCollect } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('checkers');
+    initConsent();
+    initAudio?.();
+    trackGameView('checkers', 'Strategy');
+
+    const RED = 1, BLACK = -1;
+    const PIECE = 1, KING = 2;
+
+    let board = [];
+    let currentPlayer = RED;
+    let selected = null;
+    let validMoves = [];
+    let mustCapture = false;
+    let captureChain = null;
+    let sessionGames = 0, sessionWins = 0, sessionStreak = 0;
+    let soundOn = true;
+
+    const boardEl = document.getElementById('board');
+    const statusEl = document.getElementById('status');
+    const modeEl = document.getElementById('mode');
+    const restartEl = document.getElementById('restart');
+    const soundToggleEl = document.getElementById('sound-toggle');
+    const sessionStatsEl = document.getElementById('session-stats');
+
+    function secureRandom() {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] / (0xFFFFFFFF + 1);
+    }
+
+    function initBoard() {
+      board = Array(8).fill(null).map(() => Array(8).fill(0));
+      for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+          if ((r + c) % 2 === 1) {
+            if (r < 3) board[r][c] = BLACK * PIECE;
+            else if (r > 4) board[r][c] = RED * PIECE;
+          }
+        }
+      }
+      currentPlayer = RED;
+      selected = null;
+      validMoves = [];
+      mustCapture = false;
+      captureChain = null;
+    }
+
+    function getValidMoves(r, c) {
+      const piece = board[r][c];
+      if (!piece) return [];
+      const side = piece > 0 ? 1 : -1;
+      const isKing = Math.abs(piece) === KING;
+      const moves = [];
+      const dirs = isKing ? [[-1,-1],[-1,1],[1,-1],[1,1]] : (side === RED ? [[-1,-1],[-1,1]] : [[1,-1],[1,1]]);
+
+      for (const [dr, dc] of dirs) {
+        let nr = r + dr, nc = c + dc;
+        if (nr < 0 || nr > 7 || nc < 0 || nc > 7) continue;
+        const target = board[nr][nc];
+        if (target === 0) {
+          if (!mustCapture) moves.push({ r: nr, c: nc, capture: null });
+        } else if ((target > 0) !== (piece > 0)) {
+          let jr = nr + dr, jc = nc + dc;
+          if (jr >= 0 && jr <= 7 && jc >= 0 && jc <= 7 && board[jr][jc] === 0)
+            moves.push({ r: jr, c: jc, capture: { r: nr, c: nc } });
+        }
+      }
+      return moves;
+    }
+
+    function hasAnyCapture(player) {
+      for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+          if (board[r][c] && (board[r][c] > 0) === (player === RED)) {
+            const moves = getValidMoves(r, c);
+            if (moves.some(m => m.capture)) return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    function getCaptureMoves(r, c) {
+      const moves = getValidMoves(r, c);
+      const caps = moves.filter(m => m.capture);
+      return caps.length ? caps : moves;
+    }
+
+    function canContinueCapture(r, c) {
+      return getValidMoves(r, c).some(m => m.capture);
+    }
+
+    function getAllValidMoves(player) {
+      const all = [];
+      mustCapture = hasAnyCapture(player);
+      for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+          if (board[r][c] && (board[r][c] > 0) === (player === RED)) {
+            const moves = mustCapture ? getCaptureMoves(r, c) : getValidMoves(r, c);
+            for (const m of moves) all.push({ from: { r, c }, to: m });
+          }
+        }
+      }
+      return all;
+    }
+
+    function makeMove(fromR, fromC, toR, toC) {
+      const piece = board[fromR][fromC];
+      const move = getValidMoves(fromR, fromC).find(m => m.r === toR && m.c === toC);
+      if (!move) return false;
+
+      board[fromR][fromC] = 0;
+      board[toR][toC] = piece;
+
+      if (move.capture) {
+        board[move.capture.r][move.capture.c] = 0;
+        if (soundOn) playCollect?.();
+        if (canContinueCapture(toR, toC)) {
+          captureChain = { r: toR, c: toC };
+          return 'continue';
+        }
+      }
+      captureChain = null;
+
+      const promote = (piece > 0 && toR === 0) || (piece < 0 && toR === 7);
+      if (promote) board[toR][toC] = (piece > 0 ? 1 : -1) * KING;
+
+      return 'done';
+    }
+
+    function gameOver() {
+      const redMoves = getAllValidMoves(RED);
+      const blackMoves = getAllValidMoves(BLACK);
+      const redCount = board.flat().filter(x => x > 0).length;
+      const blackCount = board.flat().filter(x => x < 0).length;
+      if (redCount === 0 || redMoves.length === 0) return BLACK;
+      if (blackCount === 0 || blackMoves.length === 0) return RED;
+      return null;
+    }
+
+    function getAIMove(difficulty) {
+      const moves = getAllValidMoves(BLACK);
+      if (!moves.length) return null;
+
+      if (difficulty === 'easy') {
+        return moves[Math.floor(secureRandom() * moves.length)];
+      }
+
+      let best = moves[0];
+      let bestScore = -Infinity;
+
+      for (const move of moves) {
+        const sim = board.map(r => [...r]);
+        const piece = board[move.from.r][move.from.c];
+        board[move.from.r][move.from.c] = 0;
+        board[move.to.r][move.to.c] = piece;
+        if (move.to.capture) board[move.to.capture.r][move.to.capture.c] = 0;
+        const promote = (piece < 0 && move.to.r === 7);
+        if (promote) board[move.to.r][move.to.c] = -KING;
+
+        let score = 0;
+        for (let r = 0; r < 8; r++) {
+          for (let c = 0; c < 8; c++) {
+            const p = board[r][c];
+            if (p < 0) score += Math.abs(p) === KING ? 3 : 1;
+            if (p > 0) score -= Math.abs(p) === KING ? 3 : 1;
+          }
+        }
+        if (move.to.capture) score += 2;
+        if (difficulty === 'medium') score += (secureRandom() - 0.5) * 2;
+        if (score > bestScore) { bestScore = score; best = move; }
+        board = sim.map(r => [...r]);
+      }
+      return best;
+    }
+
+    function aiTurn() {
+      const mode = modeEl.value;
+      if (!mode.startsWith('ai-') || currentPlayer !== BLACK) return;
+      statusEl.textContent = 'Black thinking...';
+      const diff = mode.replace('ai-', '');
+      setTimeout(() => {
+        if (captureChain) {
+          const moves = getValidMoves(captureChain.r, captureChain.c).filter(m => m.capture);
+          if (moves.length) {
+            const m = diff === 'easy' ? moves[Math.floor(secureRandom() * moves.length)] : moves[0];
+            const result = makeMove(captureChain.r, captureChain.c, m.r, m.c);
+            if (result === 'continue') { render(); setTimeout(aiTurn, 300); return; }
+            captureChain = null;
+            currentPlayer = RED;
+            selected = null;
+            statusEl.textContent = 'Red to move';
+            render();
+            checkWinner();
+            return;
+          }
+          captureChain = null;
+        }
+        const move = getAIMove(diff);
+        if (move) {
+          const result = makeMove(move.from.r, move.from.c, move.to.r, move.to.c);
+          if (result === 'continue') { render(); setTimeout(aiTurn, 300); return; }
+          currentPlayer = RED;
+        }
+        selected = null;
+        statusEl.textContent = 'Red to move';
+        render();
+        checkWinner();
+        if (!gameOver() && mode.startsWith('ai-') && currentPlayer === BLACK) setTimeout(aiTurn, 400);
+      }, captureChain ? 200 : 400);
+    }
+
+    function checkWinner() {
+      const winner = gameOver();
+      if (winner) {
+        sessionGames++;
+        if (winner === RED) sessionWins++, sessionStreak++;
+        else sessionStreak = 0;
+        if (soundOn) playGameOver?.();
+        trackGameOver?.('checkers', winner === RED ? 'win' : 'loss');
+        statusEl.textContent = winner === RED ? 'Red wins!' : 'Black wins!';
+        updateStats();
+      }
+    }
+
+    function updateStats() {
+      sessionStatsEl.textContent = `Games: ${sessionGames} | Wins: ${sessionWins} | Streak: ${sessionStreak}`;
+    }
+
+    function render() {
+      boardEl.innerHTML = '';
+      for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+          const cell = document.createElement('div');
+          cell.className = `w-full aspect-square flex items-center justify-center cursor-pointer ${(r + c) % 2 === 0 ? 'square-light' : 'square-dark'}`;
+          cell.dataset.r = r;
+          cell.dataset.c = c;
+
+          const isDark = (r + c) % 2 === 1;
+          const piece = board[r][c];
+          const isSelected = selected && selected.r === r && selected.c === c;
+          const move = validMoves.find(m => m.r === r && m.c === c);
+
+          if (move) {
+            cell.classList.add(move.capture ? 'valid-capture' : 'valid-move');
+          }
+          if (isDark && piece) {
+            const p = document.createElement('div');
+            p.className = `w-[85%] aspect-square rounded-full ${piece > 0 ? 'piece-red' : 'piece-black'} ${Math.abs(piece) === KING ? 'piece-king' : ''} relative`;
+            if (isSelected) p.classList.add('selected');
+            cell.appendChild(p);
+          }
+          boardEl.appendChild(cell);
+        }
+      }
+    }
+
+    function handleClick(r, c) {
+      const winner = gameOver();
+      if (winner) return;
+
+      const mode = modeEl.value;
+      const isAI = mode.startsWith('ai-') && currentPlayer === BLACK;
+      if (isAI) return;
+
+      const piece = board[r][c];
+      const move = validMoves.find(m => m.r === r && m.c === c);
+
+      if (move) {
+        if (soundOn) playClick?.();
+        const result = makeMove(selected.r, selected.c, r, c);
+        if (result === 'continue') {
+          selected = { r, c };
+          validMoves = getValidMoves(r, c).filter(m => m.capture);
+          render();
+          return;
+        }
+        currentPlayer = -currentPlayer;
+        selected = null;
+        validMoves = [];
+        statusEl.textContent = currentPlayer === RED ? 'Red to move' : 'Black to move';
+        render();
+        checkWinner();
+        if (!gameOver() && mode.startsWith('ai-')) aiTurn();
+        return;
+      }
+
+      if (captureChain && !move) {
+        render();
+        return;
+      }
+      if (piece && (piece > 0) === (currentPlayer === RED)) {
+        mustCapture = hasAnyCapture(currentPlayer);
+        validMoves = mustCapture ? getCaptureMoves(r, c) : getValidMoves(r, c);
+        if (validMoves.length) {
+          selected = { r, c };
+          if (soundOn) playClick?.();
+        }
+      } else {
+        selected = null;
+        validMoves = [];
+      }
+      render();
+    }
+
+    boardEl.addEventListener('click', (e) => {
+      const cell = e.target.closest('[data-r][data-c]');
+      if (cell) handleClick(+cell.dataset.r, +cell.dataset.c);
+    });
+
+    restartEl.addEventListener('click', () => {
+      initBoard();
+      render();
+      statusEl.textContent = 'Red to move';
+      trackGameStart?.('checkers');
+      if (modeEl.value.startsWith('ai-')) aiTurn();
+    });
+
+    soundToggleEl.addEventListener('click', () => {
+      soundOn = !soundOn;
+      soundToggleEl.textContent = soundOn ? '🔊 Sound' : '🔇 Muted';
+      if (!soundOn) muteAll?.();
+    });
+
+    modeEl.addEventListener('change', () => {
+      initBoard();
+      render();
+      statusEl.textContent = 'Red to move';
+    });
+
+    initBoard();
+    render();
+    updateStats();
+  </script>
+</body>
+</html>

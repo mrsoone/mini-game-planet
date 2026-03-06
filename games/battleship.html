@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Battleship - Play Online Naval Strategy Game | Mini Game Planet</title>
+  <meta name="description" content="Play Battleship online against AI. Place your fleet, fire at the enemy grid, and sink all ships first. Hunt-and-target AI, ship placement with rotation, full naval strategy.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/battleship.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('consent', 'default', { 'analytics_storage': 'denied', 'ad_storage': 'denied', 'ad_user_data': 'denied', 'ad_personalization': 'denied', 'wait_for_update': 500 });
+    gtag('config', 'G-XXXXXXXXXX');
+  </script>
+  <!--
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+  -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Battleship - Play Online Naval Strategy Game | Mini Game Planet">
+  <meta property="og:description" content="Play Battleship online against AI. Place your fleet, fire at the enemy grid, and sink all ships first.">
+  <meta property="og:url" content="https://minigameplanet.com/games/battleship.html">
+  <meta property="og:site_name" content="Mini Game Planet">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoGame",
+    "name": "Battleship",
+    "description": "Play Battleship online against AI. Place your fleet, fire at the enemy grid, and sink all ships first. Hunt-and-target AI strategy.",
+    "genre": "Strategy",
+    "gamePlatform": "Web Browser",
+    "applicationCategory": "Game",
+    "operatingSystem": "Any",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    .bs-cell {
+      width: 28px; height: 28px;
+      border: 1px solid #CBD5E1;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 600; cursor: pointer;
+      user-select: none; transition: background 0.15s, color 0.15s;
+      font-family: 'DM Mono', monospace;
+    }
+    .bs-cell.water { background: #E0F2FE; }
+    .bs-cell.ship { background: #0D9488; color: #fff; }
+    .bs-cell.ship.valid { background: #0D9488; }
+    .bs-cell.ship.invalid { background: #FCA5A5; }
+    .bs-cell.hit { background: #DC2626; color: #fff; }
+    .bs-cell.miss { background: #F1F5F9; color: #94A3B8; }
+    .bs-cell.sunk { background: #7F1D1D; color: #fff; }
+    .bs-cell.target { background: #FEF3C7; cursor: pointer; }
+    .bs-cell.target:hover { background: #FDE68A; }
+    .bs-cell.disabled { cursor: default; pointer-events: none; opacity: 0.8; }
+    .bs-cell.opponent .water { background: #E0F2FE; }
+    @keyframes pulse-hit { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+    .bs-cell.hit { animation: pulse-hit 0.2s ease; }
+  </style>
+</head>
+<body class="min-h-screen text-stone-800">
+  <div id="nav-container"></div>
+
+  <main class="max-w-4xl mx-auto px-4 py-6">
+    <div class="bg-white rounded-2xl shadow-sm border border-stone-200 p-6 mb-6">
+      <h1 class="text-2xl font-bold mb-2">Battleship</h1>
+      <p class="text-stone-600 mb-4">Place your fleet, then fire at the enemy grid. Sink all five ships to win. Press <kbd class="font-mono px-1.5 py-0.5 bg-stone-200 rounded text-xs">R</kbd> to rotate during placement.</p>
+
+      <div class="flex flex-wrap gap-4 items-center mb-4">
+        <div id="session-stats" class="text-sm font-mono text-stone-500">
+          Session: <span id="stat-wins">0</span>W / <span id="stat-losses">0</span>L · Streak: <span id="stat-streak">0</span>
+        </div>
+        <button id="restart-btn" class="text-sm px-3 py-1.5 rounded bg-stone-800 text-white hover:bg-stone-700">Restart</button>
+      </div>
+
+      <div id="phase-placement" class="mb-6">
+        <p class="text-sm font-medium text-stone-600 mb-2">Place your ships (click a cell, then <kbd class="font-mono px-1 py-0.5 bg-stone-200 rounded text-xs">R</kbd> to rotate)</p>
+        <p class="text-xs text-stone-500 mb-2">Remaining: <span id="ship-queue">Carrier (5), Battleship (4), Cruiser (3), Submarine (3), Destroyer (2)</span></p>
+      </div>
+
+      <div id="phase-battle" class="hidden">
+        <p id="game-status" class="mb-4 text-sm font-medium text-stone-600">Your turn — click the opponent grid to fire</p>
+      </div>
+
+      <div class="flex flex-col lg:flex-row gap-8 items-start">
+        <div>
+          <h3 class="text-sm font-semibold text-stone-700 mb-2">Your Fleet</h3>
+          <div id="player-grid" class="inline-grid grid-cols-10 gap-0 border-2 border-stone-300 rounded-lg overflow-hidden mb-2"></div>
+        </div>
+        <div>
+          <h3 class="text-sm font-semibold text-stone-700 mb-2">Enemy Waters</h3>
+          <div id="opponent-grid" class="inline-grid grid-cols-10 gap-0 border-2 border-stone-300 rounded-lg overflow-hidden mb-2"></div>
+        </div>
+      </div>
+
+      <div id="game-over-overlay" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50" aria-modal="true">
+        <div class="bg-white rounded-xl p-6 shadow-xl max-w-sm mx-4 text-center">
+          <h3 id="go-title" class="text-xl font-bold mb-2"></h3>
+          <p id="go-subtitle" class="text-stone-600 text-sm mb-4"></p>
+          <div id="go-stats" class="font-mono text-xs text-stone-500 mb-4 p-3 bg-stone-50 rounded-lg text-left"></div>
+          <button id="play-again-btn" class="px-6 py-2.5 bg-stone-800 text-white rounded-lg font-semibold hover:bg-stone-700">Play Again</button>
+          <p class="text-xs text-stone-400 mt-2">Press Enter or Space to restart</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="related-games"></div>
+
+    <article class="bg-white rounded-2xl shadow-sm border border-stone-200 p-6 mb-6 prose prose-stone max-w-none">
+      <h2 class="text-xl font-bold mb-4">How to Play Battleship</h2>
+      <p>Battleship is a classic naval strategy game where two opponents hide fleets on separate 10×10 grids and take turns firing at coordinates to sink each other's ships. The goal is simple: be the first to sink all five of your opponent's vessels. Despite its straightforward rules, Battleship rewards logical deduction, pattern recognition, and a bit of luck.</p>
+
+      <h3 class="text-lg font-semibold mt-6 mb-2">Game Setup</h3>
+      <p>Each player has five ships of different sizes: a Carrier (5 cells), a Battleship (4 cells), a Cruiser (3 cells), a Submarine (3 cells), and a Destroyer (2 cells). Ships are placed either horizontally or vertically on the grid. They cannot overlap, and they must stay entirely within the board. In this online version, you place your fleet by clicking a starting cell and pressing the R key to rotate orientation before confirming. The computer places its fleet randomly at the start of each game.</p>
+
+      <h3 class="text-lg font-semibold mt-6 mb-2">Battle Phase</h3>
+      <p>Once both fleets are placed, players take turns firing at a single cell on the opponent's grid. A hit is marked in red; a miss is marked in gray or white. When every cell of a ship has been hit, that ship is sunk and typically indicated with a distinct color or marker. The first player to sink all five enemy ships wins the game.</p>
+
+      <h3 class="text-lg font-semibold mt-6 mb-2">Strategy Tips</h3>
+      <ul class="list-disc pl-6 space-y-2">
+        <li><strong>Spread your shots early.</strong> Use a checkerboard or grid pattern to maximize coverage and increase the chance of finding ships.</li>
+        <li><strong>Hunt and target.</strong> Once you score a hit, fire at adjacent cells (up, down, left, right) to determine the ship's orientation and finish it off.</li>
+        <li><strong>Consider ship sizes.</strong> A 5-cell carrier needs more space than a 2-cell destroyer. Use the board geometry to narrow down likely positions.</li>
+        <li><strong>Place ships unpredictably.</strong> Avoid obvious patterns. Mix edge and center placements, and vary orientations to make it harder for the AI to find your fleet.</li>
+        <li><strong>Corner and edge play.</strong> Ships along edges have fewer adjacent cells, which can sometimes make them slightly harder to fully locate once hit.</li>
+      </ul>
+
+      <h3 class="text-lg font-semibold mt-6 mb-2">History and Popularity</h3>
+      <p>Battleship originated as a pencil-and-paper game played by Russian officers before World War I. It was later commercialized as a board game by Milton Bradley and has been a household name for decades. The 2012 film adaptation and countless digital versions have kept the game relevant. Its blend of luck and logic makes it accessible to newcomers while still engaging for experienced players who enjoy optimizing their search patterns.</p>
+
+      <h3 class="text-lg font-semibold mt-6 mb-2">Playing Against the AI</h3>
+      <p>Our Battleship AI uses a hunt-and-target strategy: it first fires randomly across the grid until it scores a hit, then systematically targets adjacent cells to sink the damaged ship. This mimics how skilled human players think, making each game a fair and challenging contest. Play free Battleship online right here—no download, no signup, just strategy and fun.</p>
+    </article>
+
+    <div id="footer-container"></div>
+  </main>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playExplosion } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    document.addEventListener('click', () => initAudio(), { once: true });
+    initToolPage('battleship');
+    initConsent();
+    trackGameView('battleship', 'Strategy');
+
+    const SHIPS = [
+      { id: 'carrier', name: 'Carrier', size: 5 },
+      { id: 'battleship', name: 'Battleship', size: 4 },
+      { id: 'cruiser', name: 'Cruiser', size: 3 },
+      { id: 'submarine', name: 'Submarine', size: 3 },
+      { id: 'destroyer', name: 'Destroyer', size: 2 }
+    ];
+
+    const GRID_SIZE = 10;
+    const CELL_STATES = { water: 0, ship: 1, hit: 2, miss: 3, sunk: 4 };
+
+    function secureRandom(max) {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] % max;
+    }
+
+    function secureShuffle(arr) {
+      const out = [...arr];
+      for (let i = out.length - 1; i > 0; i--) {
+        const j = secureRandom(i + 1);
+        [out[i], out[j]] = [out[j], out[i]];
+      }
+      return out;
+    }
+
+    let state = {
+      phase: 'placement',
+      playerGrid: null,
+      opponentGrid: null,
+      playerShips: [],
+      opponentShips: [],
+      currentShipIndex: 0,
+      horizontal: true,
+      pendingPlace: null,
+      playerHits: [],
+      opponentHits: [],
+      aiHuntMode: true,
+      aiLastHit: null,
+      aiCandidates: [],
+      sessionWins: 0,
+      sessionLosses: 0,
+      streak: 0,
+      gameStartTime: 0
+    };
+
+    const playerGridEl = document.getElementById('player-grid');
+    const opponentGridEl = document.getElementById('opponent-grid');
+    const phasePlacement = document.getElementById('phase-placement');
+    const phaseBattle = document.getElementById('phase-battle');
+    const gameStatus = document.getElementById('game-status');
+    const shipQueue = document.getElementById('ship-queue');
+    const goOverlay = document.getElementById('game-over-overlay');
+    const goTitle = document.getElementById('go-title');
+    const goSub = document.getElementById('go-subtitle');
+    const goStats = document.getElementById('go-stats');
+
+    function createGrid() {
+      return Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill(CELL_STATES.water));
+    }
+
+    function canPlace(grid, row, col, size, horizontal) {
+      if (horizontal) {
+        if (col + size > GRID_SIZE) return false;
+        for (let c = col; c < col + size; c++) {
+          if (grid[row][c] !== CELL_STATES.water) return false;
+        }
+      } else {
+        if (row + size > GRID_SIZE) return false;
+        for (let r = row; r < row + size; r++) {
+          if (grid[r][col] !== CELL_STATES.water) return false;
+        }
+      }
+      return true;
+    }
+
+    function placeShip(grid, ships, row, col, size, horizontal, shipId) {
+      const cells = [];
+      if (horizontal) {
+        for (let c = col; c < col + size; c++) {
+          grid[row][c] = CELL_STATES.ship;
+          cells.push([row, c]);
+        }
+      } else {
+        for (let r = row; r < row + size; r++) {
+          grid[r][col] = CELL_STATES.ship;
+          cells.push([r, col]);
+        }
+      }
+      ships.push({ id: shipId, size, cells });
+    }
+
+    function placeAIShips() {
+      const grid = createGrid();
+      const ships = [];
+      const shipSizes = [5, 4, 3, 3, 2];
+      const ids = ['carrier', 'battleship', 'cruiser', 'submarine', 'destroyer'];
+
+      for (let i = 0; i < shipSizes.length; i++) {
+        let placed = false;
+        const attempts = secureShuffle([...Array(GRID_SIZE * GRID_SIZE).keys()]);
+        for (const idx of attempts) {
+          const row = Math.floor(idx / GRID_SIZE);
+          const col = idx % GRID_SIZE;
+          for (const horizontal of [true, false]) {
+            if (canPlace(grid, row, col, shipSizes[i], horizontal)) {
+              placeShip(grid, ships, row, col, shipSizes[i], horizontal, ids[i]);
+              placed = true;
+              break;
+            }
+          }
+          if (placed) break;
+        }
+      }
+      return { grid, ships };
+    }
+
+    function getShipAt(ships, row, col) {
+      return ships.find(s => s.cells.some(([r, c]) => r === row && c === col));
+    }
+
+    function isShipSunk(grid, ship) {
+      return ship.cells.every(([r, c]) => grid[r][c] === CELL_STATES.hit || grid[r][c] === CELL_STATES.sunk);
+    }
+
+    function markSunk(grid, ships, ship) {
+      ship.cells.forEach(([r, c]) => { grid[r][c] = CELL_STATES.sunk; });
+    }
+
+    function renderPlayerGrid() {
+      playerGridEl.innerHTML = '';
+      const g = state.playerGrid;
+      for (let r = 0; r < GRID_SIZE; r++) {
+        for (let c = 0; c < GRID_SIZE; c++) {
+          const cell = document.createElement('div');
+          cell.className = 'bs-cell';
+          cell.dataset.row = r;
+          cell.dataset.col = c;
+
+          if (state.phase === 'placement') {
+            let inPreview = false;
+            let previewValid = true;
+            if (state.pendingPlace) {
+              const { row: pr, col: pc } = state.pendingPlace;
+              const size = SHIPS[state.currentShipIndex].size;
+              const h = state.horizontal;
+              previewValid = canPlace(g, pr, pc, size, h);
+              if (h) {
+                inPreview = r === pr && c >= pc && c < pc + size;
+              } else {
+                inPreview = c === pc && r >= pr && r < pr + size;
+              }
+            }
+            if (inPreview) {
+              cell.classList.add('ship', previewValid ? 'valid' : 'invalid');
+              if (previewValid) cell.textContent = '';
+            } else {
+              cell.classList.add('water');
+              if (g[r][c] === CELL_STATES.ship) {
+                cell.classList.add('ship');
+                cell.textContent = '';
+              } else if (g[r][c] === CELL_STATES.hit) {
+                cell.classList.add('hit');
+                cell.textContent = '✕';
+              } else if (g[r][c] === CELL_STATES.miss) {
+                cell.classList.add('miss');
+                cell.textContent = '·';
+              } else if (g[r][c] === CELL_STATES.sunk) {
+                cell.classList.add('sunk');
+                cell.textContent = '✕';
+              }
+            }
+            cell.addEventListener('click', () => handlePlacementClick(r, c));
+          } else {
+            cell.classList.add('water');
+            if (g[r][c] === CELL_STATES.ship) {
+              cell.classList.add('ship');
+            } else if (g[r][c] === CELL_STATES.hit) {
+              cell.classList.add('hit');
+              cell.textContent = '✕';
+            } else if (g[r][c] === CELL_STATES.miss) {
+              cell.classList.add('miss');
+              cell.textContent = '·';
+            } else if (g[r][c] === CELL_STATES.sunk) {
+              cell.classList.add('sunk');
+              cell.textContent = '✕';
+            }
+          }
+          playerGridEl.appendChild(cell);
+        }
+      }
+    }
+
+    function isInPreview(row, col) {
+      if (!state.pendingPlace) return false;
+      const { row: pr, col: pc } = state.pendingPlace;
+      const size = SHIPS[state.currentShipIndex].size;
+      const h = state.horizontal;
+      if (h) return row === pr && col >= pc && col < pc + size;
+      return col === pc && row >= pr && row < pr + size;
+    }
+
+    function handlePlacementClick(row, col) {
+      if (state.currentShipIndex >= SHIPS.length) return;
+      const ship = SHIPS[state.currentShipIndex];
+      const g = state.playerGrid;
+
+      if (state.pendingPlace && isInPreview(row, col) && canPlace(g, state.pendingPlace.row, state.pendingPlace.col, ship.size, state.horizontal)) {
+        placeShip(state.playerGrid, state.playerShips, state.pendingPlace.row, state.pendingPlace.col, ship.size, state.horizontal, ship.id);
+        playClick();
+        state.currentShipIndex++;
+        state.pendingPlace = null;
+        updateShipQueue();
+        renderPlayerGrid();
+        if (state.currentShipIndex >= SHIPS.length) {
+          startBattle();
+        }
+        return;
+      }
+
+      state.pendingPlace = { row, col };
+      renderPlayerGrid();
+    }
+
+    function updateShipQueue() {
+      if (state.currentShipIndex >= SHIPS.length) {
+        shipQueue.textContent = 'All placed!';
+        return;
+      }
+      const remaining = SHIPS.slice(state.currentShipIndex).map(s => `${s.name} (${s.size})`).join(', ');
+      shipQueue.textContent = remaining;
+    }
+
+    function startBattle() {
+      state.phase = 'battle';
+      phasePlacement.classList.add('hidden');
+      phaseBattle.classList.remove('hidden');
+      gameStatus.textContent = 'Your turn — click the opponent grid to fire';
+      state.gameStartTime = Date.now();
+      trackGameStart('battleship', 'Strategy');
+      renderPlayerGrid();
+      renderOpponentGrid();
+    }
+
+    function renderOpponentGrid() {
+      opponentGridEl.innerHTML = '';
+      const g = state.opponentGrid;
+      for (let r = 0; r < GRID_SIZE; r++) {
+        for (let c = 0; c < GRID_SIZE; c++) {
+          const cell = document.createElement('div');
+          cell.className = 'bs-cell';
+          cell.dataset.row = r;
+          cell.dataset.col = c;
+
+          if (g[r][c] === CELL_STATES.hit) {
+            cell.classList.add('hit');
+            cell.textContent = '✕';
+            cell.classList.add('disabled');
+          } else if (g[r][c] === CELL_STATES.miss) {
+            cell.classList.add('miss');
+            cell.textContent = '·';
+            cell.classList.add('disabled');
+          } else if (g[r][c] === CELL_STATES.sunk) {
+            cell.classList.add('sunk');
+            cell.textContent = '✕';
+            cell.classList.add('disabled');
+          } else {
+            if (state.phase === 'battle') {
+              cell.classList.add('target', 'water');
+              cell.addEventListener('click', () => handleFire(r, c));
+            } else {
+              cell.classList.add('water');
+              cell.classList.add('disabled');
+            }
+          }
+          opponentGridEl.appendChild(cell);
+        }
+      }
+    }
+
+    function handleFire(row, col) {
+      if (state.phase !== 'battle') return;
+      const g = state.opponentGrid;
+      if (g[row][col] !== CELL_STATES.water && g[row][col] !== CELL_STATES.ship) return;
+
+      const ship = getShipAt(state.opponentShips, row, col);
+      const isHit = !!ship;
+
+      if (isHit) {
+        g[row][col] = CELL_STATES.hit;
+        playExplosion();
+        const sunk = isShipSunk(g, ship);
+        if (sunk) {
+          markSunk(g, state.opponentShips, ship);
+          playSuccess();
+        }
+      } else {
+        g[row][col] = CELL_STATES.miss;
+        playClick();
+      }
+
+      renderOpponentGrid();
+
+      const allSunk = state.opponentShips.every(s => isShipSunk(g, s));
+      if (allSunk) {
+        endGame(true);
+        return;
+      }
+
+      gameStatus.textContent = 'Enemy\'s turn...';
+      setTimeout(aiTurn, 500);
+    }
+
+    function getAdjacent(row, col) {
+      const adj = [];
+      if (row > 0) adj.push([row - 1, col]);
+      if (row < GRID_SIZE - 1) adj.push([row + 1, col]);
+      if (col > 0) adj.push([row, col - 1]);
+      if (col < GRID_SIZE - 1) adj.push([row, col + 1]);
+      return adj;
+    }
+
+    function aiTurn() {
+      const g = state.playerGrid;
+      let row, col;
+
+      if (state.aiCandidates.length > 0) {
+        const idx = secureRandom(state.aiCandidates.length);
+        [row, col] = state.aiCandidates.splice(idx, 1)[0];
+      } else if (state.aiLastHit) {
+        const [hr, hc] = state.aiLastHit;
+        const adj = getAdjacent(hr, hc).filter(([r, c]) => g[r][c] !== CELL_STATES.hit && g[r][c] !== CELL_STATES.miss && g[r][c] !== CELL_STATES.sunk);
+        if (adj.length > 0) {
+          const pick = adj[secureRandom(adj.length)];
+          row = pick[0];
+          col = pick[1];
+        } else {
+          state.aiLastHit = null;
+          aiTurn();
+          return;
+        }
+      } else {
+        const unknowns = [];
+        for (let r = 0; r < GRID_SIZE; r++) {
+          for (let c = 0; c < GRID_SIZE; c++) {
+            if (g[r][c] === CELL_STATES.water || g[r][c] === CELL_STATES.ship) unknowns.push([r, c]);
+          }
+        }
+        const pick = unknowns[secureRandom(unknowns.length)];
+        row = pick[0];
+        col = pick[1];
+      }
+
+      const ship = getShipAt(state.playerShips, row, col);
+      const isHit = !!ship;
+
+      if (isHit) {
+        g[row][col] = CELL_STATES.hit;
+        playExplosion();
+        state.aiLastHit = [row, col];
+        const adj = getAdjacent(row, col).filter(([r, c]) => (g[r][c] === CELL_STATES.water || g[r][c] === CELL_STATES.ship));
+        state.aiCandidates.push(...adj);
+
+        const sunk = isShipSunk(g, ship);
+        if (sunk) {
+          markSunk(g, state.playerShips, ship);
+          state.aiLastHit = null;
+          state.aiCandidates = state.aiCandidates.filter(([r, c]) => g[r][c] !== CELL_STATES.hit && g[r][c] !== CELL_STATES.miss && g[r][c] !== CELL_STATES.sunk);
+        }
+      } else {
+        g[row][col] = CELL_STATES.miss;
+        playClick();
+      }
+
+      renderPlayerGrid();
+
+      const allSunk = state.playerShips.every(s => isShipSunk(g, s));
+      if (allSunk) {
+        endGame(false);
+        return;
+      }
+
+      gameStatus.textContent = 'Your turn — click the opponent grid to fire';
+    }
+
+    function endGame(playerWon) {
+      state.phase = 'ended';
+      if (playerWon) {
+        state.sessionWins++;
+        state.streak++;
+        playSuccess();
+        goTitle.textContent = 'You Win!';
+        goSub.textContent = 'You sank all enemy ships.';
+      } else {
+        state.sessionLosses++;
+        state.streak = 0;
+        playGameOver();
+        goTitle.textContent = 'You Lose';
+        goSub.textContent = 'The enemy sank your fleet.';
+      }
+
+      const duration = Math.round((Date.now() - state.gameStartTime) / 1000);
+      trackGameOver('battleship', 'Strategy', playerWon ? 1 : 0, duration);
+
+      goStats.textContent = `Session: ${state.sessionWins}W / ${state.sessionLosses}L · Streak: ${state.streak}`;
+      goOverlay.classList.remove('hidden');
+    }
+
+    function updateStats() {
+      document.getElementById('stat-wins').textContent = state.sessionWins;
+      document.getElementById('stat-losses').textContent = state.sessionLosses;
+      document.getElementById('stat-streak').textContent = state.streak;
+    }
+
+    function restart() {
+      state.playerGrid = createGrid();
+      state.opponentGrid = createGrid();
+      state.playerShips = [];
+      const ai = placeAIShips();
+      state.opponentGrid = ai.grid;
+      state.opponentShips = ai.ships;
+      state.currentShipIndex = 0;
+      state.horizontal = true;
+      state.pendingPlace = null;
+      state.aiHuntMode = true;
+      state.aiLastHit = null;
+      state.aiCandidates = [];
+      state.phase = 'placement';
+
+      phasePlacement.classList.remove('hidden');
+      phaseBattle.classList.add('hidden');
+      goOverlay.classList.add('hidden');
+      updateShipQueue();
+      updateStats();
+      renderPlayerGrid();
+      renderOpponentGrid();
+      playClick();
+    }
+
+    document.getElementById('restart-btn').addEventListener('click', restart);
+    document.getElementById('play-again-btn').addEventListener('click', restart);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'r' || e.key === 'R') {
+        if (state.phase === 'placement' && state.pendingPlace) {
+          state.horizontal = !state.horizontal;
+          renderPlayerGrid();
+          playClick();
+        }
+      }
+      if ((e.key === 'Enter' || e.key === ' ') && state.phase === 'ended') {
+        e.preventDefault();
+        restart();
+      }
+    });
+
+    restart();
+  </script>
+</body>
+</html>

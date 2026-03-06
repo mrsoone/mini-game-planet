@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mancala - Free Strategy Board Game Online | Mini Game Planet</title>
+  <meta name="description" content="Play Mancala online free. Classic Kalah strategy board game. 6 pits, 4 stones each. Capture stones, outsmart the AI. Easy, Medium, Hard difficulties.">
+  <link rel="canonical" href="https://minigameplanet.com/games/mancala.html">
+  <!-- Open Graph -->
+  <meta property="og:title" content="Mancala - Free Strategy Board Game">
+  <meta property="og:description" content="Play Mancala online. Classic Kalah variant with AI opponents. Capture stones and win!">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/mancala.html">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    .pit { transition: transform 0.15s, box-shadow 0.15s; }
+    .pit:hover:not(.disabled) { transform: scale(1.05); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+    .pit.disabled { opacity: 0.5; cursor: not-allowed; }
+    .stone { transition: all 0.3s ease; }
+    @keyframes sow { 0% { opacity: 0; transform: scale(0.5); } 50% { opacity: 1; transform: scale(1.1); } 100% { opacity: 1; transform: scale(1); } }
+    .sow-animate { animation: sow 0.35s ease-out; }
+  </style>
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Mancala",
+    "description": "Play Mancala online - classic Kalah strategy board game with AI opponents",
+    "applicationCategory": "Game",
+    "genre": "Strategy"
+  }
+  </script>
+  <!-- AdSense placeholder - uncomment when ready
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXX" crossorigin="anonymous"></script>
+  -->
+</head>
+<body class="min-h-screen text-gray-800">
+  <div id="nav-container"></div>
+
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-8">
+      <header class="text-center mb-6">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Mancala</h1>
+        <p class="text-gray-600">Classic Kalah strategy game — capture stones, outsmart the AI</p>
+      </header>
+
+      <div class="flex flex-wrap items-center justify-center gap-4 mb-6">
+        <div class="flex items-center gap-2">
+          <label class="text-sm font-medium text-gray-600">Difficulty:</label>
+          <select id="difficulty" class="rounded-lg border border-gray-300 px-3 py-2 text-sm font-mono bg-white">
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+          </select>
+        </div>
+        <button id="sound-toggle" class="px-4 py-2 rounded-lg border border-gray-300 text-sm hover:bg-gray-50" title="Toggle sound">🔊 Sound</button>
+        <button id="restart-btn" class="px-4 py-2 rounded-lg bg-amber-500 text-white font-medium hover:bg-amber-600 transition">New Game</button>
+      </div>
+
+      <div class="flex justify-between items-center mb-4 font-mono text-sm">
+        <div><span class="text-gray-500">Streak:</span> <span id="streak">0</span></div>
+        <div><span class="text-gray-500">Wins:</span> <span id="wins">0</span> / <span id="played">0</span></div>
+      </div>
+
+      <div id="game-status" class="text-center font-medium mb-4 min-h-[24px]">Your turn — pick a pit on your side</div>
+
+      <!-- Mancala Board: Store 13 (AI) | Pits 12-7 (AI) | Store 6 (You). Bottom: Pits 0-5 (You) -->
+      <div class="max-w-2xl mx-auto mb-8">
+        <div class="grid grid-cols-8 gap-2" id="board">
+          <div id="store-13" class="store col-span-1 row-span-2 flex items-center justify-center rounded-xl bg-amber-100 border-2 border-amber-200 min-h-[80px] md:min-h-[100px] font-mono text-xl font-bold text-amber-800" style="grid-row: 1 / -1;">0</div>
+          <div id="pit-12" class="pit store-pit rounded-xl bg-amber-50 border-2 border-amber-200 p-2 min-h-[60px] md:min-h-[70px] flex flex-col items-center justify-center cursor-default" data-pit="12">0</div>
+          <div id="pit-11" class="pit store-pit rounded-xl bg-amber-50 border-2 border-amber-200 p-2 min-h-[60px] md:min-h-[70px] flex flex-col items-center justify-center cursor-default" data-pit="11">0</div>
+          <div id="pit-10" class="pit store-pit rounded-xl bg-amber-50 border-2 border-amber-200 p-2 min-h-[60px] md:min-h-[70px] flex flex-col items-center justify-center cursor-default" data-pit="10">0</div>
+          <div id="pit-9" class="pit store-pit rounded-xl bg-amber-50 border-2 border-amber-200 p-2 min-h-[60px] md:min-h-[70px] flex flex-col items-center justify-center cursor-default" data-pit="9">0</div>
+          <div id="pit-8" class="pit store-pit rounded-xl bg-amber-50 border-2 border-amber-200 p-2 min-h-[60px] md:min-h-[70px] flex flex-col items-center justify-center cursor-default" data-pit="8">0</div>
+          <div id="pit-7" class="pit store-pit rounded-xl bg-amber-50 border-2 border-amber-200 p-2 min-h-[60px] md:min-h-[70px] flex flex-col items-center justify-center cursor-default" data-pit="7">0</div>
+          <div id="store-6" class="store col-span-1 row-span-2 flex items-center justify-center rounded-xl bg-amber-100 border-2 border-amber-200 min-h-[80px] md:min-h-[100px] font-mono text-xl font-bold text-amber-800" style="grid-row: 1 / -1;">0</div>
+          <div id="pit-0" class="pit player-pit rounded-xl bg-amber-50 border-2 border-amber-200 p-2 min-h-[60px] md:min-h-[70px] flex flex-col items-center justify-center cursor-pointer" data-pit="0">0</div>
+          <div id="pit-1" class="pit player-pit rounded-xl bg-amber-50 border-2 border-amber-200 p-2 min-h-[60px] md:min-h-[70px] flex flex-col items-center justify-center cursor-pointer" data-pit="1">0</div>
+          <div id="pit-2" class="pit player-pit rounded-xl bg-amber-50 border-2 border-amber-200 p-2 min-h-[60px] md:min-h-[70px] flex flex-col items-center justify-center cursor-pointer" data-pit="2">0</div>
+          <div id="pit-3" class="pit player-pit rounded-xl bg-amber-50 border-2 border-amber-200 p-2 min-h-[60px] md:min-h-[70px] flex flex-col items-center justify-center cursor-pointer" data-pit="3">0</div>
+          <div id="pit-4" class="pit player-pit rounded-xl bg-amber-50 border-2 border-amber-200 p-2 min-h-[60px] md:min-h-[70px] flex flex-col items-center justify-center cursor-pointer" data-pit="4">0</div>
+          <div id="pit-5" class="pit player-pit rounded-xl bg-amber-50 border-2 border-amber-200 p-2 min-h-[60px] md:min-h-[70px] flex flex-col items-center justify-center cursor-pointer" data-pit="5">0</div>
+        </div>
+        <div class="flex justify-between mt-2 text-xs text-gray-500 px-1">
+          <span>AI</span>
+          <span>You</span>
+        </div>
+      </div>
+
+      <div id="related-games"></div>
+    </div>
+
+    <!-- SEO Article -->
+    <article class="bg-white rounded-2xl shadow-lg p-6 md:p-8 text-gray-700 leading-relaxed">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4">How to Play Mancala</h2>
+      <p>Mancala is one of the oldest known board games in the world, with roots tracing back thousands of years across Africa and the Middle East. Archaeologists have found Mancala-style boards dating to ancient Egypt and beyond. The game spread along trade routes and evolved into many regional variants. The Kalah variant—which you're playing here—was popularized in the 20th century by American game designer William Julius Champion Jr. and has become a beloved strategy game for players of all ages.</p>
+      <p class="mt-4">The board consists of six pits on each side, plus one large store (mancala) per player. Each pit starts with four stones, for a total of 48 stones on the board. On your turn, you pick up all the stones from one of your pits and distribute them one by one into the next pits in a counter-clockwise direction. You always skip your opponent's store when sowing, so stones flow through your pits, your store, and the opponent's pits in a predictable pattern.</p>
+      <p class="mt-4">Two special rules make Mancala exciting: if your last stone lands in your own store, you get another turn. This can lead to powerful chains of moves. If your last stone lands in an empty pit on your side, you capture that stone plus all stones from the opposite pit and add them to your store. Plan your moves carefully to set up captures and earn extra turns. Skilled players think several moves ahead.</p>
+      <p class="mt-4">The game ends when one player has no stones left in their pits. The other player adds any remaining stones to their store. The player with the most stones in their store wins. A tie is possible if both stores end up with the same count. In competitive play, ties are rare but can occur when both players manage their stones equally well.</p>
+      <p class="mt-4">Strategy tips: prioritize moves that give you another turn, set up captures by leaving empty pits, and avoid leaving your pits vulnerable when the opponent can capture. Try to empty your rightmost pit last so your final stone lands in your store. Against the AI, start with Easy to learn the flow, then challenge Medium and Hard for a real test of your skills. The Hard AI uses look-ahead search to find strong moves.</p>
+      <p class="mt-4">Play Mancala free online anytime—no download, no sign-up. Enjoy this timeless strategy game right in your browser. Perfect for a quick break or a deep thinking session. Whether you're new to the game or a seasoned player, our Mancala offers a smooth experience with animated stone sowing and clear feedback on every move.</p>
+    </article>
+  </main>
+
+  <div id="footer-container"></div>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playCollect } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('mancala');
+    initConsent();
+    trackGameView('mancala', 'Strategy');
+
+    const STORES = { 0: 6, 1: 13 };
+    const PITS_PER_SIDE = 6;
+    const INIT_STONES = 4;
+
+    let board = [];
+    let currentPlayer = 0;
+    let gameOver = false;
+    let animating = false;
+    let soundEnabled = true;
+    let streak = 0;
+    let wins = 0;
+    let played = 0;
+
+    const statusEl = document.getElementById('game-status');
+    const restartBtn = document.getElementById('restart-btn');
+    const soundToggle = document.getElementById('sound-toggle');
+    const difficultySelect = document.getElementById('difficulty');
+
+    function secureRandom() {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] / (0xFFFFFFFF + 1);
+    }
+
+    function loadStats() {
+      try {
+        const s = sessionStorage.getItem('mancala-stats');
+        if (s) {
+          const o = JSON.parse(s);
+          streak = o.streak || 0;
+          wins = o.wins || 0;
+          played = o.played || 0;
+        }
+      } catch (_) {}
+    }
+
+    function saveStats() {
+      sessionStorage.setItem('mancala-stats', JSON.stringify({ streak, wins, played }));
+    }
+
+    function updateStatsUI() {
+      document.getElementById('streak').textContent = streak;
+      document.getElementById('wins').textContent = wins;
+      document.getElementById('played').textContent = played;
+    }
+
+    function initBoard() {
+      board = new Array(14).fill(0);
+      for (let i = 0; i < 14; i++) {
+        if (i !== 6 && i !== 13) board[i] = INIT_STONES;
+      }
+    }
+
+    function getNextPit(pit, player) {
+      let next = (pit + 1) % 14;
+      const oppStore = player === 0 ? 13 : 6;
+      if (next === oppStore) next = (next + 1) % 14;
+      return next;
+    }
+
+    function getOppositePit(pit) {
+      return 12 - pit;
+    }
+
+    function isPlayerPit(pit, player) {
+      if (player === 0) return pit >= 0 && pit <= 5;
+      return pit >= 7 && pit <= 12;
+    }
+
+    function isStore(pit) {
+      return pit === 6 || pit === 13;
+    }
+
+    function renderBoard(highlightPit = -1) {
+      for (let i = 0; i < 14; i++) {
+        const id = isStore(i) ? `store-${i}` : `pit-${i}`;
+        const e = document.getElementById(id);
+        if (e) {
+          e.textContent = board[i];
+          e.classList.toggle('sow-animate', highlightPit === i);
+          if (highlightPit === i) setTimeout(() => e.classList.remove('sow-animate'), 350);
+        }
+      }
+    }
+
+    function updatePitDisplay(pitIdx, count, animate = false) {
+      const id = isStore(pitIdx) ? `store-${pitIdx}` : `pit-${pitIdx}`;
+      const el = document.getElementById(id);
+      if (el) {
+        el.textContent = count;
+        if (animate) el.classList.add('sow-animate');
+        setTimeout(() => el.classList.remove('sow-animate'), 350);
+      }
+    }
+
+    async function sowStones(fromPit, player) {
+      let count = board[fromPit];
+      if (count === 0) return false;
+      board[fromPit] = 0;
+      updatePitDisplay(fromPit, 0, true);
+      if (soundEnabled) playClick();
+
+      let pit = fromPit;
+      const oppStore = player === 0 ? 13 : 6;
+
+      while (count > 0) {
+        pit = (pit + 1) % 14;
+        if (pit === oppStore) pit = (pit + 1) % 14;
+        board[pit]++;
+        count--;
+        updatePitDisplay(pit, board[pit], true);
+        await new Promise(r => setTimeout(r, 120));
+      }
+
+      const lastPit = pit;
+      let extraTurn = false;
+      let captured = false;
+
+      if (lastPit === STORES[player]) {
+        extraTurn = true;
+        if (soundEnabled) playScoreUp();
+      } else if (isPlayerPit(lastPit, player) && board[lastPit] === 1) {
+        const opp = getOppositePit(lastPit);
+        if (board[opp] > 0) {
+          const total = board[lastPit] + board[opp];
+          board[STORES[player]] += total;
+          board[lastPit] = 0;
+          board[opp] = 0;
+          updatePitDisplay(lastPit, 0, true);
+          updatePitDisplay(opp, 0, true);
+          updatePitDisplay(STORES[player], board[STORES[player]], true);
+          captured = true;
+          if (soundEnabled) playCollect();
+        }
+      }
+
+      renderBoard();
+      return { extraTurn, captured };
+    }
+
+    function checkGameOver() {
+      const p0Empty = board.slice(0, 6).every(s => s === 0);
+      const p1Empty = board.slice(7, 13).every(s => s === 0);
+      if (p0Empty || p1Empty) {
+        const remainder = p0Empty ? board.slice(7, 13) : board.slice(0, 6);
+        const sum = remainder.reduce((a, b) => a + b, 0);
+        if (p0Empty) {
+          board[13] += sum;
+          for (let i = 7; i <= 12; i++) board[i] = 0;
+        } else {
+          board[6] += sum;
+          for (let i = 0; i <= 5; i++) board[i] = 0;
+        }
+        renderBoard();
+        return true;
+      }
+      return false;
+    }
+
+    function getValidMoves(player) {
+      const start = player === 0 ? 0 : 7;
+      const moves = [];
+      for (let i = start; i < start + 6; i++) {
+        if (board[i] > 0) moves.push(i);
+      }
+      return moves;
+    }
+
+    function setPitsEnabled(enabled, playerOnly = false) {
+      document.querySelectorAll('.pit').forEach(el => {
+        const pit = parseInt(el.dataset.pit, 10);
+        if (pit === undefined || isNaN(pit)) return;
+        const isPlayerPitEl = pit >= 0 && pit <= 5;
+        if (playerOnly && !isPlayerPitEl) return;
+        if (isPlayerPitEl) {
+          el.classList.toggle('disabled', !enabled || animating);
+          el.style.pointerEvents = enabled && !animating ? 'auto' : 'none';
+        }
+      });
+    }
+
+    async function humanMove(pitIdx) {
+      if (animating || gameOver || currentPlayer !== 0) return;
+      if (pitIdx < 0 || pitIdx > 5 || board[pitIdx] === 0) {
+        if (soundEnabled) playError();
+        return;
+      }
+      animating = true;
+      setPitsEnabled(false);
+      const { extraTurn } = await sowStones(pitIdx, 0);
+      if (checkGameOver()) {
+        endGame();
+        animating = false;
+        return;
+      }
+      if (!extraTurn) currentPlayer = 1;
+      statusEl.textContent = extraTurn ? 'Extra turn! Pick another pit.' : "AI's turn...";
+      animating = false;
+      if (!extraTurn) {
+        setPitsEnabled(false);
+        setTimeout(aiTurn, 600);
+      } else {
+        setPitsEnabled(true);
+      }
+    }
+
+    function evaluateBoard() {
+      return board[13] - board[6];
+    }
+
+    function minimax(depth, alpha, beta, maximizing, player) {
+      if (depth === 0 || checkGameOver()) return evaluateBoard();
+      const moves = getValidMoves(player);
+      if (moves.length === 0) return evaluateBoard();
+
+      if (maximizing) {
+        let maxEval = -Infinity;
+        for (const m of moves) {
+          const b = [...board];
+          const lastPit = sowStonesSync(m, player);
+          const extraTurn = lastPit >= 0 && lastPitWasStore(lastPit, player);
+          let evalScore;
+          if (extraTurn) {
+            evalScore = minimax(depth, alpha, beta, true, player);
+          } else {
+            evalScore = minimax(depth - 1, alpha, beta, false, 1 - player);
+          }
+          board = b;
+          maxEval = Math.max(maxEval, evalScore);
+          alpha = Math.max(alpha, evalScore);
+          if (beta <= alpha) break;
+        }
+        return maxEval;
+      } else {
+        let minEval = Infinity;
+        for (const m of moves) {
+          const b = [...board];
+          const lastPit = sowStonesSync(m, player);
+          const extraTurn = lastPit >= 0 && lastPitWasStore(lastPit, player);
+          let evalScore;
+          if (extraTurn) {
+            evalScore = minimax(depth, alpha, beta, false, player);
+          } else {
+            evalScore = minimax(depth - 1, alpha, beta, true, 1 - player);
+          }
+          board = b;
+          minEval = Math.min(minEval, evalScore);
+          beta = Math.min(beta, evalScore);
+          if (beta <= alpha) break;
+        }
+        return minEval;
+      }
+    }
+
+    function sowStonesSync(fromPit, player) {
+      let count = board[fromPit];
+      if (count === 0) return -1;
+      board[fromPit] = 0;
+      let pit = fromPit;
+      const oppStore = player === 0 ? 13 : 6;
+      while (count > 0) {
+        pit = (pit + 1) % 14;
+        if (pit === oppStore) pit = (pit + 1) % 14;
+        board[pit]++;
+        count--;
+      }
+      if (isPlayerPit(pit, player) && board[pit] === 1) {
+        const opp = getOppositePit(pit);
+        if (board[opp] > 0) {
+          board[STORES[player]] += board[pit] + board[opp];
+          board[pit] = 0;
+          board[opp] = 0;
+        }
+      }
+      return pit;
+    }
+
+    function lastPitWasStore(lastPit, player) {
+      return lastPit === STORES[player];
+    }
+
+    function getAIMove() {
+      const moves = getValidMoves(1);
+      if (moves.length === 0) return -1;
+      const diff = difficultySelect.value;
+      if (diff === 'easy') {
+        return moves[Math.floor(secureRandom() * moves.length)];
+      }
+      if (diff === 'medium') {
+        const depth = 2;
+        let best = -Infinity;
+        let bestMove = moves[0];
+        for (const m of moves) {
+          const b = [...board];
+          const lastPit = sowStonesSync(m, 1);
+          const extraTurn = lastPit >= 0 && lastPitWasStore(lastPit, 1);
+          const score = extraTurn ? minimax(depth, -Infinity, Infinity, true, 1) : minimax(depth - 1, -Infinity, Infinity, false, 0);
+          board = b;
+          if (score > best) {
+            best = score;
+            bestMove = m;
+          }
+        }
+        return bestMove;
+      }
+      const depth = 4;
+      let best = -Infinity;
+      let bestMoves = [];
+      for (const m of moves) {
+        const b = [...board];
+        const lastPit = sowStonesSync(m, 1);
+        const extraTurn = lastPit >= 0 && lastPitWasStore(lastPit, 1);
+        const score = extraTurn ? minimax(depth, -Infinity, Infinity, true, 1) : minimax(depth - 1, -Infinity, Infinity, false, 0);
+        board = b;
+        if (score > best) {
+          best = score;
+          bestMoves = [m];
+        } else if (score === best) bestMoves.push(m);
+      }
+      return bestMoves[Math.floor(secureRandom() * bestMoves.length)];
+    }
+
+    async function aiTurn() {
+      if (gameOver || currentPlayer !== 1) return;
+      animating = true;
+      const move = getAIMove();
+      if (move < 0) {
+        animating = false;
+        return;
+      }
+      statusEl.textContent = `AI picks pit ${move - 6}...`;
+      await new Promise(r => setTimeout(r, 400));
+      const { extraTurn } = await sowStones(move, 1);
+      if (checkGameOver()) {
+        endGame();
+        animating = false;
+        return;
+      }
+      if (extraTurn) {
+        statusEl.textContent = "AI gets another turn...";
+        await new Promise(r => setTimeout(r, 500));
+        aiTurn();
+      } else {
+        currentPlayer = 0;
+        statusEl.textContent = 'Your turn — pick a pit on your side';
+        setPitsEnabled(true);
+        animating = false;
+      }
+    }
+
+    function endGame() {
+      gameOver = true;
+      const p0Score = board[6];
+      const p1Score = board[13];
+      played++;
+      let msg;
+      if (p0Score > p1Score) {
+        wins++;
+        streak++;
+        msg = `You win! ${p0Score} - ${p1Score}`;
+        if (soundEnabled) playSuccess();
+        trackGameOver('mancala', true);
+      } else if (p1Score > p0Score) {
+        streak = 0;
+        msg = `AI wins! ${p1Score} - ${p0Score}`;
+        if (soundEnabled) playGameOver();
+        trackGameOver('mancala', false);
+      } else {
+        streak = 0;
+        msg = `Tie! ${p0Score} - ${p1Score}`;
+        if (soundEnabled) playGameOver();
+        trackGameOver('mancala', null);
+      }
+      statusEl.textContent = msg;
+      saveStats();
+      updateStatsUI();
+      setPitsEnabled(false);
+    }
+
+    function restart() {
+      gameOver = false;
+      animating = false;
+      currentPlayer = 0;
+      initBoard();
+      renderBoard();
+      statusEl.textContent = 'Your turn — pick a pit on your side';
+      setPitsEnabled(true);
+      trackGameStart('mancala');
+      if (soundEnabled) playClick();
+    }
+
+    document.getElementById('board').addEventListener('click', (e) => {
+      const pit = e.target.closest('.player-pit');
+      if (pit && pit.dataset.pit) humanMove(parseInt(pit.dataset.pit, 10));
+    });
+
+    restartBtn.addEventListener('click', restart);
+    soundToggle.addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      soundToggle.textContent = soundEnabled ? '🔊 Sound' : '🔇 Mute';
+      if (!soundEnabled) muteAll();
+    });
+
+    loadStats();
+    updateStatsUI();
+    restart();
+  </script>
+</body>
+</html>

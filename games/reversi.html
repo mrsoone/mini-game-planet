@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reversi (Othello) - Free Online Strategy Game | Mini Game Planet</title>
+  <meta name="description" content="Play Reversi (Othello) online for free. Classic strategy board game with AI opponents. Outflank your opponent's discs and flip them to win. Three difficulty levels.">
+  <link rel="canonical" href="https://minigameplanet.com/games/reversi.html">
+  <meta property="og:title" content="Reversi (Othello) - Free Online Strategy Game">
+  <meta property="og:description" content="Play Reversi online. Classic strategy game with AI. Outflank and flip opponent discs to win.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/reversi.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    .cell-valid { @apply ring-2 ring-green-500/60 ring-inset cursor-pointer hover:bg-green-100/50; }
+    .disc-flip { animation: discFlip 0.4s ease-out forwards; }
+    @keyframes discFlip {
+      0% { transform: scaleY(1); }
+      50% { transform: scaleY(0); }
+      100% { transform: scaleY(1); }
+    }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Reversi (Othello)",
+    "description": "Free online Reversi strategy game. Play against AI with three difficulty levels.",
+    "applicationCategory": "Game",
+    "operatingSystem": "Any",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+  <!--
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXX" crossorigin="anonymous"></script>
+  -->
+</head>
+<body class="min-h-screen bg-[#F5F5F4] text-gray-800">
+  <div id="nav-container"></div>
+
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-8">
+      <h1 class="text-3xl font-bold mb-2">Reversi (Othello)</h1>
+      <p class="text-gray-600 mb-6">Classic strategy board game. Outflank opponent discs to flip them. Most discs wins.</p>
+
+      <div class="flex flex-wrap gap-4 items-center mb-6">
+        <div class="flex items-center gap-2">
+          <span class="font-medium">Difficulty:</span>
+          <select id="difficulty" class="border rounded-lg px-3 py-2 font-mono text-sm">
+            <option value="0">Easy</option>
+            <option value="1" selected>Medium</option>
+            <option value="2">Hard</option>
+          </select>
+        </div>
+        <button id="sound-toggle" class="px-4 py-2 rounded-lg border hover:bg-gray-100 font-mono text-sm">🔊 Sound On</button>
+        <button id="restart-btn" class="px-4 py-2 rounded-lg bg-gray-800 text-white hover:bg-gray-700 font-mono text-sm">Restart</button>
+      </div>
+
+      <div class="flex justify-between items-center mb-4 font-mono">
+        <div class="flex gap-6">
+          <span id="black-count" class="font-semibold">Black: 2</span>
+          <span id="white-count" class="font-semibold">White: 2</span>
+        </div>
+        <div id="turn-indicator" class="text-sm text-gray-600">Your turn (Black)</div>
+      </div>
+
+      <div id="board" class="inline-grid grid-cols-8 gap-0.5 p-2 bg-gray-800 rounded-xl mb-6 w-fit"></div>
+
+      <div id="game-message" class="text-center font-semibold text-lg mb-4 min-h-[2rem]"></div>
+
+      <div id="session-stats" class="flex gap-6 font-mono text-sm text-gray-600 mb-6">
+        <span>Games: <span id="stat-games">0</span></span>
+        <span>Wins: <span id="stat-wins">0</span></span>
+        <span>Streak: <span id="stat-streak">0</span></span>
+      </div>
+    </div>
+
+    <article class="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-8 prose prose-gray max-w-none">
+      <h2 class="text-2xl font-bold mb-4">About Reversi (Othello)</h2>
+      <p>Reversi, also known as Othello, is a classic strategy board game played on an 8×8 grid. The game was popularized in the 1970s under the name Othello, though its origins trace back to the late 19th century. Today, Reversi remains one of the most beloved abstract strategy games, combining simple rules with deep tactical play.</p>
+      <p>The objective is straightforward: place your discs so that you outflank your opponent's discs. When you place a disc, any of your opponent's discs that lie in a straight line (horizontal, vertical, or diagonal) between your new disc and another of your discs are flipped to your color. This creates a cascading effect where a single move can flip many discs and dramatically shift the board's balance.</p>
+      <p>At the start of the game, four discs are placed in the center: two black and two white, arranged in a checkerboard pattern. Black typically moves first. Each player takes turns placing one disc of their color on an empty square that outflanks at least one opponent disc. If a player has no valid moves, they must pass their turn. The game ends when neither player can make a legal move—usually when the board is full.</p>
+      <p>Winning requires careful planning. Corner squares are especially valuable because discs in corners cannot be flipped. Controlling the edges and avoiding "bad" squares adjacent to corners (which give your opponent easy corner access) is crucial. Skilled players think several moves ahead, sacrificing short-term gains for long-term board control.</p>
+      <p>Our online Reversi game features three AI difficulty levels. Easy mode makes occasional mistakes and is perfect for beginners. Medium difficulty offers a solid challenge for intermediate players. Hard mode uses stronger evaluation and lookahead to provide a formidable opponent. Whether you're learning the basics or honing advanced strategy, this free game offers endless replay value.</p>
+    </article>
+
+    <div id="related-games" class="mb-8"></div>
+  </main>
+
+  <footer id="footer-container"></footer>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('reversi');
+    initConsent();
+    trackGameView('reversi', 'Strategy');
+
+    const BLACK = 1, WHITE = -1;
+    let board = [], currentPlayer = BLACK, gameOver = false, difficulty = 1;
+    let sessionGames = parseInt(sessionStorage.getItem('reversi_games') || '0', 10);
+    let sessionWins = parseInt(sessionStorage.getItem('reversi_wins') || '0', 10);
+    let streak = parseInt(sessionStorage.getItem('reversi_streak') || '0', 10);
+    let gameStarted = false;
+
+    function secureRandom() {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] / (0xFFFFFFFF + 1);
+    }
+
+    function initBoard() {
+      board = Array(8).fill(null).map(() => Array(8).fill(0));
+      board[3][3] = WHITE; board[3][4] = BLACK;
+      board[4][3] = BLACK; board[4][4] = WHITE;
+      currentPlayer = BLACK;
+      gameOver = false;
+    }
+
+    function getDirections() {
+      return [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
+    }
+
+    function inBounds(r, c) { return r >= 0 && r < 8 && c >= 0 && c < 8; }
+
+    function getFlips(r, c, player) {
+      if (board[r][c] !== 0) return [];
+      const opponent = -player;
+      let allFlips = [];
+      for (const [dr, dc] of getDirections()) {
+        let nr = r + dr, nc = c + dc;
+        const line = [];
+        while (inBounds(nr, nc) && board[nr][nc] === opponent) {
+          line.push([nr, nc]);
+          nr += dr; nc += dc;
+        }
+        if (inBounds(nr, nc) && board[nr][nc] === player && line.length > 0)
+          allFlips.push(...line);
+      }
+      return allFlips;
+    }
+
+    function getValidMoves(player) {
+      const moves = [];
+      for (let r = 0; r < 8; r++)
+        for (let c = 0; c < 8; c++)
+          if (getFlips(r, c, player).length > 0) moves.push([r, c]);
+      return moves;
+    }
+
+    function makeMove(r, c, player, animate = true) {
+      const flips = getFlips(r, c, player);
+      if (flips.length === 0) return false;
+      if (animate) {
+        board[r][c] = player;
+        const cell = document.querySelector(`[data-row="${r}"][data-col="${c}"]`);
+        const disc = document.createElement('div');
+        disc.className = `w-10 h-10 rounded-full ${player === BLACK ? 'bg-gray-900' : 'bg-white border-2 border-gray-400'} disc-flip`;
+        disc.dataset.player = player;
+        cell.appendChild(disc);
+        flips.forEach(([fr, fc], i) => {
+          setTimeout(() => {
+            const fcell = document.querySelector(`[data-row="${fr}"][data-col="${fc}"]`);
+            const oldDisc = fcell.querySelector('div');
+            if (oldDisc) oldDisc.remove();
+            const newDisc = document.createElement('div');
+            newDisc.className = `w-10 h-10 rounded-full ${player === BLACK ? 'bg-gray-900' : 'bg-white border-2 border-gray-400'} disc-flip`;
+            newDisc.dataset.player = player;
+            fcell.appendChild(newDisc);
+            board[fr][fc] = player;
+          }, 80 + i * 50);
+        });
+      } else {
+        board[r][c] = player;
+        flips.forEach(([fr, fc]) => { board[fr][fc] = player; });
+      }
+      return true;
+    }
+
+    function updateCounts() {
+      let b = 0, w = 0;
+      for (let r = 0; r < 8; r++)
+        for (let c = 0; c < 8; c++) {
+          if (board[r][c] === BLACK) b++;
+          else if (board[r][c] === WHITE) w++;
+        }
+      document.getElementById('black-count').textContent = `Black: ${b}`;
+      document.getElementById('white-count').textContent = `White: ${w}`;
+    }
+
+    function renderBoard(validMoves = []) {
+      const container = document.getElementById('board');
+      container.innerHTML = '';
+      const validSet = new Set(validMoves.map(([r,c]) => `${r},${c}`));
+      for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+          const cell = document.createElement('div');
+          cell.className = 'w-12 h-12 flex items-center justify-center bg-green-700 border border-green-800';
+          cell.dataset.row = r; cell.dataset.col = c;
+          if (validSet.has(`${r},${c}`) && !gameOver) cell.classList.add('cell-valid');
+          const val = board[r][c];
+          if (val !== 0) {
+            const disc = document.createElement('div');
+            disc.className = `w-10 h-10 rounded-full ${val === BLACK ? 'bg-gray-900' : 'bg-white border-2 border-gray-400'}`;
+            disc.dataset.player = val;
+            cell.appendChild(disc);
+          }
+          container.appendChild(cell);
+        }
+      }
+    }
+
+    function updateTurnUI() {
+      const msg = document.getElementById('game-message');
+      msg.textContent = '';
+      if (gameOver) return;
+      const humanMoves = getValidMoves(BLACK);
+      const aiMoves = getValidMoves(WHITE);
+      if (currentPlayer === BLACK) {
+        document.getElementById('turn-indicator').textContent = humanMoves.length ? 'Your turn (Black)' : 'No valid moves — passing';
+        renderBoard(humanMoves);
+      } else {
+        document.getElementById('turn-indicator').textContent = 'AI thinking...';
+        renderBoard([]);
+      }
+    }
+
+    function checkGameEnd() {
+      const humanMoves = getValidMoves(BLACK);
+      const aiMoves = getValidMoves(WHITE);
+      if (humanMoves.length > 0 || aiMoves.length > 0) return false;
+      gameOver = true;
+      let b = 0, w = 0;
+      for (let r = 0; r < 8; r++)
+        for (let c = 0; c < 8; c++) {
+          if (board[r][c] === BLACK) b++;
+          else if (board[r][c] === WHITE) w++;
+        }
+      let result;
+      if (b > w) result = 'win';
+      else if (w > b) result = 'loss';
+      else result = 'draw';
+      sessionGames++;
+      if (result === 'win') { sessionWins++; streak++; } else streak = 0;
+      playGameOver();
+      trackGameOver('reversi', result, { black: b, white: w });
+      const msg = document.getElementById('game-message');
+      if (b > w) msg.textContent = `You win! Black ${b} - White ${w}`;
+      else if (w > b) msg.textContent = `AI wins! Black ${b} - White ${w}`;
+      else msg.textContent = `Draw! ${b} - ${w}`;
+      document.getElementById('turn-indicator').textContent = 'Game over';
+      document.getElementById('stat-games').textContent = sessionGames;
+      document.getElementById('stat-wins').textContent = sessionWins;
+      document.getElementById('stat-streak').textContent = streak;
+      sessionStorage.setItem('reversi_games', sessionGames);
+      sessionStorage.setItem('reversi_wins', sessionWins);
+      sessionStorage.setItem('reversi_streak', streak);
+      renderBoard([]);
+      return true;
+    }
+
+    function aiMove() {
+      const moves = getValidMoves(WHITE);
+      if (moves.length === 0) {
+        currentPlayer = BLACK;
+        if (checkGameEnd()) return;
+        updateTurnUI();
+        return;
+      }
+      let best = moves[0];
+      if (difficulty === 0) {
+        best = moves[Math.floor(secureRandom() * moves.length)];
+      } else {
+        const corners = [[0,0],[0,7],[7,0],[7,7]];
+        const cornerMoves = moves.filter(([r,c]) => corners.some(([cr,cc]) => cr===r&&cc===c));
+        const goodMoves = cornerMoves.length ? cornerMoves : moves;
+        const badSquares = [[0,1],[1,0],[0,6],[1,7],[6,0],[7,1],[6,7],[7,6]];
+        const filtered = goodMoves.filter(([r,c]) => !badSquares.some(([br,bc]) => br===r&&bc===c));
+        const pool = filtered.length ? filtered : goodMoves;
+        if (difficulty === 1) {
+          best = pool[Math.floor(secureRandom() * pool.length)];
+        } else {
+          let bestScore = -Infinity;
+          for (const [r, c] of pool) {
+            const flips = getFlips(r, c, WHITE);
+            let score = flips.length;
+            if (corners.some(([cr,cc]) => cr===r&&cc===c)) score += 20;
+            if (secureRandom() < 0.1) score += Math.floor(secureRandom() * 5);
+            if (score > bestScore) { bestScore = score; best = [r, c]; }
+          }
+        }
+      }
+      setTimeout(() => {
+        makeMove(best[0], best[1], WHITE, true);
+        playClick();
+        setTimeout(() => {
+          updateCounts();
+          currentPlayer = BLACK;
+          if (checkGameEnd()) return;
+          const humanMoves = getValidMoves(BLACK);
+          if (humanMoves.length === 0) {
+            document.getElementById('game-message').textContent = 'No valid moves — passing to AI';
+            currentPlayer = WHITE;
+            setTimeout(aiMove, 600);
+          }
+          updateTurnUI();
+        }, 500);
+      }, 400);
+    }
+
+    function handleCellClick(e) {
+      if (gameOver || currentPlayer !== BLACK) return;
+      const cell = e.target.closest('[data-row]');
+      if (!cell) return;
+      const r = +cell.dataset.row, c = +cell.dataset.col;
+      if (getFlips(r, c, BLACK).length === 0) return;
+      makeMove(r, c, BLACK, true);
+      playSuccess();
+      if (!gameStarted) { gameStarted = true; trackGameStart('reversi'); }
+      updateCounts();
+      currentPlayer = WHITE;
+      if (checkGameEnd()) return;
+      updateTurnUI();
+      aiMove();
+    }
+
+    function startGame() {
+      initBoard();
+      gameStarted = false;
+      difficulty = +document.getElementById('difficulty').value;
+      renderBoard(getValidMoves(BLACK));
+      updateCounts();
+      document.getElementById('game-message').textContent = '';
+      document.getElementById('turn-indicator').textContent = 'Your turn (Black)';
+    }
+
+    document.getElementById('board').addEventListener('click', handleCellClick);
+    document.getElementById('restart-btn').addEventListener('click', () => {
+      playClick();
+      startGame();
+    });
+    document.getElementById('difficulty').addEventListener('change', () => { difficulty = +document.getElementById('difficulty').value; });
+    document.getElementById('sound-toggle').addEventListener('click', () => {
+      muteAll();
+      const btn = document.getElementById('sound-toggle');
+      btn.textContent = btn.textContent.includes('On') ? '🔇 Sound Off' : '🔊 Sound On';
+    });
+
+    document.getElementById('stat-games').textContent = sessionGames;
+    document.getElementById('stat-wins').textContent = sessionWins;
+    document.getElementById('stat-streak').textContent = streak;
+    initAudio();
+    startGame();
+  </script>
+</body>
+</html>

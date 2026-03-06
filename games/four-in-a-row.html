@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gomoku (Five in a Row) - Strategy Game | Mini Game Planet</title>
+  <meta name="description" content="Play Gomoku (Five in a Row) online. Place black or white stones on a 15×15 grid. First to get five in a row wins. Free strategy game with AI opponents at three difficulty levels.">
+  <link rel="canonical" href="https://minigameplanet.com/games/four-in-a-row.html">
+  <!-- Open Graph -->
+  <meta property="og:title" content="Gomoku (Five in a Row) - Strategy Game | Mini Game Planet">
+  <meta property="og:description" content="Play Gomoku online. Place stones on a 15×15 grid. First to get five in a row wins. Play vs AI with three difficulty levels.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/four-in-a-row.html">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    #goban { display: block; cursor: pointer; touch-action: none; }
+    .stone-pulse { animation: stonePulse 0.6s ease-in-out infinite alternate; }
+    @keyframes stonePulse {
+      from { filter: drop-shadow(0 0 4px rgba(255,215,0,0.8)); }
+      to { filter: drop-shadow(0 0 10px rgba(255,215,0,1)); }
+    }
+  </style>
+</head>
+<body class="min-h-screen text-gray-800 antialiased">
+  <div id="nav-container"></div>
+
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-8">
+      <header class="text-center mb-8">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Gomoku (Five in a Row)</h1>
+        <p class="text-gray-600">Place stones. Get five in a row. Win.</p>
+      </header>
+
+      <!-- AI Difficulty & Sound -->
+      <div id="game-setup" class="flex flex-wrap gap-4 justify-center mb-6">
+        <div class="flex items-center gap-2">
+          <label class="font-medium">AI:</label>
+          <select id="ai-difficulty" class="rounded-lg border border-gray-300 px-3 py-2 text-sm">
+            <option value="easy">Easy</option>
+            <option value="normal" selected>Normal</option>
+            <option value="hard">Hard</option>
+          </select>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="sound-toggle" class="rounded-lg border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50" title="Toggle sound">🔊 Sound</button>
+        </div>
+      </div>
+
+      <!-- Stats Bar -->
+      <div class="flex flex-wrap justify-between items-center gap-4 mb-4 font-mono text-sm">
+        <div class="flex gap-6">
+          <span>Wins: <strong id="stat-wins">0</strong></span>
+          <span>Streak: <strong id="stat-streak">0</strong></span>
+          <span>Best: <strong id="stat-best">0</strong></span>
+        </div>
+        <div id="turn-indicator" class="font-medium"></div>
+      </div>
+
+      <!-- Canvas Board -->
+      <div class="flex justify-center mb-6 overflow-x-auto">
+        <div class="inline-block p-4 bg-amber-800 rounded-2xl shadow-xl">
+          <canvas id="goban" width="450" height="450"></canvas>
+        </div>
+      </div>
+
+      <!-- Restart -->
+      <div class="text-center">
+        <button id="restart-btn" class="px-6 py-3 bg-amber-800 text-white rounded-xl font-medium hover:bg-amber-700 transition-colors">
+          New Game
+        </button>
+      </div>
+
+      <!-- Result overlay -->
+      <div id="result-overlay" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-2xl p-8 max-w-sm mx-4 text-center shadow-2xl">
+          <p id="result-text" class="text-xl font-bold mb-4"></p>
+          <button id="play-again-btn" class="px-6 py-3 bg-amber-800 text-white rounded-xl font-medium hover:bg-amber-700">Play Again</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEO Article -->
+    <article class="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-8 prose prose-slate max-w-none">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4">How to Play Gomoku (Five in a Row)</h2>
+      <p class="text-gray-600 leading-relaxed">
+        Gomoku, also known as Five in a Row or Wuziqi, is a classic abstract strategy game played on a 15×15 grid. Two players take turns placing stones of their color—black and white—on the intersections of the grid. The objective is simple: be the first to form an unbroken line of five stones horizontally, vertically, or diagonally. Black typically moves first, and the game combines straightforward rules with deep strategic possibilities.
+      </p>
+      <p class="text-gray-600 leading-relaxed">
+        The game has ancient origins, with similar variants played in China, Japan, and Korea for centuries. The name "Gomoku" comes from Japanese (五目, "five points"), while the Chinese name "Wuziqi" means "five-in-a-row chess." Unlike chess or Go, Gomoku has no captures or complex piece movement—only placement. This simplicity makes it easy to learn, but mastering the game requires understanding patterns, threats, and positional play. The game is sometimes confused with Connect Four, but Gomoku uses a flat grid with stones placed on intersections rather than dropped into columns.
+      </p>
+      <h3 class="text-xl font-semibold text-gray-900 mt-6 mb-2">Strategy Tips</h3>
+      <p class="text-gray-600 leading-relaxed">
+        Control the center early. The middle of the board offers the most flexibility for building winning lines in multiple directions. Watch for "open threes"—three stones in a row with both ends open—because they can often be extended into an unstoppable four. Learn to recognize "double threats," positions where you create two ways to win on your next move, forcing your opponent to block one while you complete the other. Always block your opponent's four-in-a-row immediately, and be wary of leaving open threes that they can exploit.
+      </p>
+      <p class="text-gray-600 leading-relaxed">
+        Defensive play is crucial. A common mistake is focusing only on your own threats while ignoring your opponent's building patterns. Skilled players balance offense and defense, blocking critical lines while advancing their own. The corners and edges can be useful for creating diagonal threats that are harder to spot. In competitive play, some rule sets add restrictions—such as forbidding certain opening moves or requiring a swap rule—to balance the first-mover advantage. Our online version uses the free placement rule set for maximum accessibility.
+      </p>
+      <h3 class="text-xl font-semibold text-gray-900 mt-6 mb-2">Play Online for Free</h3>
+      <p class="text-gray-600 leading-relaxed">
+        Our Gomoku game features a beautiful wooden-style board rendered on canvas, with smooth stone placement and a clear last-move indicator. Play against the computer at three difficulty levels: Easy AI makes random valid moves for beginners, Normal AI uses pattern matching to block threats and create opportunities, and Hard AI evaluates the board to find strong defensive and offensive moves. Session statistics track your wins, current streak, and best streak. The game uses cryptographically secure randomness for fair AI play. No installation required—just open this page and start playing. Challenge yourself to improve your streak and outthink the AI. Perfect for quick breaks, commutes, or honing your strategic thinking.
+      </p>
+    </article>
+
+    <div id="related-games" class="mb-8"></div>
+    <!-- AdSense placeholder (uncomment when ready)
+    <div class="my-8">
+      <ins class="adsbygoogle" data-ad-client="ca-pub-XXXX" data-ad-slot="XXXX" data-ad-format="auto"></ins>
+    </div>
+    -->
+    <div id="footer-container"></div>
+  </main>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('four-in-a-row');
+    initConsent();
+    trackGameView('four-in-a-row', 'Strategy');
+
+    const SIZE = 15;
+    const BLACK = 1, WHITE = 2;
+    const CELL = 30;
+    const PAD = 15;
+    const RADIUS = 12;
+
+    let board = [];
+    let currentPlayer = BLACK;
+    let gameOver = false;
+    let aiDifficulty = 'normal';
+    let muted = false;
+    let stats = { wins: 0, streak: 0, best: 0 };
+    let lastMove = null;
+    let winningLine = null;
+
+    const canvas = document.getElementById('goban');
+    const ctx = canvas.getContext('2d');
+    const $ = (id) => document.getElementById(id);
+    const turnIndicator = $('turn-indicator');
+    const resultOverlay = $('result-overlay');
+    const resultText = $('result-text');
+    const restartBtn = $('restart-btn');
+    const playAgainBtn = $('play-again-btn');
+    const soundToggle = $('sound-toggle');
+    const aiDifficultySelect = $('ai-difficulty');
+
+    function secureRandom() {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] / (0xFFFFFFFF + 1);
+    }
+
+    function loadStats() {
+      try {
+        const s = JSON.parse(sessionStorage.getItem('four-in-a-row-stats') || '{}');
+        stats = { wins: s.wins || 0, streak: s.streak || 0, best: s.best || 0 };
+      } catch (_) {}
+      updateStatsUI();
+    }
+
+    function saveStats() {
+      sessionStorage.setItem('four-in-a-row-stats', JSON.stringify(stats));
+    }
+
+    function updateStatsUI() {
+      $('stat-wins').textContent = stats.wins;
+      $('stat-streak').textContent = stats.streak;
+      $('stat-best').textContent = stats.best;
+    }
+
+    function xyToCell(x, y) {
+      const px = x - PAD, py = y - PAD;
+      const col = Math.round(px / CELL);
+      const row = Math.round(py / CELL);
+      if (row >= 0 && row < SIZE && col >= 0 && col < SIZE) return [row, col];
+      return null;
+    }
+
+    function cellToXY(row, col) {
+      return [PAD + col * CELL, PAD + row * CELL];
+    }
+
+    function drawBoard() {
+      const w = canvas.width, h = canvas.height;
+      ctx.fillStyle = '#b45309';
+      ctx.fillRect(0, 0, w, h);
+      ctx.strokeStyle = '#1c1917';
+      ctx.lineWidth = 1;
+      for (let i = 0; i < SIZE; i++) {
+        ctx.beginPath();
+        ctx.moveTo(PAD + i * CELL, PAD);
+        ctx.lineTo(PAD + i * CELL, PAD + (SIZE - 1) * CELL);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(PAD, PAD + i * CELL);
+        ctx.lineTo(PAD + (SIZE - 1) * CELL, PAD + i * CELL);
+        ctx.stroke();
+      }
+      const star = [3, 3, 3, 11, 11, 3, 11, 11, 7, 7];
+      for (let i = 0; i < 5; i++) {
+        const [r, c] = [star[i * 2], star[i * 2 + 1]];
+        const [x, y] = cellToXY(r, c);
+        ctx.fillStyle = '#1c1917';
+        ctx.beginPath();
+        ctx.arc(x, y, 3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function drawStone(row, col, player, isLast = false, isWin = false) {
+      const [x, y] = cellToXY(row, col);
+      ctx.save();
+      if (isWin) ctx.shadowColor = 'rgba(255,215,0,0.9)';
+      if (isWin) ctx.shadowBlur = 12;
+      ctx.beginPath();
+      ctx.arc(x, y, RADIUS, 0, Math.PI * 2);
+      if (player === BLACK) {
+        const grad = ctx.createRadialGradient(x - 4, y - 4, 0, x, y, RADIUS);
+        grad.addColorStop(0, '#4b5563');
+        grad.addColorStop(1, '#1f2937');
+        ctx.fillStyle = grad;
+      } else {
+        const grad = ctx.createRadialGradient(x - 4, y - 4, 0, x, y, RADIUS);
+        grad.addColorStop(0, '#f9fafb');
+        grad.addColorStop(1, '#e5e7eb');
+        ctx.fillStyle = grad;
+        ctx.strokeStyle = '#9ca3af';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+      ctx.fill();
+      if (isLast && !isWin) {
+        ctx.strokeStyle = 'rgba(255,215,0,0.9)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(x, y, RADIUS - 2, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    function render() {
+      drawBoard();
+      for (let r = 0; r < SIZE; r++) {
+        for (let c = 0; c < SIZE; c++) {
+          if (board[r][c] !== 0) {
+            const isLast = lastMove && lastMove[0] === r && lastMove[1] === c;
+            const isWin = winningLine && winningLine.some(([rr, cc]) => rr === r && cc === c);
+            drawStone(r, c, board[r][c], isLast, isWin);
+          }
+        }
+      }
+    }
+
+    function checkWin(row, col) {
+      const p = board[row][col];
+      const dirs = [[0, 1], [1, 0], [1, 1], [1, -1]];
+      for (const [dr, dc] of dirs) {
+        let count = 1;
+        const line = [[row, col]];
+        for (let s = 1; s <= 4; s++) {
+          const r = row + dr * s, c = col + dc * s;
+          if (r >= 0 && r < SIZE && c >= 0 && c < SIZE && board[r][c] === p) {
+            count++;
+            line.push([r, c]);
+          } else break;
+        }
+        for (let s = -1; s >= -4; s--) {
+          const r = row + dr * s, c = col + dc * s;
+          if (r >= 0 && r < SIZE && c >= 0 && c < SIZE && board[r][c] === p) {
+            count++;
+            line.unshift([r, c]);
+          } else break;
+        }
+        if (count >= 5) return line;
+      }
+      return null;
+    }
+
+    function placeStone(row, col) {
+      if (gameOver || board[row][col] !== 0) return false;
+      try { playClick(); } catch (_) {}
+      board[row][col] = currentPlayer;
+      lastMove = [row, col];
+
+      const win = checkWin(row, col);
+      if (win) {
+        gameOver = true;
+        winningLine = win;
+        try { playGameOver(); } catch (_) {}
+        if (currentPlayer === BLACK) {
+          stats.wins++;
+          if (stats.streak >= 0) stats.streak++;
+          else stats.streak = 1;
+          if (stats.streak > stats.best) stats.best = stats.streak;
+        } else {
+          stats.streak = 0;
+        }
+        saveStats();
+        updateStatsUI();
+        trackGameOver('four-in-a-row', currentPlayer === BLACK ? 'win' : 'loss', { player: currentPlayer === BLACK ? 'Black' : 'White' });
+        showResult(currentPlayer === BLACK ? 'Black wins!' : 'White wins!');
+        render();
+        return true;
+      }
+
+      if (board.every(row => row.every(cell => cell !== 0))) {
+        gameOver = true;
+        try { playError(); } catch (_) {}
+        stats.streak = -1;
+        saveStats();
+        updateStatsUI();
+        trackGameOver('four-in-a-row', 'draw');
+        showResult("It's a draw!");
+        render();
+        return true;
+      }
+
+      currentPlayer = currentPlayer === BLACK ? WHITE : BLACK;
+      updateTurnIndicator();
+      render();
+      return true;
+    }
+
+    function updateTurnIndicator() {
+      if (gameOver) {
+        turnIndicator.textContent = '';
+        return;
+      }
+      const name = currentPlayer === WHITE ? 'AI' : 'You (Black)';
+      turnIndicator.textContent = `${name}'s turn`;
+      turnIndicator.className = 'font-medium';
+      turnIndicator.style.color = currentPlayer === BLACK ? '#1f2937' : '#6b7280';
+    }
+
+    function showResult(text) {
+      resultText.textContent = text;
+      resultOverlay.classList.remove('hidden');
+    }
+
+    function getValidMoves() {
+      const moves = [];
+      for (let r = 0; r < SIZE; r++)
+        for (let c = 0; c < SIZE; c++)
+          if (board[r][c] === 0) moves.push([r, c]);
+      return moves;
+    }
+
+    function countInDirection(row, col, dr, dc, player) {
+      let count = 0;
+      let r = row + dr, c = col + dc;
+      while (r >= 0 && r < SIZE && c >= 0 && c < SIZE && board[r][c] === player) {
+        count++;
+        r += dr;
+        c += dc;
+      }
+      return count;
+    }
+
+    function scoreLine(row, col, dr, dc, player) {
+      const before = countInDirection(row, col, -dr, -dc, player);
+      const after = countInDirection(row, col, dr, dc, player);
+      const total = before + after + 1;
+      const openBefore = (() => {
+        let r = row - (before + 1) * dr, c = col - (before + 1) * dc;
+        return r < 0 || r >= SIZE || c < 0 || c >= SIZE || board[r][c] === 0;
+      })();
+      const openAfter = (() => {
+        let r = row + (after + 1) * dr, c = col + (after + 1) * dc;
+        return r < 0 || r >= SIZE || c < 0 || c >= SIZE || board[r][c] === 0;
+      })();
+      const openEnds = (openBefore ? 1 : 0) + (openAfter ? 1 : 0);
+      if (total >= 5) return 100000;
+      if (total === 4 && openEnds >= 1) return 10000;
+      if (total === 3 && openEnds >= 1) return 1000;
+      if (total === 2 && openEnds >= 1) return 100;
+      if (total === 1 && openEnds >= 1) return 10;
+      return 0;
+    }
+
+    function scorePosition(row, col, player) {
+      let score = 0;
+      const dirs = [[0, 1], [1, 0], [1, 1], [1, -1]];
+      const centerBonus = 7 - Math.abs(row - 7) - Math.abs(col - 7);
+      score += Math.max(0, centerBonus) * 3;
+      for (const [dr, dc] of dirs) {
+        score += scoreLine(row, col, dr, dc, player);
+      }
+      return score;
+    }
+
+    function getAIMove() {
+      const moves = getValidMoves();
+      if (moves.length === 0) return null;
+
+      if (aiDifficulty === 'easy') {
+        return moves[Math.floor(secureRandom() * moves.length)];
+      }
+
+      if (aiDifficulty === 'normal') {
+        for (const [r, c] of moves) {
+          board[r][c] = WHITE;
+          if (checkWin(r, c)) { board[r][c] = 0; return [r, c]; }
+          board[r][c] = 0;
+        }
+        for (const [r, c] of moves) {
+          board[r][c] = BLACK;
+          if (checkWin(r, c)) { board[r][c] = 0; return [r, c]; }
+          board[r][c] = 0;
+        }
+        return moves[Math.floor(secureRandom() * moves.length)];
+      }
+
+      let best = moves[0];
+      let bestScore = -Infinity;
+      for (const [r, c] of moves) {
+        board[r][c] = WHITE;
+        let score = 0;
+        if (checkWin(r, c)) score = 50000;
+        else {
+          const ourScore = scorePosition(r, c, WHITE);
+          board[r][c] = BLACK;
+          const blockScore = scorePosition(r, c, BLACK);
+          board[r][c] = 0;
+          score = ourScore + blockScore * 1.5;
+        }
+        board[r][c] = 0;
+        if (score > bestScore) {
+          bestScore = score;
+          best = [r, c];
+        }
+      }
+      return best;
+    }
+
+    function aiMove() {
+      const move = getAIMove();
+      if (move) placeStone(move[0], move[1]);
+    }
+
+    function getCanvasCoords(e) {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      let clientX, clientY;
+      if (e.touches && e.touches.length) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else if (e.changedTouches && e.changedTouches.length) {
+        clientX = e.changedTouches[0].clientX;
+        clientY = e.changedTouches[0].clientY;
+      } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+      }
+      return [(clientX - rect.left) * scaleX, (clientY - rect.top) * scaleY];
+    }
+
+    function handleClick(e) {
+      if (gameOver || currentPlayer === WHITE) return;
+      e.preventDefault();
+      const [x, y] = getCanvasCoords(e);
+      const cell = xyToCell(x, y);
+      if (cell) placeStone(cell[0], cell[1]);
+      if (!gameOver && currentPlayer === WHITE) setTimeout(aiMove, 300);
+    }
+
+    function init() {
+      board = Array(SIZE).fill(0).map(() => Array(SIZE).fill(0));
+      currentPlayer = BLACK;
+      gameOver = false;
+      lastMove = null;
+      winningLine = null;
+      render();
+      updateTurnIndicator();
+      trackGameStart('four-in-a-row');
+    }
+
+    aiDifficultySelect.addEventListener('change', () => {
+      aiDifficulty = aiDifficultySelect.value;
+    });
+
+    soundToggle.addEventListener('click', () => {
+      muted = !muted;
+      try {
+        if (muted) muteAll();
+        else initAudio();
+      } catch (_) {}
+      soundToggle.textContent = muted ? '🔇 Sound' : '🔊 Sound';
+    });
+
+    restartBtn.addEventListener('click', () => {
+      resultOverlay.classList.add('hidden');
+      init();
+    });
+
+    playAgainBtn.addEventListener('click', () => {
+      resultOverlay.classList.add('hidden');
+      init();
+    });
+
+    canvas.addEventListener('click', handleClick);
+    canvas.addEventListener('touchend', (e) => { e.preventDefault(); handleClick(e); }, { passive: false });
+
+    loadStats();
+    init();
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Gomoku (Five in a Row)",
+    "description": "Play Gomoku online. Place stones on a 15×15 grid. First to get five in a row wins. Play vs AI with three difficulty levels.",
+    "applicationCategory": "Game",
+    "genre": "Strategy",
+    "url": "https://minigameplanet.com/games/four-in-a-row.html"
+  }
+  </script>
+</body>
+</html>

@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dots and Boxes - Free Strategy Game | Mini Game Planet</title>
+  <meta name="description" content="Play Dots and Boxes online. Classic pencil-and-paper strategy game. Connect dots to claim boxes. Challenge the AI at 3 difficulty levels. Free, no download.">
+  <link rel="canonical" href="https://minigameplanet.com/games/dots-and-boxes.html">
+  <!-- Open Graph -->
+  <meta property="og:title" content="Dots and Boxes - Free Strategy Game">
+  <meta property="og:description" content="Play Dots and Boxes online. Connect dots, claim boxes, outsmart the AI.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/dots-and-boxes.html">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    .line-hover:hover { opacity: 0.7; cursor: pointer; }
+    .line-taken { pointer-events: none; }
+  </style>
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Dots and Boxes",
+    "description": "Classic strategy game. Connect adjacent dots to complete boxes. Player vs AI with multiple difficulty levels.",
+    "applicationCategory": "Game",
+    "genre": "Strategy",
+    "url": "https://minigameplanet.com/games/dots-and-boxes.html",
+    "browserRequirements": "Requires JavaScript"
+  }
+  </script>
+  <!-- AdSense placeholder - uncomment when ready
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXX" crossorigin="anonymous"></script>
+  -->
+</head>
+<body class="min-h-screen text-stone-800">
+  <nav id="nav-container" class="bg-white/80 backdrop-blur border-b border-stone-200 sticky top-0 z-50"></nav>
+
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-2xl shadow-lg border border-stone-200 p-6 md:p-8 mb-8">
+      <header class="text-center mb-6">
+        <h1 class="text-3xl md:text-4xl font-bold text-stone-900 mb-2">Dots and Boxes</h1>
+        <p class="text-stone-600">Connect dots. Claim boxes. Outsmart the AI.</p>
+      </header>
+
+      <div class="flex flex-wrap gap-4 justify-center items-center mb-6">
+        <div class="flex items-center gap-2">
+          <label class="text-sm font-medium text-stone-600">Grid:</label>
+          <select id="grid-size" class="rounded-lg border border-stone-300 px-3 py-2 text-sm font-mono bg-white">
+            <option value="4">4×4</option>
+            <option value="5">5×5</option>
+            <option value="6">6×6</option>
+          </select>
+        </div>
+        <div class="flex items-center gap-2">
+          <label class="text-sm font-medium text-stone-600">AI:</label>
+          <select id="ai-difficulty" class="rounded-lg border border-stone-300 px-3 py-2 text-sm font-mono bg-white">
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+          </select>
+        </div>
+        <button id="new-game-btn" class="px-4 py-2 rounded-lg bg-stone-800 text-white font-medium hover:bg-stone-700 transition">New Game</button>
+        <div class="flex items-center gap-2">
+          <button id="sound-toggle" class="p-2 rounded-lg border border-stone-300 hover:bg-stone-100" title="Toggle sound">🔊</button>
+        </div>
+      </div>
+
+      <div class="flex justify-center gap-8 mb-6">
+        <div class="text-center">
+          <span class="text-sm text-stone-500">You</span>
+          <div id="player-score" class="text-2xl font-bold text-blue-600">0</div>
+        </div>
+        <div class="text-center">
+          <span class="text-sm text-stone-500">AI</span>
+          <div id="ai-score" class="text-2xl font-bold text-amber-600">0</div>
+        </div>
+      </div>
+
+      <div id="game-status" class="text-center font-medium text-stone-700 mb-4">Your turn — click a line to draw</div>
+
+      <div id="game-container" class="flex justify-center overflow-auto py-4"></div>
+
+      <div id="session-stats" class="mt-6 pt-6 border-t border-stone-200 text-center text-sm text-stone-500 font-mono">
+        <span>Games: <span id="stat-games">0</span></span>
+        <span class="mx-3">Wins: <span id="stat-wins">0</span></span>
+        <span>Streak: <span id="stat-streak">0</span></span>
+      </div>
+    </div>
+
+    <article class="bg-white rounded-2xl shadow-lg border border-stone-200 p-6 md:p-8 mb-8 prose prose-stone max-w-none">
+      <h2 class="text-xl font-bold text-stone-900">About Dots and Boxes</h2>
+      <p>Dots and Boxes is a classic strategy game that has entertained players for over a century. Also known as "La Pipopipette" in France and "Pigs in a Pen" in some regions, this pencil-and-paper game combines simple rules with deep tactical play. The objective is straightforward: draw lines between adjacent dots to complete boxes. Each completed box earns you a point and an extra turn. The player with the most boxes when the grid is full wins.</p>
+      <p>The game begins with a grid of dots—typically 4×4, 5×5, or 6×6. Players alternate drawing a single horizontal or vertical line between two neighboring dots. When you complete the fourth side of a 1×1 square, you claim that box by coloring it in and immediately take another turn. This "chain reaction" mechanic is crucial: skilled players can force opponents into positions where they must give away multiple boxes in sequence.</p>
+      <p>Strategy in Dots and Boxes revolves around "double-dealing" and "chains." A chain is a sequence of boxes where each shares a side with the next. The player who is forced to "open" a chain—by drawing the first line of it—typically loses those boxes to their opponent. Advanced players count chains and sacrifice small chains to gain larger ones. The opening moves matter: controlling the center and avoiding early chain creation can set the tone for the entire game.</p>
+      <p>On Mini Game Planet, you can play Dots and Boxes against an AI at three difficulty levels. Easy mode makes random moves, Medium adds basic avoidance of giving away boxes, and Hard uses look-ahead to maximize its score. Whether you're a beginner learning the basics or an experienced player honing your chain-counting skills, our free online version offers instant play with no download required.</p>
+    </article>
+
+    <section id="related-games" class="mb-8"></section>
+    <footer id="footer-container"></footer>
+  </main>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playCollect } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('dots-and-boxes');
+    initConsent();
+    initAudio();
+    trackGameView('dots-and-boxes', 'Strategy');
+
+    // Secure randomness
+    function secureRandom() {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] / (0xFFFFFFFF + 1);
+    }
+
+    // Session stats
+    const SESSION_KEY = 'dots-and-boxes-stats';
+    function loadStats() {
+      try {
+        const s = JSON.parse(sessionStorage.getItem(SESSION_KEY) || '{}');
+        return { games: s.games || 0, wins: s.wins || 0, streak: s.streak || 0 };
+      } catch { return { games: 0, wins: 0, streak: 0 }; }
+    }
+    function saveStats(stats) {
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify(stats));
+    }
+    function updateStatsUI(stats) {
+      document.getElementById('stat-games').textContent = stats.games;
+      document.getElementById('stat-wins').textContent = stats.wins;
+      document.getElementById('stat-streak').textContent = stats.streak;
+    }
+
+    let gameState = {
+      n: 5,
+      lines: new Set(),
+      boxes: new Map(),
+      playerScore: 0,
+      aiScore: 0,
+      turn: 'player',
+      gameOver: false,
+      difficulty: 'medium',
+    };
+
+    function getEdges(n) {
+      const edges = [];
+      for (let r = 0; r <= n; r++) {
+        for (let c = 0; c < n; c++) {
+          edges.push({ r, c, dir: 'h' });
+        }
+      }
+      for (let r = 0; r < n; r++) {
+        for (let c = 0; c <= n; c++) {
+          edges.push({ r, c, dir: 'v' });
+        }
+      }
+      return edges;
+    }
+
+    function edgeKey(e) {
+      return `${e.r},${e.c},${e.dir}`;
+    }
+
+    function getBoxesForEdge(e, n) {
+      const boxes = [];
+      if (e.dir === 'h') {
+        if (e.r > 0) boxes.push({ r: e.r - 1, c: e.c });
+        if (e.r < n) boxes.push({ r: e.r, c: e.c });
+      } else {
+        if (e.c > 0) boxes.push({ r: e.r, c: e.c - 1 });
+        if (e.c < n) boxes.push({ r: e.r, c: e.c });
+      }
+      return boxes;
+    }
+
+    function countBoxSides(box, lines, n) {
+      const [r, c] = [box.r, box.c];
+      const sides = [
+        { r, c, dir: 'h' },
+        { r: r + 1, c, dir: 'h' },
+        { r, c, dir: 'v' },
+        { r, c: c + 1, dir: 'v' },
+      ];
+      return sides.filter(s => lines.has(edgeKey(s))).length;
+    }
+
+    function getCompletedBoxes(edge, lines, n) {
+      return getBoxesForEdge(edge, n).filter(b => countBoxSides(b, lines, n) === 4);
+    }
+
+    function getAvailableEdges(lines, allEdges) {
+      return allEdges.filter(e => !lines.has(edgeKey(e)));
+    }
+
+    function playMove(edge, owner) {
+      const key = edgeKey(edge);
+      if (gameState.lines.has(key)) return [];
+      gameState.lines.add(key);
+      const completed = getCompletedBoxes(edge, gameState.lines, gameState.n);
+      completed.forEach(b => gameState.boxes.set(`${b.r},${b.c}`, owner));
+      if (owner === 'player') gameState.playerScore += completed.length;
+      else gameState.aiScore += completed.length;
+      return completed;
+    }
+
+    function checkGameOver() {
+      const totalBoxes = gameState.n * gameState.n;
+      return gameState.playerScore + gameState.aiScore === totalBoxes;
+    }
+
+    function aiMove() {
+      const edges = getEdges(gameState.n);
+      const available = getAvailableEdges(gameState.lines, edges);
+
+      if (available.length === 0) return;
+
+      let chosen = null;
+
+      if (gameState.difficulty === 'easy') {
+        chosen = available[Math.floor(secureRandom() * available.length)];
+      } else if (gameState.difficulty === 'medium') {
+        const safe = available.filter(e => getCompletedBoxes(e, gameState.lines, gameState.n).length === 0);
+        const scoring = available.filter(e => getCompletedBoxes(e, gameState.lines, gameState.n).length > 0);
+        if (scoring.length) chosen = scoring[Math.floor(secureRandom() * scoring.length)];
+        else if (safe.length) chosen = safe[Math.floor(secureRandom() * safe.length)];
+        else chosen = available[Math.floor(secureRandom() * available.length)];
+      } else {
+        const scoring = available.filter(e => getCompletedBoxes(e, gameState.lines, gameState.n).length > 0);
+        const safe = available.filter(e => getCompletedBoxes(e, gameState.lines, gameState.n).length === 0);
+        if (scoring.length) {
+          const best = scoring.reduce((a, e) => {
+            const c = getCompletedBoxes(e, gameState.lines, gameState.n).length;
+            return c > (getCompletedBoxes(a, gameState.lines, gameState.n).length) ? e : a;
+          }, scoring[0]);
+          chosen = best;
+        } else if (safe.length) {
+          const dangerous = safe.filter(e => {
+            const newLines = new Set(gameState.lines);
+            newLines.add(edgeKey(e));
+            return getBoxesForEdge(e, gameState.n).some(b => countBoxSides(b, newLines, gameState.n) === 3);
+          });
+          chosen = dangerous.length ? dangerous[Math.floor(secureRandom() * dangerous.length)] : safe[Math.floor(secureRandom() * safe.length)];
+        } else {
+          chosen = available[Math.floor(secureRandom() * available.length)];
+        }
+      }
+
+      const completed = playMove(chosen, 'ai');
+      render();
+      if (completed.length) {
+        playScoreUp();
+        if (!checkGameOver()) setTimeout(aiMove, 400);
+        else endGame();
+      } else {
+        gameState.turn = 'player';
+        document.getElementById('game-status').textContent = 'Your turn — click a line to draw';
+      }
+    }
+
+    function endGame() {
+      gameState.gameOver = true;
+      const stats = loadStats();
+      stats.games++;
+      const playerWon = gameState.playerScore > gameState.aiScore;
+      if (playerWon) {
+        stats.wins++;
+        stats.streak++;
+        playGameOver();
+      } else {
+        stats.streak = 0;
+        playError();
+      }
+      saveStats(stats);
+      updateStatsUI(stats);
+      trackGameOver('dots-and-boxes', { playerScore: gameState.playerScore, aiScore: gameState.aiScore, won: playerWon });
+      const msg = gameState.playerScore > gameState.aiScore ? 'You win!' : gameState.playerScore < gameState.aiScore ? 'AI wins!' : "It's a tie!";
+      document.getElementById('game-status').textContent = msg + ' Click New Game to play again.';
+    }
+
+    function render() {
+      const container = document.getElementById('game-container');
+      const n = gameState.n;
+      const dotSpacing = Math.min(48, 320 / (n + 1));
+      const size = (n + 1) * dotSpacing;
+
+      container.innerHTML = '';
+      container.style.width = size + 'px';
+      container.style.height = size + 'px';
+      container.style.position = 'relative';
+
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('width', size);
+      svg.setAttribute('height', size);
+      svg.style.position = 'absolute';
+      svg.style.left = '0';
+      svg.style.top = '0';
+
+      for (let r = 0; r <= n; r++) {
+        for (let c = 0; c <= n; c++) {
+          const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          dot.setAttribute('cx', c * dotSpacing + dotSpacing / 2);
+          dot.setAttribute('cy', r * dotSpacing + dotSpacing / 2);
+          dot.setAttribute('r', 4);
+          dot.setAttribute('fill', '#57534e');
+          svg.appendChild(dot);
+        }
+      }
+
+      const edges = getEdges(n);
+      edges.forEach(e => {
+        const key = edgeKey(e);
+        const taken = gameState.lines.has(key);
+
+        if (e.dir === 'h') {
+          const x1 = e.c * dotSpacing + dotSpacing / 2;
+          const x2 = (e.c + 1) * dotSpacing + dotSpacing / 2;
+          const y = e.r * dotSpacing + dotSpacing / 2;
+          if (taken) {
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('x1', x1);
+            line.setAttribute('y1', y);
+            line.setAttribute('x2', x2);
+            line.setAttribute('y2', y);
+            line.setAttribute('stroke', '#1e293b');
+            line.setAttribute('stroke-width', 3);
+            line.setAttribute('stroke-linecap', 'round');
+            svg.appendChild(line);
+          } else if (!gameState.gameOver && gameState.turn === 'player') {
+            const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            rect.setAttribute('x', Math.min(x1, x2) - 8);
+            rect.setAttribute('y', y - 8);
+            rect.setAttribute('width', dotSpacing + 16);
+            rect.setAttribute('height', 16);
+            rect.setAttribute('fill', 'transparent');
+            rect.setAttribute('data-edge', key);
+            rect.classList.add('line-hover');
+            rect.style.cursor = 'pointer';
+            rect.addEventListener('click', () => handleLineClick(e));
+            svg.appendChild(rect);
+          }
+        } else {
+          const x = e.c * dotSpacing + dotSpacing / 2;
+          const y1 = e.r * dotSpacing + dotSpacing / 2;
+          const y2 = (e.r + 1) * dotSpacing + dotSpacing / 2;
+          if (taken) {
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('x1', x);
+            line.setAttribute('y1', y1);
+            line.setAttribute('x2', x);
+            line.setAttribute('y2', y2);
+            line.setAttribute('stroke', '#1e293b');
+            line.setAttribute('stroke-width', 3);
+            line.setAttribute('stroke-linecap', 'round');
+            svg.appendChild(line);
+          } else if (!gameState.gameOver && gameState.turn === 'player') {
+            const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            rect.setAttribute('x', x - 8);
+            rect.setAttribute('y', Math.min(y1, y2) - 8);
+            rect.setAttribute('width', 16);
+            rect.setAttribute('height', dotSpacing + 16);
+            rect.setAttribute('fill', 'transparent');
+            rect.setAttribute('data-edge', key);
+            rect.classList.add('line-hover');
+            rect.style.cursor = 'pointer';
+            rect.addEventListener('click', () => handleLineClick(e));
+            svg.appendChild(rect);
+          }
+        }
+      });
+
+      for (let r = 0; r < n; r++) {
+        for (let c = 0; c < n; c++) {
+          const owner = gameState.boxes.get(`${r},${c}`);
+          if (owner) {
+            const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            rect.setAttribute('x', c * dotSpacing + dotSpacing / 2 + 2);
+            rect.setAttribute('y', r * dotSpacing + dotSpacing / 2 + 2);
+            rect.setAttribute('width', dotSpacing - 4);
+            rect.setAttribute('height', dotSpacing - 4);
+            rect.setAttribute('fill', owner === 'player' ? 'rgba(59, 130, 246, 0.4)' : 'rgba(245, 158, 11, 0.4)');
+            rect.setAttribute('rx', 2);
+            svg.insertBefore(rect, svg.firstChild);
+          }
+        }
+      }
+
+      container.appendChild(svg);
+    }
+
+    function handleLineClick(edge) {
+      if (gameState.gameOver || gameState.turn !== 'player') return;
+      if (gameState.lines.has(edgeKey(edge))) return;
+
+      playClick();
+      const completed = playMove(edge, 'player');
+      if (completed.length) playScoreUp();
+
+      document.getElementById('player-score').textContent = gameState.playerScore;
+      document.getElementById('ai-score').textContent = gameState.aiScore;
+      render();
+
+      if (checkGameOver()) {
+        endGame();
+        return;
+      }
+      if (completed.length) {
+        document.getElementById('game-status').textContent = 'Box claimed! Go again.';
+        return;
+      }
+      gameState.turn = 'ai';
+      document.getElementById('game-status').textContent = "AI's turn...";
+      setTimeout(aiMove, 300);
+    }
+
+    function startNewGame() {
+      const n = parseInt(document.getElementById('grid-size').value, 10);
+      const diff = document.getElementById('ai-difficulty').value;
+      gameState = {
+        n,
+        lines: new Set(),
+        boxes: new Map(),
+        playerScore: 0,
+        aiScore: 0,
+        turn: 'player',
+        gameOver: false,
+        difficulty: diff,
+      };
+      document.getElementById('player-score').textContent = '0';
+      document.getElementById('ai-score').textContent = '0';
+      document.getElementById('game-status').textContent = 'Your turn — click a line to draw';
+      render();
+      trackGameStart('dots-and-boxes');
+    }
+
+    document.getElementById('new-game-btn').addEventListener('click', () => {
+      playClick();
+      startNewGame();
+    });
+    document.getElementById('grid-size').addEventListener('change', () => { if (gameState.gameOver) startNewGame(); });
+    document.getElementById('ai-difficulty').addEventListener('change', () => { if (gameState.gameOver) startNewGame(); });
+
+    document.getElementById('sound-toggle').addEventListener('click', () => {
+      muteAll();
+      document.getElementById('sound-toggle').textContent = document.getElementById('sound-toggle').textContent === '🔊' ? '🔇' : '🔊';
+    });
+
+    updateStatsUI(loadStats());
+    startNewGame();
+  </script>
+</body>
+</html>

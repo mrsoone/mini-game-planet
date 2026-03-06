@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Nim Game Online — Play Strategy Nim | MiniGamePlanet</title>
+  <meta name="description" content="Play Nim free online. Remove stones from rows — the player who takes the last stone loses. Player vs AI with Easy, Normal, and Hard modes. Classic misère Nim strategy game.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/nim">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500});gtag('config','G-XXXXXXXXXX');</script>
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
+  <meta property="og:type" content="website"><meta property="og:title" content="Free Nim Game Online | MiniGamePlanet"><meta property="og:description" content="Play Nim free. Remove stones from rows — last to take loses. Strategy game vs AI."><meta property="og:url" content="https://minigameplanet.com/games/nim"><meta property="og:site_name" content="MiniGamePlanet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Nim","url":"https://minigameplanet.com/games/nim","description":"Play Nim free online. Remove stones from rows. Last to take loses. Strategy game vs AI.","genre":"Strategy","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <style>
+    .hero-grad{background:linear-gradient(135deg,#0891B2 0%,#2563EB 22%,#7C3AED 44%,#E11D48 66%,#EA580C 82%,#D97706 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:heroShift 8s ease-in-out infinite}
+    @keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+    .nim-stone{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#64748B 0%,#475569 100%);border:2px solid #334155;cursor:pointer;transition:all 0.15s ease;flex-shrink:0}
+    .nim-stone:hover{transform:scale(1.1);box-shadow:0 2px 8px rgba(0,0,0,0.2)}
+    .nim-stone.selected{background:linear-gradient(135deg,#0D9488 0%,#0F766E 100%);border-color:#0F766E;box-shadow:0 0 0 3px rgba(13,148,136,0.5)}
+    .nim-stone.removed{opacity:0;transform:scale(0);pointer-events:none}
+    .nim-row{display:flex;align-items:center;gap:6px;padding:10px 16px;background:#F8FAFC;border-radius:10px;margin-bottom:8px;min-height:48px;border:2px solid #E2E8F0}
+    .nim-row:hover{background:#F1F5F9}
+    .nim-row-label{font-family:'DM Mono',monospace;font-size:12px;font-weight:600;color:#64748B;min-width:24px}
+    .nim-pick-bar{display:flex;gap:4px;margin-top:8px;flex-wrap:wrap}
+    .nim-pick-btn{padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;border:2px solid #E2E8F0;background:#fff;color:#334155;cursor:pointer;font-family:inherit;transition:all 0.15s}
+    .nim-pick-btn:hover{background:#0D9488;color:#fff;border-color:#0D9488}
+    .nim-pick-btn:disabled{opacity:0.5;cursor:not-allowed}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;" id="game-wrap">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <div><h1 style="font-size:22px;font-weight:700;margin:0;">🪨 Nim</h1>
+        <p style="font-size:12px;color:#94A3B8;margin:2px 0 0;">Remove stones from one row — last to take loses (misère)</p></div>
+        <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊 Sound</button>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+        <button class="size-btn" data-s="small" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">Small</button>
+        <button class="size-btn" data-s="medium" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #0D9488;background:#0D9488;color:#fff;cursor:pointer;font-family:inherit;">Medium</button>
+        <button class="size-btn" data-s="large" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">Large</button>
+        <span style="width:1px;background:#E2E8F0;margin:0 4px;"></span>
+        <button class="diff-btn" data-d="easy" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">Easy</button>
+        <button class="diff-btn" data-d="normal" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">Normal</button>
+        <button class="diff-btn" data-d="hard" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">Hard</button>
+        <button id="new-game" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">🔄 New</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:10px;padding:6px 10px;background:#F8FAFC;border-radius:8px;flex-wrap:wrap;">
+        <span style="font-family:'DM Mono',monospace;font-size:13px;font-weight:600;" id="turn-label">Your turn</span>
+        <span style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;">🔥 <span id="streak">0</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;">🏆 <span id="wins">0</span> / <span id="played">0</span></span>
+      </div>
+      <div id="board" style="margin-bottom:12px;"></div>
+      <div id="pick-area" style="display:none;padding:12px;background:#F1F5F9;border-radius:10px;margin-bottom:12px;">
+        <div style="font-size:12px;font-weight:600;margin-bottom:6px;">How many to remove from Row <span id="pick-row-num">1</span>?</div>
+        <div class="nim-pick-bar" id="pick-btns"></div>
+      </div>
+      <div id="game-over" style="display:none;text-align:center;padding:20px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;">
+        <div id="go-title" style="font-size:24px;font-weight:700;margin-bottom:4px;"></div>
+        <div id="go-sub" style="font-size:14px;color:#64748B;margin-bottom:12px;"></div>
+        <div id="session-stats" style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;text-align:left;max-width:220px;margin:0 auto 16px;padding:12px;background:#fff;border-radius:8px;"></div>
+        <button id="play-again" style="padding:10px 28px;background:#0D9488;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">▶ Play Again</button>
+        <p style="font-size:11px;color:#94A3B8;margin-top:6px;">Enter or Space to restart</p>
+      </div>
+    </div>
+  </main>
+
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play Nim</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>Nim is one of the oldest and most mathematically elegant strategy games in existence. The game is played with several rows of objects—traditionally stones, sticks, or matches—and two players take turns removing any number of objects from a single row. In the misère variant played here, the player who is forced to take the last object loses. Despite its simple rules, Nim has profound connections to combinatorial game theory and was one of the first games to be fully solved mathematically using the concept of nim-sum (binary XOR).</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Rules</h3>
+      <p>On your turn, you choose one row and remove one or more stones from it. You must remove at least one stone, and all stones must come from the same row. The player who takes the last remaining stone loses. That's the misère rule: you want to force your opponent into taking the final stone. The game starts with a preset configuration—Small (rows of 1, 3, 5), Medium (1, 3, 5, 7), or Large (1, 3, 5, 7, 9) stones—and you play against the computer.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">How to Play</h3>
+      <p>Click a row to select it. A bar of buttons will appear showing how many stones you can remove (1 through the row's count). Click a number to make your move. The AI will then respond. On Easy, the AI makes random legal moves. On Normal, it sometimes plays optimally and sometimes makes mistakes. On Hard, it uses the nim-sum strategy for perfect play—you cannot beat it from a losing position.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">History &amp; Origin</h3>
+      <p>Nim's origins are ancient. Similar games appear in Chinese literature and were played in Europe for centuries. The name "Nim" was coined by Charles L. Bouton, who published a complete mathematical analysis in 1901. Bouton proved that the game could be solved using binary numbers and the XOR operation. His work laid the foundation for the Sprague-Grundy theorem, which generalizes winning strategies to many impartial games. Nim has since become a staple of game theory courses and a classic example of a combinatorial game.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Strategy &amp; the Nim-Sum</h3>
+      <p>The key to perfect play is the nim-sum: the XOR of all heap sizes. If the nim-sum is zero, the position is losing for the player to move—assuming normal play (last to take wins). In misère Nim, when at least one heap has more than one stone, the optimal strategy is the same: play to leave a nim-sum of zero. When all heaps are of size 0 or 1, the strategy changes: you want to leave an odd number of heaps of size 1 for your opponent. Skilled players learn to compute nim-sums mentally to find winning moves.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Tips for Winning</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Learn the nim-sum.</strong> XOR the sizes of all rows. If the result is 0, you're in a losing position unless your opponent errs.</li>
+        <li><strong>Find the winning move.</strong> For each row, compute target = nimSum XOR rowSize. If target &lt; rowSize, remove (rowSize - target) stones from that row.</li>
+        <li><strong>Practice on Easy.</strong> Use Easy mode to explore positions and see how the game flows before facing optimal play.</li>
+        <li><strong>Board size matters.</strong> Larger boards offer more complexity and longer games. Start with Small to build intuition.</li>
+      </ul>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Frequently Asked Questions</h3>
+      <h4 class="font-semibold text-slate-800">What is misère Nim?</h4>
+      <p>In normal Nim, the player who takes the last stone wins. In misère Nim, the player who takes the last stone loses. The misère variant adds a twist: when all heaps are small (0 or 1), the endgame strategy differs from the standard nim-sum approach.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">Can I beat the Hard AI?</h4>
+      <p>Only if you start from a winning position. From a losing position (nim-sum zero), the Hard AI will never make a mistake. From a winning position, you can force a win by always leaving nim-sum zero after your moves.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">Why use XOR for Nim?</h4>
+      <p>Bouton proved that the winning strategy depends on the binary representation of heap sizes. XOR (exclusive-or) captures the "nim-sum": when the nim-sum is 0, the position is losing. This elegant connection makes Nim a beautiful example of mathematical game theory.</p>
+      <p class="mt-6">Play Nim free in your browser—no download needed. Remove stones, outthink the AI, and avoid taking the last one.</p>
+    </div>
+  </article>
+  <div id="related-games"></div>
+  <div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+  document.addEventListener('click',()=>initAudio(),{once:true});
+  initToolPage('nim'); initConsent(); trackGameView('nim','Strategy');
+
+  const BOARDS = { small: [1,3,5], medium: [1,3,5,7], large: [1,3,5,7,9] };
+  let heaps = [], size = 'medium', diff = 'normal', gameActive = false, gameStarted = false;
+  let selectedRow = -1, playerTurn = true;
+  let streak = 0, wins = 0, played = 0;
+  let session = { rounds: 0, wins: 0, startTime: Date.now() };
+
+  function rng(min, max) {
+    const a = new Uint32Array(1);
+    crypto.getRandomValues(a);
+    return min + (a[0] % (max - min + 1));
+  }
+
+  function newGame() {
+    heaps = [...BOARDS[size]];
+    gameActive = true;
+    gameStarted = false;
+    playerTurn = true;
+    selectedRow = -1;
+    document.getElementById('game-over').style.display = 'none';
+    document.getElementById('pick-area').style.display = 'none';
+    document.getElementById('turn-label').textContent = 'Your turn';
+    document.getElementById('turn-label').style.color = '#0F172A';
+    render();
+  }
+
+  function nimSum(arr) {
+    return arr.reduce((a, b) => a ^ b, 0);
+  }
+
+  function getOptimalMove(h) {
+    const allOnes = h.every(v => v <= 1);
+    const ones = h.filter(v => v === 1).length;
+    if (allOnes) {
+      if (ones % 2 === 1) return null;
+      for (let i = 0; i < h.length; i++) if (h[i] === 1) return { row: i, count: 1 };
+      return null;
+    }
+    const ns = nimSum(h);
+    if (ns === 0) return null;
+    for (let i = 0; i < h.length; i++) {
+      const target = ns ^ h[i];
+      if (target < h[i]) return { row: i, count: h[i] - target };
+    }
+    return null;
+  }
+
+  function getRandomMove(h) {
+    const rows = [];
+    for (let i = 0; i < h.length; i++) if (h[i] > 0) rows.push(i);
+    if (rows.length === 0) return null;
+    const row = rows[rng(0, rows.length - 1)];
+    const count = rng(1, heaps[row]);
+    return { row, count };
+  }
+
+  function aiMove() {
+    let move = null;
+    if (diff === 'easy') move = getRandomMove(heaps);
+    else if (diff === 'hard') move = getOptimalMove(heaps);
+    else {
+      const opt = getOptimalMove(heaps);
+      if (opt && rng(1, 100) <= 70) move = opt;
+      else move = getRandomMove(heaps);
+    }
+    if (!move) move = getRandomMove(heaps);
+    if (move) applyMove(move.row, move.count, false);
+  }
+
+  function applyMove(row, count, isPlayer) {
+    heaps[row] -= count;
+    playClick();
+    render();
+    const total = heaps.reduce((a, b) => a + b, 0);
+    if (total === 0) {
+      gameActive = false;
+      session.rounds++;
+      played++;
+      const playerWon = !isPlayer;
+      if (playerWon) { wins++; streak++; playSuccess(); } else { streak = 0; playGameOver(); }
+      document.getElementById('go-title').textContent = playerWon ? '🏆 You Win!' : '😔 You Lose';
+      document.getElementById('go-title').style.color = playerWon ? '#059669' : '#DC2626';
+      document.getElementById('go-sub').textContent = playerWon ? 'AI took the last stone!' : 'You took the last stone.';
+      document.getElementById('wins').textContent = wins;
+      document.getElementById('played').textContent = played;
+      document.getElementById('streak').textContent = streak;
+      const elapsed = Math.round((Date.now() - session.startTime) / 1000);
+      const mins = Math.floor(elapsed / 60), secs = elapsed % 60;
+      document.getElementById('session-stats').innerHTML = `🎮 This Session<br>─────────────────────<br>Rounds played   ${session.rounds}<br>Wins            ${wins}<br>Current streak  ${streak} ${streak >= 3 ? '🔥' : ''}<br>Time played     ${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      document.getElementById('game-over').style.display = 'block';
+      document.getElementById('play-again').focus();
+      trackGameOver('nim', 'Strategy', playerWon ? 1 : 0, 0);
+      return;
+    }
+    if (isPlayer) {
+      playerTurn = false;
+      document.getElementById('turn-label').textContent = 'AI thinking...';
+      document.getElementById('turn-label').style.color = '#64748B';
+      setTimeout(aiMove, 500);
+    } else {
+      playerTurn = true;
+      document.getElementById('turn-label').textContent = 'Your turn';
+      document.getElementById('turn-label').style.color = '#0F172A';
+    }
+  }
+
+  function render() {
+    const board = document.getElementById('board');
+    board.innerHTML = '';
+    heaps.forEach((count, rowIdx) => {
+      const rowEl = document.createElement('div');
+      rowEl.className = 'nim-row';
+      rowEl.dataset.row = rowIdx;
+      rowEl.innerHTML = `<span class="nim-row-label">${rowIdx + 1}</span>`;
+      const stones = document.createElement('div');
+      stones.style.display = 'flex';
+      stones.style.flexWrap = 'wrap';
+      stones.style.gap = '6px';
+      stones.style.flex = '1';
+      for (let i = 0; i < count; i++) {
+        const s = document.createElement('div');
+        s.className = 'nim-stone' + (selectedRow === rowIdx ? ' selected' : '');
+        s.dataset.row = rowIdx;
+        s.dataset.idx = i;
+        if (playerTurn && gameActive && count > 0) {
+          s.style.cursor = 'pointer';
+          s.addEventListener('click', () => selectRow(rowIdx));
+        }
+        stones.appendChild(s);
+      }
+      rowEl.appendChild(stones);
+      board.appendChild(rowEl);
+    });
+
+    document.getElementById('pick-area').style.display = selectedRow >= 0 ? 'block' : 'none';
+    if (selectedRow >= 0 && heaps[selectedRow] > 0) {
+      document.getElementById('pick-row-num').textContent = selectedRow + 1;
+      const pickBar = document.getElementById('pick-btns');
+      pickBar.innerHTML = '';
+      for (let k = 1; k <= heaps[selectedRow]; k++) {
+        const btn = document.createElement('button');
+        btn.className = 'nim-pick-btn';
+        btn.textContent = k;
+        btn.addEventListener('click', () => {
+          const row = selectedRow;
+          selectedRow = -1;
+          playClick();
+          applyMove(row, k, true);
+        });
+        pickBar.appendChild(btn);
+      }
+    }
+  }
+
+  function selectRow(rowIdx) {
+    if (!gameActive || !playerTurn || heaps[rowIdx] === 0) return;
+    if (!gameStarted) { gameStarted = true; trackGameStart('nim', 'Strategy'); }
+    selectedRow = rowIdx;
+    render();
+  }
+
+  document.getElementById('sound-btn').addEventListener('click', () => {
+    initAudio();
+    const m = muteAll();
+    document.getElementById('sound-btn').textContent = m ? '🔇 Sound' : '🔊 Sound';
+  });
+
+  document.querySelectorAll('.size-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      size = btn.dataset.s;
+      document.querySelectorAll('.size-btn').forEach(b => { b.style.background = '#fff'; b.style.color = '#334155'; b.style.borderColor = '#E5E7EB'; });
+      btn.style.background = '#0D9488'; btn.style.color = '#fff'; btn.style.borderColor = '#0D9488';
+      newGame();
+    });
+  });
+
+  document.querySelectorAll('.diff-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      diff = btn.dataset.d;
+      document.querySelectorAll('.diff-btn').forEach(b => { b.style.background = '#fff'; b.style.color = '#334155'; b.style.borderColor = '#E5E7EB'; });
+      btn.style.background = '#0D9488'; btn.style.color = '#fff'; btn.style.borderColor = '#0D9488';
+      newGame();
+    });
+  });
+
+  document.getElementById('new-game').addEventListener('click', () => { playClick(); newGame(); });
+  document.getElementById('play-again').addEventListener('click', () => { playClick(); newGame(); });
+  document.addEventListener('keydown', e => { if (!gameActive && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); playClick(); newGame(); } });
+
+  document.querySelector('.diff-btn[data-d="normal"]').style.background = '#0D9488';
+  document.querySelector('.diff-btn[data-d="normal"]').style.color = '#fff';
+  document.querySelector('.diff-btn[data-d="normal"]').style.borderColor = '#0D9488';
+  newGame();
+  </script>
+</body>
+</html>

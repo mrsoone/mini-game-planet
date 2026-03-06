@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connect Four - Strategy Game | Mini Game Planet</title>
+  <meta name="description" content="Play Connect Four online. Drop colored discs, connect four in a row to win. Play vs AI or a friend. Free strategy game with multiple difficulty levels.">
+  <link rel="canonical" href="https://minigameplanet.com/games/connect-four.html">
+  <!-- Open Graph -->
+  <meta property="og:title" content="Connect Four - Strategy Game | Mini Game Planet">
+  <meta property="og:description" content="Play Connect Four online. Drop colored discs, connect four in a row to win. Play vs AI or a friend.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/connect-four.html">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    .disc { transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .disc-drop { animation: drop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+    @keyframes drop {
+      from { transform: translateY(-400%); opacity: 0.8; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .cell-hole { background: radial-gradient(circle at 30% 30%, #1e293b, #0f172a); }
+    .winning-disc { animation: pulse-win 0.8s ease-in-out infinite alternate; }
+    @keyframes pulse-win {
+      from { filter: drop-shadow(0 0 8px rgba(255,215,0,0.9)); }
+      to { filter: drop-shadow(0 0 16px rgba(255,215,0,1)); }
+    }
+    .column-hover:hover .cell-hole { background: radial-gradient(circle at 30% 30%, #334155, #1e293b); }
+  </style>
+</head>
+<body class="min-h-screen text-gray-800 antialiased">
+  <div id="nav-container"></div>
+
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-8">
+      <header class="text-center mb-8">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Connect Four</h1>
+        <p class="text-gray-600">Drop discs. Connect four. Win.</p>
+      </header>
+
+      <!-- Game Mode & AI Select -->
+      <div id="game-setup" class="flex flex-wrap gap-4 justify-center mb-6">
+        <div class="flex items-center gap-2">
+          <label class="font-medium">Mode:</label>
+          <select id="game-mode" class="rounded-lg border border-gray-300 px-3 py-2 text-sm">
+            <option value="2p">2 Players</option>
+            <option value="ai">vs AI</option>
+          </select>
+        </div>
+        <div id="ai-difficulty-wrap" class="flex items-center gap-2 hidden">
+          <label class="font-medium">AI:</label>
+          <select id="ai-difficulty" class="rounded-lg border border-gray-300 px-3 py-2 text-sm">
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+          </select>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="sound-toggle" class="rounded-lg border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50" title="Toggle sound">🔊 Sound</button>
+        </div>
+      </div>
+
+      <!-- Stats Bar -->
+      <div class="flex flex-wrap justify-between items-center gap-4 mb-4 font-mono text-sm">
+        <div class="flex gap-6">
+          <span>Wins: <strong id="stat-wins">0</strong></span>
+          <span>Streak: <strong id="stat-streak">0</strong></span>
+          <span>Best: <strong id="stat-best">0</strong></span>
+        </div>
+        <div id="turn-indicator" class="font-medium"></div>
+      </div>
+
+      <!-- Board -->
+      <div class="flex justify-center mb-6">
+        <div id="board" class="inline-block p-4 bg-slate-800 rounded-2xl shadow-xl">
+          <div id="grid" class="grid grid-cols-7 gap-1"></div>
+        </div>
+      </div>
+
+      <!-- Restart -->
+      <div class="text-center">
+        <button id="restart-btn" class="px-6 py-3 bg-slate-800 text-white rounded-xl font-medium hover:bg-slate-700 transition-colors">
+          New Game
+        </button>
+      </div>
+
+      <!-- Result overlay -->
+      <div id="result-overlay" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-2xl p-8 max-w-sm mx-4 text-center shadow-2xl">
+          <p id="result-text" class="text-xl font-bold mb-4"></p>
+          <button id="play-again-btn" class="px-6 py-3 bg-slate-800 text-white rounded-xl font-medium hover:bg-slate-700">Play Again</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEO Article -->
+    <article class="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-8 prose prose-slate max-w-none">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4">How to Play Connect Four</h2>
+      <p class="text-gray-600 leading-relaxed">
+        Connect Four is a classic two-player strategy game where the goal is simple: be the first to connect four of your colored discs in a row—horizontally, vertically, or diagonally. The game is played on a vertical board with seven columns and six rows. Players take turns dropping one disc at a time into any column. The disc falls to the lowest available position in that column due to gravity.
+      </p>
+      <p class="text-gray-600 leading-relaxed">
+        The game was first sold under the name "Connect Four" by Milton Bradley in 1974 and has since become one of the most beloved board games worldwide. Its rules are easy to learn, but mastering the strategy takes practice. Skilled players learn to block their opponent's winning moves while setting up their own winning combinations. Mathematically, Connect Four has been solved: with perfect play from both players, the first player can always force a win. In practice, however, most games remain competitive and exciting.
+      </p>
+      <h3 class="text-xl font-semibold text-gray-900 mt-6 mb-2">Strategy Tips</h3>
+      <p class="text-gray-600 leading-relaxed">
+        The center column is the most powerful position on the board because it offers the most opportunities for creating winning lines. Try to control the center early in the game. Always watch for your opponent's threats—if they have two in a row with an open end, block it. Look for "double threats," positions where you can create two ways to win on your next turn, making it impossible for your opponent to block both. Avoid playing directly under your opponent's disc when they can build upward; instead, force them to defend.
+      </p>
+      <p class="text-gray-600 leading-relaxed">
+        In two-player mode, you can challenge a friend on the same device. In vs AI mode, choose from three difficulty levels: Easy AI makes random valid moves, Medium AI blocks wins and occasionally sets up its own, and Hard AI uses advanced search to find strong moves. Whether you're playing for fun or honing your skills, Connect Four offers endless strategic depth. The game is suitable for all ages and makes an excellent way to pass time during breaks or family game nights.
+      </p>
+      <h3 class="text-xl font-semibold text-gray-900 mt-6 mb-2">Play Online for Free</h3>
+      <p class="text-gray-600 leading-relaxed">
+        Our online version features smooth falling animations, highlighted winning combinations, and session statistics including wins, streaks, and personal bests. The game uses cryptographically secure randomness for fair AI play. Enjoy Connect Four anytime, anywhere—no installation required. Simply open this page in your browser and start playing. Track your progress with built-in stats and challenge yourself to beat your personal best streak.
+      </p>
+    </article>
+
+    <div id="related-games" class="mb-8"></div>
+    <!-- AdSense placeholder (uncomment when ready)
+    <div class="my-8">
+      <ins class="adsbygoogle" data-ad-client="ca-pub-XXXX" data-ad-slot="XXXX" data-ad-format="auto"></ins>
+    </div>
+    -->
+    <div id="footer-container"></div>
+  </main>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playBounce } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('connect-four');
+    initConsent();
+    trackGameView('connect-four', 'Strategy');
+
+    const COLS = 7, ROWS = 6;
+    const RED = 1, YELLOW = 2;
+    const COLORS = { [RED]: '#ef4444', [YELLOW]: '#eab308' };
+
+    let board = [];
+    let currentPlayer = RED;
+    let gameOver = false;
+    let mode = '2p';
+    let aiDifficulty = 'medium';
+    let muted = false;
+    let stats = { wins: 0, streak: 0, best: 0 };
+
+    const $ = (id) => document.getElementById(id);
+    const grid = $('grid');
+    const turnIndicator = $('turn-indicator');
+    const resultOverlay = $('result-overlay');
+    const resultText = $('result-text');
+    const restartBtn = $('restart-btn');
+    const playAgainBtn = $('play-again-btn');
+    const soundToggle = $('sound-toggle');
+    const gameMode = $('game-mode');
+    const aiDifficultyWrap = $('ai-difficulty-wrap');
+    const aiDifficultySelect = $('ai-difficulty');
+
+    function secureRandom() {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] / (0xFFFFFFFF + 1);
+    }
+
+    function loadStats() {
+      try {
+        const s = JSON.parse(sessionStorage.getItem('connect-four-stats') || '{}');
+        stats = { wins: s.wins || 0, streak: s.streak || 0, best: s.best || 0 };
+      } catch (_) {}
+      updateStatsUI();
+    }
+
+    function saveStats() {
+      sessionStorage.setItem('connect-four-stats', JSON.stringify(stats));
+    }
+
+    function updateStatsUI() {
+      $('stat-wins').textContent = stats.wins;
+      $('stat-streak').textContent = stats.streak;
+      $('stat-best').textContent = stats.best;
+    }
+
+    function buildBoard() {
+      grid.innerHTML = '';
+      for (let c = 0; c < COLS; c++) {
+        const col = document.createElement('div');
+        col.className = 'column-hover flex flex-col gap-1 cursor-pointer';
+        col.dataset.col = c;
+        for (let r = 0; r < ROWS; r++) {
+          const cell = document.createElement('div');
+          cell.className = 'w-12 h-12 md:w-14 md:h-14 rounded-full cell-hole flex items-center justify-center';
+          cell.dataset.col = c;
+          cell.dataset.row = r;
+          col.appendChild(cell);
+        }
+        grid.appendChild(col);
+      }
+    }
+
+    function getLowestRow(col) {
+      for (let r = ROWS - 1; r >= 0; r--) {
+        if (board[r][col] === 0) return r;
+      }
+      return -1;
+    }
+
+    function dropDisc(col) {
+      if (gameOver) return;
+      const row = getLowestRow(col);
+      if (row < 0) return;
+
+      try { playClick(); } catch (_) {}
+      board[row][col] = currentPlayer;
+
+      const colEl = grid.children[col];
+      const cell = colEl.children[row];
+      const disc = document.createElement('div');
+      disc.className = `disc disc-drop w-10 h-10 md:w-12 md:h-12 rounded-full absolute`;
+      disc.style.backgroundColor = COLORS[currentPlayer];
+      disc.style.boxShadow = 'inset -2px -2px 4px rgba(0,0,0,0.3)';
+      disc.dataset.col = col;
+      disc.dataset.row = row;
+      cell.style.position = 'relative';
+      cell.appendChild(disc);
+
+      const win = checkWin(row, col);
+      if (win) {
+        gameOver = true;
+        highlightWin(win);
+        try { playGameOver(); } catch (_) {}
+        stats.wins++;
+        if (stats.streak >= 0) stats.streak++;
+        else stats.streak = 1;
+        if (stats.streak > stats.best) stats.best = stats.streak;
+        saveStats();
+        updateStatsUI();
+        trackGameOver('connect-four', 'win', { player: currentPlayer === RED ? 'Red' : 'Yellow' });
+        showResult(currentPlayer === RED ? 'Red wins!' : 'Yellow wins!');
+        return;
+      }
+
+      if (isDraw()) {
+        gameOver = true;
+        try { playError(); } catch (_) {}
+        stats.streak = -1;
+        saveStats();
+        updateStatsUI();
+        trackGameOver('connect-four', 'draw');
+        showResult("It's a draw!");
+        return;
+      }
+
+      currentPlayer = currentPlayer === RED ? YELLOW : RED;
+      updateTurnIndicator();
+
+      if (mode === 'ai' && currentPlayer === YELLOW) {
+        setTimeout(() => aiMove(), 400);
+      }
+    }
+
+    function checkWin(row, col) {
+      const p = board[row][col];
+      const dirs = [[0,1],[1,0],[1,1],[1,-1]];
+      for (const [dr, dc] of dirs) {
+        let count = 1;
+        const line = [[row, col]];
+        for (let s = 1; s <= 3; s++) {
+          const r = row + dr * s, c = col + dc * s;
+          if (r >= 0 && r < ROWS && c >= 0 && c < COLS && board[r][c] === p) {
+            count++;
+            line.push([r, c]);
+          } else break;
+        }
+        for (let s = -1; s >= -3; s--) {
+          const r = row + dr * s, c = col + dc * s;
+          if (r >= 0 && r < ROWS && c >= 0 && c < COLS && board[r][c] === p) {
+            count++;
+            line.unshift([r, c]);
+          } else break;
+        }
+        if (count >= 4) return line;
+      }
+      return null;
+    }
+
+    function highlightWin(line) {
+      line.forEach(([r, c]) => {
+        const colEl = grid.children[c];
+        const cell = colEl.children[r];
+        const disc = cell.querySelector('.disc');
+        if (disc) disc.classList.add('winning-disc');
+      });
+    }
+
+    function isDraw() {
+      return board.every(row => row.every(cell => cell !== 0));
+    }
+
+    function updateTurnIndicator() {
+      if (gameOver) {
+        turnIndicator.textContent = '';
+        return;
+      }
+      const name = mode === 'ai' && currentPlayer === YELLOW ? 'AI' : (currentPlayer === RED ? 'Red' : 'Yellow');
+      turnIndicator.textContent = `${name}'s turn`;
+      turnIndicator.className = 'font-medium';
+      turnIndicator.style.color = COLORS[currentPlayer];
+    }
+
+    function showResult(text) {
+      resultText.textContent = text;
+      resultOverlay.classList.remove('hidden');
+    }
+
+    function aiMove() {
+      const col = getAIMove();
+      if (col >= 0) dropDisc(col);
+    }
+
+    function getAIMove() {
+      const valid = [];
+      for (let c = 0; c < COLS; c++) {
+        if (getLowestRow(c) >= 0) valid.push(c);
+      }
+      if (valid.length === 0) return -1;
+
+      if (aiDifficulty === 'easy') {
+        return valid[Math.floor(secureRandom() * valid.length)];
+      }
+
+      if (aiDifficulty === 'medium') {
+        for (const c of valid) {
+          const r = getLowestRow(c);
+          board[r][c] = YELLOW;
+          if (checkWin(r, c)) { board[r][c] = 0; return c; }
+          board[r][c] = 0;
+        }
+        for (const c of valid) {
+          const r = getLowestRow(c);
+          board[r][c] = RED;
+          if (checkWin(r, c)) { board[r][c] = 0; return c; }
+          board[r][c] = 0;
+        }
+        return valid[Math.floor(secureRandom() * valid.length)];
+      }
+
+      const best = minimax(4, -Infinity, Infinity, false);
+      return best.col >= 0 ? best.col : valid[Math.floor(secureRandom() * valid.length)];
+    }
+
+    function minimax(depth, alpha, beta, isMax) {
+      const win = checkAnyWin();
+      if (win === YELLOW) return { score: 1000 - depth, col: -1 };
+      if (win === RED) return { score: -1000 + depth, col: -1 };
+      if (isDraw() || depth === 0) return { score: 0, col: -1 };
+
+      const valid = [];
+      for (let c = 0; c < COLS; c++) {
+        if (getLowestRow(c) >= 0) valid.push(c);
+      }
+
+      if (isMax) {
+        let best = { score: -Infinity, col: valid[0] };
+        for (const c of valid) {
+          const r = getLowestRow(c);
+          board[r][c] = YELLOW;
+          const res = minimax(depth - 1, alpha, beta, false);
+          board[r][c] = 0;
+          if (res.score > best.score) best = { score: res.score, col: c };
+          alpha = Math.max(alpha, res.score);
+          if (beta <= alpha) break;
+        }
+        return best;
+      } else {
+        let best = { score: Infinity, col: valid[0] };
+        for (const c of valid) {
+          const r = getLowestRow(c);
+          board[r][c] = RED;
+          const res = minimax(depth - 1, alpha, beta, true);
+          board[r][c] = 0;
+          if (res.score < best.score) best = { score: res.score, col: c };
+          beta = Math.min(beta, res.score);
+          if (beta <= alpha) break;
+        }
+        return best;
+      }
+    }
+
+    function checkAnyWin() {
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          if (board[r][c] && checkWin(r, c)) return board[r][c];
+        }
+      }
+      return 0;
+    }
+
+    function init() {
+      board = Array(ROWS).fill(0).map(() => Array(COLS).fill(0));
+      currentPlayer = RED;
+      gameOver = false;
+      buildBoard();
+      updateTurnIndicator();
+      trackGameStart('connect-four');
+    }
+
+    function handleColumnClick(e) {
+      const col = parseInt(e.currentTarget.dataset.col, 10);
+      if (mode === 'ai' && currentPlayer === YELLOW) return;
+      dropDisc(col);
+    }
+
+    gameMode.addEventListener('change', () => {
+      mode = gameMode.value;
+      aiDifficultyWrap.classList.toggle('hidden', mode !== 'ai');
+      if (!gameOver) init();
+    });
+
+    aiDifficultySelect.addEventListener('change', () => {
+      aiDifficulty = aiDifficultySelect.value;
+    });
+
+    soundToggle.addEventListener('click', () => {
+      muted = !muted;
+      try {
+        if (muted) muteAll();
+        else initAudio();
+      } catch (_) {}
+      soundToggle.textContent = muted ? '🔇 Sound' : '🔊 Sound';
+    });
+
+    restartBtn.addEventListener('click', () => {
+      resultOverlay.classList.add('hidden');
+      init();
+    });
+
+    playAgainBtn.addEventListener('click', () => {
+      resultOverlay.classList.add('hidden');
+      init();
+    });
+
+    grid.addEventListener('click', (e) => {
+      const col = e.target.closest('.column-hover');
+      if (col && col.parentElement === grid) handleColumnClick({ currentTarget: col });
+    });
+
+    loadStats();
+    init();
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Connect Four",
+    "description": "Play Connect Four online. Drop colored discs, connect four in a row to win. Play vs AI or a friend.",
+    "applicationCategory": "Game",
+    "genre": "Strategy",
+    "url": "https://minigameplanet.com/games/connect-four.html"
+  }
+  </script>
+</body>
+</html>

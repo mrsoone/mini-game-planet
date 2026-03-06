@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chess - Play Online Strategy Game | Mini Game Planet</title>
+  <meta name="description" content="Play Chess online against AI. Master classic strategy with full rules: castling, en passant, pawn promotion. Choose Easy, Normal, or Hard difficulty.">
+  <link rel="canonical" href="https://minigameplanet.com/games/chess.html">
+  <meta property="og:title" content="Chess - Play Online Strategy Game">
+  <meta property="og:description" content="Play Chess online against AI. Full rules including castling, en passant, and pawn promotion.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/chess.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    .chess-square { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.15s; }
+    .chess-square.light { background: #F0D9B5; }
+    .chess-square.dark { background: #B58863; }
+    .chess-square.selected { background: #7FC97F !important; }
+    .chess-square.valid { background: rgba(127, 201, 127, 0.6) !important; }
+    .chess-square.valid-capture { background: rgba(255, 100, 100, 0.6) !important; }
+    .chess-piece { font-size: clamp(2rem, 5vw, 3.5rem); line-height: 1; user-select: none; }
+    .check-indicator { animation: pulse 1s infinite; }
+    @keyframes pulse { 50% { opacity: 0.7; } }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoGame",
+    "name": "Chess",
+    "description": "Play Chess online against AI. Full rules including castling, en passant, pawn promotion, check and checkmate.",
+    "genre": "Strategy",
+    "gamePlatform": "Web Browser"
+  }
+  </script>
+  <!-- 
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXX" crossorigin="anonymous"></script>
+  -->
+</head>
+<body class="min-h-screen text-stone-800">
+  <nav class="nav-container bg-white/80 backdrop-blur border-b border-stone-200 sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="font-semibold text-lg">Mini Game Planet</a>
+      <div class="flex items-center gap-4">
+        <button id="sound-toggle" class="text-sm px-3 py-1 rounded border border-stone-300 hover:bg-stone-100" aria-label="Toggle sound">🔊 Sound</button>
+        <button id="restart-btn" class="text-sm px-3 py-1 rounded bg-stone-800 text-white hover:bg-stone-700">Restart</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-4xl mx-auto px-4 py-6">
+    <div class="bg-white rounded-2xl shadow-sm border border-stone-200 p-6 mb-6">
+      <h1 class="text-2xl font-bold mb-2">Chess</h1>
+      <p class="text-stone-600 mb-4">Classic strategy game. You play as White. Click a piece, then a highlighted square to move.</p>
+
+      <div class="flex flex-wrap gap-4 items-center mb-4">
+        <label class="flex items-center gap-2">
+          <span class="text-sm font-medium">AI Difficulty:</span>
+          <select id="ai-difficulty" class="border border-stone-300 rounded px-3 py-1.5 text-sm">
+            <option value="easy">Easy</option>
+            <option value="normal">Normal</option>
+            <option value="hard">Hard</option>
+          </select>
+        </label>
+        <div id="session-stats" class="text-sm font-mono text-stone-500">
+          Session: <span id="stat-wins">0</span>W / <span id="stat-losses">0</span>L · Streak: <span id="stat-streak">0</span>
+        </div>
+      </div>
+
+      <div class="flex flex-col md:flex-row gap-6 items-start">
+        <div class="flex-shrink-0">
+          <div id="chess-board" class="grid grid-cols-8 w-full max-w-[min(90vw,400px)] border-2 border-stone-300 rounded-lg overflow-hidden shadow-md"></div>
+          <p id="game-status" class="mt-2 text-sm font-medium text-stone-600">Your turn (White)</p>
+        </div>
+        <div class="flex-1 min-w-0">
+          <h3 class="text-sm font-semibold text-stone-700 mb-2">Move History</h3>
+          <div id="move-history" class="font-mono text-sm max-h-64 overflow-y-auto bg-stone-50 rounded p-3 border border-stone-200 space-y-1"></div>
+        </div>
+      </div>
+
+      <div id="promotion-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50" aria-modal="true">
+        <div class="bg-white rounded-xl p-6 shadow-xl max-w-xs w-full mx-4">
+          <h3 class="font-semibold mb-4">Promote pawn to:</h3>
+          <div class="grid grid-cols-4 gap-2">
+            <button data-piece="q" class="chess-piece p-2 rounded border border-stone-300 hover:bg-stone-100 text-3xl">♕</button>
+            <button data-piece="r" class="chess-piece p-2 rounded border border-stone-300 hover:bg-stone-100 text-3xl">♖</button>
+            <button data-piece="b" class="chess-piece p-2 rounded border border-stone-300 hover:bg-stone-100 text-3xl">♗</button>
+            <button data-piece="n" class="chess-piece p-2 rounded border border-stone-300 hover:bg-stone-100 text-3xl">♘</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="related-games bg-white rounded-2xl shadow-sm border border-stone-200 p-6 mb-6">
+      <h2 class="text-lg font-semibold mb-3">Related Games</h2>
+      <div class="flex flex-wrap gap-2">
+        <a href="/games/checkers.html" class="px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-sm">Checkers</a>
+        <a href="/games/reversi.html" class="px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-sm">Reversi</a>
+        <a href="/games/connect4.html" class="px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-sm">Connect 4</a>
+      </div>
+    </div>
+
+    <article class="bg-white rounded-2xl shadow-sm border border-stone-200 p-6 mb-6 prose prose-stone max-w-none">
+      <h2 class="text-xl font-bold mb-4">How to Play Chess</h2>
+      <p>Chess is one of the world's oldest and most beloved strategy games. Two players face off on an 8×8 board, each commanding sixteen pieces: one king, one queen, two rooks, two bishops, two knights, and eight pawns. The goal is to checkmate your opponent's king—placing it under attack with no legal escape.</p>
+      <p>Each piece moves in a unique way. Pawns advance one square (or two on their first move) and capture diagonally. Rooks move any number of squares along ranks or files. Knights jump in an L-shape (two squares in one direction, one in the other). Bishops slide diagonally. The queen combines rook and bishop movement. The king moves one square in any direction.</p>
+      <p>Special rules add depth to the game. Castling allows the king and rook to move together under certain conditions—either king-side (short) or queen-side (long). En passant lets a pawn capture an opponent's pawn that just advanced two squares, as if it had moved only one. When a pawn reaches the opposite end of the board, it promotes to a queen, rook, bishop, or knight.</p>
+      <p>Check occurs when the king is under attack. The player must get out of check on their next move. Checkmate ends the game when the king cannot escape. Stalemate is a draw when the player to move has no legal moves but is not in check.</p>
+      <p>Strategy in chess involves controlling the center, developing pieces early, ensuring king safety, and creating threats. Our AI offers three difficulty levels: Easy plays random valid moves, Normal evaluates captures and center control, and Hard uses minimax search with piece values to find stronger moves. Whether you're learning or sharpening your skills, this online chess game provides a full, rule-complete experience.</p>
+    </article>
+
+    <footer class="footer-container text-center text-sm text-stone-500 py-6">
+      <p>© Mini Game Planet. Play free strategy games online.</p>
+    </footer>
+  </main>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('chess');
+    initConsent();
+    trackGameView('chess', 'Strategy');
+
+    const PIECES = { P: '♙', N: '♘', B: '♗', R: '♖', Q: '♕', K: '♔', p: '♟', n: '♞', b: '♝', r: '♜', q: '♛', k: '♚' };
+    const VALUES = { P: 1, N: 3, B: 3, R: 5, Q: 9, K: 0, p: -1, n: -3, b: -3, r: -5, q: -9, k: 0 };
+    const FILES = 'abcdefgh';
+    const RANKS = '87654321';
+
+    function secureRandom() {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] / (0xFFFFFFFF + 1);
+    }
+
+    function loadSessionStats() {
+      try {
+        const s = JSON.parse(sessionStorage.getItem('chess-stats') || '{}');
+        return { wins: s.wins || 0, losses: s.losses || 0, streak: s.streak || 0 };
+      } catch { return { wins: 0, losses: 0, streak: 0 }; }
+    }
+
+    function saveSessionStats(stats) {
+      sessionStorage.setItem('chess-stats', JSON.stringify(stats));
+    }
+
+    function updateStatsUI(stats) {
+      document.getElementById('stat-wins').textContent = stats.wins;
+      document.getElementById('stat-losses').textContent = stats.losses;
+      document.getElementById('stat-streak').textContent = stats.streak;
+    }
+
+    function createBoard() {
+      const board = [];
+      for (let r = 0; r < 8; r++) {
+        board[r] = [];
+        for (let c = 0; c < 8; c++) board[r][c] = null;
+      }
+      const start = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
+      let row = 0, col = 0;
+      for (const ch of start) {
+        if (ch === '/') { row++; col = 0; continue; }
+        if (/\d/.test(ch)) { col += parseInt(ch); continue; }
+        board[row][col] = ch;
+        col++;
+      }
+      return board;
+    }
+
+    function copyBoard(b) {
+      return b.map(r => [...r]);
+    }
+
+    function getPiece(board, r, c) {
+      if (r < 0 || r > 7 || c < 0 || c > 7) return null;
+      return board[r][c];
+    }
+
+    function isWhite(p) { return p && p === p.toUpperCase(); }
+    function isBlack(p) { return p && p === p.toLowerCase(); }
+
+    function getMoves(board, r, c, enPassant, castling) {
+      const piece = getPiece(board, r, c);
+      if (!piece) return [];
+      const white = isWhite(piece);
+      const moves = [];
+
+      const add = (nr, nc, flags = {}) => {
+        const np = getPiece(board, nr, nc);
+        if (np === null) moves.push({ r: nr, c: nc, ...flags });
+        else if (white ? isBlack(np) : isWhite(np)) moves.push({ r: nr, c: nc, capture: true, ...flags });
+      };
+
+      const slide = (dr, dc) => {
+        for (let i = 1; i < 8; i++) {
+          const nr = r + dr * i, nc = c + dc * i;
+          const np = getPiece(board, nr, nc);
+          if (np === null) moves.push({ r: nr, c: nc });
+          else {
+            if (white ? isBlack(np) : isWhite(np)) moves.push({ r: nr, c: nc, capture: true });
+            break;
+          }
+        }
+      };
+
+      const jump = (nr, nc) => {
+        if (nr < 0 || nr > 7 || nc < 0 || nc > 7) return;
+        const np = getPiece(board, nr, nc);
+        if (np === null || (white ? isBlack(np) : isWhite(np))) moves.push({ r: nr, c: nc, capture: !!np });
+      };
+
+      switch (piece.toUpperCase()) {
+        case 'P': {
+          const dir = white ? -1 : 1;
+          const startRow = white ? 6 : 1;
+          if (!getPiece(board, r + dir, c)) {
+            moves.push({ r: r + dir, c });
+            if (r === startRow && !getPiece(board, r + 2 * dir, c)) moves.push({ r: r + 2 * dir, c, pawnTwo: true });
+          }
+          for (const dc of [-1, 1]) {
+            const nr = r + dir, nc = c + dc;
+            const np = getPiece(board, nr, nc);
+            if (np && (white ? isBlack(np) : isWhite(np))) moves.push({ r: nr, c: nc, capture: true });
+            if (enPassant && enPassant.r === nr && enPassant.c === nc) moves.push({ r: nr, c: nc, enPassant: true });
+          }
+          break;
+        }
+        case 'R': for (const [dr, dc] of [[0,1],[0,-1],[1,0],[-1,0]]) slide(dr, dc); break;
+        case 'B': for (const [dr, dc] of [[1,1],[1,-1],[-1,1],[-1,-1]]) slide(dr, dc); break;
+        case 'Q': for (const [dr, dc] of [[0,1],[0,-1],[1,0],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]]) slide(dr, dc); break;
+        case 'N': for (const [dr, dc] of [[2,1],[2,-1],[-2,1],[-2,-1],[1,2],[1,-2],[-1,2],[-1,-2]]) jump(r+dr, c+dc); break;
+        case 'K': {
+          for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) if (dr || dc) jump(r+dr, c+dc);
+          if (castling) {
+            const back = white ? 7 : 0;
+            const ck = white ? castling.K : castling.k;
+            const cq = white ? castling.Q : castling.q;
+            if (r === back && c === 4) {
+              if (ck && !getPiece(board, back, 5) && !getPiece(board, back, 6)) moves.push({ r: back, c: 6, castle: 'k' });
+              if (cq && !getPiece(board, back, 1) && !getPiece(board, back, 2) && !getPiece(board, back, 3)) moves.push({ r: back, c: 2, castle: 'q' });
+            }
+          }
+          break;
+        }
+      }
+      return moves.filter(m => m.r >= 0 && m.r <= 7 && m.c >= 0 && m.c <= 7);
+    }
+
+    function isSquareAttacked(board, r, c, byWhite) {
+      const piece = byWhite ? 'K' : 'k';
+      for (let rr = 0; rr < 8; rr++) {
+        for (let cc = 0; cc < 8; cc++) {
+          const p = getPiece(board, rr, cc);
+          if (!p || (byWhite ? isBlack(p) : isWhite(p))) continue;
+          const moves = getMoves(board, rr, cc, null, null);
+          if (moves.some(m => m.r === r && m.c === c)) return true;
+        }
+      }
+      return false;
+    }
+
+    function findKing(board, white) {
+      const k = white ? 'K' : 'k';
+      for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) if (getPiece(board, r, c) === k) return { r, c };
+      return null;
+    }
+
+    function isInCheck(board, white) {
+      const king = findKing(board, white);
+      if (!king) return false;
+      return isSquareAttacked(board, king.r, king.c, !white);
+    }
+
+    function filterLegalMoves(board, r, c, moves, enPassant, castling) {
+      const piece = getPiece(board, r, c);
+      const white = isWhite(piece);
+      return moves.filter(m => {
+        if (m.castle) {
+          const back = white ? 7 : 0;
+          if (m.castle === 'k') {
+            if (isSquareAttacked(board, back, 5, !white)) return false;
+          } else {
+            if (isSquareAttacked(board, back, 3, !white)) return false;
+          }
+        }
+        const next = copyBoard(board);
+        applyMove(next, r, c, m, piece, enPassant);
+        return !isInCheck(next, white);
+      });
+    }
+
+    function applyMove(board, fromR, fromC, move, piece, enPassant) {
+      board[fromR][fromC] = null;
+      if (move.enPassant) board[enPassant.r + (isWhite(piece) ? 1 : -1)][enPassant.c] = null;
+      if (move.castle) {
+        const back = isWhite(piece) ? 7 : 0;
+        if (move.castle === 'k') {
+          board[back][7] = null;
+          board[back][5] = isWhite(piece) ? 'R' : 'r';
+        } else {
+          board[back][0] = null;
+          board[back][3] = isWhite(piece) ? 'R' : 'r';
+        }
+      }
+      let promo = piece;
+      if (move.promotion) promo = (isWhite(piece) ? move.promotion.toUpperCase() : move.promotion.toLowerCase());
+      else if ((piece === 'P' || piece === 'p') && (move.r === 0 || move.r === 7)) promo = isWhite(piece) ? 'Q' : 'q';
+      board[move.r][move.c] = promo;
+    }
+
+    function getAllLegalMoves(board, white, enPassant, castling) {
+      const all = [];
+      for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+          const p = getPiece(board, r, c);
+          if (!p || (white && isBlack(p)) || (!white && isWhite(p))) continue;
+          const raw = getMoves(board, r, c, enPassant, castling);
+          const legal = filterLegalMoves(board, r, c, raw, enPassant, castling);
+          for (const m of legal) all.push({ from: { r, c }, to: m, piece: p });
+        }
+      }
+      return all;
+    }
+
+    function toAlgebraic(from, to, piece, capture, promo) {
+      const p = piece.toUpperCase() === 'P' ? '' : piece.toUpperCase();
+      const cap = capture ? 'x' : '';
+      const dest = FILES[to.c] + (8 - to.r);
+      const prom = promo ? '=' + promo.toUpperCase() : '';
+      if (piece.toUpperCase() === 'K' && Math.abs(from.c - to.c) === 2) return to.c === 6 ? 'O-O' : 'O-O-O';
+      return p + cap + dest + prom;
+    }
+
+    let state = {
+      board: createBoard(),
+      turn: true,
+      selected: null,
+      validMoves: [],
+      enPassant: null,
+      castling: { k: true, q: true, K: true, Q: true },
+      history: [],
+      gameOver: null,
+      lastMove: null
+    };
+
+    function updateCastling(move, piece) {
+      if (piece.toUpperCase() === 'K') {
+        if (isWhite(piece)) state.castling.K = state.castling.Q = false;
+        else state.castling.k = state.castling.q = false;
+      }
+      if (piece.toUpperCase() === 'R') {
+        if (isWhite(piece)) {
+          if (move.from.c === 0) state.castling.Q = false;
+          if (move.from.c === 7) state.castling.K = false;
+        } else {
+          if (move.from.c === 0) state.castling.q = false;
+          if (move.from.c === 7) state.castling.k = false;
+        }
+      }
+    }
+
+    function makeMove(fromR, fromC, toR, toC, promotion = 'q') {
+      const piece = getPiece(state.board, fromR, fromC);
+      const moveObj = state.validMoves.find(m => m.r === toR && m.c === toC);
+      if (!moveObj || !piece) return false;
+
+      const capture = !!getPiece(state.board, toR, toC) || moveObj.enPassant;
+      let promo = null;
+      if ((piece === 'P' || piece === 'p') && (toR === 0 || toR === 7)) promo = promotion;
+
+      const nextBoard = copyBoard(state.board);
+      const m = { ...moveObj };
+      if (promo) m.promotion = promo;
+      applyMove(nextBoard, fromR, fromC, m, piece, state.enPassant);
+
+      state.lastMove = { from: { r: fromR, c: fromC }, to: { r: toR, c: toC } };
+      state.board = nextBoard;
+      state.turn = !state.turn;
+      state.enPassant = moveObj.pawnTwo ? { r: toR, c: toC } : null;
+      updateCastling({ from: { r: fromR, c: fromC } }, piece);
+
+      const alg = toAlgebraic(
+        { r: fromR, c: fromC },
+        { r: toR, c: toC },
+        piece,
+        capture,
+        promo || (moveObj.promotion ? (promo || 'q') : null)
+      );
+      const num = Math.floor(state.history.length / 2) + 1;
+      if (!state.turn) state.history.push(`${num}. ${alg}`);
+      else state.history.push(`${num}. ... ${alg}`);
+
+      state.selected = null;
+      state.validMoves = [];
+      return true;
+    }
+
+    function evaluate(board) {
+      let score = 0;
+      for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+          const p = getPiece(board, r, c);
+          if (!p) continue;
+          let v = VALUES[p] || 0;
+          if (p.toUpperCase() === 'P') v += 0.1 * (isWhite(p) ? (7 - r) : r);
+          score += v;
+        }
+      }
+      return score;
+    }
+
+    function minimax(board, depth, white, alpha, beta, enPassant, castling) {
+      const moves = getAllLegalMoves(board, white, enPassant, castling);
+      if (moves.length === 0) {
+        if (isInCheck(board, white)) return white ? -10000 + (3 - depth) : 10000 - (3 - depth);
+        return 0;
+      }
+      if (depth === 0) return evaluate(board);
+
+      if (white) {
+        let best = -Infinity;
+        for (const m of moves) {
+          const next = copyBoard(board);
+          applyMove(next, m.from.r, m.from.c, m.to, m.piece, enPassant);
+          const ep = m.to.pawnTwo ? { r: m.to.r, c: m.to.c } : null;
+          const score = minimax(next, depth - 1, false, alpha, beta, ep, castling);
+          best = Math.max(best, score);
+          alpha = Math.max(alpha, score);
+          if (beta <= alpha) break;
+        }
+        return best;
+      } else {
+        let best = Infinity;
+        for (const m of moves) {
+          const next = copyBoard(board);
+          applyMove(next, m.from.r, m.from.c, m.to, m.piece, enPassant);
+          const ep = m.to.pawnTwo ? { r: m.to.r, c: m.to.c } : null;
+          const score = minimax(next, depth - 1, true, alpha, beta, ep, castling);
+          best = Math.min(best, score);
+          beta = Math.min(beta, score);
+          if (beta <= alpha) break;
+        }
+        return best;
+      }
+    }
+
+    function getAIMove() {
+      const moves = getAllLegalMoves(state.board, false, state.enPassant, state.castling);
+      if (moves.length === 0) return null;
+
+      const diff = document.getElementById('ai-difficulty').value;
+
+      if (diff === 'easy') {
+        return moves[Math.floor(secureRandom() * moves.length)];
+      }
+
+      if (diff === 'normal') {
+        let best = moves[0];
+        let bestScore = -Infinity;
+        for (const m of moves) {
+          const next = copyBoard(state.board);
+          applyMove(next, m.from.r, m.from.c, m.to, m.piece, state.enPassant);
+          const score = evaluate(next) + (m.to.capture ? 0.5 : 0) + (Math.abs(m.to.c - 3.5) + Math.abs(m.to.r - 3.5) < 4 ? 0.1 : 0);
+          if (score > bestScore) { bestScore = score; best = m; }
+        }
+        return best;
+      }
+
+      if (diff === 'hard') {
+        let best = moves[0];
+        let bestScore = Infinity;
+        for (const m of moves) {
+          const next = copyBoard(state.board);
+          applyMove(next, m.from.r, m.from.c, m.to, m.piece, state.enPassant);
+          const ep = m.to.pawnTwo ? { r: m.to.r, c: m.to.c } : null;
+          const score = minimax(next, 3, true, -Infinity, Infinity, ep, state.castling);
+          if (score < bestScore) { bestScore = score; best = m; }
+        }
+        return best;
+      }
+
+      return moves[0];
+    }
+
+    function doAIMove() {
+      if (state.gameOver || state.turn) return;
+      const move = getAIMove();
+      if (!move) return;
+      makeMove(move.from.r, move.from.c, move.to.r, move.to.c);
+      playClick();
+      render();
+      checkGameOver();
+      if (!state.gameOver && state.turn) updateStatus();
+    }
+
+    function checkGameOver() {
+      const whiteMoves = getAllLegalMoves(state.board, true, state.enPassant, state.castling);
+      const blackMoves = getAllLegalMoves(state.board, false, state.enPassant, state.castling);
+      const whiteCheck = isInCheck(state.board, true);
+      const blackCheck = isInCheck(state.board, false);
+
+      if (state.turn) {
+        if (whiteMoves.length === 0) {
+          state.gameOver = whiteCheck ? 'checkmate' : 'stalemate';
+          if (state.gameOver === 'checkmate') {
+            const stats = loadSessionStats();
+            stats.losses++;
+            stats.streak = 0;
+            saveSessionStats(stats);
+            updateStatsUI(stats);
+            playGameOver();
+            trackGameOver('chess', 'Strategy', { result: 'loss' });
+          } else {
+            playSuccess();
+            trackGameOver('chess', 'Strategy', { result: 'draw' });
+          }
+        }
+      } else {
+        if (blackMoves.length === 0) {
+          state.gameOver = blackCheck ? 'checkmate' : 'stalemate';
+          if (state.gameOver === 'checkmate') {
+            const stats = loadSessionStats();
+            stats.wins++;
+            stats.streak++;
+            saveSessionStats(stats);
+            updateStatsUI(stats);
+            playScoreUp();
+            trackGameOver('chess', 'Strategy', { result: 'win' });
+          } else {
+            playSuccess();
+            trackGameOver('chess', 'Strategy', { result: 'draw' });
+          }
+        }
+      }
+    }
+
+    function showPromotionModal(resolve) {
+      const modal = document.getElementById('promotion-modal');
+      modal.classList.remove('hidden');
+      modal.querySelectorAll('button').forEach(btn => {
+        btn.onclick = () => {
+          modal.classList.add('hidden');
+          resolve(btn.dataset.piece);
+        };
+      });
+    }
+
+    function handleSquareClick(r, c) {
+      if (state.gameOver) return;
+
+      if (state.selected && state.validMoves.some(m => m.r === r && m.c === c)) {
+        const piece = getPiece(state.board, state.selected.r, state.selected.c);
+        const needsPromo = (piece === 'P' || piece === 'p') && (r === 0 || r === 7);
+
+        if (needsPromo) {
+          new Promise(res => showPromotionModal(res)).then(promo => {
+            makeMove(state.selected.r, state.selected.c, r, c, promo);
+            playClick();
+            render();
+            checkGameOver();
+            setTimeout(doAIMove, 300);
+          });
+        } else {
+          makeMove(state.selected.r, state.selected.c, r, c);
+          playClick();
+          render();
+          checkGameOver();
+          setTimeout(doAIMove, 300);
+        }
+        return;
+      }
+
+      const piece = getPiece(state.board, r, c);
+      if (piece && isWhite(piece) && state.turn) {
+        const raw = getMoves(state.board, r, c, state.enPassant, state.turn ? state.castling : null);
+        state.validMoves = filterLegalMoves(state.board, r, c, raw, state.enPassant, state.castling);
+        state.selected = { r, c };
+        playClick();
+      } else {
+        state.selected = null;
+        state.validMoves = [];
+      }
+      render();
+    }
+
+    function render() {
+      const el = document.getElementById('chess-board');
+      el.innerHTML = '';
+      for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+          const sq = document.createElement('div');
+          sq.className = `chess-square ${(r + c) % 2 === 0 ? 'light' : 'dark'}`;
+          sq.dataset.r = r;
+          sq.dataset.c = c;
+
+          if (state.selected && state.selected.r === r && state.selected.c === c) sq.classList.add('selected');
+          const vm = state.validMoves.find(m => m.r === r && m.c === c);
+          if (vm) sq.classList.add(vm.capture || vm.enPassant ? 'valid-capture' : 'valid');
+
+          const piece = getPiece(state.board, r, c);
+          if (piece) {
+            const span = document.createElement('span');
+            span.className = 'chess-piece';
+            span.textContent = PIECES[piece] || piece;
+            if (piece.toLowerCase() === 'k' && isInCheck(state.board, isWhite(piece))) span.classList.add('check-indicator');
+            sq.appendChild(span);
+          }
+
+          sq.addEventListener('click', () => handleSquareClick(r, c));
+          el.appendChild(sq);
+        }
+      }
+
+      const hist = document.getElementById('move-history');
+      hist.innerHTML = state.history.join('<br>') || '—';
+
+      let status = '';
+      if (state.gameOver) {
+        status = state.gameOver === 'checkmate' ? (state.turn ? 'Checkmate! Black wins.' : 'Checkmate! You win!') : 'Stalemate — Draw.';
+      } else {
+        const check = state.turn ? isInCheck(state.board, true) : isInCheck(state.board, false);
+        status = state.turn ? (check ? 'Check! Your turn (White)' : 'Your turn (White)') : (check ? 'Check! Black thinking...' : "Black's turn...");
+      }
+      document.getElementById('game-status').textContent = status;
+    }
+
+    function updateStatus() {
+      document.getElementById('game-status').textContent = state.turn ? 'Your turn (White)' : "Black's turn...";
+    }
+
+    function restart() {
+      state = {
+        board: createBoard(),
+        turn: true,
+        selected: null,
+        validMoves: [],
+        enPassant: null,
+        castling: { k: true, q: true, K: true, Q: true },
+        history: [],
+        gameOver: null,
+        lastMove: null
+      };
+      document.getElementById('promotion-modal').classList.add('hidden');
+      playClick();
+      render();
+      trackGameStart('chess', 'Strategy');
+    }
+
+    document.getElementById('restart-btn').addEventListener('click', restart);
+    document.getElementById('sound-toggle').addEventListener('click', () => {
+      muteAll();
+      document.getElementById('sound-toggle').textContent = document.getElementById('sound-toggle').textContent.includes('Off') ? '🔊 Sound' : '🔇 Sound Off';
+    });
+
+    const stats = loadSessionStats();
+    updateStatsUI(stats);
+    render();
+    trackGameStart('chess', 'Strategy');
+  </script>
+</body>
+</html>
