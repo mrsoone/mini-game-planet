@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Sudoku Online — Play Instantly | MiniGamePlanet</title>
+  <meta name="description" content="Play free Sudoku puzzles at four difficulty levels. Notes mode, error highlighting, timer, undo, and daily challenges. No download needed.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/sudoku">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+  window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+  gtag('js',new Date());
+  gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500});
+  gtag('config','G-XXXXXXXXXX');
+  </script>
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Free Sudoku Online | MiniGamePlanet">
+  <meta property="og:description" content="Play free Sudoku puzzles at four difficulty levels with notes, timer, and daily challenges.">
+  <meta property="og:url" content="https://minigameplanet.com/games/sudoku">
+  <meta property="og:site_name" content="MiniGamePlanet">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"VideoGame","name":"Sudoku","url":"https://minigameplanet.com/games/sudoku","description":"Play free Sudoku puzzles at four difficulty levels with notes, timer, and daily challenges.","genre":"Puzzle","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+  </script>
+  <style>
+    .hero-grad{background:linear-gradient(135deg,#0891B2 0%,#2563EB 22%,#7C3AED 44%,#E11D48 66%,#EA580C 82%,#D97706 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:heroShift 8s ease-in-out infinite}
+    @keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+
+    #sudoku-grid{display:grid;grid-template-columns:repeat(9,1fr);max-width:378px;margin:0 auto;border:2px solid #0F172A;border-radius:4px}
+    .su-cell{width:100%;aspect-ratio:1;border:1px solid #CBD5E1;display:flex;align-items:center;justify-content:center;cursor:pointer;font-family:'DM Mono',monospace;font-size:20px;font-weight:700;color:#0F172A;position:relative;transition:background 0.1s;user-select:none}
+    .su-cell.given{color:#0F172A;font-weight:700}
+    .su-cell.user{color:#2563EB}
+    .su-cell.error{color:#DC2626;background:#FEF2F2}
+    .su-cell.selected{background:#DBEAFE !important}
+    .su-cell.same-num{background:#EFF6FF}
+    .su-cell.same-row,.su-cell.same-col,.su-cell.same-box{background:#F8FAFC}
+    .su-cell:nth-child(3n){border-right:2px solid #0F172A}
+    .su-cell:nth-child(9n){border-right:2px solid #0F172A}
+    .su-cell:nth-child(n+19):nth-child(-n+27){border-bottom:2px solid #0F172A}
+    .su-cell:nth-child(n+46):nth-child(-n+54){border-bottom:2px solid #0F172A}
+    .su-cell:nth-child(n+73):nth-child(-n+81){border-bottom:none}
+    .su-cell:last-child{border-bottom:none}
+    .su-notes{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);width:100%;height:100%;position:absolute;inset:0;pointer-events:none}
+    .su-note{font-size:9px;font-weight:500;color:#94A3B8;display:flex;align-items:center;justify-content:center;line-height:1}
+    /* thick borders for 3x3 boxes via row grouping */
+    .su-cell:nth-child(9n+1){border-left:2px solid #0F172A}
+    .su-cell:nth-child(9n+4){border-left:2px solid #0F172A}
+    .su-cell:nth-child(9n+7){border-left:2px solid #0F172A}
+    .su-cell:nth-child(-n+9){border-top:2px solid #0F172A}
+    .su-cell:nth-child(n+28):nth-child(-n+36){border-top:2px solid #0F172A}
+    .su-cell:nth-child(n+55):nth-child(-n+63){border-top:2px solid #0F172A}
+
+    .num-btn{width:40px;height:44px;border:2px solid #E5E7EB;border-radius:8px;background:#fff;font-family:'DM Mono',monospace;font-size:18px;font-weight:700;cursor:pointer;color:#0F172A;transition:all 0.1s}
+    .num-btn:hover{border-color:#2563EB;color:#2563EB}
+    .num-btn.active{background:#2563EB;color:#fff;border-color:#2563EB}
+
+    @keyframes floatUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-30px)}}
+    @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}75%{transform:translateX(2px)}}
+    .shake{animation:shake 0.3s ease}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;position:relative;" id="game-wrap">
+      <!-- Header -->
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <div><h1 style="font-size:22px;font-weight:700;margin:0;">9️⃣ Sudoku</h1>
+          <p style="font-size:12px;color:#94A3B8;margin:2px 0 0;">Click cell → type or tap number</p></div>
+        <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊 Sound</button>
+      </div>
+      <!-- Difficulty + Mode -->
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+        <button class="diff-btn" data-diff="easy" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">Easy</button>
+        <button class="diff-btn active" data-diff="medium" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #2563EB;background:#2563EB;color:#fff;cursor:pointer;font-family:inherit;">Medium</button>
+        <button class="diff-btn" data-diff="hard" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">Hard</button>
+        <button class="diff-btn" data-diff="expert" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">Expert</button>
+        <div style="flex:1;"></div>
+        <button id="daily-btn" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #D97706;background:#fff;color:#D97706;cursor:pointer;font-family:inherit;">📅 Daily</button>
+      </div>
+      <!-- Stats -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding:6px 10px;background:#F8FAFC;border-radius:8px;flex-wrap:wrap;gap:6px;">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <span style="font-family:'DM Mono',monospace;font-size:13px;font-weight:600;">⏱ <span id="timer">0:00</span></span>
+          <span style="font-family:'DM Mono',monospace;font-size:13px;font-weight:600;">❌ <span id="errors">0</span>/3</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;">🔥 <span id="streak">0</span></span>
+          <span style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;">🏆 <span id="best-time">---</span></span>
+        </div>
+      </div>
+      <!-- Controls bar -->
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap;">
+        <button id="note-toggle" style="padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">✏️ Notes</button>
+        <button id="undo-btn" style="padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">↩ Undo</button>
+        <button id="erase-btn" style="padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">🗑 Erase</button>
+        <button id="pause-btn" style="padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">⏸ Pause</button>
+        <label style="display:flex;align-items:center;gap:4px;font-size:11px;color:#64748B;margin-left:auto;cursor:pointer;">
+          <input type="checkbox" id="show-errors" checked style="accent-color:#2563EB;"> Show errors
+        </label>
+      </div>
+      <div id="near-miss" style="display:none;text-align:center;padding:3px;font-size:12px;font-weight:600;color:#D97706;margin-bottom:4px;"></div>
+      <!-- Grid -->
+      <div id="sudoku-grid"></div>
+      <!-- Number buttons (mobile) -->
+      <div style="display:flex;justify-content:center;gap:4px;margin-top:10px;flex-wrap:wrap;" id="num-pad">
+        <button class="num-btn" data-num="1">1</button>
+        <button class="num-btn" data-num="2">2</button>
+        <button class="num-btn" data-num="3">3</button>
+        <button class="num-btn" data-num="4">4</button>
+        <button class="num-btn" data-num="5">5</button>
+        <button class="num-btn" data-num="6">6</button>
+        <button class="num-btn" data-num="7">7</button>
+        <button class="num-btn" data-num="8">8</button>
+        <button class="num-btn" data-num="9">9</button>
+      </div>
+      <!-- Game Over -->
+      <div id="game-over" style="display:none;text-align:center;padding:20px;margin-top:12px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;">
+        <div id="go-title" style="font-size:24px;font-weight:700;margin-bottom:4px;"></div>
+        <div id="go-sub" style="font-size:14px;color:#64748B;margin-bottom:12px;"></div>
+        <div id="session-stats" style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;text-align:left;max-width:220px;margin:0 auto 16px;padding:12px;background:#fff;border-radius:8px;"></div>
+        <button id="play-again" style="padding:10px 28px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">▶ Play Again</button>
+        <p style="font-size:11px;color:#94A3B8;margin-top:6px;">Press Enter or Space to restart</p>
+      </div>
+    </div>
+  </main>
+
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play Sudoku</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>Sudoku is the world's most popular number-placement puzzle and one of the purest tests of logical reasoning. The rules are elegantly simple: fill a 9×9 grid so that every row, every column, and every 3×3 box contains the digits 1 through 9 exactly once. No math is required — it is entirely about pattern recognition and elimination. Whether you are a first-time player or a seasoned solver, Sudoku offers a deeply satisfying mental workout every single time.</p>
+
+      <h3 class="text-lg font-bold text-slate-900 mt-6">How to Play</h3>
+      <p>Click or tap an empty cell to select it, then press a number key (1–9) or tap one of the number buttons below the grid to place a digit. If the digit violates the rules (appears twice in the same row, column, or 3×3 box), it will be highlighted in red if error highlighting is enabled. You have 3 errors allowed before the game ends. Press 0, Delete, or Backspace to erase a cell. Use arrow keys to navigate between cells.</p>
+      <p><strong>Notes mode:</strong> Toggle notes (pencil marks) with the ✏️ button or press N. In notes mode, clicking a number adds or removes a small pencil mark in the cell, helping you track possible values. <strong>Undo:</strong> Press Ctrl+Z or the ↩ button to reverse your last action. <strong>Pause:</strong> Press the ⏸ button to pause the timer and hide the board — useful for breaks.</p>
+      <p>Four difficulty levels are available: Easy (38+ given digits), Medium (30–37 given), Hard (25–29 given), and Expert (22–24 given). Higher difficulties have fewer starting clues, requiring more advanced solving techniques.</p>
+
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Daily Challenge</h3>
+      <p>The 📅 Daily Challenge generates the same puzzle for everyone each day using a date-based seed. Complete today's puzzle, see your time, and come back tomorrow for a fresh challenge. It is a great way to build a daily habit and track your improvement over time.</p>
+
+      <h3 class="text-lg font-bold text-slate-900 mt-6">History &amp; Origin</h3>
+      <p>Although Sudoku feels timeless, its modern form only emerged in 1979 when Howard Garns, a retired architect from Indianapolis, designed a puzzle called "Number Place" for Dell Magazines. The puzzle was introduced to Japan by publisher Nikoli in 1984, who shortened the name to "Sudoku" (meaning "single number"). It exploded into a global phenomenon in 2004–2005 when Wayne Gould, a retired Hong Kong judge, began supplying computer-generated puzzles to The Times of London. Within months, Sudoku appeared in newspapers worldwide and became the most popular logic puzzle in history. For solving strategies from basic to advanced, see our <a href="/blog/sudoku-solving-techniques" class="text-blue-600 underline">Sudoku Solving Techniques</a> guide.</p>
+
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Strategy &amp; Tips</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Scan for singles.</strong> Look for rows, columns, or boxes where only one empty cell remains for a particular digit. These "naked singles" are the easiest placements to spot.</li>
+        <li><strong>Use pencil marks.</strong> In harder puzzles, notes mode is essential. Write down all possible candidates for each cell, then eliminate candidates as you fill in other cells.</li>
+        <li><strong>Work the intersections.</strong> When a digit can only go in one row or column within a 3×3 box, you can eliminate that digit from the rest of that row or column outside the box. This technique is called "pointing pairs."</li>
+        <li><strong>Try the "hidden single" technique.</strong> Even if a cell has multiple candidates, if a digit can only appear once within a row, column, or box, that digit must go in that cell.</li>
+        <li><strong>Start with the most constrained areas.</strong> Look at rows, columns, or boxes that already have the most digits filled in — they have the fewest possibilities remaining.</li>
+        <li><strong>Never guess on Easy or Medium.</strong> If you feel the need to guess, you have missed a logical deduction. Take a step back and scan again.</li>
+      </ul>
+
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Frequently Asked Questions</h3>
+      <h4 class="font-semibold text-slate-800">Does Sudoku require math?</h4>
+      <p>No. Despite using numbers, Sudoku is purely a logic puzzle. The digits could be replaced with letters, colors, or symbols and the puzzle would work identically. No addition, subtraction, or arithmetic of any kind is needed.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">Can every Sudoku puzzle be solved without guessing?</h4>
+      <p>Properly constructed Sudoku puzzles always have a unique solution reachable through logic alone, without guessing or trial-and-error. All puzzles generated on MiniGamePlanet meet this standard.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">What is a good time for medium Sudoku?</h4>
+      <p>For a medium-difficulty puzzle, 5–10 minutes is typical for an experienced solver. Beginners may take 15–30 minutes, which is perfectly fine. Speed comes naturally with practice as you learn to recognize patterns faster.</p>
+
+      <p class="mt-6">Play Sudoku free in your browser right now — no download, no account needed. Pick a difficulty, start filling cells, and enjoy one of the greatest puzzles ever created.</p>
+    </div>
+  </article>
+
+  <div id="related-games"></div>
+  <div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, isMuted, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playDrop, playLock, playTick } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+  document.addEventListener('click', () => initAudio(), { once: true });
+  initToolPage('sudoku');
+  initConsent();
+  trackGameView('sudoku', 'Puzzle');
+
+  const CLUE_COUNTS = { easy: 42, medium: 33, hard: 27, expert: 23 };
+
+  let solution = [], puzzle = [], userGrid = [], notes = [], given = [];
+  let selectedCell = -1, noteMode = false, showErrors = true, paused = false;
+  let errors = 0, maxErrors = 3, diff = 'medium', isDaily = false;
+  let seconds = 0, timerInterval = null, gameActive = false, gameStarted = false;
+  let undoStack = [];
+  let streak = 0, bestTimes = { easy:null, medium:null, hard:null, expert:null };
+  let session = { rounds:0, wins:0, totalTime:0, startTime:Date.now() };
+  let consecutiveCorrect = 0;
+
+  const gridEl = document.getElementById('sudoku-grid');
+  const timerEl = document.getElementById('timer');
+  const errorsEl = document.getElementById('errors');
+  const streakEl = document.getElementById('streak');
+  const bestEl = document.getElementById('best-time');
+  const goEl = document.getElementById('game-over');
+  const nearMiss = document.getElementById('near-miss');
+
+  // Sound toggle
+  document.getElementById('sound-btn').addEventListener('click', () => {
+    initAudio(); const m = muteAll();
+    document.getElementById('sound-btn').textContent = m ? '🔇 Sound' : '🔊 Sound';
+  });
+
+  // ── Sudoku Generator ──
+
+  function generateSolution() {
+    const board = Array(81).fill(0);
+    fillBoard(board, 0);
+    return board;
+  }
+
+  function fillBoard(board, idx) {
+    if (idx === 81) return true;
+    const nums = [1,2,3,4,5,6,7,8,9];
+    shuffleArr(nums);
+    for (const n of nums) {
+      if (isValid(board, idx, n)) {
+        board[idx] = n;
+        if (fillBoard(board, idx + 1)) return true;
+        board[idx] = 0;
+      }
+    }
+    return false;
+  }
+
+  function isValid(board, idx, num) {
+    const r = Math.floor(idx / 9), c = idx % 9;
+    for (let i = 0; i < 9; i++) {
+      if (board[r * 9 + i] === num) return false;
+      if (board[i * 9 + c] === num) return false;
+    }
+    const br = Math.floor(r / 3) * 3, bc = Math.floor(c / 3) * 3;
+    for (let dr = 0; dr < 3; dr++) for (let dc = 0; dc < 3; dc++) {
+      if (board[(br + dr) * 9 + (bc + dc)] === num) return false;
+    }
+    return true;
+  }
+
+  function shuffleArr(arr) {
+    const rand = new Uint32Array(arr.length);
+    crypto.getRandomValues(rand);
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = rand[i] % (i + 1);
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+  }
+
+  function createPuzzle(sol, clueCount) {
+    const puz = [...sol];
+    const indices = Array.from({length:81}, (_,i) => i);
+    shuffleArr(indices);
+    let removed = 0;
+    for (const idx of indices) {
+      if (removed >= 81 - clueCount) break;
+      const backup = puz[idx];
+      puz[idx] = 0;
+      if (hasUniqueSolution(puz)) {
+        removed++;
+      } else {
+        puz[idx] = backup;
+      }
+    }
+    return puz;
+  }
+
+  function hasUniqueSolution(board) {
+    let solutions = 0;
+    const b = [...board];
+    function solve(idx) {
+      if (solutions > 1) return;
+      if (idx === 81) { solutions++; return; }
+      if (b[idx] !== 0) { solve(idx + 1); return; }
+      for (let n = 1; n <= 9; n++) {
+        if (isValid(b, idx, n)) {
+          b[idx] = n;
+          solve(idx + 1);
+          b[idx] = 0;
+        }
+      }
+    }
+    solve(0);
+    return solutions === 1;
+  }
+
+  function seededRandom(seed) {
+    let s = seed;
+    return function() {
+      s = (s * 1664525 + 1013904223) & 0xFFFFFFFF;
+      return (s >>> 0) / 4294967296;
+    };
+  }
+
+  function generateDaily() {
+    const today = new Date();
+    const dateStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+    let seed = 0;
+    for (let i = 0; i < dateStr.length; i++) seed = ((seed << 5) - seed + dateStr.charCodeAt(i)) | 0;
+    const rng = seededRandom(Math.abs(seed));
+
+    const board = Array(81).fill(0);
+    function fillSeeded(idx) {
+      if (idx === 81) return true;
+      const nums = [1,2,3,4,5,6,7,8,9];
+      for (let i = nums.length - 1; i > 0; i--) {
+        const j = Math.floor(rng() * (i + 1));
+        [nums[i], nums[j]] = [nums[j], nums[i]];
+      }
+      for (const n of nums) {
+        if (isValid(board, idx, n)) {
+          board[idx] = n;
+          if (fillSeeded(idx + 1)) return true;
+          board[idx] = 0;
+        }
+      }
+      return false;
+    }
+    fillSeeded(0);
+
+    const puz = [...board];
+    const indices = Array.from({length:81}, (_,i) => i);
+    for (let i = indices.length - 1; i > 0; i--) {
+      const j = Math.floor(rng() * (i + 1));
+      [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
+    let removed = 0;
+    for (const idx of indices) {
+      if (removed >= 81 - 33) break;
+      const backup = puz[idx];
+      puz[idx] = 0;
+      if (hasUniqueSolution(puz)) removed++;
+      else puz[idx] = backup;
+    }
+    return { solution: board, puzzle: puz };
+  }
+
+  // ── Game Logic ──
+
+  function newGame(daily = false) {
+    isDaily = daily;
+    if (daily) {
+      const d = generateDaily();
+      solution = d.solution;
+      puzzle = d.puzzle;
+    } else {
+      solution = generateSolution();
+      puzzle = createPuzzle(solution, CLUE_COUNTS[diff]);
+    }
+    userGrid = [...puzzle];
+    notes = Array.from({length:81}, () => new Set());
+    given = puzzle.map(v => v !== 0);
+    selectedCell = -1; noteMode = false; paused = false;
+    errors = 0; seconds = 0; undoStack = [];
+    gameActive = true; gameStarted = false;
+    consecutiveCorrect = 0;
+    clearInterval(timerInterval);
+    errorsEl.textContent = '0';
+    timerEl.textContent = '0:00';
+    goEl.style.display = 'none';
+    nearMiss.style.display = 'none';
+    updateNoteBtn();
+    updateBest();
+    renderGrid();
+  }
+
+  function renderGrid() {
+    gridEl.innerHTML = '';
+    const filledCount = userGrid.filter(v => v !== 0).length;
+    const pct = filledCount / 81;
+    if (pct >= 0.85 && pct < 1 && gameActive) {
+      nearMiss.style.display = 'block';
+      nearMiss.textContent = pct >= 0.95 ? '⚡ Almost solved!' : '🔥 Close to finishing!';
+    } else {
+      nearMiss.style.display = 'none';
+    }
+
+    for (let i = 0; i < 81; i++) {
+      const cell = document.createElement('div');
+      cell.className = 'su-cell';
+      cell.dataset.idx = i;
+
+      if (given[i]) {
+        cell.classList.add('given');
+        cell.textContent = puzzle[i];
+      } else if (userGrid[i] !== 0) {
+        cell.classList.add('user');
+        cell.textContent = userGrid[i];
+        if (showErrors && userGrid[i] !== solution[i]) {
+          cell.classList.add('error');
+        }
+      } else if (notes[i].size > 0) {
+        const nd = document.createElement('div');
+        nd.className = 'su-notes';
+        for (let n = 1; n <= 9; n++) {
+          const s = document.createElement('span');
+          s.className = 'su-note';
+          if (notes[i].has(n)) s.textContent = n;
+          nd.appendChild(s);
+        }
+        cell.appendChild(nd);
+      }
+
+      if (i === selectedCell) cell.classList.add('selected');
+
+      if (selectedCell >= 0) {
+        const sr = Math.floor(selectedCell / 9), sc = selectedCell % 9;
+        const cr = Math.floor(i / 9), cc = i % 9;
+        if (cr === sr) cell.classList.add('same-row');
+        if (cc === sc) cell.classList.add('same-col');
+        const sbr = Math.floor(sr/3), sbc = Math.floor(sc/3);
+        const cbr = Math.floor(cr/3), cbc = Math.floor(cc/3);
+        if (sbr === cbr && sbc === cbc) cell.classList.add('same-box');
+        const selectedVal = userGrid[selectedCell];
+        if (selectedVal && userGrid[i] === selectedVal && i !== selectedCell) cell.classList.add('same-num');
+      }
+
+      cell.addEventListener('click', () => selectCell(i));
+      gridEl.appendChild(cell);
+    }
+  }
+
+  function selectCell(idx) {
+    if (!gameActive || paused) return;
+    selectedCell = idx;
+    playClick();
+    renderGrid();
+  }
+
+  function placeNumber(num) {
+    if (!gameActive || selectedCell < 0 || given[selectedCell] || paused) return;
+
+    if (!gameStarted) {
+      gameStarted = true;
+      trackGameStart('sudoku', 'Puzzle');
+      timerInterval = setInterval(() => {
+        if (!paused) {
+          seconds++;
+          const m = Math.floor(seconds/60), s = seconds%60;
+          timerEl.textContent = `${m}:${String(s).padStart(2,'0')}`;
+        }
+      }, 1000);
+    }
+
+    if (noteMode) {
+      undoStack.push({ idx: selectedCell, val: userGrid[selectedCell], notes: new Set(notes[selectedCell]) });
+      if (notes[selectedCell].has(num)) notes[selectedCell].delete(num);
+      else notes[selectedCell].add(num);
+      playTick();
+      renderGrid();
+      return;
+    }
+
+    undoStack.push({ idx: selectedCell, val: userGrid[selectedCell], notes: new Set(notes[selectedCell]) });
+    userGrid[selectedCell] = num;
+    notes[selectedCell].clear();
+
+    if (num === solution[selectedCell]) {
+      consecutiveCorrect++;
+      if (consecutiveCorrect >= 8) playPerfect();
+      else if (consecutiveCorrect >= 5) playSuccess();
+      else if (consecutiveCorrect >= 3) playScoreUp(consecutiveCorrect * 60);
+      else playLock();
+
+      // Remove from notes in same row/col/box
+      const r = Math.floor(selectedCell / 9), c = selectedCell % 9;
+      const br = Math.floor(r/3)*3, bc = Math.floor(c/3)*3;
+      for (let i = 0; i < 9; i++) {
+        notes[r * 9 + i].delete(num);
+        notes[i * 9 + c].delete(num);
+      }
+      for (let dr = 0; dr < 3; dr++) for (let dc = 0; dc < 3; dc++) {
+        notes[(br+dr)*9+(bc+dc)].delete(num);
+      }
+    } else {
+      consecutiveCorrect = 0;
+      errors++;
+      errorsEl.textContent = errors;
+      playError();
+      if (errors >= maxErrors) { endGame(false); return; }
+    }
+
+    renderGrid();
+    if (checkWin()) endGame(true);
+  }
+
+  function eraseCell() {
+    if (!gameActive || selectedCell < 0 || given[selectedCell] || paused) return;
+    if (userGrid[selectedCell] === 0 && notes[selectedCell].size === 0) return;
+    undoStack.push({ idx: selectedCell, val: userGrid[selectedCell], notes: new Set(notes[selectedCell]) });
+    userGrid[selectedCell] = 0;
+    notes[selectedCell].clear();
+    playClick();
+    renderGrid();
+  }
+
+  function undo() {
+    if (undoStack.length === 0 || !gameActive || paused) return;
+    const action = undoStack.pop();
+    userGrid[action.idx] = action.val;
+    notes[action.idx] = action.notes;
+    playClick();
+    renderGrid();
+  }
+
+  function checkWin() {
+    return userGrid.every((v, i) => v === solution[i]);
+  }
+
+  function endGame(won) {
+    gameActive = false;
+    clearInterval(timerInterval);
+    session.rounds++;
+    session.totalTime += seconds;
+
+    const goTitle = document.getElementById('go-title');
+    const goSub = document.getElementById('go-sub');
+
+    if (won) {
+      session.wins++;
+      streak++;
+      const key = isDaily ? 'daily' : diff;
+      if (!bestTimes[key] || seconds < bestTimes[key]) {
+        bestTimes[key] = seconds;
+        goTitle.textContent = '🏆 NEW PERSONAL BEST!';
+        goTitle.style.color = '#D97706';
+        const m = Math.floor(seconds/60), s = seconds%60;
+        goSub.textContent = `Solved in ${m}:${String(s).padStart(2,'0')} with ${errors} error${errors!==1?'s':''}! New record!`;
+        playPerfect(); setTimeout(() => playLevelUp(), 300);
+      } else {
+        goTitle.textContent = isDaily ? '📅 Daily Complete!' : '✅ Puzzle Solved!';
+        goTitle.style.color = '#059669';
+        const m = Math.floor(seconds/60), s = seconds%60;
+        const bm = Math.floor(bestTimes[key]/60), bs = bestTimes[key]%60;
+        goSub.textContent = `Solved in ${m}:${String(s).padStart(2,'0')} — best: ${bm}:${String(bs).padStart(2,'0')}`;
+        playSuccess();
+      }
+      if (isDaily) goSub.textContent += '\nCome back tomorrow for a new puzzle!';
+    } else {
+      streak = 0;
+      goTitle.textContent = '❌ Too Many Errors';
+      goTitle.style.color = '#DC2626';
+      goSub.textContent = `${errors}/${maxErrors} errors. The puzzle will be revealed.`;
+      playGameOver();
+      // Reveal solution
+      userGrid = [...solution];
+      renderGrid();
+    }
+
+    streakEl.textContent = streak;
+    updateBest();
+    trackGameOver('sudoku', 'Puzzle', won ? seconds : 0, seconds);
+
+    const elapsed = Math.round((Date.now() - session.startTime) / 1000);
+    const mins = Math.floor(elapsed/60), secs = elapsed%60;
+    const avgTime = session.rounds > 0 ? Math.round(session.totalTime / session.rounds) : 0;
+    const am = Math.floor(avgTime/60), as2 = avgTime%60;
+    document.getElementById('session-stats').innerHTML = `
+      🎮 This Session<br>
+      ─────────────────────<br>
+      Rounds played&nbsp;&nbsp;&nbsp;${session.rounds}<br>
+      Wins&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${session.wins}<br>
+      Best time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${formatBest()}<br>
+      Average time&nbsp;&nbsp;&nbsp;${am}:${String(as2).padStart(2,'0')}<br>
+      Current streak&nbsp;${streak} ${streak>=3?'🔥':''}<br>
+      Time played&nbsp;&nbsp;&nbsp;&nbsp;${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}
+    `;
+
+    goEl.style.display = 'block';
+    document.getElementById('play-again').focus();
+  }
+
+  function formatBest() {
+    const key = isDaily ? 'daily' : diff;
+    if (!bestTimes[key]) return '---';
+    const m = Math.floor(bestTimes[key]/60), s = bestTimes[key]%60;
+    return `${m}:${String(s).padStart(2,'0')}`;
+  }
+
+  function updateBest() {
+    bestEl.textContent = formatBest();
+  }
+
+  function updateNoteBtn() {
+    const btn = document.getElementById('note-toggle');
+    if (noteMode) { btn.style.background = '#2563EB'; btn.style.color = '#fff'; btn.style.borderColor = '#2563EB'; }
+    else { btn.style.background = '#fff'; btn.style.color = '#334155'; btn.style.borderColor = '#E5E7EB'; }
+  }
+
+  // ── Event Listeners ──
+
+  // Difficulty buttons
+  document.querySelectorAll('.diff-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      diff = btn.dataset.diff;
+      document.querySelectorAll('.diff-btn').forEach(b => {
+        b.style.background='#fff';b.style.color='#334155';b.style.borderColor='#E5E7EB';
+      });
+      btn.style.background='#2563EB';btn.style.color='#fff';btn.style.borderColor='#2563EB';
+      document.getElementById('daily-btn').style.background = '#fff';
+      document.getElementById('daily-btn').style.color = '#D97706';
+      newGame(false);
+    });
+  });
+
+  document.getElementById('daily-btn').addEventListener('click', () => {
+    document.querySelectorAll('.diff-btn').forEach(b => {
+      b.style.background='#fff';b.style.color='#334155';b.style.borderColor='#E5E7EB';
+    });
+    const db = document.getElementById('daily-btn');
+    db.style.background = '#D97706'; db.style.color = '#fff';
+    newGame(true);
+  });
+
+  document.getElementById('note-toggle').addEventListener('click', () => {
+    noteMode = !noteMode;
+    updateNoteBtn();
+    playClick();
+  });
+
+  document.getElementById('undo-btn').addEventListener('click', undo);
+  document.getElementById('erase-btn').addEventListener('click', eraseCell);
+
+  document.getElementById('pause-btn').addEventListener('click', () => {
+    if (!gameActive) return;
+    paused = !paused;
+    document.getElementById('pause-btn').textContent = paused ? '▶ Resume' : '⏸ Pause';
+    gridEl.style.filter = paused ? 'blur(8px)' : '';
+    gridEl.style.pointerEvents = paused ? 'none' : '';
+    playClick();
+  });
+
+  document.getElementById('show-errors').addEventListener('change', (e) => {
+    showErrors = e.target.checked;
+    renderGrid();
+  });
+
+  // Number pad
+  document.querySelectorAll('.num-btn').forEach(btn => {
+    btn.addEventListener('click', () => placeNumber(parseInt(btn.dataset.num)));
+  });
+
+  // Keyboard
+  document.addEventListener('keydown', (e) => {
+    if (!gameActive && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); playClick(); newGame(isDaily); return; }
+    if (e.key === 'n' || e.key === 'N') { noteMode = !noteMode; updateNoteBtn(); return; }
+    if (e.ctrlKey && e.key === 'z') { e.preventDefault(); undo(); return; }
+
+    if (e.key >= '1' && e.key <= '9') { placeNumber(parseInt(e.key)); return; }
+    if (e.key === '0' || e.key === 'Delete' || e.key === 'Backspace') { eraseCell(); return; }
+
+    if (selectedCell >= 0) {
+      const r = Math.floor(selectedCell / 9), c = selectedCell % 9;
+      if (e.key === 'ArrowUp' && r > 0) { e.preventDefault(); selectCell(selectedCell - 9); }
+      if (e.key === 'ArrowDown' && r < 8) { e.preventDefault(); selectCell(selectedCell + 9); }
+      if (e.key === 'ArrowLeft' && c > 0) { e.preventDefault(); selectCell(selectedCell - 1); }
+      if (e.key === 'ArrowRight' && c < 8) { e.preventDefault(); selectCell(selectedCell + 1); }
+    }
+  });
+
+  document.getElementById('play-again').addEventListener('click', () => { playClick(); newGame(isDaily); });
+
+  newGame(false);
+  </script>
+</body>
+</html>

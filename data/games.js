@@ -274,7 +274,7 @@ export const games = [
     icon: '9️⃣',
     accent: '#2563EB',
     keywords: ['sudoku', 'number puzzle', 'logic puzzle', 'brain game'],
-    built: false
+    built: true
   },
   {
     name: 'Nonogram',
