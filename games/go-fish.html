@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Go Fish Online — Play Against AI | MiniGamePlanet</title>
+  <meta name="description" content="Play Go Fish free online against a smart AI. Ask for cards, collect sets of four, and outsmart the computer. No download, no sign-up.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/go-fish">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500});gtag('config','G-XXXXXXXXXX');</script>
+  <meta property="og:type" content="website"><meta property="og:title" content="Free Go Fish Online | MiniGamePlanet"><meta property="og:description" content="Play Go Fish free against AI."><meta property="og:url" content="https://minigameplanet.com/games/go-fish"><meta property="og:site_name" content="MiniGamePlanet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Go Fish","url":"https://minigameplanet.com/games/go-fish","description":"Play Go Fish free online against AI.","genre":"Card","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <style>
+    .gf-card{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:52px;height:74px;border-radius:6px;background:#fff;border:2px solid #E2E8F0;font-family:'DM Mono',monospace;font-weight:700;cursor:pointer;margin:2px;transition:all 0.15s;user-select:none;font-size:12px}
+    .gf-card:hover{transform:translateY(-4px);box-shadow:0 4px 8px rgba(0,0,0,0.1)}
+    .gf-card.selected{border-color:#2563EB;box-shadow:0 0 0 2px #2563EB;transform:translateY(-6px)}
+    .gf-card.red{color:#DC2626}.gf-card.blk{color:#1E293B}
+    .gf-back{display:inline-flex;width:40px;height:56px;border-radius:5px;background:linear-gradient(135deg,#1E40AF,#7C3AED);border:1.5px solid #312E81;margin:1px}
+    .log-entry{padding:4px 8px;font-size:12px;border-radius:4px;margin:2px 0}
+    .log-you{background:#DBEAFE;color:#1E3A8A}.log-cpu{background:#FEE2E2;color:#991B1B}.log-info{background:#F1F5F9;color:#64748B}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <h1 style="font-size:22px;font-weight:700;margin:0;">🐟 Go Fish</h1>
+        <div style="display:flex;gap:6px;">
+          <button id="new-btn" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">🔄 New</button>
+          <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊</button>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;padding:6px 10px;background:#F8FAFC;border-radius:8px;flex-wrap:wrap;">
+        <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;">You: <span id="p-sets">0</span> sets</span>
+        <span style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;">CPU: <span id="c-sets">0</span> sets</span>
+        <span style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;">🃏 Pool: <span id="pool-count">0</span></span>
+      </div>
+      <!-- CPU hand (face-down) -->
+      <div style="text-align:center;margin-bottom:8px;">
+        <p style="font-size:11px;color:#94A3B8;margin-bottom:4px;">CPU Hand</p>
+        <div id="cpu-hand" style="display:flex;justify-content:center;flex-wrap:wrap;"></div>
+      </div>
+      <!-- Your hand -->
+      <div style="text-align:center;margin-bottom:8px;">
+        <p style="font-size:11px;color:#94A3B8;margin-bottom:4px;">Your Hand — click a card to ask for that rank</p>
+        <div id="player-hand" style="display:flex;justify-content:center;flex-wrap:wrap;min-height:80px;"></div>
+      </div>
+      <!-- Log -->
+      <div id="log" style="max-height:160px;overflow-y:auto;padding:8px;background:#F8FAFC;border-radius:8px;font-family:'DM Mono',monospace;margin-bottom:8px;"></div>
+      <div id="game-over" style="display:none;text-align:center;padding:16px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;">
+        <div id="go-title" style="font-size:22px;font-weight:700;margin-bottom:4px;"></div>
+        <div id="go-sub" style="font-size:13px;color:#64748B;margin-bottom:12px;"></div>
+        <button id="play-again" style="padding:8px 24px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">▶ Play Again</button>
+      </div>
+    </div>
+  </main>
+
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play Go Fish</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>Go Fish is a classic card game for all ages. Each player starts with 7 cards. On your turn, ask the opponent for a specific rank (you must have at least one card of that rank). If they have any, they hand them all over. If not, they say "Go Fish!" and you draw from the pool. When you collect all four cards of a rank, that's a "set" — place it aside. The player with the most sets when all cards are matched wins.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">How to Play</h3>
+      <p>Click any card in your hand to ask the AI for that rank. If the AI has matching cards, they're transferred to you. If not, you draw from the fish pool. The AI then takes its turn automatically. Collect sets of four to score points.</p>
+      <p class="mt-6">Play Go Fish free — no download needed.</p>
+    </div>
+  </article>
+  <div id="related-games"></div>
+  <div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playError, playScoreUp, playCollect, playPerfect, playLevelUp, playGameOver } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+  document.addEventListener('click',()=>initAudio(),{once:true});
+  initToolPage('go-fish'); initConsent(); trackGameView('go-fish','Card');
+
+  const SUITS=['♠','♥','♦','♣'], RANKS=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+  const isRed=s=>s==='♥'||s==='♦';
+
+  let pool=[], playerHand=[], cpuHand=[], playerSets=0, cpuSets=0, gameActive=false, playerTurn=true;
+  let cpuMemory=new Set();
+
+  document.getElementById('sound-btn').addEventListener('click',()=>{initAudio();const m=muteAll();document.getElementById('sound-btn').textContent=m?'🔇':'🔊';});
+  document.getElementById('new-btn').addEventListener('click',()=>newGame());
+  document.getElementById('play-again').addEventListener('click',()=>{playClick();newGame();});
+
+  function rng(min,max){const a=new Uint32Array(1);crypto.getRandomValues(a);return min+a[0]%(max-min+1);}
+  function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=rng(0,i);[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+
+  function newGame(){
+    pool=[];for(const s of SUITS)for(const r of RANKS)pool.push({rank:r,suit:s});
+    shuffle(pool);
+    playerHand=pool.splice(0,7);cpuHand=pool.splice(0,7);
+    playerSets=0;cpuSets=0;gameActive=true;playerTurn=true;cpuMemory=new Set();
+    document.getElementById('game-over').style.display='none';
+    document.getElementById('log').innerHTML='';
+    addLog('info','Game started! Click a card to ask for that rank.');
+    trackGameStart('go-fish','Card');
+    checkSets(playerHand,'player');checkSets(cpuHand,'cpu');
+    render();
+  }
+
+  function render(){
+    // CPU hand
+    const ch=document.getElementById('cpu-hand');ch.innerHTML='';
+    cpuHand.forEach(()=>{const d=document.createElement('div');d.className='gf-back';ch.appendChild(d);});
+    // Player hand
+    const ph=document.getElementById('player-hand');ph.innerHTML='';
+    playerHand.sort((a,b)=>RANKS.indexOf(a.rank)-RANKS.indexOf(b.rank)).forEach((c,i)=>{
+      const d=document.createElement('div');
+      d.className='gf-card '+(isRed(c.suit)?'red':'blk');
+      d.innerHTML=`<span>${c.rank}</span><span style="font-size:16px;">${c.suit}</span>`;
+      if(gameActive&&playerTurn)d.addEventListener('click',()=>playerAsk(c.rank));
+      ph.appendChild(d);
+    });
+    document.getElementById('p-sets').textContent=playerSets;
+    document.getElementById('c-sets').textContent=cpuSets;
+    document.getElementById('pool-count').textContent=pool.length;
+  }
+
+  function addLog(type,msg){
+    const log=document.getElementById('log');
+    const div=document.createElement('div');div.className='log-entry log-'+type;div.textContent=msg;
+    log.appendChild(div);log.scrollTop=log.scrollHeight;
+  }
+
+  function playerAsk(rank){
+    if(!gameActive||!playerTurn)return;
+    const matches=cpuHand.filter(c=>c.rank===rank);
+    if(matches.length>0){
+      addLog('you',`You asked for ${rank}s — got ${matches.length}!`);
+      cpuHand=cpuHand.filter(c=>c.rank!==rank);
+      playerHand.push(...matches);
+      playCollect();
+      checkSets(playerHand,'player');
+      render();
+      // Player goes again
+      if(!checkGameEnd())setTimeout(()=>render(),100);
+    } else{
+      addLog('you',`You asked for ${rank}s — Go Fish!`);
+      cpuMemory.add(rank);
+      if(pool.length>0){const drawn=pool.pop();playerHand.push(drawn);addLog('info',`You drew ${drawn.rank}${drawn.suit}`);}
+      playError();
+      checkSets(playerHand,'player');
+      render();
+      if(!checkGameEnd()){playerTurn=false;setTimeout(()=>cpuTurn(),800);}
+    }
+  }
+
+  function cpuTurn(){
+    if(!gameActive)return;
+    if(cpuHand.length===0&&pool.length>0){cpuHand.push(pool.pop());}
+    if(cpuHand.length===0){checkGameEnd();return;}
+
+    // CPU strategy: ask for a rank it remembers the player might have, or a random rank it holds
+    let askRank=null;
+    const cpuRanks=[...new Set(cpuHand.map(c=>c.rank))];
+    for(const r of cpuRanks){if(cpuMemory.has(r)){askRank=r;break;}}
+    if(!askRank)askRank=cpuRanks[rng(0,cpuRanks.length-1)];
+
+    const matches=playerHand.filter(c=>c.rank===askRank);
+    if(matches.length>0){
+      addLog('cpu',`CPU asked for ${askRank}s — got ${matches.length}!`);
+      playerHand=playerHand.filter(c=>c.rank!==askRank);
+      cpuHand.push(...matches);
+      playClick();
+      checkSets(cpuHand,'cpu');
+      render();
+      if(!checkGameEnd())setTimeout(()=>cpuTurn(),800);
+    } else{
+      addLog('cpu',`CPU asked for ${askRank}s — Go Fish!`);
+      if(pool.length>0)cpuHand.push(pool.pop());
+      checkSets(cpuHand,'cpu');
+      render();
+      if(!checkGameEnd()){playerTurn=true;addLog('info','Your turn — click a card.');}
+    }
+  }
+
+  function checkSets(hand,who){
+    const counts={};hand.forEach(c=>{counts[c.rank]=(counts[c.rank]||0)+1;});
+    for(const[rank,count]of Object.entries(counts)){
+      if(count===4){
+        if(who==='player'){playerSets++;addLog('info',`✅ You completed a set of ${rank}s!`);playScoreUp(200);}
+        else{cpuSets++;addLog('info',`CPU completed a set of ${rank}s`);}
+        const idx=who==='player'?playerHand:cpuHand;
+        for(let i=idx.length-1;i>=0;i--){if(idx[i].rank===rank)idx.splice(i,1);}
+      }
+    }
+  }
+
+  function checkGameEnd(){
+    if(playerHand.length===0&&cpuHand.length===0&&pool.length===0||playerSets+cpuSets===13){
+      gameActive=false;
+      const won=playerSets>cpuSets;const tie=playerSets===cpuSets;
+      document.getElementById('go-title').textContent=won?'🎉 You Win!':tie?'🤝 Tie!':'😞 CPU Wins';
+      document.getElementById('go-title').style.color=won?'#059669':tie?'#D97706':'#DC2626';
+      document.getElementById('go-sub').textContent=`You: ${playerSets} sets — CPU: ${cpuSets} sets`;
+      document.getElementById('game-over').style.display='block';
+      if(won){playPerfect();setTimeout(()=>playLevelUp(),300);}else if(!tie)playGameOver();
+      trackGameOver('go-fish','Card',won?1:0,0);
+      return true;
+    }
+    // Auto-draw if hand empty
+    if(playerHand.length===0&&pool.length>0)playerHand.push(pool.pop());
+    if(cpuHand.length===0&&pool.length>0)cpuHand.push(pool.pop());
+    return false;
+  }
+
+  newGame();
+  </script>
+</body>
+</html>

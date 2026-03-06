@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free High Low Card Game Online — Play Instantly | MiniGamePlanet</title>
+  <meta name="description" content="Play High Low free online. Guess if the next card is higher or lower. Build your streak in this fast, addictive card guessing game.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/high-low">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500});gtag('config','G-XXXXXXXXXX');</script>
+  <meta property="og:type" content="website"><meta property="og:title" content="Free High Low Card Game | MiniGamePlanet"><meta property="og:description" content="Guess higher or lower — build your streak!"><meta property="og:url" content="https://minigameplanet.com/games/high-low"><meta property="og:site_name" content="MiniGamePlanet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"High Low Card Game","url":"https://minigameplanet.com/games/high-low","description":"Play High Low card game free online.","genre":"Card","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <style>
+    .hl-card{width:80px;height:116px;border-radius:10px;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-weight:700;transition:all 0.3s;position:relative}
+    .hl-card.up{background:#fff;border:2.5px solid #E2E8F0;box-shadow:0 4px 12px rgba(0,0,0,0.08)}
+    .hl-card.down{background:linear-gradient(135deg,#1E40AF,#7C3AED);border:2.5px solid #312E81}
+    .hl-card.red{color:#DC2626}.hl-card.blk{color:#1E293B}
+    .hl-card .rk{font-size:18px}.hl-card .st{font-size:28px}
+    @keyframes cardReveal{0%{transform:rotateY(90deg)}100%{transform:rotateY(0)}}.reveal{animation:cardReveal 0.3s ease-out}
+    .guess-btn{padding:12px 32px;border-radius:10px;font-size:16px;font-weight:800;border:none;cursor:pointer;font-family:inherit;color:#fff;transition:all 0.1s}
+    .guess-btn:hover{transform:translateY(-2px)}
+    .guess-btn:active{transform:scale(0.97)}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <h1 style="font-size:22px;font-weight:700;margin:0;">📊 High Low</h1>
+        <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:12px;padding:8px 12px;background:#F8FAFC;border-radius:8px;flex-wrap:wrap;justify-content:center;">
+        <span style="font-family:'DM Mono',monospace;font-size:15px;font-weight:700;">🔥 Streak: <span id="streak">0</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;">🏆 Best: <span id="best">0</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;">🃏 Left: <span id="remaining">51</span></span>
+      </div>
+      <div id="near-miss" style="display:none;text-align:center;padding:3px;font-size:12px;font-weight:600;color:#D97706;margin-bottom:4px;"></div>
+      <!-- Cards display -->
+      <div style="display:flex;justify-content:center;align-items:center;gap:20px;margin-bottom:16px;min-height:130px;">
+        <div style="text-align:center;">
+          <p style="font-size:10px;color:#94A3B8;margin-bottom:4px;">CURRENT</p>
+          <div id="current-card"></div>
+        </div>
+        <div style="font-size:20px;color:#94A3B8;">→</div>
+        <div style="text-align:center;">
+          <p style="font-size:10px;color:#94A3B8;margin-bottom:4px;">NEXT</p>
+          <div id="next-card"><div class="hl-card down"></div></div>
+        </div>
+      </div>
+      <div id="result-text" style="text-align:center;min-height:24px;font-size:15px;font-weight:700;margin-bottom:8px;"></div>
+      <!-- Buttons -->
+      <div id="guess-buttons" style="display:flex;gap:12px;justify-content:center;margin-bottom:12px;">
+        <button id="btn-higher" class="guess-btn" style="background:#059669;">⬆ Higher</button>
+        <button id="btn-lower" class="guess-btn" style="background:#DC2626;">⬇ Lower</button>
+      </div>
+      <div id="restart-area" style="display:none;text-align:center;">
+        <button id="btn-restart" style="padding:10px 28px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">▶ Play Again</button>
+        <p style="font-size:11px;color:#94A3B8;margin-top:4px;">Enter or Space to restart</p>
+      </div>
+      <div id="session-stats" style="display:none;font-family:'DM Mono',monospace;font-size:12px;color:#64748B;text-align:left;max-width:220px;margin:12px auto 0;padding:10px;background:#F8FAFC;border-radius:8px;"></div>
+    </div>
+  </main>
+
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play High Low</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>High Low is the simplest card game imaginable — and one of the most addictive. A card is shown face-up. Guess whether the next card will be higher or lower. Correct guesses build your streak. One wrong guess and it's over. How long can you keep your streak alive?</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">How to Play</h3>
+      <p>Click "Higher" if you think the next card's rank will be higher, or "Lower" if you think it will be lower. Cards rank from 2 (lowest) to Ace (highest). If the next card is equal, it counts as a loss. The game uses a single shuffled deck — once a card is played, it won't appear again. Use this knowledge: if the current card is a King, the next one is almost certainly lower.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Strategy</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Low cards → guess Higher.</strong> If the current card is a 3, there are many more cards above it.</li>
+        <li><strong>High cards → guess Lower.</strong> A Queen or King has most of the deck below it.</li>
+        <li><strong>Middle cards are the gamble.</strong> A 7 or 8 is nearly 50/50. Go with your gut.</li>
+        <li><strong>Track what's been played.</strong> With a single deck, you can mentally count which ranks remain.</li>
+      </ul>
+      <p class="mt-6">Play High Low free — how high can you streak?</p>
+    </div>
+  </article>
+  <div id="related-games"></div>
+  <div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playFlip } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+  document.addEventListener('click',()=>initAudio(),{once:true});
+  initToolPage('high-low'); initConsent(); trackGameView('high-low','Card');
+
+  const SUITS=['♠','♥','♦','♣'], RANKS=['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+  const RV={'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'10':10,J:11,Q:12,K:13,A:14};
+  const isRed=s=>s==='♥'||s==='♦';
+
+  let deck=[], currentCard=null, streak=0, bestStreak=0, gameActive=false;
+  let session={rounds:0,totalStreak:0,startTime:Date.now()};
+  const savedBest=localStorage.getItem('mgp_highlow_best');
+  if(savedBest)bestStreak=parseInt(savedBest)||0;
+
+  document.getElementById('sound-btn').addEventListener('click',()=>{initAudio();const m=muteAll();document.getElementById('sound-btn').textContent=m?'🔇':'🔊';});
+
+  function shuffle(arr){for(let i=arr.length-1;i>0;i--){const a=new Uint32Array(1);crypto.getRandomValues(a);const j=a[0]%(i+1);[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+
+  function cardHTML(c){
+    const cl=isRed(c.suit)?'red':'blk';
+    return`<div class="hl-card up ${cl} reveal"><span class="rk">${c.rank}</span><span class="st">${c.suit}</span></div>`;
+  }
+
+  function newGame(){
+    deck=[];for(const s of SUITS)for(const r of RANKS)deck.push({rank:r,suit:s});
+    shuffle(deck);
+    currentCard=deck.pop();streak=0;gameActive=true;session.rounds++;
+    document.getElementById('current-card').innerHTML=cardHTML(currentCard);
+    document.getElementById('next-card').innerHTML='<div class="hl-card down"></div>';
+    document.getElementById('result-text').textContent='';
+    document.getElementById('guess-buttons').style.display='flex';
+    document.getElementById('restart-area').style.display='none';
+    document.getElementById('session-stats').style.display='none';
+    document.getElementById('near-miss').style.display='none';
+    updateUI();
+    trackGameStart('high-low','Card');
+  }
+
+  document.getElementById('btn-higher').addEventListener('click',()=>guess('higher'));
+  document.getElementById('btn-lower').addEventListener('click',()=>guess('lower'));
+  document.getElementById('btn-restart').addEventListener('click',()=>{playClick();newGame();});
+  document.addEventListener('keydown',e=>{
+    if(!gameActive&&(e.key==='Enter'||e.key===' ')){e.preventDefault();playClick();newGame();return;}
+    if(gameActive){
+      if(e.key==='ArrowUp'||e.key==='h')guess('higher');
+      if(e.key==='ArrowDown'||e.key==='l')guess('lower');
+    }
+  });
+
+  function guess(dir){
+    if(!gameActive||deck.length===0)return;
+    const nextCard=deck.pop();
+    document.getElementById('next-card').innerHTML=cardHTML(nextCard);
+    playFlip();
+
+    const cv=RV[currentCard.rank], nv=RV[nextCard.rank];
+    const correct=(dir==='higher'&&nv>cv)||(dir==='lower'&&nv<cv);
+
+    setTimeout(()=>{
+      if(correct){
+        streak++;
+        document.getElementById('result-text').textContent='✅ Correct!';
+        document.getElementById('result-text').style.color='#059669';
+        if(streak%5===0)playLevelUp();else playSuccess();
+        playScoreUp(streak*30);
+        currentCard=nextCard;
+        document.getElementById('current-card').innerHTML=cardHTML(currentCard);
+        document.getElementById('next-card').innerHTML='<div class="hl-card down"></div>';
+
+        // Near miss
+        if(deck.length<=5&&deck.length>0){
+          document.getElementById('near-miss').style.display='block';
+          document.getElementById('near-miss').textContent=`⚡ ${deck.length} cards left — can you clear the deck?`;
+        }
+
+        if(deck.length===0){
+          document.getElementById('result-text').textContent='🏆 PERFECT — You cleared the entire deck!';
+          document.getElementById('result-text').style.color='#D97706';
+          playPerfect();endGame();return;
+        }
+        updateUI();
+      } else{
+        if(nv===cv){
+          document.getElementById('result-text').textContent='😬 Same rank — counts as wrong!';
+          document.getElementById('near-miss').style.display='block';
+          document.getElementById('near-miss').textContent='So close — ties break the streak!';
+        } else{
+          document.getElementById('result-text').textContent=`❌ Wrong! ${nextCard.rank} was ${nv>cv?'higher':'lower'}`;
+        }
+        document.getElementById('result-text').style.color='#DC2626';
+        playGameOver();endGame();
+      }
+    },300);
+  }
+
+  function endGame(){
+    gameActive=false;
+    session.totalStreak=Math.max(session.totalStreak,streak);
+    if(streak>bestStreak){bestStreak=streak;localStorage.setItem('mgp_highlow_best',bestStreak);}
+    updateUI();
+    document.getElementById('guess-buttons').style.display='none';
+    document.getElementById('restart-area').style.display='block';
+    const elapsed=Math.round((Date.now()-session.startTime)/1000);const mins=Math.floor(elapsed/60),secs=elapsed%60;
+    document.getElementById('session-stats').style.display='block';
+    document.getElementById('session-stats').innerHTML=`🎮 This Session<br>─────────────────────<br>Rounds played   ${session.rounds}<br>This streak     ${streak}<br>Best ever       ${bestStreak}<br>Time played     ${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+    trackGameOver('high-low','Card',streak,0);
+  }
+
+  function updateUI(){
+    document.getElementById('streak').textContent=streak;
+    document.getElementById('best').textContent=bestStreak;
+    document.getElementById('remaining').textContent=deck.length;
+  }
+
+  newGame();
+  </script>
+</body>
+</html>

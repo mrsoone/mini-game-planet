@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Video Poker Online — Jacks or Better | MiniGamePlanet</title>
+  <meta name="description" content="Play free Video Poker Jacks or Better online. Hold your best cards, draw replacements, and aim for a Royal Flush. No real money, no sign-up required.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/video-poker">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500});gtag('config','G-XXXXXXXXXX');</script>
+  <meta property="og:type" content="website"><meta property="og:title" content="Free Video Poker Online | MiniGamePlanet"><meta property="og:description" content="Play Video Poker Jacks or Better free."><meta property="og:url" content="https://minigameplanet.com/games/video-poker"><meta property="og:site_name" content="MiniGamePlanet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Video Poker","url":"https://minigameplanet.com/games/video-poker","description":"Play Video Poker Jacks or Better free online.","genre":"Card","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <style>
+    .vp-card{width:72px;height:104px;border-radius:8px;background:#fff;border:2px solid #E2E8F0;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-weight:700;cursor:pointer;transition:all 0.15s;position:relative;user-select:none}
+    .vp-card.held{border-color:#2563EB;box-shadow:0 0 0 2px #2563EB,0 4px 12px rgba(37,99,235,0.2);transform:translateY(-8px)}
+    .vp-card .rank{font-size:14px;position:absolute;top:4px;left:6px}.vp-card .suit{font-size:22px}
+    .vp-card .rank2{font-size:14px;position:absolute;bottom:4px;right:6px;transform:rotate(180deg)}
+    .vp-card.red{color:#DC2626}.vp-card.black{color:#1E293B}
+    .held-badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#2563EB;color:#fff;font-size:9px;font-weight:800;padding:1px 6px;border-radius:4px;letter-spacing:0.5px}
+    .pay-row{display:flex;justify-content:space-between;padding:2px 8px;font-size:11px;border-radius:3px}
+    .pay-row.active{background:#FDE68A;font-weight:700}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <h1 style="font-size:22px;font-weight:700;margin:0;">🎰 Video Poker</h1>
+        <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊</button>
+      </div>
+      <!-- Pay table -->
+      <div id="paytable" style="max-width:320px;margin:0 auto 12px;background:#1E293B;border-radius:8px;padding:8px;font-family:'DM Mono',monospace;color:#CBD5E1;">
+        <div class="pay-row"><span>Royal Flush</span><span>250×</span></div>
+        <div class="pay-row"><span>Straight Flush</span><span>50×</span></div>
+        <div class="pay-row"><span>Four of a Kind</span><span>25×</span></div>
+        <div class="pay-row"><span>Full House</span><span>9×</span></div>
+        <div class="pay-row"><span>Flush</span><span>6×</span></div>
+        <div class="pay-row"><span>Straight</span><span>4×</span></div>
+        <div class="pay-row"><span>Three of a Kind</span><span>3×</span></div>
+        <div class="pay-row"><span>Two Pair</span><span>2×</span></div>
+        <div class="pay-row"><span>Jacks or Better</span><span>1×</span></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:10px;padding:6px 10px;background:#F8FAFC;border-radius:8px;flex-wrap:wrap;justify-content:center;">
+        <span style="font-family:'DM Mono',monospace;font-size:14px;font-weight:700;">💰 <span id="credits">1000</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;">Bet: <span id="bet-display">5</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;">🔥 <span id="streak">0</span></span>
+      </div>
+      <div id="result-banner" style="display:none;text-align:center;padding:6px;border-radius:6px;margin-bottom:8px;font-weight:700;font-size:15px;"></div>
+      <!-- Cards -->
+      <div id="hand" style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;min-height:120px;"></div>
+      <!-- Actions -->
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+        <button id="btn-bet" style="padding:8px 16px;border-radius:8px;font-size:12px;font-weight:700;background:#D97706;color:#fff;border:none;cursor:pointer;font-family:inherit;">Bet: 5</button>
+        <button id="btn-deal" style="padding:8px 24px;border-radius:8px;font-size:14px;font-weight:700;background:#2563EB;color:#fff;border:none;cursor:pointer;font-family:inherit;">DEAL</button>
+      </div>
+      <div style="background:#FEF3C7;border:1px solid #FDE68A;border-radius:8px;padding:8px 12px;margin-top:12px;">
+        <p style="font-size:11px;color:#92400E;margin:0;"><strong>🎲 Entertainment Only</strong> — No real money. All credits are virtual with zero monetary value.</p>
+      </div>
+    </div>
+  </main>
+
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play Video Poker</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>Video Poker combines the excitement of poker with the simplicity of a slot machine. In Jacks or Better — the most common variant — you're dealt five cards. You choose which to hold and which to discard. The discarded cards are replaced, and your final hand is evaluated against a paytable. Any hand containing at least a pair of Jacks or better wins.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">How to Play</h3>
+      <p>Set your bet (1, 5, 10, or 25 credits) and click Deal. Five cards appear. Click any card to hold it (held cards glow blue and lift up). Click Deal again to replace the non-held cards. Your final five-card hand is evaluated and you're paid according to the paytable.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Strategy</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Always hold a made hand</strong> (pair of Jacks+, two pair, etc.).</li>
+        <li><strong>Hold four to a flush or straight.</strong> The odds of completing are good enough.</li>
+        <li><strong>Never hold a kicker.</strong> If you have a pair of Jacks, discard the other three cards.</li>
+        <li><strong>With nothing, hold high cards</strong> (J, Q, K, A) and discard the rest.</li>
+      </ul>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">FAQ</h3>
+      <h4 class="font-semibold text-slate-800">Does this use real money?</h4>
+      <p>No. This is a 100% free game with virtual credits. No real money, deposits, or withdrawals.</p>
+      <p class="mt-6">Play Video Poker free — practice perfect strategy without risking a cent.</p>
+    </div>
+  </article>
+  <div id="related-games"></div>
+  <div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playDeal, playFlip, playCollect } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+  document.addEventListener('click',()=>initAudio(),{once:true});
+  initToolPage('video-poker'); initConsent(); trackGameView('video-poker','Card');
+
+  const SUITS=['♠','♥','♦','♣'], RANKS=['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+  const RV={'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'10':10,J:11,Q:12,K:13,A:14};
+  const PAYOUTS={'Royal Flush':250,'Straight Flush':50,'Four of a Kind':25,'Full House':9,'Flush':6,'Straight':4,'Three of a Kind':3,'Two Pair':2,'Jacks or Better':1};
+  const isRed=s=>s==='♥'||s==='♦';
+
+  let deck=[], hand=[], held=[false,false,false,false,false], credits=1000, bet=5, phase='bet', streak=0;
+  const saved=localStorage.getItem('mgp_vp_credits');if(saved)credits=Math.max(5,parseInt(saved)||1000);
+
+  document.getElementById('sound-btn').addEventListener('click',()=>{initAudio();const m=muteAll();document.getElementById('sound-btn').textContent=m?'🔇':'🔊';});
+
+  const BETS=[1,5,10,25];let betIdx=1;
+  document.getElementById('btn-bet').addEventListener('click',()=>{
+    if(phase!=='bet')return;
+    betIdx=(betIdx+1)%BETS.length;
+    bet=BETS[betIdx];
+    document.getElementById('btn-bet').textContent=`Bet: ${bet}`;
+    document.getElementById('bet-display').textContent=bet;
+    playClick();
+  });
+
+  document.getElementById('btn-deal').addEventListener('click',()=>handleDeal());
+
+  function shuffleDeck(){
+    deck=[];for(const s of SUITS)for(const r of RANKS)deck.push({rank:r,suit:s});
+    for(let i=deck.length-1;i>0;i--){const a=new Uint32Array(1);crypto.getRandomValues(a);const j=a[0]%(i+1);[deck[i],deck[j]]=[deck[j],deck[i]];}
+  }
+
+  function handleDeal(){
+    if(phase==='bet'){
+      if(credits<bet)return;
+      credits-=bet;saveCredits();updateUI();
+      shuffleDeck();hand=deck.splice(0,5);held=[false,false,false,false,false];
+      phase='hold';
+      document.getElementById('btn-deal').textContent='DRAW';
+      document.getElementById('result-banner').style.display='none';
+      trackGameStart('video-poker','Card');
+      playDeal();
+    } else{
+      for(let i=0;i<5;i++){if(!held[i])hand[i]=deck.pop();}
+      phase='result';evaluate();
+      document.getElementById('btn-deal').textContent='DEAL';
+    }
+    renderHand();
+  }
+
+  function renderHand(){
+    const el=document.getElementById('hand');el.innerHTML='';
+    hand.forEach((c,i)=>{
+      const color=isRed(c.suit)?'red':'black';
+      const div=document.createElement('div');
+      div.className='vp-card '+color+(held[i]?' held':'');
+      div.innerHTML=`<span class="rank">${c.rank}<br>${c.suit}</span><span class="suit">${c.suit}</span><span class="rank2">${c.rank}<br>${c.suit}</span>${held[i]?'<span class="held-badge">HELD</span>':''}`;
+      if(phase==='hold')div.addEventListener('click',()=>{held[i]=!held[i];playClick();renderHand();});
+      el.appendChild(div);
+    });
+  }
+
+  function evaluate(){
+    const ranks=hand.map(c=>RV[c.rank]).sort((a,b)=>a-b);
+    const suits=hand.map(c=>c.suit);
+    const isFlush=suits.every(s=>s===suits[0]);
+    const unique=[...new Set(ranks)];
+    const counts={};ranks.forEach(r=>{counts[r]=(counts[r]||0)+1;});
+    const groups=Object.values(counts).sort((a,b)=>b-a);
+    const isStraight=(unique.length===5&&ranks[4]-ranks[0]===4)||(ranks.join(',')===('2,3,4,5,14'));
+
+    let result=null, payout=0;
+    const banner=document.getElementById('result-banner');
+    const payRows=document.querySelectorAll('.pay-row');payRows.forEach(r=>r.classList.remove('active'));
+
+    if(isFlush&&isStraight&&ranks[0]===10){result='Royal Flush';}
+    else if(isFlush&&isStraight){result='Straight Flush';}
+    else if(groups[0]===4){result='Four of a Kind';}
+    else if(groups[0]===3&&groups[1]===2){result='Full House';}
+    else if(isFlush){result='Flush';}
+    else if(isStraight){result='Straight';}
+    else if(groups[0]===3){result='Three of a Kind';}
+    else if(groups[0]===2&&groups[1]===2){result='Two Pair';}
+    else if(groups[0]===2){
+      const pairRank=parseInt(Object.entries(counts).find(([k,v])=>v===2)[0]);
+      if(pairRank>=11)result='Jacks or Better';
+    }
+
+    if(result){
+      payout=PAYOUTS[result]*bet;
+      credits+=payout;streak++;
+      banner.style.display='block';banner.style.background='#D1FAE5';banner.style.color='#065F46';
+      banner.textContent=`${result}! +${payout}`;
+      payRows.forEach(r=>{if(r.children[0].textContent===result)r.classList.add('active');});
+      if(result==='Royal Flush')playPerfect();
+      else if(payout>=bet*10)playLevelUp();
+      else playSuccess();
+    } else{
+      streak=0;
+      banner.style.display='block';banner.style.background='#FEE2E2';banner.style.color='#991B1B';
+      banner.textContent='No win';playError();
+    }
+
+    saveCredits();updateUI();
+    trackGameOver('video-poker','Card',payout,0);
+    phase='bet';
+  }
+
+  function saveCredits(){localStorage.setItem('mgp_vp_credits',credits);}
+  function updateUI(){
+    document.getElementById('credits').textContent=credits;
+    document.getElementById('streak').textContent=streak;
+  }
+  updateUI();
+  </script>
+</body>
+</html>

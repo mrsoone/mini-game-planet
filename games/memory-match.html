@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Memory Match Online — Play Instantly | MiniGamePlanet</title>
+  <meta name="description" content="Play Memory Match free online. Flip cards to find matching pairs. Multiple grid sizes and emoji themes. Test your memory and beat your best time.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/memory-match">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500});gtag('config','G-XXXXXXXXXX');</script>
+  <meta property="og:type" content="website"><meta property="og:title" content="Free Memory Match | MiniGamePlanet"><meta property="og:description" content="Flip cards and find matching pairs."><meta property="og:url" content="https://minigameplanet.com/games/memory-match"><meta property="og:site_name" content="MiniGamePlanet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Memory Match","url":"https://minigameplanet.com/games/memory-match","description":"Play Memory Match free online. Find matching pairs of cards.","genre":"Card","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <style>
+    .mm-card{border-radius:8px;cursor:pointer;perspective:600px;user-select:none}
+    .mm-inner{position:relative;width:100%;height:100%;transition:transform 0.4s;transform-style:preserve-3d}
+    .mm-card.flipped .mm-inner{transform:rotateY(180deg)}
+    .mm-front,.mm-back{position:absolute;inset:0;backface-visibility:hidden;border-radius:8px;display:flex;align-items:center;justify-content:center}
+    .mm-back{background:linear-gradient(135deg,#2563EB,#7C3AED);border:2px solid #1D4ED8}
+    .mm-front{transform:rotateY(180deg);background:#fff;border:2px solid #E2E8F0}
+    .mm-card.matched .mm-front{background:#D1FAE5;border-color:#6EE7B7}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <h1 style="font-size:22px;font-weight:700;margin:0;">🧠 Memory Match</h1>
+        <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊</button>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+        <button class="sz-btn" data-c="4" data-r="3" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #2563EB;background:#2563EB;color:#fff;cursor:pointer;font-family:inherit;">4×3</button>
+        <button class="sz-btn" data-c="4" data-r="4" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">4×4</button>
+        <button class="sz-btn" data-c="6" data-r="4" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">6×4</button>
+        <button class="sz-btn" data-c="6" data-r="5" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">6×5</button>
+        <button id="new-btn" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">🔄 New</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;padding:4px 8px;background:#F8FAFC;border-radius:6px;flex-wrap:wrap;">
+        <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;">🔢 Moves: <span id="moves">0</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;">✅ <span id="pairs">0</span>/<span id="total-pairs">6</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;">⏱ <span id="timer">0:00</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;">🔥 <span id="streak">0</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;">🏆 <span id="best">---</span></span>
+      </div>
+      <div id="near-miss" style="display:none;text-align:center;padding:3px;font-size:12px;font-weight:600;color:#D97706;margin-bottom:4px;"></div>
+      <div style="display:flex;justify-content:center;margin-bottom:12px;"><div id="board" style="display:inline-grid;gap:6px;"></div></div>
+      <div id="game-over" style="display:none;text-align:center;padding:16px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;">
+        <div id="go-title" style="font-size:22px;font-weight:700;margin-bottom:4px;"></div>
+        <div id="go-sub" style="font-size:13px;color:#64748B;margin-bottom:12px;"></div>
+        <div id="session-stats" style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;text-align:left;max-width:220px;margin:0 auto 12px;padding:10px;background:#fff;border-radius:8px;"></div>
+        <button id="play-again" style="padding:8px 24px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">▶ Play Again</button>
+      </div>
+    </div>
+  </main>
+
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play Memory Match</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>Memory Match (also known as Concentration) is a card-matching game that tests your short-term memory. Flip two cards at a time — if they match, they stay face-up. If not, they flip back. Find all pairs to win. Fewer moves means a better score. The game uses emoji symbols instead of playing cards for a colorful, family-friendly experience.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">How to Play</h3>
+      <p>Click any face-down card to flip it. Then click a second card. If both show the same emoji, the pair is matched and stays visible. If they differ, both flip back after a brief pause. Continue until all pairs are found. Four grid sizes are available, from 4×3 (6 pairs) up to 6×5 (15 pairs).</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Strategy</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Pay attention to every flip</strong> — even mismatches give you information.</li>
+        <li><strong>Work systematically.</strong> Don't randomly click — try to remember and return to seen cards.</li>
+        <li><strong>Use spatial memory.</strong> Note where each symbol appears relative to the grid.</li>
+      </ul>
+      <p class="mt-6">Play Memory Match free in your browser — test your recall, beat your best time.</p>
+    </div>
+  </article>
+  <div id="related-games"></div>
+  <div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playError, playScoreUp, playLevelUp, playPerfect, playFlip, playCollect } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+  document.addEventListener('click',()=>initAudio(),{once:true});
+  initToolPage('memory-match'); initConsent(); trackGameView('memory-match','Card');
+
+  const EMOJI_POOL=['🐶','🐱','🐸','🦊','🐻','🐼','🐨','🦁','🐮','🐷','🐵','🐔','🐧','🐳','🦄','🐝','🐞','🦋','🌸','🌻','🍎','🍕','🎸','🚀','⭐','🌈','💎','🔥','🎈','🎃'];
+
+  let cols=4,rows=3,cards=[],flipped=[],matched=new Set(),moveCount=0,combo=0;
+  let timerInterval,seconds=0,started=false,locked=false;
+  let streak=0,best={},session={rounds:0,wins:0,totalTime:0,startTime:Date.now()};
+
+  document.getElementById('sound-btn').addEventListener('click',()=>{initAudio();const m=muteAll();document.getElementById('sound-btn').textContent=m?'🔇':'🔊';});
+  document.querySelectorAll('.sz-btn').forEach(b=>{
+    b.addEventListener('click',()=>{
+      cols=parseInt(b.dataset.c);rows=parseInt(b.dataset.r);
+      document.querySelectorAll('.sz-btn').forEach(x=>{x.style.background='#fff';x.style.color='#334155';x.style.borderColor='#E5E7EB';});
+      b.style.background='#2563EB';b.style.color='#fff';b.style.borderColor='#2563EB';
+      newGame();
+    });
+  });
+  document.getElementById('new-btn').addEventListener('click',()=>newGame());
+  document.getElementById('play-again').addEventListener('click',()=>{playClick();newGame();});
+
+  function rng(min,max){const a=new Uint32Array(1);crypto.getRandomValues(a);return min+a[0]%(max-min+1);}
+  function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=rng(0,i);[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+
+  function newGame(){
+    const numPairs=(cols*rows)/2;
+    const emojis=shuffle([...EMOJI_POOL]).slice(0,numPairs);
+    cards=shuffle([...emojis,...emojis]);
+    flipped=[];matched=new Set();moveCount=0;combo=0;seconds=0;started=false;locked=false;
+    clearInterval(timerInterval);
+    document.getElementById('moves').textContent='0';
+    document.getElementById('pairs').textContent='0';
+    document.getElementById('total-pairs').textContent=numPairs;
+    document.getElementById('timer').textContent='0:00';
+    document.getElementById('game-over').style.display='none';
+    document.getElementById('near-miss').style.display='none';
+    updateBest();render();
+  }
+
+  function render(){
+    const board=document.getElementById('board');board.innerHTML='';
+    const cellSize=Math.min(72,Math.floor((window.innerWidth-64)/cols));
+    board.style.gridTemplateColumns=`repeat(${cols},${cellSize}px)`;
+
+    for(let i=0;i<cards.length;i++){
+      const card=document.createElement('div');
+      card.className='mm-card';
+      if(flipped.includes(i)||matched.has(i))card.classList.add('flipped');
+      if(matched.has(i))card.classList.add('matched');
+      card.style.width=cellSize+'px';card.style.height=(cellSize*1.2)+'px';
+      card.innerHTML=`<div class="mm-inner"><div class="mm-back"></div><div class="mm-front" style="font-size:${cellSize*0.5}px;">${cards[i]}</div></div>`;
+      card.addEventListener('click',()=>handleClick(i));
+      board.appendChild(card);
+    }
+
+    const pairsFound=matched.size/2;
+    const totalPairs=(cols*rows)/2;
+    const pct=pairsFound/totalPairs;
+    if(pct>=0.8&&pct<1){
+      document.getElementById('near-miss').style.display='block';
+      document.getElementById('near-miss').textContent=totalPairs-pairsFound<=1?'⚡ Last pair!':'🔥 Almost done!';
+    } else document.getElementById('near-miss').style.display='none';
+  }
+
+  function handleClick(i){
+    if(locked||flipped.includes(i)||matched.has(i))return;
+    if(!started){started=true;trackGameStart('memory-match','Card');timerInterval=setInterval(()=>{seconds++;document.getElementById('timer').textContent=`${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`;},1000);}
+
+    flipped.push(i);playFlip();render();
+
+    if(flipped.length===2){
+      moveCount++;document.getElementById('moves').textContent=moveCount;
+      locked=true;
+      const [a,b]=flipped;
+      if(cards[a]===cards[b]){
+        matched.add(a);matched.add(b);combo++;
+        document.getElementById('pairs').textContent=matched.size/2;
+        if(combo>=3)playPerfect();else playCollect();
+        flipped=[];locked=false;render();
+        if(matched.size===cards.length)endGame();
+      } else{
+        combo=0;playError();
+        setTimeout(()=>{flipped=[];locked=false;render();},700);
+      }
+    }
+  }
+
+  function endGame(){
+    clearInterval(timerInterval);session.rounds++;session.wins++;session.totalTime+=seconds;streak++;
+    const key=`${cols}x${rows}`;
+    if(!best[key]||moveCount<best[key]){
+      best[key]=moveCount;
+      document.getElementById('go-title').textContent='🏆 NEW BEST!';document.getElementById('go-title').style.color='#D97706';
+      playPerfect();setTimeout(()=>playLevelUp(),300);
+    } else{
+      document.getElementById('go-title').textContent='🧠 All Pairs Found!';document.getElementById('go-title').style.color='#059669';
+      playSuccess();
+    }
+    document.getElementById('go-sub').textContent=`${moveCount} moves · ${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`;
+    document.getElementById('streak').textContent=streak;updateBest();
+    trackGameOver('memory-match','Card',moveCount,seconds);
+    const elapsed=Math.round((Date.now()-session.startTime)/1000);const mins=Math.floor(elapsed/60),secs=elapsed%60;
+    document.getElementById('session-stats').innerHTML=`🎮 This Session<br>─────────────────────<br>Rounds played   ${session.rounds}<br>Best (${key})    ${best[key]||'---'} moves<br>Current streak  ${streak} ${streak>=3?'🔥':''}<br>Time played     ${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+    document.getElementById('game-over').style.display='block';
+  }
+
+  function updateBest(){const key=`${cols}x${rows}`;document.getElementById('best').textContent=best[key]?best[key]+' moves':'---';}
+
+  newGame();
+  </script>
+</body>
+</html>

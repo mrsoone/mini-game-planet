@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free FreeCell Solitaire Online — Play Instantly | MiniGamePlanet</title>
+  <meta name="description" content="Play FreeCell Solitaire free online. Every deal is solvable. Use four free cells strategically to move all cards to the foundations from Ace to King.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/freecell">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500});gtag('config','G-XXXXXXXXXX');</script>
+  <meta property="og:type" content="website"><meta property="og:title" content="Free FreeCell Online | MiniGamePlanet"><meta property="og:description" content="Play FreeCell Solitaire free — every deal solvable."><meta property="og:url" content="https://minigameplanet.com/games/freecell"><meta property="og:site_name" content="MiniGamePlanet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"FreeCell","url":"https://minigameplanet.com/games/freecell","description":"Play FreeCell Solitaire free online. Every deal is solvable.","genre":"Card","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <style>
+    *{box-sizing:border-box}
+    .card-f{position:absolute;width:60px;height:84px;border-radius:5px;font-family:'DM Mono',monospace;font-weight:700;user-select:none;cursor:pointer;background:#fff;border:1.5px solid #D1D5DB}
+    .card-f .rk{font-size:12px;position:absolute;top:2px;left:3px;line-height:1}.card-f .su{font-size:16px;position:absolute;bottom:2px;right:4px}
+    .c-red{color:#DC2626}.c-blk{color:#1E293B}
+    .slot-f{position:absolute;width:60px;height:84px;border-radius:5px;border:2px dashed rgba(255,255,255,0.25)}
+    .slot-f.hl{border-color:#FDE68A;background:rgba(253,230,138,0.12)}
+    .btn-f{padding:5px 14px;border-radius:6px;font-size:11px;font-weight:700;border:none;cursor:pointer;font-family:inherit;color:#fff}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px;">
+        <h1 style="font-size:22px;font-weight:700;margin:0;">🗃 FreeCell</h1>
+        <div style="display:flex;gap:6px;">
+          <button id="undo-btn" class="btn-f" style="background:#D97706;">↩ Undo</button>
+          <button id="new-btn" class="btn-f" style="background:#059669;">🔄 New</button>
+          <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊</button>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;padding:4px 8px;background:#F8FAFC;border-radius:6px;">
+        <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;">🔢 <span id="moves">0</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;">⏱ <span id="timer">0:00</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;">🔥 <span id="streak">0</span></span>
+      </div>
+      <div id="game-area" style="position:relative;width:100%;max-width:660px;margin:0 auto;min-height:480px;background:#0F6B3A;border-radius:12px;padding:10px;overflow:hidden;touch-action:none;"></div>
+      <div id="win-banner" style="display:none;text-align:center;padding:16px;margin-top:8px;background:#D1FAE5;border-radius:8px;border:2px solid #6EE7B7;">
+        <div style="font-size:22px;font-weight:700;color:#065F46;">🎉 You Win!</div>
+        <div id="win-sub" style="font-size:13px;color:#047857;margin-top:2px;"></div>
+        <button id="win-new" class="btn-f" style="background:#2563EB;margin-top:8px;padding:8px 24px;font-size:13px;">New Game</button>
+      </div>
+    </div>
+  </main>
+
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play FreeCell</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>FreeCell is a solitaire card game where nearly every deal is solvable with perfect play. All 52 cards are dealt face-up into 8 tableau columns, giving you complete information. Four "free cells" serve as temporary storage for single cards. The goal is to move all cards to four foundation piles, building each suit from Ace to King.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">How to Play</h3>
+      <p>Click a card to select it, then click a destination. Tableau columns build down in alternating colors (black on red, red on black). Only the top card of each column is movable, but you can move sequences if enough free cells and empty columns are available. Free cells hold one card each. Foundations build up by suit from Ace.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Strategy</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Keep free cells open.</strong> Each occupied free cell reduces your ability to move sequences.</li>
+        <li><strong>Empty columns are even more valuable.</strong> They function like free cells but can hold sequences.</li>
+        <li><strong>Plan ahead.</strong> With all cards visible, you can plan moves in advance. Look for buried Aces.</li>
+        <li><strong>Uncover Aces and Twos early.</strong> Getting them to foundations quickly frees space.</li>
+      </ul>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">FAQ</h3>
+      <h4 class="font-semibold text-slate-800">Is every FreeCell game solvable?</h4>
+      <p>Nearly. Of the first 32,000 Microsoft FreeCell deals, only one (#11982) is proven unsolvable. The win rate with perfect play exceeds 99.99%.</p>
+      <p class="mt-6">Play FreeCell free in your browser — all cards face-up, pure strategy, every game (almost) winnable.</p>
+    </div>
+  </article>
+  <div id="related-games"></div>
+  <div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playDeal, playFlip, playDrop, playPerfect, playLevelUp, playCollect, playError } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+  document.addEventListener('click',()=>initAudio(),{once:true});
+  initToolPage('freecell'); initConsent(); trackGameView('freecell','Card');
+
+  const SUITS=['♠','♥','♦','♣'], RANKS=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+  const RV={A:1,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'10':10,J:11,Q:12,K:13};
+  const isRed=s=>s==='♥'||s==='♦';
+  const area=document.getElementById('game-area');
+  const CW=60,CH=84,GAP=6,VOFF=20;
+
+  let freeCells=[null,null,null,null], foundations=[[],[],[],[]], tableau=[[],[],[],[],[],[],[],[]];
+  let moves=0, timerInterval, seconds=0, started=false, selected=null, streak=0, undoStack=[];
+
+  document.getElementById('sound-btn').addEventListener('click',()=>{initAudio();const m=muteAll();document.getElementById('sound-btn').textContent=m?'🔇':'🔊';});
+  document.getElementById('new-btn').addEventListener('click',()=>newGame());
+  document.getElementById('win-new').addEventListener('click',()=>newGame());
+  document.getElementById('undo-btn').addEventListener('click',()=>undo());
+
+  function buildDeck(){
+    const d=[];for(const s of SUITS)for(const r of RANKS)d.push({rank:r,suit:s});
+    for(let i=d.length-1;i>0;i--){const a=new Uint32Array(1);crypto.getRandomValues(a);const j=a[0]%(i+1);[d[i],d[j]]=[d[j],d[i]];}
+    return d;
+  }
+
+  function newGame(){
+    const deck=buildDeck();
+    tableau=Array.from({length:8},()=>[]);
+    let ci=0;
+    for(const card of deck){tableau[ci%8].push(card);ci++;}
+    freeCells=[null,null,null,null];foundations=[[],[],[],[]];
+    moves=0;seconds=0;started=false;selected=null;undoStack=[];
+    clearInterval(timerInterval);
+    document.getElementById('moves').textContent='0';
+    document.getElementById('timer').textContent='0:00';
+    document.getElementById('win-banner').style.display='none';
+    playDeal();render();
+  }
+
+  function startTimer(){
+    if(started)return;started=true;
+    trackGameStart('freecell','Card');
+    timerInterval=setInterval(()=>{seconds++;document.getElementById('timer').textContent=`${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`;},1000);
+  }
+
+  function render(){
+    area.innerHTML='';
+    const w=area.clientWidth;
+    const totalW=8*CW+7*GAP;
+    const ox=Math.max(0,(w-totalW)/2);
+
+    // Free cells (top left 4)
+    for(let i=0;i<4;i++){
+      const x=ox+i*(CW+GAP),y=8;
+      const sl=document.createElement('div');sl.className='slot-f';sl.style.left=x+'px';sl.style.top=y+'px';
+      sl.addEventListener('click',()=>clickFreeCell(i));
+      area.appendChild(sl);
+      if(freeCells[i]){
+        const el=makeCard(freeCells[i],x,y,20+i);
+        el.addEventListener('click',(e)=>{e.stopPropagation();clickFreeCell(i);});
+        area.appendChild(el);
+      }
+    }
+
+    // Foundations (top right 4)
+    for(let f=0;f<4;f++){
+      const x=ox+(4+f)*(CW+GAP),y=8;
+      const sl=document.createElement('div');sl.className='slot-f';sl.style.left=x+'px';sl.style.top=y+'px';
+      sl.addEventListener('click',()=>clickFoundation(f));
+      area.appendChild(sl);
+      if(foundations[f].length>0){
+        const card=foundations[f][foundations[f].length-1];
+        area.appendChild(makeCard(card,x,y,20+f));
+      }
+    }
+
+    // Tableau
+    let maxH=CH+30;
+    const tabY=CH+24;
+    for(let c=0;c<8;c++){
+      const x=ox+c*(CW+GAP);
+      const sl=document.createElement('div');sl.className='slot-f';sl.style.left=x+'px';sl.style.top=tabY+'px';
+      sl.addEventListener('click',()=>clickTableauEmpty(c));
+      area.appendChild(sl);
+
+      const col=tableau[c];
+      for(let r=0;r<col.length;r++){
+        const yy=tabY+r*VOFF;
+        const el=makeCard(col[r],x,yy,30+c*20+r);
+        if(r===col.length-1)el.addEventListener('click',(e)=>{e.stopPropagation();clickTableauCard(c,r);});
+        else el.addEventListener('click',(e)=>{e.stopPropagation();clickTableauCard(c,r);});
+        area.appendChild(el);
+        maxH=Math.max(maxH,yy+CH+8);
+      }
+    }
+    area.style.minHeight=maxH+'px';
+  }
+
+  function makeCard(card,x,y,z){
+    const el=document.createElement('div');
+    el.className='card-f';
+    el.style.left=x+'px';el.style.top=y+'px';el.style.zIndex=z;
+    const clr=isRed(card.suit)?'c-red':'c-blk';
+    el.innerHTML=`<span class="rk ${clr}">${card.rank}<br>${card.suit}</span><span class="su" style="color:${isRed(card.suit)?'#DC2626':'#1E293B'}">${card.suit}</span>`;
+    return el;
+  }
+
+  function clickFreeCell(i){
+    startTimer();
+    if(selected){
+      if(selected.type==='freecell'&&selected.index===i){selected=null;render();return;}
+      if(freeCells[i]===null){
+        saveUndo();
+        freeCells[i]=removeSelected();
+        moves++;document.getElementById('moves').textContent=moves;
+        selected=null;playDrop();autoFoundation();render();return;
+      }
+    }
+    if(freeCells[i])selected={type:'freecell',index:i};
+    else selected=null;
+    render();
+  }
+
+  function clickFoundation(f){
+    startTimer();
+    if(!selected)return;
+    const card=getSelectedCard();
+    if(!card){selected=null;render();return;}
+    const pile=foundations[f];
+    if(pile.length===0&&card.rank==='A'){saveUndo();removeSelected();pile.push(card);moves++;document.getElementById('moves').textContent=moves;selected=null;playCollect();autoFoundation();render();checkWin();return;}
+    if(pile.length>0&&card.suit===pile[pile.length-1].suit&&RV[card.rank]===RV[pile[pile.length-1].rank]+1){saveUndo();removeSelected();pile.push(card);moves++;document.getElementById('moves').textContent=moves;selected=null;playCollect();autoFoundation();render();checkWin();return;}
+    playError();selected=null;render();
+  }
+
+  function clickTableauCard(col,row){
+    startTimer();
+    if(selected){
+      const card=getSelectedCard();
+      if(!card){selected=null;render();return;}
+      const targetCol=tableau[col];
+      const top=targetCol[targetCol.length-1];
+      if(row===targetCol.length-1&&isRed(card.suit)!==isRed(top.suit)&&RV[card.rank]===RV[top.rank]-1){
+        saveUndo();removeSelected();targetCol.push(card);moves++;document.getElementById('moves').textContent=moves;selected=null;playDrop();autoFoundation();render();return;
+      }
+      // Try foundation
+      for(let f=0;f<4;f++){
+        const pile=foundations[f];
+        if(pile.length===0&&card.rank==='A'){saveUndo();removeSelected();pile.push(card);moves++;document.getElementById('moves').textContent=moves;selected=null;playCollect();autoFoundation();render();checkWin();return;}
+        if(pile.length>0&&card.suit===pile[pile.length-1].suit&&RV[card.rank]===RV[pile[pile.length-1].rank]+1){saveUndo();removeSelected();pile.push(card);moves++;document.getElementById('moves').textContent=moves;selected=null;playCollect();autoFoundation();render();checkWin();return;}
+      }
+      selected=null;playError();render();return;
+    }
+    if(row===tableau[col].length-1)selected={type:'tableau',col,row};
+    render();
+  }
+
+  function clickTableauEmpty(col){
+    startTimer();
+    if(!selected)return;
+    if(tableau[col].length>0)return;
+    const card=getSelectedCard();
+    if(!card){selected=null;render();return;}
+    saveUndo();removeSelected();tableau[col].push(card);
+    moves++;document.getElementById('moves').textContent=moves;
+    selected=null;playDrop();autoFoundation();render();
+  }
+
+  function getSelectedCard(){
+    if(!selected)return null;
+    if(selected.type==='freecell')return freeCells[selected.index];
+    if(selected.type==='tableau'){const col=tableau[selected.col];return col.length>0?col[col.length-1]:null;}
+    return null;
+  }
+
+  function removeSelected(){
+    if(!selected)return null;
+    if(selected.type==='freecell'){const c=freeCells[selected.index];freeCells[selected.index]=null;return c;}
+    if(selected.type==='tableau')return tableau[selected.col].pop();
+    return null;
+  }
+
+  function autoFoundation(){
+    let moved=true;
+    while(moved){
+      moved=false;
+      const sources=[];
+      for(let c=0;c<8;c++){if(tableau[c].length>0)sources.push({type:'tableau',col:c,card:tableau[c][tableau[c].length-1]});}
+      for(let i=0;i<4;i++){if(freeCells[i])sources.push({type:'freecell',index:i,card:freeCells[i]});}
+      for(const src of sources){
+        const minVal=Math.min(...foundations.map(f=>f.length>0?RV[f[f.length-1].rank]:0));
+        if(RV[src.card.rank]>minVal+1)continue;
+        for(let f=0;f<4;f++){
+          const pile=foundations[f];
+          if(pile.length===0&&src.card.rank==='A'){
+            if(src.type==='freecell')freeCells[src.index]=null;else tableau[src.col].pop();
+            pile.push(src.card);moved=true;break;
+          }
+          if(pile.length>0&&src.card.suit===pile[pile.length-1].suit&&RV[src.card.rank]===RV[pile[pile.length-1].rank]+1){
+            if(src.type==='freecell')freeCells[src.index]=null;else tableau[src.col].pop();
+            pile.push(src.card);moved=true;break;
+          }
+        }
+      }
+    }
+  }
+
+  function checkWin(){
+    if(foundations.every(f=>f.length===13)){
+      clearInterval(timerInterval);streak++;
+      document.getElementById('streak').textContent=streak;
+      document.getElementById('win-banner').style.display='block';
+      document.getElementById('win-sub').textContent=`${moves} moves · ${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`;
+      playPerfect();setTimeout(()=>playLevelUp(),400);
+      trackGameOver('freecell','Card',1,seconds);
+    }
+  }
+
+  function saveUndo(){
+    undoStack.push({
+      freeCells:[...freeCells],
+      foundations:foundations.map(f=>[...f]),
+      tableau:tableau.map(c=>[...c]),moves
+    });
+    if(undoStack.length>50)undoStack.shift();
+  }
+  function undo(){
+    if(undoStack.length===0)return;
+    const s=undoStack.pop();
+    freeCells=s.freeCells;foundations=s.foundations;tableau=s.tableau;moves=s.moves;
+    document.getElementById('moves').textContent=moves;selected=null;
+    playClick();render();
+  }
+
+  newGame();
+  </script>
+</body>
+</html>

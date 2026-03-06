@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Klondike Solitaire Online — Play Instantly | MiniGamePlanet</title>
+  <meta name="description" content="Play classic Klondike Solitaire free online. Drag and drop cards, build foundations from Ace to King. Draw-1 or draw-3 modes with undo and auto-complete.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/solitaire">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500});gtag('config','G-XXXXXXXXXX');</script>
+  <meta property="og:type" content="website"><meta property="og:title" content="Free Klondike Solitaire Online | MiniGamePlanet"><meta property="og:description" content="Play classic Klondike Solitaire free in your browser."><meta property="og:url" content="https://minigameplanet.com/games/solitaire"><meta property="og:site_name" content="MiniGamePlanet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Klondike Solitaire","url":"https://minigameplanet.com/games/solitaire","description":"Play classic Klondike Solitaire free online.","genre":"Card","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <style>
+    .hero-grad{background:linear-gradient(135deg,#0891B2 0%,#2563EB 22%,#7C3AED 44%,#E11D48 66%,#EA580C 82%,#D97706 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:heroShift 8s ease-in-out infinite}
+    @keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+    *{box-sizing:border-box}
+    #game-canvas{position:relative;width:100%;max-width:700px;margin:0 auto;min-height:500px;background:#0F6B3A;border-radius:12px;padding:12px;overflow:hidden;touch-action:none}
+    .card-el{position:absolute;width:62px;height:88px;border-radius:6px;cursor:pointer;user-select:none;transition:box-shadow 0.1s;font-family:'DM Mono',monospace}
+    .card-el.face-up{background:#fff;border:1.5px solid #D1D5DB}
+    .card-el.face-down{background:linear-gradient(135deg,#1E40AF,#6D28D9);border:1.5px solid #312E81}
+    .card-el:hover{box-shadow:0 2px 8px rgba(0,0,0,0.2)}
+    .card-el.dragging{z-index:1000!important;box-shadow:0 8px 24px rgba(0,0,0,0.3);transition:none}
+    .card-rank{font-weight:700;font-size:13px;line-height:1}.card-suit{font-size:18px}
+    .card-red{color:#DC2626}.card-black{color:#1E293B}
+    .slot{position:absolute;width:62px;height:88px;border-radius:6px;border:2px dashed rgba(255,255,255,0.25)}
+    .slot.highlight{border-color:#FDE68A;background:rgba(253,230,138,0.15)}
+    .action-btn{padding:5px 14px;border-radius:6px;font-size:11px;font-weight:700;border:none;cursor:pointer;font-family:inherit;color:#fff}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px;">
+        <div><h1 style="font-size:22px;font-weight:700;margin:0;">🃏 Klondike Solitaire</h1></div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+        <button class="draw-btn action-btn" data-n="1" style="background:#2563EB;">Draw 1</button>
+        <button class="draw-btn action-btn" data-n="3" style="background:#475569;">Draw 3</button>
+        <button id="undo-btn" class="action-btn" style="background:#D97706;">↩ Undo</button>
+        <button id="new-btn" class="action-btn" style="background:#059669;">🔄 New</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;padding:4px 8px;background:#F8FAFC;border-radius:6px;">
+        <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;">🔢 <span id="moves">0</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;">⏱ <span id="timer">0:00</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;">🔥 <span id="streak">0</span></span>
+      </div>
+      <div id="game-canvas"></div>
+      <div id="win-banner" style="display:none;text-align:center;padding:16px;margin-top:8px;background:#D1FAE5;border-radius:8px;border:2px solid #6EE7B7;">
+        <div style="font-size:22px;font-weight:700;color:#065F46;">🎉 You Win!</div>
+        <div id="win-sub" style="font-size:13px;color:#047857;margin-top:2px;"></div>
+        <button id="win-new" class="action-btn" style="background:#2563EB;margin-top:8px;padding:8px 24px;font-size:13px;">New Game</button>
+      </div>
+    </div>
+  </main>
+
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play Klondike Solitaire</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>Klondike Solitaire is the classic one-player card game that came pre-installed on every Windows computer since 1990 — making it arguably the most-played video game in history. The goal is to build four foundation piles, one for each suit, from Ace up to King. You achieve this by arranging cards in the tableau in descending order with alternating colors, gradually uncovering and freeing cards until all 52 make it to the foundations.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">How to Play</h3>
+      <p>The tableau has seven columns, with 1 to 7 cards each. Only the top card of each column is face-up. Build down in alternating colors (black on red, red on black). You can move single cards or sequences of face-up cards between columns. Empty columns can only be filled with a King (or a sequence starting with a King).</p>
+      <p>Click the stock pile to deal cards to the waste pile. In Draw-1 mode, one card is dealt at a time. In Draw-3, three are dealt but only the top is playable. Move cards from the waste to the tableau or directly to foundations. When you get an Ace, place it on a foundation, then build up in the same suit.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">History &amp; Origin</h3>
+      <p>Klondike Solitaire gets its name from the Klondike region of Canada, where gold prospectors during the 1890s Klondike Gold Rush reportedly played the game in their tents. Microsoft included it in Windows 3.0 in 1990 primarily to teach users how to drag and drop with a mouse. The game's inclusion made it the most widely played computer game ever. It's estimated that more hours have been spent on Solitaire than any other game in computing history.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Strategy &amp; Tips</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Always play Aces and Twos immediately.</strong> There's no reason to keep them in the tableau.</li>
+        <li><strong>Uncover face-down cards.</strong> Prioritize moves that reveal hidden cards, as they open new possibilities.</li>
+        <li><strong>Don't empty a column without a King.</strong> An empty column is wasted unless you have a King to fill it.</li>
+        <li><strong>Use Draw-1 for easier games.</strong> Draw-3 is the traditional "hard mode" and significantly reduces win rate.</li>
+      </ul>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">FAQ</h3>
+      <h4 class="font-semibold text-slate-800">Is every Solitaire game winnable?</h4>
+      <p>No. Roughly 80% of Klondike Solitaire games are theoretically winnable with perfect play in Draw-1 mode. In Draw-3, the rate drops to about 40%. Some deals are simply impossible regardless of skill.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">What's the difference between Draw-1 and Draw-3?</h4>
+      <p>Draw-1 turns over one stock card at a time, giving access to every card. Draw-3 turns over three, restricting access. Draw-3 is much harder and is the traditional casino/competitive version.</p>
+      <p class="mt-6">Play Klondike Solitaire free — no download, no ads interrupting gameplay. Drag cards, build foundations, and beat your best time.</p>
+    </div>
+  </article>
+  <div id="related-games"></div>
+  <div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playError, playDeal, playFlip, playDrop, playPerfect, playLevelUp, playCollect } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+  document.addEventListener('click',()=>initAudio(),{once:true});
+  initToolPage('solitaire'); initConsent(); trackGameView('solitaire','Card');
+
+  const SUITS=['♠','♥','♦','♣'], RANKS=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+  const RANK_VAL={A:1,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'10':10,J:11,Q:12,K:13};
+  const isRed=s=>s==='♥'||s==='♦';
+
+  let drawCount=1, stock=[], waste=[], foundations=[[],[],[],[]], tableau=[[],[],[],[],[],[],[]];
+  let moves=0, timerInterval, seconds=0, gameStarted=false, gameOver=false;
+  let streak=0, undoStack=[];
+
+  const canvas=document.getElementById('game-canvas');
+  const CW=62, CH=88, GAP=8, VOFF=22, VOFF_DOWN=6;
+
+  document.getElementById('sound-btn').addEventListener('click',()=>{initAudio();const m=muteAll();document.getElementById('sound-btn').textContent=m?'🔇':'🔊';});
+  document.querySelectorAll('.draw-btn').forEach(b=>{
+    b.addEventListener('click',()=>{
+      drawCount=parseInt(b.dataset.n);
+      document.querySelectorAll('.draw-btn').forEach(x=>{x.style.background='#475569';});
+      b.style.background='#2563EB';newGame();
+    });
+  });
+  document.getElementById('new-btn').addEventListener('click',()=>newGame());
+  document.getElementById('win-new').addEventListener('click',()=>newGame());
+  document.getElementById('undo-btn').addEventListener('click',()=>undo());
+
+  function buildDeck(){
+    const d=[];for(const s of SUITS)for(const r of RANKS)d.push({rank:r,suit:s,faceUp:false});
+    for(let i=d.length-1;i>0;i--){const a=new Uint32Array(1);crypto.getRandomValues(a);const j=a[0]%(i+1);[d[i],d[j]]=[d[j],d[i]];}
+    return d;
+  }
+
+  function newGame(){
+    const deck=buildDeck();
+    tableau=[[],[],[],[],[],[],[]];
+    for(let c=0;c<7;c++){
+      for(let r=0;r<=c;r++){
+        const card=deck.pop();
+        card.faceUp=r===c;
+        tableau[c].push(card);
+      }
+    }
+    stock=deck.reverse();stock.forEach(c=>{c.faceUp=false;});
+    waste=[];foundations=[[],[],[],[]];
+    moves=0;seconds=0;gameStarted=false;gameOver=false;undoStack=[];
+    clearInterval(timerInterval);
+    document.getElementById('moves').textContent='0';
+    document.getElementById('timer').textContent='0:00';
+    document.getElementById('win-banner').style.display='none';
+    playDeal();render();
+  }
+
+  function startTimer(){
+    if(gameStarted)return;gameStarted=true;
+    trackGameStart('solitaire','Card');
+    timerInterval=setInterval(()=>{seconds++;const m=Math.floor(seconds/60),s=seconds%60;document.getElementById('timer').textContent=`${m}:${String(s).padStart(2,'0')}`;},1000);
+  }
+
+  function getLayout(){
+    const w=canvas.clientWidth;
+    const totalCardW=7*CW+6*GAP;
+    const offX=Math.max(0,(w-totalCardW)/2);
+    return{offX,stockX:offX,stockY:8,wasteX:offX+CW+GAP,wasteY:8,foundX:offX+3*(CW+GAP),foundY:8,tabX:offX,tabY:8+CH+16};
+  }
+
+  function render(){
+    canvas.innerHTML='';
+    const L=getLayout();
+    const canvasH=L.tabY+CH+20*VOFF+40;
+    canvas.style.minHeight=canvasH+'px';
+
+    // Stock
+    const stockSlot=makeSlot(L.stockX,L.stockY);
+    stockSlot.style.cursor='pointer';
+    stockSlot.addEventListener('click',()=>clickStock());
+    canvas.appendChild(stockSlot);
+    if(stock.length>0){
+      const el=makeCard(stock[stock.length-1],false,L.stockX,L.stockY,10);
+      el.addEventListener('click',e=>{e.stopPropagation();clickStock();});
+      canvas.appendChild(el);
+    }
+
+    // Waste
+    canvas.appendChild(makeSlot(L.wasteX,L.wasteY));
+    const wasteShow=Math.min(drawCount,waste.length);
+    for(let i=Math.max(0,waste.length-wasteShow);i<waste.length;i++){
+      const off=(i-(waste.length-wasteShow))*16;
+      const el=makeCard(waste[i],true,L.wasteX+off,L.wasteY,20+i);
+      if(i===waste.length-1)makeDraggable(el,{source:'waste',index:i});
+      canvas.appendChild(el);
+    }
+
+    // Foundations
+    for(let f=0;f<4;f++){
+      const x=L.foundX+f*(CW+GAP),y=L.foundY;
+      const slot=makeSlot(x,y);slot.dataset.dropTarget='foundation';slot.dataset.fi=f;
+      canvas.appendChild(slot);
+      if(foundations[f].length>0){
+        const card=foundations[f][foundations[f].length-1];
+        canvas.appendChild(makeCard(card,true,x,y,20));
+      }
+    }
+
+    // Tableau
+    for(let c=0;c<7;c++){
+      const x=L.tabX+c*(CW+GAP);
+      const slot=makeSlot(x,L.tabY);slot.dataset.dropTarget='tableau';slot.dataset.ti=c;
+      canvas.appendChild(slot);
+      const col=tableau[c];
+      for(let r=0;r<col.length;r++){
+        const card=col[r];
+        const yOff=r*(card.faceUp?VOFF:VOFF_DOWN);
+        const el=makeCard(card,card.faceUp,x,L.tabY+yOff,30+c*20+r);
+        if(card.faceUp)makeDraggable(el,{source:'tableau',col:c,row:r});
+        canvas.appendChild(el);
+      }
+    }
+  }
+
+  function makeSlot(x,y){
+    const d=document.createElement('div');d.className='slot';
+    d.style.left=x+'px';d.style.top=y+'px';
+    return d;
+  }
+
+  function makeCard(card,faceUp,x,y,z){
+    const d=document.createElement('div');
+    d.className='card-el '+(faceUp?'face-up':'face-down');
+    d.style.left=x+'px';d.style.top=y+'px';d.style.zIndex=z;
+    if(faceUp){
+      const color=isRed(card.suit)?'card-red':'card-black';
+      d.innerHTML=`<span class="card-rank ${color}" style="position:absolute;top:3px;left:4px;">${card.rank}<br>${card.suit}</span><span class="card-suit" style="position:absolute;bottom:3px;right:4px;${isRed(card.suit)?'color:#DC2626':'color:#1E293B'}">${card.suit}</span>`;
+    }
+    return d;
+  }
+
+  let dragState=null;
+  function makeDraggable(el,info){
+    el.addEventListener('mousedown',e=>{e.preventDefault();startDrag(e.clientX,e.clientY,info,el);});
+    el.addEventListener('touchstart',e=>{e.preventDefault();const t=e.touches[0];startDrag(t.clientX,t.clientY,info,el);},{passive:false});
+    el.addEventListener('dblclick',()=>autoMove(info));
+  }
+
+  function startDrag(cx,cy,info,el){
+    startTimer();
+    const rect=canvas.getBoundingClientRect();
+    const cards=getMovableCards(info);
+    if(!cards||cards.length===0)return;
+    dragState={info,cards,startX:cx,startY:cy,offX:cx-rect.left-parseInt(el.style.left),offY:cy-rect.top-parseInt(el.style.top)};
+    document.addEventListener('mousemove',onDragMove);
+    document.addEventListener('mouseup',onDragEnd);
+    document.addEventListener('touchmove',onDragMoveT,{passive:false});
+    document.addEventListener('touchend',onDragEndT);
+  }
+
+  function onDragMove(e){moveDrag(e.clientX,e.clientY);}
+  function onDragMoveT(e){e.preventDefault();const t=e.touches[0];moveDrag(t.clientX,t.clientY);}
+  function moveDrag(cx,cy){}
+  function onDragEnd(e){endDrag(e.clientX,e.clientY);}
+  function onDragEndT(e){const t=e.changedTouches[0];endDrag(t.clientX,t.clientY);}
+
+  function endDrag(cx,cy){
+    document.removeEventListener('mousemove',onDragMove);
+    document.removeEventListener('mouseup',onDragEnd);
+    document.removeEventListener('touchmove',onDragMoveT);
+    document.removeEventListener('touchend',onDragEndT);
+    if(!dragState)return;
+
+    const rect=canvas.getBoundingClientRect();
+    const x=cx-rect.left, y=cy-rect.top;
+    const L=getLayout();
+
+    // Check foundations
+    for(let f=0;f<4;f++){
+      const fx=L.foundX+f*(CW+GAP),fy=L.foundY;
+      if(x>=fx&&x<=fx+CW&&y>=fy&&y<=fy+CH){
+        if(tryMoveToFoundation(dragState.info,f)){dragState=null;return;}
+      }
+    }
+    // Check tableau columns
+    for(let c=0;c<7;c++){
+      const tx=L.tabX+c*(CW+GAP);
+      const colH=CH+(tableau[c].length-1)*VOFF+CH;
+      if(x>=tx&&x<=tx+CW&&y>=L.tabY&&y<=L.tabY+colH){
+        if(tryMoveToTableau(dragState.info,c)){dragState=null;return;}
+      }
+    }
+
+    // If minimal movement, treat as click — try auto-move
+    if(Math.abs(cx-dragState.startX)<5&&Math.abs(cy-dragState.startY)<5){
+      autoMove(dragState.info);
+    }
+    dragState=null;render();
+  }
+
+  function getMovableCards(info){
+    if(info.source==='waste')return waste.length>0?[waste[waste.length-1]]:null;
+    if(info.source==='tableau')return tableau[info.col].slice(info.row);
+    return null;
+  }
+
+  function autoMove(info){
+    startTimer();
+    const cards=getMovableCards(info);
+    if(!cards||cards.length===0)return;
+    if(cards.length===1){
+      for(let f=0;f<4;f++){if(tryMoveToFoundation(info,f))return;}
+    }
+    for(let c=0;c<7;c++){if(tryMoveToTableau(info,c))return;}
+    playError();
+  }
+
+  function tryMoveToFoundation(info,f){
+    const cards=getMovableCards(info);
+    if(!cards||cards.length!==1)return false;
+    const card=cards[0];
+    const pile=foundations[f];
+    if(pile.length===0){
+      if(card.rank!=='A')return false;
+    } else{
+      const top=pile[pile.length-1];
+      if(card.suit!==top.suit||RANK_VAL[card.rank]!==RANK_VAL[top.rank]+1)return false;
+    }
+    saveUndo();
+    removeCard(info);
+    foundations[f].push(card);
+    moves++;document.getElementById('moves').textContent=moves;
+    playCollect();flipTopCards();render();checkWin();
+    return true;
+  }
+
+  function tryMoveToTableau(info,targetCol){
+    const cards=getMovableCards(info);
+    if(!cards||cards.length===0)return false;
+    const card=cards[0];
+    const col=tableau[targetCol];
+    if(col.length===0){
+      if(card.rank!=='K')return false;
+    } else{
+      const top=col[col.length-1];
+      if(!top.faceUp)return false;
+      if(RANK_VAL[card.rank]!==RANK_VAL[top.rank]-1)return false;
+      if(isRed(card.suit)===isRed(top.suit))return false;
+    }
+    if(info.source==='tableau'&&info.col===targetCol)return false;
+    saveUndo();
+    const removed=removeCards(info);
+    tableau[targetCol].push(...removed);
+    moves++;document.getElementById('moves').textContent=moves;
+    playDrop();flipTopCards();render();
+    return true;
+  }
+
+  function removeCard(info){
+    if(info.source==='waste')return waste.pop();
+    if(info.source==='tableau'){return tableau[info.col].splice(info.row,1)[0];}
+  }
+  function removeCards(info){
+    if(info.source==='waste')return[waste.pop()];
+    if(info.source==='tableau')return tableau[info.col].splice(info.row);
+  }
+
+  function flipTopCards(){
+    for(let c=0;c<7;c++){
+      const col=tableau[c];
+      if(col.length>0&&!col[col.length-1].faceUp){col[col.length-1].faceUp=true;playFlip();}
+    }
+  }
+
+  function clickStock(){
+    startTimer();
+    if(stock.length===0){
+      if(waste.length===0)return;
+      saveUndo();
+      stock=waste.reverse();stock.forEach(c=>{c.faceUp=false;});waste=[];
+      playClick();
+    } else{
+      saveUndo();
+      const n=Math.min(drawCount,stock.length);
+      for(let i=0;i<n;i++){const c=stock.pop();c.faceUp=true;waste.push(c);}
+      moves++;document.getElementById('moves').textContent=moves;
+      playFlip();
+    }
+    render();
+  }
+
+  function saveUndo(){
+    undoStack.push({
+      stock:stock.map(c=>({...c})),waste:waste.map(c=>({...c})),
+      foundations:foundations.map(f=>f.map(c=>({...c}))),
+      tableau:tableau.map(col=>col.map(c=>({...c}))),
+      moves
+    });
+    if(undoStack.length>50)undoStack.shift();
+  }
+  function undo(){
+    if(undoStack.length===0)return;
+    const s=undoStack.pop();
+    stock=s.stock;waste=s.waste;foundations=s.foundations;tableau=s.tableau;moves=s.moves;
+    document.getElementById('moves').textContent=moves;
+    playClick();render();
+  }
+
+  function checkWin(){
+    if(foundations.every(f=>f.length===13)){
+      gameOver=true;clearInterval(timerInterval);streak++;
+      document.getElementById('streak').textContent=streak;
+      document.getElementById('win-banner').style.display='block';
+      document.getElementById('win-sub').textContent=`${moves} moves · ${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`;
+      playPerfect();setTimeout(()=>playLevelUp(),400);
+      trackGameOver('solitaire','Card',1,seconds);
+    }
+  }
+
+  newGame();
+  </script>
+</body>
+</html>

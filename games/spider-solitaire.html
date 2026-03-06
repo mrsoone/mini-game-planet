@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Spider Solitaire Online — Play Instantly | MiniGamePlanet</title>
+  <meta name="description" content="Play Spider Solitaire free online. 1-suit, 2-suit, and 4-suit modes. Build descending sequences of the same suit to clear the tableau.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/spider-solitaire">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500});gtag('config','G-XXXXXXXXXX');</script>
+  <meta property="og:type" content="website"><meta property="og:title" content="Free Spider Solitaire Online | MiniGamePlanet"><meta property="og:description" content="Play Spider Solitaire free. 1, 2, or 4 suit modes."><meta property="og:url" content="https://minigameplanet.com/games/spider-solitaire"><meta property="og:site_name" content="MiniGamePlanet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Spider Solitaire","url":"https://minigameplanet.com/games/spider-solitaire","description":"Play Spider Solitaire free online with 1, 2, or 4 suits.","genre":"Card","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <style>
+    .hero-grad{background:linear-gradient(135deg,#0891B2 0%,#2563EB 22%,#7C3AED 44%,#E11D48 66%,#EA580C 82%,#D97706 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:heroShift 8s ease-in-out infinite}
+    @keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+    *{box-sizing:border-box}
+    .card-s{position:absolute;width:58px;height:82px;border-radius:5px;font-family:'DM Mono',monospace;font-weight:700;user-select:none;cursor:pointer}
+    .card-s.up{background:#fff;border:1.5px solid #D1D5DB}
+    .card-s.down{background:linear-gradient(135deg,#1E40AF,#6D28D9);border:1.5px solid #312E81}
+    .card-s .r{font-size:12px;position:absolute;top:2px;left:3px;line-height:1}
+    .card-s .st{font-size:16px;position:absolute;bottom:2px;right:4px}
+    .card-red{color:#DC2626}.card-black{color:#1E293B}
+    .action-btn{padding:5px 14px;border-radius:6px;font-size:11px;font-weight:700;border:none;cursor:pointer;font-family:inherit;color:#fff}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px;">
+        <h1 style="font-size:22px;font-weight:700;margin:0;">🕷 Spider Solitaire</h1>
+        <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊</button>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+        <button class="suit-btn action-btn" data-n="1" style="background:#2563EB;">1 Suit</button>
+        <button class="suit-btn action-btn" data-n="2" style="background:#475569;">2 Suits</button>
+        <button class="suit-btn action-btn" data-n="4" style="background:#475569;">4 Suits</button>
+        <button id="deal-row" class="action-btn" style="background:#D97706;">Deal Row</button>
+        <button id="undo-btn" class="action-btn" style="background:#64748B;">↩ Undo</button>
+        <button id="new-btn" class="action-btn" style="background:#059669;">🔄 New</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;padding:4px 8px;background:#F8FAFC;border-radius:6px;flex-wrap:wrap;">
+        <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;">🔢 <span id="moves">0</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;">⏱ <span id="timer">0:00</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;">✅ <span id="completed">0</span>/8</span>
+        <span style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;">📦 Stock: <span id="stock-count">50</span></span>
+      </div>
+      <div id="game-area" style="position:relative;width:100%;max-width:660px;margin:0 auto;min-height:460px;background:#0F6B3A;border-radius:12px;padding:10px;overflow:hidden;touch-action:none;"></div>
+      <div id="win-banner" style="display:none;text-align:center;padding:16px;margin-top:8px;background:#D1FAE5;border-radius:8px;border:2px solid #6EE7B7;">
+        <div style="font-size:22px;font-weight:700;color:#065F46;">🎉 You Win!</div>
+        <div id="win-sub" style="font-size:13px;color:#047857;margin-top:2px;"></div>
+        <button id="win-new" class="action-btn" style="background:#2563EB;margin-top:8px;padding:8px 24px;font-size:13px;">New Game</button>
+      </div>
+    </div>
+  </main>
+
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play Spider Solitaire</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>Spider Solitaire is one of the most popular solitaire variants, using two decks (104 cards) dealt across 10 columns. The goal is to build complete descending sequences from King to Ace within the same suit. When a full sequence is completed, it is removed from the tableau. Remove all 8 sequences to win.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">How to Play</h3>
+      <p>Cards in the tableau can be moved if they form a descending sequence. In 1-suit mode, any descending sequence can be moved together. In 2-suit and 4-suit modes, only same-suit sequences can be moved as a group — you can still place any card on one rank higher, but only same-suit runs move together.</p>
+      <p>When you run out of moves, click "Deal Row" to deal one card to each of the 10 columns from the stock (all columns must be non-empty). A complete K-to-A same-suit sequence is automatically removed.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">History</h3>
+      <p>Spider Solitaire was included in Microsoft Windows starting with Windows ME in 2000 and quickly became one of the most played computer games. Its name likely comes from the eight legs of a spider, corresponding to the eight foundation sequences needed to win.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Strategy</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Build same-suit sequences.</strong> Mixed-suit stacking works but creates immovable blocks.</li>
+        <li><strong>Empty columns are powerful.</strong> Use them as temporary storage to rearrange cards.</li>
+        <li><strong>Delay dealing from stock.</strong> Each deal adds complexity. Maximize tableau moves first.</li>
+      </ul>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">FAQ</h3>
+      <h4 class="font-semibold text-slate-800">Which mode is easiest?</h4>
+      <p>1-suit mode (all Spades) is the easiest and most relaxing. 4-suit mode is extremely challenging, with a win rate under 10% even with good play.</p>
+      <p class="mt-6">Play Spider Solitaire free in your browser — choose your difficulty and clear the board.</p>
+    </div>
+  </article>
+  <div id="related-games"></div>
+  <div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playDeal, playFlip, playDrop, playPerfect, playLevelUp, playCollect, playError } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+  document.addEventListener('click',()=>initAudio(),{once:true});
+  initToolPage('spider-solitaire'); initConsent(); trackGameView('spider-solitaire','Card');
+
+  const SUITS_ALL=['♠','♥','♦','♣'], RANKS=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+  const RV={A:1,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'10':10,J:11,Q:12,K:13};
+  const isRed=s=>s==='♥'||s==='♦';
+
+  let suitCount=1, stock=[], tableau=[], completed=0, moves=0, timerInterval, seconds=0, started=false, undoStack=[];
+  const area=document.getElementById('game-area');
+  const CW=58,CH=82,GAP=5,VOFF=20,VD=5;
+
+  document.getElementById('sound-btn').addEventListener('click',()=>{initAudio();const m=muteAll();document.getElementById('sound-btn').textContent=m?'🔇':'🔊';});
+  document.querySelectorAll('.suit-btn').forEach(b=>{
+    b.addEventListener('click',()=>{
+      suitCount=parseInt(b.dataset.n);
+      document.querySelectorAll('.suit-btn').forEach(x=>{x.style.background='#475569';});
+      b.style.background='#2563EB';newGame();
+    });
+  });
+  document.getElementById('new-btn').addEventListener('click',()=>newGame());
+  document.getElementById('win-new').addEventListener('click',()=>newGame());
+  document.getElementById('undo-btn').addEventListener('click',()=>undo());
+  document.getElementById('deal-row').addEventListener('click',()=>dealRow());
+
+  function buildDeck(){
+    const suits=SUITS_ALL.slice(0,suitCount);
+    const deck=[];
+    const copies=Math.ceil(104/(suits.length*13));
+    for(let c=0;c<copies;c++)for(const s of suits)for(const r of RANKS)deck.push({rank:r,suit:s,faceUp:false});
+    while(deck.length>104)deck.pop();
+    for(let i=deck.length-1;i>0;i--){const a=new Uint32Array(1);crypto.getRandomValues(a);const j=a[0]%(i+1);[deck[i],deck[j]]=[deck[j],deck[i]];}
+    return deck;
+  }
+
+  function newGame(){
+    const deck=buildDeck();
+    tableau=Array.from({length:10},()=>[]);
+    for(let i=0;i<54;i++){
+      const col=i%10;
+      const card=deck.pop();
+      card.faceUp=false;
+      tableau[col].push(card);
+    }
+    for(let c=0;c<10;c++){if(tableau[c].length>0)tableau[c][tableau[c].length-1].faceUp=true;}
+    stock=deck;completed=0;moves=0;seconds=0;started=false;undoStack=[];
+    clearInterval(timerInterval);
+    document.getElementById('moves').textContent='0';
+    document.getElementById('timer').textContent='0:00';
+    document.getElementById('completed').textContent='0';
+    document.getElementById('stock-count').textContent=stock.length;
+    document.getElementById('win-banner').style.display='none';
+    playDeal();render();
+  }
+
+  function startTimer(){
+    if(started)return;started=true;
+    trackGameStart('spider-solitaire','Card');
+    timerInterval=setInterval(()=>{seconds++;const m=Math.floor(seconds/60),s=seconds%60;document.getElementById('timer').textContent=`${m}:${String(s).padStart(2,'0')}`;},1000);
+  }
+
+  function render(){
+    area.innerHTML='';
+    const w=area.clientWidth;
+    const totalW=10*CW+9*GAP;
+    const ox=Math.max(0,(w-totalW)/2);
+    let maxH=CH+20;
+
+    for(let c=0;c<10;c++){
+      const x=ox+c*(CW+GAP);
+      const col=tableau[c];
+      // Slot
+      const slot=document.createElement('div');
+      slot.style.cssText=`position:absolute;left:${x}px;top:8px;width:${CW}px;height:${CH}px;border:2px dashed rgba(255,255,255,0.2);border-radius:5px;`;
+      slot.dataset.col=c;
+      area.appendChild(slot);
+
+      for(let r=0;r<col.length;r++){
+        const card=col[r];
+        const yy=8+r*(card.faceUp?VOFF:VD);
+        const el=document.createElement('div');
+        el.className='card-s '+(card.faceUp?'up':'down');
+        el.style.left=x+'px';el.style.top=yy+'px';el.style.zIndex=10+r;
+        if(card.faceUp){
+          const clr=isRed(card.suit)?'card-red':'card-black';
+          el.innerHTML=`<span class="r ${clr}">${card.rank}<br>${card.suit}</span><span class="st" style="color:${isRed(card.suit)?'#DC2626':'#1E293B'}">${card.suit}</span>`;
+          el.addEventListener('click',()=>handleClick(c,r));
+        }
+        area.appendChild(el);
+        maxH=Math.max(maxH,yy+CH+8);
+      }
+    }
+    area.style.minHeight=maxH+'px';
+  }
+
+  let selected=null;
+  function handleClick(col,row){
+    startTimer();
+    if(!isMovable(col,row)){selected=null;render();return;}
+    if(selected===null){
+      selected={col,row};
+      // Highlight (just re-render, could add visual but keeping it simple)
+      render();return;
+    }
+    if(selected.col===col){selected=null;render();return;}
+    // Try move
+    const cards=tableau[selected.col].slice(selected.row);
+    const targetCol=tableau[col];
+    const topCard=cards[0];
+    if(targetCol.length===0||RV[topCard.rank]===RV[targetCol[targetCol.length-1].rank]-1){
+      saveUndo();
+      tableau[selected.col].splice(selected.row);
+      tableau[col].push(...cards);
+      moves++;document.getElementById('moves').textContent=moves;
+      flipTop(selected.col);
+      playDrop();
+      checkComplete(col);
+    } else{playError();}
+    selected=null;render();
+  }
+
+  function isMovable(col,row){
+    const colCards=tableau[col];
+    if(!colCards[row].faceUp)return false;
+    for(let i=row;i<colCards.length-1;i++){
+      if(colCards[i].suit!==colCards[i+1].suit)return false;
+      if(RV[colCards[i].rank]!==RV[colCards[i+1].rank]+1)return false;
+    }
+    return true;
+  }
+
+  function flipTop(col){
+    const c=tableau[col];
+    if(c.length>0&&!c[c.length-1].faceUp){c[c.length-1].faceUp=true;playFlip();}
+  }
+
+  function checkComplete(col){
+    const c=tableau[col];
+    if(c.length<13)return;
+    const top13=c.slice(-13);
+    const suit=top13[0].suit;
+    if(top13[0].rank!=='K')return;
+    for(let i=0;i<13;i++){
+      if(top13[i].suit!==suit||RV[top13[i].rank]!==13-i)return;
+    }
+    c.splice(-13);completed++;
+    document.getElementById('completed').textContent=completed;
+    playCollect();setTimeout(()=>playSuccess(),200);
+    flipTop(col);
+    if(completed===8){
+      clearInterval(timerInterval);
+      document.getElementById('win-banner').style.display='block';
+      document.getElementById('win-sub').textContent=`${moves} moves · ${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`;
+      playPerfect();setTimeout(()=>playLevelUp(),400);
+      trackGameOver('spider-solitaire','Card',1,seconds);
+    }
+    render();
+  }
+
+  function dealRow(){
+    startTimer();
+    if(stock.length===0){playError();return;}
+    if(tableau.some(c=>c.length===0)){playError();return;}
+    saveUndo();
+    for(let c=0;c<10;c++){
+      if(stock.length===0)break;
+      const card=stock.pop();card.faceUp=true;
+      tableau[c].push(card);
+    }
+    moves++;document.getElementById('moves').textContent=moves;
+    document.getElementById('stock-count').textContent=stock.length;
+    playDeal();
+    for(let c=0;c<10;c++)checkComplete(c);
+    render();
+  }
+
+  function saveUndo(){
+    undoStack.push({
+      stock:stock.map(c=>({...c})),
+      tableau:tableau.map(col=>col.map(c=>({...c}))),
+      completed,moves
+    });
+    if(undoStack.length>30)undoStack.shift();
+  }
+  function undo(){
+    if(undoStack.length===0)return;
+    const s=undoStack.pop();
+    stock=s.stock;tableau=s.tableau;completed=s.completed;moves=s.moves;
+    document.getElementById('moves').textContent=moves;
+    document.getElementById('stock-count').textContent=stock.length;
+    document.getElementById('completed').textContent=completed;
+    playClick();render();
+  }
+
+  newGame();
+  </script>
+</body>
+</html>

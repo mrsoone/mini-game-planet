@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Crazy Eights Online — Play Against AI | MiniGamePlanet</title>
+  <meta name="description" content="Play Crazy Eights free online against AI. Match suits or ranks, play wild eights to change suits, and be the first to empty your hand.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/crazy-eights">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500});gtag('config','G-XXXXXXXXXX');</script>
+  <meta property="og:type" content="website"><meta property="og:title" content="Free Crazy Eights Online | MiniGamePlanet"><meta property="og:description" content="Play Crazy Eights free against AI."><meta property="og:url" content="https://minigameplanet.com/games/crazy-eights"><meta property="og:site_name" content="MiniGamePlanet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Crazy Eights","url":"https://minigameplanet.com/games/crazy-eights","description":"Play Crazy Eights free online against AI.","genre":"Card","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <style>
+    .ce-card{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:56px;height:80px;border-radius:6px;background:#fff;border:2px solid #E2E8F0;font-family:'DM Mono',monospace;font-weight:700;cursor:pointer;margin:2px;transition:all 0.15s;user-select:none}
+    .ce-card:hover:not(.disabled){transform:translateY(-6px);box-shadow:0 4px 8px rgba(0,0,0,0.12)}
+    .ce-card.playable{border-color:#059669;box-shadow:0 0 0 1px #059669}
+    .ce-card.disabled{opacity:0.5;cursor:not-allowed}
+    .ce-card.red{color:#DC2626}.ce-card.blk{color:#1E293B}
+    .pile-card{width:64px;height:90px;border-radius:7px;background:#fff;border:2px solid #E2E8F0;font-family:'DM Mono',monospace;font-weight:700;display:inline-flex;flex-direction:column;align-items:center;justify-content:center}
+    .suit-btn{width:40px;height:40px;border-radius:8px;border:2px solid #E5E7EB;background:#fff;font-size:20px;cursor:pointer;transition:all 0.1s}
+    .suit-btn:hover{transform:scale(1.1);border-color:#2563EB}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <h1 style="font-size:22px;font-weight:700;margin:0;">8️⃣ Crazy Eights</h1>
+        <div style="display:flex;gap:6px;">
+          <button id="new-btn" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">🔄 New</button>
+          <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊</button>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;padding:6px 10px;background:#F8FAFC;border-radius:8px;flex-wrap:wrap;">
+        <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;">CPU: <span id="cpu-count">0</span> cards</span>
+        <span style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;">🃏 Draw: <span id="draw-count">0</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;">Current suit: <span id="current-suit"></span></span>
+      </div>
+      <!-- Discard pile -->
+      <div style="text-align:center;margin-bottom:8px;">
+        <div style="display:flex;justify-content:center;gap:16px;align-items:center;">
+          <div><p style="font-size:10px;color:#94A3B8;margin-bottom:2px;">Draw</p><div id="draw-pile" style="width:64px;height:90px;border-radius:7px;background:linear-gradient(135deg,#1E40AF,#7C3AED);border:2px solid #312E81;cursor:pointer;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.3);font-size:24px;">🂠</div></div>
+          <div><p style="font-size:10px;color:#94A3B8;margin-bottom:2px;">Discard</p><div id="discard-pile"></div></div>
+        </div>
+      </div>
+      <!-- Suit chooser -->
+      <div id="suit-chooser" style="display:none;text-align:center;padding:12px;background:#F8FAFC;border-radius:8px;margin-bottom:8px;">
+        <p style="font-size:13px;font-weight:600;margin-bottom:8px;">Choose a suit:</p>
+        <div style="display:flex;gap:8px;justify-content:center;">
+          <button class="suit-btn" data-s="♠">♠</button>
+          <button class="suit-btn" data-s="♥" style="color:#DC2626">♥</button>
+          <button class="suit-btn" data-s="♦" style="color:#DC2626">♦</button>
+          <button class="suit-btn" data-s="♣">♣</button>
+        </div>
+      </div>
+      <!-- Player hand -->
+      <div style="text-align:center;margin-bottom:8px;">
+        <p style="font-size:11px;color:#94A3B8;margin-bottom:4px;">Your Hand</p>
+        <div id="player-hand" style="display:flex;justify-content:center;flex-wrap:wrap;min-height:84px;"></div>
+      </div>
+      <!-- Draw button -->
+      <div style="text-align:center;margin-bottom:8px;">
+        <button id="btn-draw" style="padding:8px 20px;background:#D97706;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:none;">Draw Card</button>
+      </div>
+      <div id="game-over" style="display:none;text-align:center;padding:16px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;">
+        <div id="go-title" style="font-size:22px;font-weight:700;margin-bottom:4px;"></div>
+        <div id="go-sub" style="font-size:13px;color:#64748B;margin-bottom:12px;"></div>
+        <button id="play-again" style="padding:8px 24px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">▶ Play Again</button>
+      </div>
+    </div>
+  </main>
+
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play Crazy Eights</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>Crazy Eights is a classic shedding card game — the precursor to UNO. Players take turns playing a card that matches the suit or rank of the top discard card. Eights are wild and can be played on anything, letting you choose the next suit. First to empty their hand wins. If you can't play, draw from the deck until you can (or the deck runs out).</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">How to Play</h3>
+      <p>Play a card from your hand that matches either the suit or rank of the top card on the discard pile. Eights are wild — play one to change the active suit. If you can't play, click "Draw Card" to draw. The AI opponent follows the same rules. First player with no cards wins.</p>
+      <p class="mt-6">Play Crazy Eights free — shed your cards before the AI does.</p>
+    </div>
+  </article>
+  <div id="related-games"></div>
+  <div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playError, playDrop, playCollect, playPerfect, playLevelUp, playGameOver } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+  document.addEventListener('click',()=>initAudio(),{once:true});
+  initToolPage('crazy-eights'); initConsent(); trackGameView('crazy-eights','Card');
+
+  const SUITS=['♠','♥','♦','♣'], RANKS=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+  const isRed=s=>s==='♥'||s==='♦';
+
+  let drawPile=[], discardPile=[], playerHand=[], cpuHand=[], currentSuit='', gameActive=false, playerTurn=true;
+
+  document.getElementById('sound-btn').addEventListener('click',()=>{initAudio();const m=muteAll();document.getElementById('sound-btn').textContent=m?'🔇':'🔊';});
+  document.getElementById('new-btn').addEventListener('click',()=>newGame());
+  document.getElementById('play-again').addEventListener('click',()=>{playClick();newGame();});
+
+  function rng(min,max){const a=new Uint32Array(1);crypto.getRandomValues(a);return min+a[0]%(max-min+1);}
+  function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=rng(0,i);[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+
+  function newGame(){
+    drawPile=[];for(const s of SUITS)for(const r of RANKS)drawPile.push({rank:r,suit:s});
+    shuffle(drawPile);
+    playerHand=drawPile.splice(0,7);cpuHand=drawPile.splice(0,7);
+    discardPile=[drawPile.pop()];
+    while(discardPile[0].rank==='8'){drawPile.unshift(discardPile[0]);discardPile=[drawPile.pop()];}
+    currentSuit=discardPile[discardPile.length-1].suit;
+    gameActive=true;playerTurn=true;
+    document.getElementById('game-over').style.display='none';
+    document.getElementById('suit-chooser').style.display='none';
+    trackGameStart('crazy-eights','Card');
+    render();
+  }
+
+  function topCard(){return discardPile[discardPile.length-1];}
+  function canPlay(card){return card.rank==='8'||card.suit===currentSuit||card.rank===topCard().rank;}
+
+  function render(){
+    // CPU count
+    document.getElementById('cpu-count').textContent=cpuHand.length;
+    document.getElementById('draw-count').textContent=drawPile.length;
+    document.getElementById('current-suit').textContent=currentSuit;
+
+    // Discard
+    const tc=topCard();
+    const dcl=isRed(tc.suit)?'color:#DC2626':'color:#1E293B';
+    document.getElementById('discard-pile').innerHTML=`<div class="pile-card" style="${dcl}"><span style="font-size:14px;">${tc.rank}</span><span style="font-size:22px;">${tc.suit}</span></div>`;
+
+    // Player hand
+    const ph=document.getElementById('player-hand');ph.innerHTML='';
+    const hasPlayable=playerHand.some(c=>canPlay(c));
+    playerHand.forEach((c,i)=>{
+      const playable=canPlay(c);
+      const d=document.createElement('div');
+      d.className='ce-card '+(isRed(c.suit)?'red':'blk')+(playable?' playable':' disabled');
+      d.innerHTML=`<span style="font-size:12px;">${c.rank}</span><span style="font-size:18px;">${c.suit}</span>`;
+      if(gameActive&&playerTurn&&playable)d.addEventListener('click',()=>playerPlay(i));
+      ph.appendChild(d);
+    });
+
+    // Draw button
+    document.getElementById('btn-draw').style.display=gameActive&&playerTurn&&!hasPlayable?'inline-block':'none';
+
+    // Draw pile click
+    document.getElementById('draw-pile').onclick=()=>{
+      if(gameActive&&playerTurn&&!hasPlayable)drawCard('player');
+    };
+  }
+
+  function playerPlay(idx){
+    if(!gameActive||!playerTurn)return;
+    const card=playerHand[idx];
+    if(!canPlay(card))return;
+    playerHand.splice(idx,1);
+    discardPile.push(card);
+    playDrop();
+
+    if(card.rank==='8'){
+      document.getElementById('suit-chooser').style.display='block';
+      render();return;
+    }
+    currentSuit=card.suit;
+    render();
+    if(playerHand.length===0){endGame(true);return;}
+    playerTurn=false;
+    setTimeout(()=>cpuTurn(),600);
+  }
+
+  // Suit chooser
+  document.querySelectorAll('.suit-btn').forEach(b=>{
+    b.addEventListener('click',()=>{
+      currentSuit=b.dataset.s;
+      document.getElementById('suit-chooser').style.display='none';
+      playClick();render();
+      if(playerHand.length===0){endGame(true);return;}
+      playerTurn=false;
+      setTimeout(()=>cpuTurn(),600);
+    });
+  });
+
+  document.getElementById('btn-draw').addEventListener('click',()=>{
+    if(gameActive&&playerTurn)drawCard('player');
+  });
+
+  function drawCard(who){
+    if(drawPile.length===0){
+      if(discardPile.length<=1)return;
+      const top=discardPile.pop();
+      drawPile=shuffle(discardPile);
+      discardPile=[top];
+    }
+    if(drawPile.length===0)return;
+    const card=drawPile.pop();
+    if(who==='player'){playerHand.push(card);playClick();render();
+      if(canPlay(card)){/* player can now play */}
+      else if(!playerHand.some(c=>canPlay(c))){playerTurn=false;render();setTimeout(()=>cpuTurn(),600);}
+      else render();
+    } else{cpuHand.push(card);}
+  }
+
+  function cpuTurn(){
+    if(!gameActive)return;
+    const playable=cpuHand.filter(c=>canPlay(c));
+    if(playable.length>0){
+      // Prefer non-8s, save 8s
+      let chosen=playable.find(c=>c.rank!=='8')||playable[0];
+      cpuHand.splice(cpuHand.indexOf(chosen),1);
+      discardPile.push(chosen);
+      if(chosen.rank==='8'){
+        const suitCounts={};cpuHand.forEach(c=>{suitCounts[c.suit]=(suitCounts[c.suit]||0)+1;});
+        currentSuit=Object.entries(suitCounts).sort((a,b)=>b[1]-a[1])[0]?.[0]||SUITS[rng(0,3)];
+      } else currentSuit=chosen.suit;
+      playDrop();render();
+      if(cpuHand.length===0){endGame(false);return;}
+    } else{
+      let drew=0;
+      while(cpuHand.length<20&&!cpuHand.some(c=>canPlay(c))&&(drawPile.length>0||discardPile.length>1)){
+        drawCard('cpu');drew++;
+        if(drew>5)break;
+      }
+      const nowPlayable=cpuHand.filter(c=>canPlay(c));
+      if(nowPlayable.length>0){render();setTimeout(()=>cpuTurn(),400);return;}
+    }
+    playerTurn=true;render();
+  }
+
+  function endGame(playerWon){
+    gameActive=false;
+    document.getElementById('go-title').textContent=playerWon?'🎉 You Win!':'😞 CPU Wins';
+    document.getElementById('go-title').style.color=playerWon?'#059669':'#DC2626';
+    document.getElementById('go-sub').textContent=playerWon?'You emptied your hand first!':'CPU emptied their hand first.';
+    document.getElementById('game-over').style.display='block';
+    if(playerWon){playPerfect();setTimeout(()=>playLevelUp(),300);}else playGameOver();
+    trackGameOver('crazy-eights','Card',playerWon?1:0,0);
+  }
+
+  newGame();
+  </script>
+</body>
+</html>

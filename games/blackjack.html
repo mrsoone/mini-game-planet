@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Blackjack Online — Play 21 Instantly | MiniGamePlanet</title>
+  <meta name="description" content="Play free Blackjack online. Hit, stand, double down, or split against the dealer. Classic 21 card game with no download, no sign-up, and no real money.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/blackjack">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500});gtag('config','G-XXXXXXXXXX');</script>
+  <meta property="og:type" content="website"><meta property="og:title" content="Free Blackjack Online | MiniGamePlanet"><meta property="og:description" content="Play free Blackjack 21 card game online."><meta property="og:url" content="https://minigameplanet.com/games/blackjack"><meta property="og:site_name" content="MiniGamePlanet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Blackjack","url":"https://minigameplanet.com/games/blackjack","description":"Play free Blackjack online — hit, stand, double down, or split.","genre":"Card","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <style>
+    .hero-grad{background:linear-gradient(135deg,#0891B2 0%,#2563EB 22%,#7C3AED 44%,#E11D48 66%,#EA580C 82%,#D97706 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:heroShift 8s ease-in-out infinite}
+    @keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+    .card{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:64px;height:92px;border-radius:8px;background:#fff;border:2px solid #E2E8F0;font-family:'DM Mono',monospace;font-weight:700;font-size:18px;box-shadow:0 2px 6px rgba(0,0,0,0.08);margin:0 -8px;transition:transform 0.2s;position:relative}
+    .card.red{color:#DC2626}.card.black{color:#1E293B}
+    .card.facedown{background:linear-gradient(135deg,#1E40AF,#7C3AED);border-color:#1E3A8A;color:transparent}
+    .card.facedown::after{content:'🂠';font-size:28px;position:absolute;color:#fff;opacity:0.3}
+    .card.deal{animation:dealIn 0.3s ease-out}
+    @keyframes dealIn{from{transform:translateY(-40px) scale(0.8);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
+    .action-btn{padding:8px 20px;border-radius:8px;font-size:13px;font-weight:700;border:2px solid;cursor:pointer;font-family:inherit;transition:all 0.1s}
+    .action-btn:hover{transform:translateY(-1px)}
+    .action-btn:active{transform:scale(0.97)}
+    .action-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;" id="game-wrap">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <div><h1 style="font-size:22px;font-weight:700;margin:0;">🂡 Blackjack</h1>
+        <p style="font-size:12px;color:#94A3B8;margin:2px 0 0;">Get closer to 21 than the dealer</p></div>
+        <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊 Sound</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:10px;padding:6px 10px;background:#F8FAFC;border-radius:8px;flex-wrap:wrap;">
+        <span style="font-family:'DM Mono',monospace;font-size:13px;font-weight:600;">💰 Chips: <span id="chips">1000</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;">🎯 Bet: <span id="current-bet">0</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;">🔥 <span id="streak">0</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;">📊 W<span id="wins">0</span> / L<span id="losses">0</span></span>
+      </div>
+      <div id="near-miss" style="display:none;text-align:center;padding:3px;font-size:12px;font-weight:600;color:#D97706;margin-bottom:4px;"></div>
+
+      <!-- Betting phase -->
+      <div id="bet-phase" style="text-align:center;padding:24px;">
+        <p style="font-size:16px;font-weight:600;margin-bottom:12px;">Place Your Bet</p>
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;">
+          <button class="bet-btn action-btn" data-amt="10" style="background:#059669;color:#fff;border-color:#047857;">10</button>
+          <button class="bet-btn action-btn" data-amt="25" style="background:#059669;color:#fff;border-color:#047857;">25</button>
+          <button class="bet-btn action-btn" data-amt="50" style="background:#059669;color:#fff;border-color:#047857;">50</button>
+          <button class="bet-btn action-btn" data-amt="100" style="background:#059669;color:#fff;border-color:#047857;">100</button>
+          <button class="bet-btn action-btn" data-amt="250" style="background:#D97706;color:#fff;border-color:#B45309;">250</button>
+        </div>
+        <button id="deal-btn" class="action-btn" style="background:#2563EB;color:#fff;border-color:#1D4ED8;padding:10px 32px;font-size:15px;" disabled>Deal</button>
+        <p id="bet-display" style="font-family:'DM Mono',monospace;font-size:14px;margin-top:8px;color:#64748B;">Bet: 0</p>
+      </div>
+
+      <!-- Play phase -->
+      <div id="play-phase" style="display:none;">
+        <div style="background:#0F4C3A;border-radius:12px;padding:20px;margin-bottom:12px;">
+          <div style="margin-bottom:20px;">
+            <p style="color:rgba(255,255,255,0.6);font-size:11px;font-weight:600;margin-bottom:4px;">DEALER <span id="dealer-total" style="color:#FDE68A;font-weight:700;font-size:13px;"></span></p>
+            <div id="dealer-hand" style="display:flex;padding:4px 0;min-height:96px;"></div>
+          </div>
+          <div id="result-banner" style="display:none;text-align:center;padding:8px;border-radius:8px;margin-bottom:12px;font-weight:700;font-size:16px;"></div>
+          <div>
+            <p style="color:rgba(255,255,255,0.6);font-size:11px;font-weight:600;margin-bottom:4px;">YOUR HAND <span id="player-total" style="color:#FDE68A;font-weight:700;font-size:13px;"></span></p>
+            <div id="player-hand" style="display:flex;padding:4px 0;min-height:96px;"></div>
+          </div>
+        </div>
+        <div id="action-buttons" style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px;">
+          <button id="btn-hit" class="action-btn" style="background:#2563EB;color:#fff;border-color:#1D4ED8;">Hit</button>
+          <button id="btn-stand" class="action-btn" style="background:#D97706;color:#fff;border-color:#B45309;">Stand</button>
+          <button id="btn-double" class="action-btn" style="background:#059669;color:#fff;border-color:#047857;">Double</button>
+        </div>
+        <div style="text-align:center;">
+          <button id="btn-newhand" class="action-btn" style="display:none;background:#2563EB;color:#fff;border-color:#1D4ED8;padding:10px 28px;">New Hand</button>
+          <p id="restart-hint" style="display:none;font-size:11px;color:#94A3B8;margin-top:4px;">Enter or Space</p>
+        </div>
+      </div>
+
+      <!-- Session stats on bust -->
+      <div id="session-panel" style="display:none;text-align:center;padding:20px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;margin-top:12px;">
+        <div style="font-size:20px;font-weight:700;color:#DC2626;margin-bottom:4px;">💸 Out of Chips!</div>
+        <div id="session-stats" style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;text-align:left;max-width:220px;margin:0 auto 16px;padding:12px;background:#fff;border-radius:8px;"></div>
+        <button id="reset-chips" class="action-btn" style="background:#2563EB;color:#fff;border-color:#1D4ED8;padding:10px 28px;">Start Fresh (1000 chips)</button>
+      </div>
+
+      <div style="background:#FEF3C7;border:1px solid #FDE68A;border-radius:8px;padding:8px 12px;margin-top:12px;">
+        <p style="font-size:11px;color:#92400E;margin:0;"><strong>🎲 Entertainment Only</strong> — This is a free game with no real money, deposits, or withdrawals. All chips are virtual and have zero monetary value.</p>
+      </div>
+    </div>
+  </main>
+
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play Blackjack</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>Blackjack — also known as 21 — is the world's most popular casino card game. The goal is to get a hand value as close to 21 as possible without going over, while also beating the dealer's hand. Number cards are worth their face value, face cards (Jack, Queen, King) are worth 10, and Aces are worth 11 or 1, whichever is more favorable. A "Blackjack" — an Ace plus a 10-value card — is the best possible hand.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">How to Play</h3>
+      <p>Place your bet using the chip buttons, then click Deal. You and the dealer each receive two cards. One of the dealer's cards is face-down (the "hole card"). You then choose your action:</p>
+      <ul class="list-disc pl-5 space-y-1">
+        <li><strong>Hit:</strong> Take another card. Risk going over 21 (bust).</li>
+        <li><strong>Stand:</strong> Keep your current hand. The dealer then plays.</li>
+        <li><strong>Double Down:</strong> Double your bet, take exactly one more card, then stand automatically.</li>
+      </ul>
+      <p>After you stand, the dealer reveals their hole card and must hit until reaching 17 or higher. If the dealer busts, you win. Otherwise, the hand closer to 21 wins. Ties push (bet returned).</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">History &amp; Origin</h3>
+      <p>Blackjack's origins trace to 17th-century France, where the game "Vingt-et-Un" (Twenty-One) was played in casinos. It came to America in the 19th century. The name "Blackjack" originated from a promotional bonus offered by American casinos: a 10-to-1 payout for a hand containing the Ace of Spades and a black Jack. Though that bonus is long gone, the name stuck. In the 1960s, mathematician Edward Thorp published "Beat the Dealer," proving that card counting could give players an edge — revolutionizing the game forever.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Strategy &amp; Tips</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Always stand on 17+.</strong> The risk of busting is too high.</li>
+        <li><strong>Hit on soft 17</strong> (Ace + 6). You can't bust, and 17 is a weak hand.</li>
+        <li><strong>Double down on 11.</strong> With a total of 11, any 10-value card gives you 21.</li>
+        <li><strong>Never take insurance.</strong> It's a sucker bet with a high house edge.</li>
+      </ul>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Frequently Asked Questions</h3>
+      <h4 class="font-semibold text-slate-800">Does this game use real money?</h4>
+      <p>No. This is a 100% free game with virtual chips. No real money, no deposits, no withdrawals. It is for entertainment and practice only.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">How many decks are used?</h4>
+      <p>This version uses a 6-deck shoe (312 cards), reshuffled when roughly half the shoe has been dealt — similar to standard casino rules.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">What is the house edge in Blackjack?</h4>
+      <p>With basic strategy, Blackjack has one of the lowest house edges of any casino game — around 0.5%. This makes it the most player-friendly table game. For more card games, see our <a href="/blog/best-puzzle-games-online" class="text-blue-600 underline">games collection</a>.</p>
+      <p class="mt-6">Play Blackjack free in your browser — no sign-up, no download. Practice basic strategy and beat the dealer.</p>
+    </div>
+  </article>
+  <div id="related-games"></div>
+  <div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playDeal, playFlip, playCollect } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+  document.addEventListener('click',()=>initAudio(),{once:true});
+  initToolPage('blackjack'); initConsent(); trackGameView('blackjack','Card');
+
+  const SUITS=['♠','♥','♦','♣'];
+  const RANKS=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+
+  let shoe=[], chips=1000, bet=0, playerHand=[], dealerHand=[], gamePhase='bet';
+  let streak=0, winCount=0, lossCount=0;
+  let session={rounds:0,wins:0,totalChipsWon:0,startTime:Date.now()};
+
+  const saved=localStorage.getItem('mgp_blackjack_chips');
+  if(saved)chips=Math.max(10,parseInt(saved)||1000);
+
+  function saveChips(){localStorage.setItem('mgp_blackjack_chips',chips);}
+
+  function buildShoe(){
+    shoe=[];
+    for(let d=0;d<6;d++)for(const s of SUITS)for(const r of RANKS)shoe.push({rank:r,suit:s});
+    shuffleShoe();
+  }
+  function shuffleShoe(){
+    for(let i=shoe.length-1;i>0;i--){const a=new Uint32Array(1);crypto.getRandomValues(a);const j=a[0]%(i+1);[shoe[i],shoe[j]]=[shoe[j],shoe[i]];}
+  }
+  function drawCard(){if(shoe.length<52)buildShoe();return shoe.pop();}
+  function cardValue(card){if(card.rank==='A')return 11;if(['K','Q','J'].includes(card.rank))return 10;return parseInt(card.rank);}
+  function handValue(hand){let total=0,aces=0;for(const c of hand){total+=cardValue(c);if(c.rank==='A')aces++;}while(total>21&&aces>0){total-=10;aces--;}return total;}
+  function isBlackjack(hand){return hand.length===2&&handValue(hand)===21;}
+  function isRed(card){return card.suit==='♥'||card.suit==='♦';}
+
+  function renderCard(card,facedown=false){
+    if(facedown)return'<div class="card facedown deal"></div>';
+    const color=isRed(card)?'red':'black';
+    return`<div class="card ${color} deal"><span style="font-size:12px;position:absolute;top:4px;left:6px;">${card.rank}</span><span style="font-size:22px;">${card.suit}</span><span style="font-size:12px;position:absolute;bottom:4px;right:6px;">${card.rank}</span></div>`;
+  }
+
+  document.getElementById('sound-btn').addEventListener('click',()=>{initAudio();const m=muteAll();document.getElementById('sound-btn').textContent=m?'🔇 Sound':'🔊 Sound';});
+
+  // Betting
+  let pendingBet=0;
+  document.querySelectorAll('.bet-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const amt=parseInt(btn.dataset.amt);
+      if(pendingBet+amt>chips)return;
+      pendingBet+=amt;
+      document.getElementById('bet-display').textContent=`Bet: ${pendingBet}`;
+      document.getElementById('deal-btn').disabled=pendingBet===0;
+      playClick();
+    });
+  });
+
+  document.getElementById('deal-btn').addEventListener('click',()=>{
+    if(pendingBet===0||pendingBet>chips)return;
+    bet=pendingBet;pendingBet=0;
+    startHand();
+  });
+
+  function startHand(){
+    if(shoe.length<52)buildShoe();
+    playerHand=[drawCard(),drawCard()];
+    dealerHand=[drawCard(),drawCard()];
+    gamePhase='play';session.rounds++;
+    trackGameStart('blackjack','Card');
+
+    document.getElementById('bet-phase').style.display='none';
+    document.getElementById('play-phase').style.display='block';
+    document.getElementById('result-banner').style.display='none';
+    document.getElementById('action-buttons').style.display='flex';
+    document.getElementById('btn-newhand').style.display='none';
+    document.getElementById('restart-hint').style.display='none';
+    document.getElementById('session-panel').style.display='none';
+    document.getElementById('current-bet').textContent=bet;
+
+    renderHands(true);
+    playDeal();
+
+    if(isBlackjack(playerHand)){
+      setTimeout(()=>resolve(),600);
+      return;
+    }
+    document.getElementById('btn-double').disabled=chips<bet*2;
+  }
+
+  function renderHands(hideDealer=false){
+    const dh=document.getElementById('dealer-hand');
+    dh.innerHTML=dealerHand.map((c,i)=>i===1&&hideDealer?renderCard(c,true):renderCard(c)).join('');
+    const ph=document.getElementById('player-hand');
+    ph.innerHTML=playerHand.map(c=>renderCard(c)).join('');
+    document.getElementById('player-total').textContent=handValue(playerHand);
+    if(hideDealer){
+      document.getElementById('dealer-total').textContent=cardValue(dealerHand[0]);
+    } else{
+      document.getElementById('dealer-total').textContent=handValue(dealerHand);
+    }
+  }
+
+  document.getElementById('btn-hit').addEventListener('click',()=>{
+    if(gamePhase!=='play')return;
+    playerHand.push(drawCard());playFlip();renderHands(true);
+    if(handValue(playerHand)>21)resolve();
+  });
+
+  document.getElementById('btn-stand').addEventListener('click',()=>{
+    if(gamePhase!=='play')return;
+    playClick();resolve();
+  });
+
+  document.getElementById('btn-double').addEventListener('click',()=>{
+    if(gamePhase!=='play'||chips<bet*2)return;
+    bet*=2;document.getElementById('current-bet').textContent=bet;
+    playerHand.push(drawCard());playFlip();renderHands(true);
+    setTimeout(()=>resolve(),400);
+  });
+
+  function resolve(){
+    gamePhase='result';
+    document.getElementById('action-buttons').style.display='none';
+
+    // Dealer plays
+    renderHands(false);
+    const pv=handValue(playerHand);
+    let dealerPlay=pv<=21&&!isBlackjack(playerHand);
+    if(dealerPlay){
+      while(handValue(dealerHand)<17){dealerHand.push(drawCard());}
+    }
+    renderHands(false);
+
+    const dv=handValue(dealerHand);
+    const banner=document.getElementById('result-banner');
+    banner.style.display='block';
+
+    let result;
+    if(isBlackjack(playerHand)&&!isBlackjack(dealerHand)){
+      result='blackjack';
+      const payout=Math.floor(bet*1.5);
+      chips+=payout;
+      banner.textContent=`🂡 BLACKJACK! +${payout}`;banner.style.background='#FEF3C7';banner.style.color='#92400E';
+      playPerfect();session.wins++;session.totalChipsWon+=payout;winCount++;streak++;
+    } else if(isBlackjack(dealerHand)&&!isBlackjack(playerHand)){
+      result='lose';chips-=bet;
+      banner.textContent=`Dealer Blackjack! -${bet}`;banner.style.background='#FEE2E2';banner.style.color='#991B1B';
+      playGameOver();lossCount++;streak=0;
+    } else if(pv>21){
+      result='bust';chips-=bet;
+      banner.textContent=`Bust! -${bet}`;banner.style.background='#FEE2E2';banner.style.color='#991B1B';
+      playError();lossCount++;streak=0;
+    } else if(dv>21){
+      result='win';chips+=bet;
+      banner.textContent=`Dealer Busts! +${bet}`;banner.style.background='#D1FAE5';banner.style.color='#065F46';
+      playSuccess();session.wins++;session.totalChipsWon+=bet;winCount++;streak++;
+    } else if(pv>dv){
+      result='win';chips+=bet;
+      banner.textContent=`You Win! +${bet}`;banner.style.background='#D1FAE5';banner.style.color='#065F46';
+      playSuccess();session.wins++;session.totalChipsWon+=bet;winCount++;streak++;
+    } else if(pv<dv){
+      result='lose';chips-=bet;
+      banner.textContent=`Dealer Wins. -${bet}`;banner.style.background='#FEE2E2';banner.style.color='#991B1B';
+      playGameOver();lossCount++;streak=0;
+    } else{
+      result='push';
+      banner.textContent='Push — Bet Returned';banner.style.background='#F1F5F9';banner.style.color='#475569';
+      playClick();
+    }
+
+    // Near miss
+    if(result==='bust'&&pv<=23){
+      document.getElementById('near-miss').style.display='block';
+      document.getElementById('near-miss').textContent='😬 So close to 21!';
+    } else if(result==='lose'&&dv===21){
+      document.getElementById('near-miss').style.display='block';
+      document.getElementById('near-miss').textContent='🎯 Dealer got exactly 21';
+    } else{document.getElementById('near-miss').style.display='none';}
+
+    if(streak>=3)playLevelUp();
+
+    saveChips();updateUI();
+    trackGameOver('blackjack','Card',result==='win'||result==='blackjack'?1:0,0);
+
+    document.getElementById('btn-newhand').style.display='inline-block';
+    document.getElementById('restart-hint').style.display='block';
+    document.getElementById('btn-newhand').focus();
+
+    if(chips<=0){showBust();}
+  }
+
+  function showBust(){
+    document.getElementById('session-panel').style.display='block';
+    const elapsed=Math.round((Date.now()-session.startTime)/1000);const mins=Math.floor(elapsed/60),secs=elapsed%60;
+    document.getElementById('session-stats').innerHTML=`🎮 This Session<br>─────────────────────<br>Hands played    ${session.rounds}<br>Hands won       ${session.wins}<br>Chips won       ${session.totalChipsWon}<br>Best streak     ${streak}<br>Time played     ${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+  }
+
+  document.getElementById('reset-chips').addEventListener('click',()=>{
+    chips=1000;saveChips();pendingBet=0;
+    document.getElementById('bet-display').textContent='Bet: 0';
+    document.getElementById('deal-btn').disabled=true;
+    document.getElementById('bet-phase').style.display='block';
+    document.getElementById('play-phase').style.display='none';
+    document.getElementById('session-panel').style.display='none';
+    updateUI();playClick();
+  });
+
+  document.getElementById('btn-newhand').addEventListener('click',()=>{
+    if(chips<=0)return;
+    pendingBet=0;
+    document.getElementById('bet-display').textContent='Bet: 0';
+    document.getElementById('deal-btn').disabled=true;
+    document.getElementById('bet-phase').style.display='block';
+    document.getElementById('play-phase').style.display='none';
+    document.getElementById('near-miss').style.display='none';
+    playClick();
+  });
+
+  document.addEventListener('keydown',e=>{
+    if(gamePhase==='result'&&(e.key==='Enter'||e.key===' ')){e.preventDefault();document.getElementById('btn-newhand').click();}
+    if(gamePhase==='play'){
+      if(e.key==='h')document.getElementById('btn-hit').click();
+      if(e.key==='s')document.getElementById('btn-stand').click();
+      if(e.key==='d')document.getElementById('btn-double').click();
+    }
+  });
+
+  function updateUI(){
+    document.getElementById('chips').textContent=chips;
+    document.getElementById('streak').textContent=streak;
+    document.getElementById('wins').textContent=winCount;
+    document.getElementById('losses').textContent=lossCount;
+  }
+
+  buildShoe();updateUI();
+  </script>
+</body>
+</html>

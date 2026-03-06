@@ -28,7 +28,7 @@ export const games = [
     icon: '🂡',
     accent: '#DC2626',
     keywords: ['blackjack', '21', 'card game', 'casino card'],
-    built: false
+    built: true
   },
   {
     name: 'Klondike Solitaire',
@@ -38,7 +38,7 @@ export const games = [
     icon: '🃏',
     accent: '#DC2626',
     keywords: ['solitaire', 'klondike', 'patience', 'card game'],
-    built: false
+    built: true
   },
   {
     name: 'Spider Solitaire',
@@ -48,7 +48,7 @@ export const games = [
     icon: '🕷',
     accent: '#DC2626',
     keywords: ['spider solitaire', 'card game', 'patience', 'solitaire variant'],
-    built: false
+    built: true
   },
   {
     name: 'FreeCell',
@@ -58,7 +58,7 @@ export const games = [
     icon: '🗃',
     accent: '#DC2626',
     keywords: ['freecell', 'solitaire', 'card game', 'strategy card'],
-    built: false
+    built: true
   },
   {
     name: 'Video Poker',
@@ -68,7 +68,7 @@ export const games = [
     icon: '🎰',
     accent: '#DC2626',
     keywords: ['video poker', 'jacks or better', 'poker', 'card game'],
-    built: false
+    built: true
   },
   {
     name: 'War Card Game',
@@ -78,7 +78,7 @@ export const games = [
     icon: '⚔',
     accent: '#DC2626',
     keywords: ['war card game', 'card battle', 'simple card game'],
-    built: false
+    built: true
   },
   {
     name: 'Memory Match',
@@ -88,7 +88,7 @@ export const games = [
     icon: '🧠',
     accent: '#DC2626',
     keywords: ['memory match', 'matching game', 'concentration', 'pairs'],
-    built: false
+    built: true
   },
   {
     name: 'Go Fish',
@@ -98,7 +98,7 @@ export const games = [
     icon: '🐟',
     accent: '#DC2626',
     keywords: ['go fish', 'card game', 'kids card game', 'family game'],
-    built: false
+    built: true
   },
   {
     name: 'Crazy Eights',
@@ -108,7 +108,7 @@ export const games = [
     icon: '8️⃣',
     accent: '#DC2626',
     keywords: ['crazy eights', 'card game', 'uno style', 'family card game'],
-    built: false
+    built: true
   },
   {
     name: 'High Low Card Game',
@@ -118,7 +118,7 @@ export const games = [
     icon: '📊',
     accent: '#DC2626',
     keywords: ['high low', 'higher lower', 'card guessing', 'streak game'],
-    built: false
+    built: true
   },
 
   // ─── ARCADE (12) ──────────────────────────────────────────────
