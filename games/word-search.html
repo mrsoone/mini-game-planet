@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Word Search Online — Play Instantly | MiniGamePlanet</title>
+  <meta name="description" content="Play Word Search free online. Find hidden words in a letter grid. Three difficulty levels with themed word lists. Click and drag to highlight words.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/word-search">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500});gtag('config','G-XXXXXXXXXX');</script>
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
+  <meta property="og:type" content="website"><meta property="og:title" content="Free Word Search Online | MiniGamePlanet"><meta property="og:description" content="Play Word Search free. Find hidden words in a letter grid."><meta property="og:url" content="https://minigameplanet.com/games/word-search"><meta property="og:site_name" content="MiniGamePlanet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Word Search","url":"https://minigameplanet.com/games/word-search","description":"Play Word Search free online. Find hidden words in a letter grid.","genre":"Puzzle","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <style>
+    .hero-grad{background:linear-gradient(135deg,#0891B2 0%,#2563EB 22%,#7C3AED 44%,#E11D48 66%,#EA580C 82%,#D97706 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:heroShift 8s ease-in-out infinite}
+    @keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+    .ws-cell{display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-weight:600;font-size:15px;cursor:pointer;user-select:none;border-radius:4px;transition:all 0.1s;color:#334155}
+    .ws-cell:hover{background:#DBEAFE}
+    .ws-cell.selecting{background:#93C5FD;color:#1E3A8A}
+    .ws-cell.found{background:#BBF7D0;color:#166534}
+    .word-item{font-family:'DM Mono',monospace;font-size:13px;padding:3px 8px;border-radius:4px;display:inline-block;margin:2px}
+    .word-item.found{text-decoration:line-through;color:#94A3B8;background:#F1F5F9}
+    .word-item.pending{color:#334155;background:#E0F2FE}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;" id="game-wrap">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <div><h1 style="font-size:22px;font-weight:700;margin:0;">🔍 Word Search</h1>
+        <p style="font-size:12px;color:#94A3B8;margin:2px 0 0;">Click first &amp; last letter, or drag to select</p></div>
+        <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊 Sound</button>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+        <button class="diff-btn" data-d="easy" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #2563EB;background:#2563EB;color:#fff;cursor:pointer;font-family:inherit;">Easy</button>
+        <button class="diff-btn" data-d="medium" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">Medium</button>
+        <button class="diff-btn" data-d="hard" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">Hard</button>
+        <button id="new-game" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">🔄 New</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:10px;padding:6px 10px;background:#F8FAFC;border-radius:8px;flex-wrap:wrap;">
+        <span style="font-family:'DM Mono',monospace;font-size:13px;font-weight:600;">📝 Found: <span id="found-count">0</span>/<span id="total-count">0</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;">⏱ <span id="timer">0:00</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;">🔥 <span id="streak">0</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;">🏆 <span id="best">---</span></span>
+      </div>
+      <div id="near-miss" style="display:none;text-align:center;padding:3px;font-size:12px;font-weight:600;color:#D97706;margin-bottom:4px;"></div>
+      <!-- Word list -->
+      <div id="word-list" style="margin-bottom:10px;text-align:center;"></div>
+      <!-- Board -->
+      <div style="display:flex;justify-content:center;margin-bottom:12px;"><div id="board" style="display:inline-grid;gap:2px;"></div></div>
+      <!-- Game Over -->
+      <div id="game-over" style="display:none;text-align:center;padding:20px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;">
+        <div id="go-title" style="font-size:24px;font-weight:700;margin-bottom:4px;"></div>
+        <div id="go-sub" style="font-size:14px;color:#64748B;margin-bottom:12px;"></div>
+        <div id="session-stats" style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;text-align:left;max-width:220px;margin:0 auto 16px;padding:12px;background:#fff;border-radius:8px;"></div>
+        <button id="play-again" style="padding:10px 28px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">▶ Play Again</button>
+        <p style="font-size:11px;color:#94A3B8;margin-top:6px;">Enter or Space to restart</p>
+      </div>
+    </div>
+  </main>
+
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play Word Search</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>Word Search is a timeless puzzle where a grid of letters hides a list of words. Words can run horizontally, vertically, or diagonally — and sometimes even backwards. Your job is to scan the grid, find each hidden word, and highlight it. It is one of the most popular paper-and-pencil puzzles in the world, appearing in newspapers, magazines, and puzzle books for decades. Our digital version lets you play instantly with themed word lists and timed challenges.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">How to Play</h3>
+      <p>Look at the word list below the grid. Each word is hidden somewhere in the letter grid. Words run in straight lines: horizontal (left to right or right to left), vertical (top to bottom or bottom to top), or diagonal (in any of four diagonal directions). Click the first letter of a word, then click the last letter. If the selected line of letters matches a word in the list, it lights up green and gets crossed off. Find all words to win.</p>
+      <p>Three difficulties are available. Easy uses a 10×10 grid with 6 short words (no diagonal or reversed). Medium uses a 12×12 grid with 8 words (diagonal allowed). Hard uses a 14×14 grid with 10 words (diagonal and reversed).</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">History &amp; Origin</h3>
+      <p>The word search puzzle was invented in 1968 by Norman E. Gibat, who published it in the Selenby Digest in Norman, Oklahoma. It quickly became a newspaper staple and classroom favorite. Spanish-language word searches ("sopas de letras") are equally popular in Latin America. The format is simple enough for children yet engaging enough for adults, making it one of the most universally enjoyed puzzle types in the world. Competitive word search solving has even emerged as a niche hobby, with solvers racing to find all words in record time. For more word games, see our <a href="/blog/best-puzzle-games-online" class="text-blue-600 underline">best puzzle games</a> article.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Strategy &amp; Tips</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Scan for uncommon letters.</strong> Words with Q, X, Z, J, or K are easier to spot because those letters are rare in the random fill. Find the unusual letter first, then check around it.</li>
+        <li><strong>Try the first letter.</strong> Scan the grid for the first letter of each target word. When you find it, check all eight directions for the second letter.</li>
+        <li><strong>Work systematically.</strong> Go through the word list one word at a time rather than scanning randomly. Focused searching is faster than hoping to stumble onto words.</li>
+        <li><strong>Don't forget reversed and diagonal.</strong> On medium and hard, words can run backwards or diagonally. Train your eyes to read in all directions.</li>
+      </ul>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Frequently Asked Questions</h3>
+      <h4 class="font-semibold text-slate-800">Are all words guaranteed to be in the grid?</h4>
+      <p>Yes. Every word in the list is placed in the grid before random letters fill the remaining cells. You will always find every word if you look carefully enough.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">Can two words overlap?</h4>
+      <p>Yes. Words can share letters where they cross. This is intentional and part of the challenge — shared letters can sometimes help you find one word by noticing the overlap with another.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">What themes are used for the word lists?</h4>
+      <p>Word lists rotate through themes including animals, colors, countries, foods, sports, space, weather, music, and more. Each new game picks a random theme for variety.</p>
+      <p class="mt-6">Play Word Search free in your browser. Scan the grid, find hidden words, and beat your best time.</p>
+    </div>
+  </article>
+  <div id="related-games"></div>
+  <div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playCollect } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+  document.addEventListener('click',()=>initAudio(),{once:true});
+  initToolPage('word-search'); initConsent(); trackGameView('word-search','Puzzle');
+
+  const THEMES=[
+    {name:'Animals',words:['TIGER','WHALE','EAGLE','SHARK','PANDA','HORSE','SNAKE','MOUSE','CRANE','BISON']},
+    {name:'Colors',words:['CORAL','IVORY','AMBER','AZURE','PEACH','OLIVE','PEARL','SLATE','MAUVE','BLUSH']},
+    {name:'Countries',words:['JAPAN','CHILE','EGYPT','KENYA','INDIA','BRAZIL','SPAIN','ITALY','NEPAL','PERU']},
+    {name:'Foods',words:['PASTA','MELON','STEAK','GRAPE','BREAD','MANGO','LEMON','OLIVE','PEACH','RICE']},
+    {name:'Sports',words:['RUGBY','GOLF','JUDO','KAYAK','POLO','SURF','FENCE','SWIM','SKATE','CLIMB']},
+    {name:'Space',words:['COMET','LUNAR','ORBIT','SOLAR','VENUS','PLUTO','EARTH','TITAN','NEBULA','QUASAR']},
+    {name:'Weather',words:['STORM','CLOUD','FROST','SLEET','HAZE','WIND','FLOOD','BREEZE','SUNNY','FOGGY']},
+    {name:'Music',words:['PIANO','DRUMS','FLUTE','VIOLA','CELLO','BANJO','ORGAN','OBOE','BRASS','CHORD']},
+    {name:'Ocean',words:['CORAL','SQUID','KELP','WHALE','SHELL','DRIFT','SHORE','PEARL','WAVES','DEPTH']},
+    {name:'Nature',words:['RIVER','STONE','BLOOM','CEDAR','FROST','CREEK','CLIFF','GROVE','RIDGE','THORN']},
+  ];
+
+  const DIFFS={easy:{size:10,words:6,diag:false,reverse:false},medium:{size:12,words:8,diag:true,reverse:false},hard:{size:14,words:10,diag:true,reverse:true}};
+  const DIRS=[[0,1],[1,0],[0,-1],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]];
+
+  let diff='easy', gridSize=10, grid=[], wordList=[], foundWords=new Set(), placedWords=[];
+  let timerInterval, seconds=0, gameActive=false, gameStarted=false;
+  let streak=0, best={easy:null,medium:null,hard:null};
+  let session={rounds:0,wins:0,totalTime:0,startTime:Date.now()};
+  let selectStart=null, selectEnd=null, selecting=false;
+  let combo=0;
+
+  document.getElementById('sound-btn').addEventListener('click',()=>{initAudio();const m=muteAll();document.getElementById('sound-btn').textContent=m?'🔇 Sound':'🔊 Sound';});
+
+  document.querySelectorAll('.diff-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      diff=btn.dataset.d;
+      document.querySelectorAll('.diff-btn').forEach(b=>{b.style.background='#fff';b.style.color='#334155';b.style.borderColor='#E5E7EB';});
+      btn.style.background='#2563EB';btn.style.color='#fff';btn.style.borderColor='#2563EB';
+      newGame();
+    });
+  });
+  document.getElementById('new-game').addEventListener('click',()=>newGame());
+
+  function rng(min,max){const a=new Uint32Array(1);crypto.getRandomValues(a);return min+a[0]%(max-min+1);}
+  function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=rng(0,i);[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+
+  function newGame(){
+    const cfg=DIFFS[diff];
+    gridSize=cfg.size;
+    grid=Array(gridSize*gridSize).fill('');
+    foundWords=new Set();placedWords=[];selectStart=null;selectEnd=null;selecting=false;combo=0;
+
+    const theme=THEMES[rng(0,THEMES.length-1)];
+    const candidates=shuffle([...theme.words]).filter(w=>w.length<=gridSize);
+    wordList=candidates.slice(0,cfg.words);
+
+    let allowedDirs=[[0,1],[1,0]];
+    if(cfg.diag)allowedDirs.push([1,1],[1,-1]);
+    if(cfg.reverse)allowedDirs.push([0,-1],[-1,0],[-1,1],[-1,-1]);
+
+    for(const word of wordList){
+      let placed=false;
+      for(let attempt=0;attempt<200;attempt++){
+        const dir=allowedDirs[rng(0,allowedDirs.length-1)];
+        const [dr,dc]=dir;
+        const maxR=dr>0?gridSize-word.length:dr<0?word.length-1:gridSize-1;
+        const minR=dr>0?0:dr<0?word.length-1:0;
+        const maxC=dc>0?gridSize-word.length:dc<0?word.length-1:gridSize-1;
+        const minC=dc>0?0:dc<0?word.length-1:0;
+        if(minR>maxR||minC>maxC)continue;
+        const sr=rng(minR,maxR),sc=rng(minC,maxC);
+        let ok=true;
+        for(let i=0;i<word.length;i++){
+          const r=sr+dr*i,c=sc+dc*i;
+          const existing=grid[r*gridSize+c];
+          if(existing&&existing!==word[i]){ok=false;break;}
+        }
+        if(!ok)continue;
+        const positions=[];
+        for(let i=0;i<word.length;i++){
+          const r=sr+dr*i,c=sc+dc*i;
+          grid[r*gridSize+c]=word[i];
+          positions.push(r*gridSize+c);
+        }
+        placedWords.push({word,positions});
+        placed=true;break;
+      }
+      if(!placed){wordList=wordList.filter(w=>w!==word);}
+    }
+
+    const letters='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    for(let i=0;i<gridSize*gridSize;i++){
+      if(!grid[i])grid[i]=letters[rng(0,25)];
+    }
+
+    seconds=0;gameActive=true;gameStarted=false;
+    clearInterval(timerInterval);
+    document.getElementById('timer').textContent='0:00';
+    document.getElementById('found-count').textContent='0';
+    document.getElementById('total-count').textContent=wordList.length;
+    document.getElementById('game-over').style.display='none';
+    document.getElementById('near-miss').style.display='none';
+    updateBest();render();
+  }
+
+  function getCellsInLine(r1,c1,r2,c2){
+    const dr=Math.sign(r2-r1),dc=Math.sign(c2-c1);
+    const len=Math.max(Math.abs(r2-r1),Math.abs(c2-c1))+1;
+    if(r1===r2&&c1===c2)return[r1*gridSize+c1];
+    if(r1!==r2&&c1!==c2&&Math.abs(r2-r1)!==Math.abs(c2-c1))return null;
+    const cells=[];
+    for(let i=0;i<len;i++)cells.push((r1+dr*i)*gridSize+(c1+dc*i));
+    return cells;
+  }
+
+  function render(){
+    const board=document.getElementById('board');
+    board.innerHTML='';
+    const cellSize=Math.min(32,Math.floor((window.innerWidth-64)/gridSize));
+    board.style.gridTemplateColumns=`repeat(${gridSize},${cellSize}px)`;
+    board.style.gridTemplateRows=`repeat(${gridSize},${cellSize}px)`;
+
+    const foundCells=new Set();
+    for(const pw of placedWords){
+      if(foundWords.has(pw.word))for(const idx of pw.positions)foundCells.add(idx);
+    }
+
+    let selectCells=new Set();
+    if(selectStart!==null&&selectEnd!==null){
+      const r1=Math.floor(selectStart/gridSize),c1=selectStart%gridSize;
+      const r2=Math.floor(selectEnd/gridSize),c2=selectEnd%gridSize;
+      const line=getCellsInLine(r1,c1,r2,c2);
+      if(line)selectCells=new Set(line);
+    } else if(selectStart!==null){
+      selectCells.add(selectStart);
+    }
+
+    for(let i=0;i<gridSize*gridSize;i++){
+      const cell=document.createElement('div');
+      cell.className='ws-cell';
+      cell.style.width=cellSize+'px';cell.style.height=cellSize+'px';
+      cell.style.fontSize=(cellSize*0.48)+'px';
+      cell.textContent=grid[i];
+      if(foundCells.has(i))cell.classList.add('found');
+      else if(selectCells.has(i))cell.classList.add('selecting');
+      cell.addEventListener('mousedown',()=>startSelect(i));
+      cell.addEventListener('mouseenter',()=>{if(selecting)moveSelect(i);});
+      cell.addEventListener('mouseup',()=>endSelect(i));
+      cell.addEventListener('touchstart',(e)=>{e.preventDefault();startSelect(i);},{passive:false});
+      cell.addEventListener('touchend',(e)=>{e.preventDefault();endSelect(selectEnd!==null?selectEnd:i);},{passive:false});
+      board.appendChild(cell);
+    }
+
+    // Touch move handling on the board itself
+    board.ontouchmove=(e)=>{
+      e.preventDefault();
+      const touch=e.touches[0];
+      const el=document.elementFromPoint(touch.clientX,touch.clientY);
+      if(el&&el.classList.contains('ws-cell')){
+        const cells=[...board.children];
+        const idx=cells.indexOf(el);
+        if(idx>=0)moveSelect(idx);
+      }
+    };
+
+    // Word list
+    const wl=document.getElementById('word-list');
+    wl.innerHTML='';
+    wordList.forEach(w=>{
+      const span=document.createElement('span');
+      span.className='word-item '+(foundWords.has(w)?'found':'pending');
+      span.textContent=w;
+      wl.appendChild(span);
+    });
+
+    // Near miss
+    const pct=wordList.length>0?foundWords.size/wordList.length:0;
+    if(gameActive&&pct>=0.7&&pct<1){
+      document.getElementById('near-miss').style.display='block';
+      document.getElementById('near-miss').textContent=wordList.length-foundWords.size===1?'⚡ One word left!':'🔥 Almost found them all!';
+    } else document.getElementById('near-miss').style.display='none';
+  }
+
+  function startSelect(idx){
+    if(!gameActive)return;
+    selecting=true;selectStart=idx;selectEnd=null;render();
+  }
+  function moveSelect(idx){
+    if(!selecting)return;
+    selectEnd=idx;render();
+  }
+  function endSelect(idx){
+    if(!selecting||!gameActive)return;
+    selecting=false;
+    if(selectStart===null){selectEnd=null;render();return;}
+    selectEnd=idx;
+
+    if(!gameStarted){gameStarted=true;trackGameStart('word-search','Puzzle');timerInterval=setInterval(()=>{seconds++;const m=Math.floor(seconds/60),s=seconds%60;document.getElementById('timer').textContent=`${m}:${String(s).padStart(2,'0')}`;},1000);}
+
+    const r1=Math.floor(selectStart/gridSize),c1=selectStart%gridSize;
+    const r2=Math.floor(selectEnd/gridSize),c2=selectEnd%gridSize;
+    const line=getCellsInLine(r1,c1,r2,c2);
+    if(line){
+      const selected=line.map(i=>grid[i]).join('');
+      const reversed=[...selected].reverse().join('');
+      let found=false;
+      for(const pw of placedWords){
+        if(foundWords.has(pw.word))continue;
+        if((pw.word===selected||pw.word===reversed)&&line.length===pw.positions.length){
+          foundWords.add(pw.word);found=true;
+          combo++;
+          document.getElementById('found-count').textContent=foundWords.size;
+          if(combo>=3)playPerfect();
+          else playCollect();
+          playScoreUp(combo*50);
+          break;
+        }
+      }
+      if(!found){combo=0;playError();}
+    }
+
+    selectStart=null;selectEnd=null;render();
+    if(foundWords.size===wordList.length)endGame();
+  }
+
+  function endGame(){
+    gameActive=false;clearInterval(timerInterval);session.rounds++;session.wins++;session.totalTime+=seconds;streak++;
+    if(!best[diff]||seconds<best[diff]){
+      best[diff]=seconds;
+      document.getElementById('go-title').textContent='🏆 NEW BEST TIME!';document.getElementById('go-title').style.color='#D97706';
+      playPerfect();setTimeout(()=>playLevelUp(),300);
+    } else{
+      document.getElementById('go-title').textContent='🔍 All Words Found!';document.getElementById('go-title').style.color='#059669';
+      playSuccess();
+    }
+    document.getElementById('go-sub').textContent=`Found ${wordList.length} words in ${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`;
+    document.getElementById('streak').textContent=streak;updateBest();
+    trackGameOver('word-search','Puzzle',seconds,seconds);
+    const elapsed=Math.round((Date.now()-session.startTime)/1000);const mins=Math.floor(elapsed/60),secs=elapsed%60;
+    document.getElementById('session-stats').innerHTML=`🎮 This Session<br>─────────────────────<br>Rounds played   ${session.rounds}<br>Wins            ${session.wins}<br>Best (${diff})    ${formatBest()}<br>Current streak  ${streak} ${streak>=3?'🔥':''}<br>Time played     ${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+    document.getElementById('game-over').style.display='block';document.getElementById('play-again').focus();
+  }
+
+  function formatBest(){if(!best[diff])return'---';const m=Math.floor(best[diff]/60),s=best[diff]%60;return`${m}:${String(s).padStart(2,'0')}`;}
+  function updateBest(){document.getElementById('best').textContent=formatBest();}
+
+  document.getElementById('play-again').addEventListener('click',()=>{playClick();newGame();});
+  document.addEventListener('keydown',e=>{if(!gameActive&&(e.key==='Enter'||e.key===' ')){e.preventDefault();playClick();newGame();}});
+
+  newGame();
+  </script>
+</body>
+</html>

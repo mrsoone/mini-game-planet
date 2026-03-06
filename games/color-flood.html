@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Color Flood Online — Play Instantly | MiniGamePlanet</title>
+  <meta name="description" content="Play Color Flood free online. Pick colors to flood-fill the board from the top-left corner. Capture all cells before you run out of moves in this addictive puzzle.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/color-flood">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500});gtag('config','G-XXXXXXXXXX');</script>
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
+  <meta property="og:type" content="website"><meta property="og:title" content="Free Color Flood Online | MiniGamePlanet"><meta property="og:description" content="Play Color Flood free. Flood-fill the board one color at a time."><meta property="og:url" content="https://minigameplanet.com/games/color-flood"><meta property="og:site_name" content="MiniGamePlanet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Color Flood","url":"https://minigameplanet.com/games/color-flood","description":"Play Color Flood free online. Pick colors to flood-fill the board.","genre":"Puzzle","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <style>
+    .hero-grad{background:linear-gradient(135deg,#0891B2 0%,#2563EB 22%,#7C3AED 44%,#E11D48 66%,#EA580C 82%,#D97706 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:heroShift 8s ease-in-out infinite}
+    @keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+    .flood-cell{transition:background 0.12s ease}
+    .color-btn{width:40px;height:40px;border-radius:8px;border:3px solid transparent;cursor:pointer;transition:transform 0.1s,border-color 0.1s,box-shadow 0.1s}
+    .color-btn:hover{transform:scale(1.1);box-shadow:0 2px 8px rgba(0,0,0,0.15)}
+    .color-btn:active{transform:scale(0.95)}
+    .color-btn.current{border-color:#0F172A;box-shadow:0 0 0 2px #0F172A}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;" id="game-wrap">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <div><h1 style="font-size:22px;font-weight:700;margin:0;">🎨 Color Flood</h1>
+        <p style="font-size:12px;color:#94A3B8;margin:2px 0 0;">Pick a color to flood from the top-left</p></div>
+        <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊 Sound</button>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+        <button class="sz-btn" data-sz="10" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #2563EB;background:#2563EB;color:#fff;cursor:pointer;font-family:inherit;">10×10</button>
+        <button class="sz-btn" data-sz="14" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">14×14</button>
+        <button class="sz-btn" data-sz="18" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">18×18</button>
+        <button id="new-game" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">🔄 New</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:10px;padding:6px 10px;background:#F8FAFC;border-radius:8px;flex-wrap:wrap;">
+        <span style="font-family:'DM Mono',monospace;font-size:13px;font-weight:600;">🔢 Moves: <span id="moves">0</span> / <span id="max-moves">25</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;">📊 <span id="pct">0</span>%</span>
+        <span style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;">⏱ <span id="timer">0:00</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;">🔥 <span id="streak">0</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;">🏆 <span id="best">---</span></span>
+      </div>
+      <div id="near-miss" style="display:none;text-align:center;padding:3px;font-size:12px;font-weight:600;color:#D97706;margin-bottom:4px;"></div>
+      <!-- Color buttons -->
+      <div id="color-buttons" style="display:flex;gap:6px;justify-content:center;margin-bottom:12px;flex-wrap:wrap;"></div>
+      <!-- Board -->
+      <div style="display:flex;justify-content:center;margin-bottom:12px;"><div id="board" style="display:inline-grid;gap:0;border-radius:8px;overflow:hidden;"></div></div>
+      <!-- Game Over -->
+      <div id="game-over" style="display:none;text-align:center;padding:20px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;">
+        <div id="go-title" style="font-size:24px;font-weight:700;margin-bottom:4px;"></div>
+        <div id="go-sub" style="font-size:14px;color:#64748B;margin-bottom:12px;"></div>
+        <div id="session-stats" style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;text-align:left;max-width:220px;margin:0 auto 16px;padding:12px;background:#fff;border-radius:8px;"></div>
+        <button id="play-again" style="padding:10px 28px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">▶ Play Again</button>
+        <p style="font-size:11px;color:#94A3B8;margin-top:6px;">Enter or Space to restart</p>
+      </div>
+    </div>
+  </main>
+
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play Color Flood</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>Color Flood (also known as Flood-It or Flood Fill) is a deceptively simple puzzle game where the goal is to turn an entire board into a single color within a limited number of moves. Starting from the top-left corner, you pick a color each turn, and your region expands to absorb all adjacent cells of that color. It begins small, but as your flood region grows, each move becomes increasingly satisfying — watching a cascade of color wash across the board is the core of this game's addictive appeal.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">How to Play</h3>
+      <p>The board starts as a randomly colored grid. Your "flood region" begins as the single cell in the top-left corner. Each turn, you pick one of the six available colors by clicking a color button. Your flood region changes to that color, and any adjacent cells that match the new color are absorbed into your region. The goal is to flood the entire board — make every cell the same color — before you run out of moves.</p>
+      <p>Three board sizes are available: 10×10 (25 moves), 14×14 (30 moves), and 18×18 (38 moves). Fewer moves used means a better score. The optimal strategy involves looking ahead to see which color captures the most territory each turn.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">History &amp; Origin</h3>
+      <p>Color Flood games first appeared on the web in the mid-2000s. The most famous version, "Flood-It," was created by LabPixies (later acquired by Google) and became one of the most popular puzzle apps on early smartphones. The underlying algorithm — flood fill — is fundamental to computer graphics and is the same one used by the paint bucket tool in image editors. The puzzle variant turns this algorithm into a strategic decision at each step: which color maximizes territory gain? The game has been mathematically proven to be NP-hard in its general form, meaning there's no known efficient algorithm that always finds the optimal solution. For more puzzles, see our <a href="/blog/best-puzzle-games-online" class="text-blue-600 underline">best puzzle games</a> roundup.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Strategy &amp; Tips</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Maximize each move.</strong> Pick the color that will absorb the most cells in a single turn. Look at the border of your flood region and count which color appears most.</li>
+        <li><strong>Think two moves ahead.</strong> Sometimes a smaller gain now sets up a huge gain next turn. If choosing green absorbs 3 cells but puts you next to 10 blue cells, it may be worth it even if red would absorb 5 cells right now.</li>
+        <li><strong>Work toward corners.</strong> The top-left corner is solved immediately. Focus on reaching the far corners — the bottom-right corner is usually the last area to be captured.</li>
+        <li><strong>Avoid the same color twice in a row.</strong> Picking a color that doesn't border your region wastes a move entirely.</li>
+      </ul>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Frequently Asked Questions</h3>
+      <h4 class="font-semibold text-slate-800">Is Color Flood always solvable within the move limit?</h4>
+      <p>Almost always. The move limits are generous enough that the vast majority of random boards are solvable. On rare occasions a particularly unlucky layout may be very tight, but smart play should win most games.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">How many colors are used?</h4>
+      <p>Six colors. More colors would make the puzzle harder, fewer would make it trivial. Six provides the ideal balance of challenge and visual variety.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">What is the connection to the flood fill algorithm?</h4>
+      <p>Each time you pick a color, the game internally runs a flood fill from the top-left corner — the same algorithm that powers the paint bucket tool in Photoshop, GIMP, and MS Paint. The game essentially asks you to orchestrate a series of flood fills to cover the entire canvas.</p>
+      <p class="mt-6">Play Color Flood free in your browser. Pick colors, flood the board, and beat it in as few moves as possible.</p>
+    </div>
+  </article>
+  <div id="related-games"></div>
+  <div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playDrop, playCollect } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+  document.addEventListener('click',()=>initAudio(),{once:true});
+  initToolPage('color-flood'); initConsent(); trackGameView('color-flood','Puzzle');
+
+  const COLORS=['#EF4444','#F59E0B','#22C55E','#3B82F6','#A855F7','#EC4899'];
+  const MAX_MOVES={10:25,14:30,18:38};
+
+  let size=10, grid=[], moveCount=0, maxMoves=25, timerInterval, seconds=0, gameActive=false, gameStarted=false;
+  let streak=0, best={10:null,14:null,18:null};
+  let session={rounds:0,wins:0,totalTime:0,startTime:Date.now()};
+
+  document.getElementById('sound-btn').addEventListener('click',()=>{initAudio();const m=muteAll();document.getElementById('sound-btn').textContent=m?'🔇 Sound':'🔊 Sound';});
+
+  document.querySelectorAll('.sz-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      size=parseInt(btn.dataset.sz);
+      document.querySelectorAll('.sz-btn').forEach(b=>{b.style.background='#fff';b.style.color='#334155';b.style.borderColor='#E5E7EB';});
+      btn.style.background='#2563EB';btn.style.color='#fff';btn.style.borderColor='#2563EB';
+      newGame();
+    });
+  });
+  document.getElementById('new-game').addEventListener('click',()=>newGame());
+
+  function rng(min,max){const a=new Uint32Array(1);crypto.getRandomValues(a);return min+a[0]%(max-min+1);}
+
+  function buildColorButtons(){
+    const wrap=document.getElementById('color-buttons');
+    wrap.innerHTML='';
+    COLORS.forEach((c,i)=>{
+      const btn=document.createElement('button');
+      btn.className='color-btn';
+      btn.style.background=c;
+      btn.dataset.ci=i;
+      btn.addEventListener('click',()=>handlePick(i));
+      wrap.appendChild(btn);
+    });
+  }
+
+  function newGame(){
+    maxMoves=MAX_MOVES[size]||25;
+    grid=[];
+    for(let i=0;i<size*size;i++)grid.push(rng(0,COLORS.length-1));
+    moveCount=0;seconds=0;gameActive=true;gameStarted=false;
+    clearInterval(timerInterval);
+    document.getElementById('moves').textContent='0';
+    document.getElementById('max-moves').textContent=maxMoves;
+    document.getElementById('timer').textContent='0:00';
+    document.getElementById('game-over').style.display='none';
+    document.getElementById('near-miss').style.display='none';
+    updateBest();buildColorButtons();render();
+  }
+
+  function getFloodRegion(){
+    const visited=new Set();
+    const color=grid[0];
+    const queue=[0];
+    visited.add(0);
+    while(queue.length){
+      const cur=queue.shift();
+      const r=Math.floor(cur/size),c=cur%size;
+      const neighbors=[[r-1,c],[r+1,c],[r,c-1],[r,c+1]];
+      for(const [nr,nc] of neighbors){
+        if(nr<0||nr>=size||nc<0||nc>=size)continue;
+        const ni=nr*size+nc;
+        if(visited.has(ni))continue;
+        if(grid[ni]===color){visited.add(ni);queue.push(ni);}
+      }
+    }
+    return visited;
+  }
+
+  function floodFill(colorIdx){
+    const region=getFloodRegion();
+    const oldColor=grid[0];
+    if(oldColor===colorIdx)return 0;
+    for(const idx of region)grid[idx]=colorIdx;
+    // Expand: absorb adjacent cells of the new color
+    let changed=true;
+    while(changed){
+      changed=false;
+      const current=getFloodRegion();
+      for(const idx of current){
+        const r=Math.floor(idx/size),c=idx%size;
+        const neighbors=[[r-1,c],[r+1,c],[r,c-1],[r,c+1]];
+        for(const [nr,nc] of neighbors){
+          if(nr<0||nr>=size||nc<0||nc>=size)continue;
+          const ni=nr*size+nc;
+          if(!current.has(ni)&&grid[ni]===colorIdx){changed=true;}
+        }
+      }
+      if(!changed)break;
+      const expanded=getFloodRegion();
+      if(expanded.size===current.size)break;
+    }
+    return getFloodRegion().size-region.size;
+  }
+
+  function handlePick(colorIdx){
+    if(!gameActive)return;
+    if(grid[0]===colorIdx)return;
+    if(!gameStarted){gameStarted=true;trackGameStart('color-flood','Puzzle');timerInterval=setInterval(()=>{seconds++;const m=Math.floor(seconds/60),s=seconds%60;document.getElementById('timer').textContent=`${m}:${String(s).padStart(2,'0')}`;},1000);}
+
+    const gained=floodFill(colorIdx);
+    moveCount++;
+    document.getElementById('moves').textContent=moveCount;
+
+    if(gained>=5)playCollect();
+    else if(gained>0)playScoreUp(gained*40);
+    else playClick();
+
+    render();
+
+    const region=getFloodRegion();
+    if(region.size===size*size){endGame(true);return;}
+    if(moveCount>=maxMoves){endGame(false);return;}
+  }
+
+  function render(){
+    const board=document.getElementById('board');
+    board.innerHTML='';
+    const cellSize=Math.min(28,Math.floor((window.innerWidth-64)/size));
+    board.style.gridTemplateColumns=`repeat(${size},${cellSize}px)`;
+    board.style.gridTemplateRows=`repeat(${size},${cellSize}px)`;
+
+    const region=getFloodRegion();
+    for(let i=0;i<size*size;i++){
+      const cell=document.createElement('div');
+      cell.className='flood-cell';
+      cell.style.width=cellSize+'px';cell.style.height=cellSize+'px';
+      cell.style.background=COLORS[grid[i]];
+      if(region.has(i))cell.style.opacity='1';
+      else cell.style.opacity='0.85';
+      board.appendChild(cell);
+    }
+
+    const pct=Math.round(region.size/(size*size)*100);
+    document.getElementById('pct').textContent=pct;
+
+    // Update current color indicator
+    document.querySelectorAll('.color-btn').forEach(b=>{
+      b.classList.toggle('current',parseInt(b.dataset.ci)===grid[0]);
+    });
+
+    // Near miss
+    if(gameActive&&pct>=85&&pct<100){
+      document.getElementById('near-miss').style.display='block';
+      document.getElementById('near-miss').textContent=pct>=95?'⚡ Almost flooded!':'🔥 So close!';
+    } else document.getElementById('near-miss').style.display='none';
+  }
+
+  function endGame(won){
+    gameActive=false;clearInterval(timerInterval);session.rounds++;session.totalTime+=seconds;
+    if(won){
+      session.wins++;streak++;
+      if(!best[size]||moveCount<best[size]){
+        best[size]=moveCount;
+        document.getElementById('go-title').textContent='🏆 NEW BEST!';document.getElementById('go-title').style.color='#D97706';
+        playPerfect();setTimeout(()=>playLevelUp(),300);
+      } else{
+        document.getElementById('go-title').textContent='🎨 Board Flooded!';document.getElementById('go-title').style.color='#059669';
+        playSuccess();
+      }
+      document.getElementById('go-sub').textContent=`Flooded in ${moveCount}/${maxMoves} moves · ${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`;
+    } else{
+      streak=0;
+      document.getElementById('go-title').textContent='💧 Out of Moves';document.getElementById('go-title').style.color='#DC2626';
+      const pct=Math.round(getFloodRegion().size/(size*size)*100);
+      document.getElementById('go-sub').textContent=`Reached ${pct}% — so close!`;
+      playGameOver();
+    }
+    document.getElementById('streak').textContent=streak;updateBest();
+    trackGameOver('color-flood','Puzzle',won?moveCount:0,seconds);
+    const elapsed=Math.round((Date.now()-session.startTime)/1000);const mins=Math.floor(elapsed/60),secs=elapsed%60;
+    document.getElementById('session-stats').innerHTML=`🎮 This Session<br>─────────────────────<br>Rounds played   ${session.rounds}<br>Wins            ${session.wins}<br>Best (${size}×${size})   ${best[size]?best[size]+' moves':'---'}<br>Current streak  ${streak} ${streak>=3?'🔥':''}<br>Time played     ${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+    document.getElementById('game-over').style.display='block';document.getElementById('play-again').focus();
+  }
+
+  function formatBest(){return best[size]?best[size]+' moves':'---';}
+  function updateBest(){document.getElementById('best').textContent=formatBest();}
+
+  document.getElementById('play-again').addEventListener('click',()=>{playClick();newGame();});
+  document.addEventListener('keydown',e=>{
+    if(!gameActive&&(e.key==='Enter'||e.key===' ')){e.preventDefault();playClick();newGame();return;}
+    if(gameActive&&e.key>='1'&&e.key<='6'){handlePick(parseInt(e.key)-1);}
+  });
+
+  newGame();
+  </script>
+</body>
+</html>

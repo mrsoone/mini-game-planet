@@ -334,7 +334,7 @@ export const games = [
     icon: '🎨',
     accent: '#2563EB',
     keywords: ['color flood', 'flood fill', 'color puzzle', 'board clear'],
-    built: false
+    built: true
   },
   {
     name: 'Jigsaw Puzzle',
@@ -417,7 +417,7 @@ export const games = [
     icon: '🔍',
     accent: '#D97706',
     keywords: ['word search', 'word find', 'grid words', 'hidden words'],
-    built: false
+    built: true
   },
   {
     name: 'Anagram Scramble',
