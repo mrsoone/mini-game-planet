@@ -22,16 +22,16 @@ function renderNav(gameName) {
   if (!el) return;
 
   el.innerHTML = `
-    <nav style="position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:2px solid #0F172A;height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;max-width:100%;">
-      <a href="/" style="display:flex;align-items:center;gap:6px;text-decoration:none;">
-        <span style="font-size:20px;">🎮</span>
-        <span style="font-weight:700;font-size:16px;color:#0F172A;">MiniGame</span><span class="hero-grad" style="font-weight:700;font-size:16px;">Planet</span>
+    <nav style="position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:2px solid #0F172A;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;max-width:100%;">
+      <a href="/" style="display:flex;align-items:center;gap:8px;text-decoration:none;">
+        <img src="/images/logo.png" alt="Mini Game Planet" style="height:32px;width:auto;">
+        <span style="font-weight:700;font-size:18px;color:#0F172A;">Mini Game Planet</span>
       </a>
-      <div style="display:flex;align-items:center;gap:16px;">
-        <a href="/blog" style="font-size:12px;font-weight:500;color:#94A3B8;text-decoration:none;transition:color 0.15s;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">Blog</a>
-        <a href="/about" style="font-size:12px;font-weight:500;color:#94A3B8;text-decoration:none;transition:color 0.15s;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">About</a>
-        <a href="/privacy" style="font-size:12px;font-weight:500;color:#94A3B8;text-decoration:none;transition:color 0.15s;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">Privacy</a>
-        <button id="sound-toggle-nav" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:4px;">
+      <div style="display:flex;align-items:center;gap:18px;">
+        <a href="/blog" style="font-size:14px;font-weight:500;color:#94A3B8;text-decoration:none;transition:color 0.15s;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">Blog</a>
+        <a href="/about" style="font-size:14px;font-weight:500;color:#94A3B8;text-decoration:none;transition:color 0.15s;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">About</a>
+        <a href="/privacy" style="font-size:14px;font-weight:500;color:#94A3B8;text-decoration:none;transition:color 0.15s;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">Privacy</a>
+        <button id="sound-toggle-nav" style="background:#0F172A;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:4px;">
           <span id="sound-icon-nav">🔊</span> Sound
         </button>
       </div>
@@ -57,20 +57,20 @@ function renderFooter() {
   if (!el) return;
 
   el.innerHTML = `
-    <footer style="border-top:2px solid #0F172A;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;max-width:100%;">
-      <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#64748B;">
-        <span>🎮</span>
-        <span>MiniGamePlanet &copy; 2025</span>
+    <footer style="border-top:2px solid #0F172A;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;max-width:100%;">
+      <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:#64748B;">
+        <img src="/images/logo.png" alt="" style="height:20px;width:auto;">
+        <span>Mini Game Planet &copy; 2026</span>
       </div>
-      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-        <a href="/sitemap.xml" style="font-size:11px;color:#94A3B8;text-decoration:none;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">Sitemap</a>
-        <a href="/blog" style="font-size:11px;color:#94A3B8;text-decoration:none;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">Blog</a>
-        <a href="/about" style="font-size:11px;color:#94A3B8;text-decoration:none;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">About</a>
-        <a href="/privacy" style="font-size:11px;color:#94A3B8;text-decoration:none;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">Privacy</a>
-        <a href="/terms" style="font-size:11px;color:#94A3B8;text-decoration:none;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">Terms</a>
-        <a href="/cookies" style="font-size:11px;color:#94A3B8;text-decoration:none;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">Cookies</a>
-        <a href="/licenses" style="font-size:11px;color:#94A3B8;text-decoration:none;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">Licenses</a>
-        <button id="footer-cookie-settings" style="font-size:11px;color:#94A3B8;background:none;border:none;cursor:pointer;padding:0;font-family:inherit;text-decoration:underline;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">Cookie Settings</button>
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+        <a href="/sitemap.xml" style="font-size:13px;color:#94A3B8;text-decoration:none;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">Sitemap</a>
+        <a href="/blog" style="font-size:13px;color:#94A3B8;text-decoration:none;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">Blog</a>
+        <a href="/about" style="font-size:13px;color:#94A3B8;text-decoration:none;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">About</a>
+        <a href="/privacy" style="font-size:13px;color:#94A3B8;text-decoration:none;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">Privacy</a>
+        <a href="/terms" style="font-size:13px;color:#94A3B8;text-decoration:none;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">Terms</a>
+        <a href="/cookies" style="font-size:13px;color:#94A3B8;text-decoration:none;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">Cookies</a>
+        <a href="/licenses" style="font-size:13px;color:#94A3B8;text-decoration:none;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">Licenses</a>
+        <button id="footer-cookie-settings" style="font-size:13px;color:#94A3B8;background:none;border:none;cursor:pointer;padding:0;font-family:inherit;text-decoration:underline;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">Cookie Settings</button>
       </div>
     </footer>
   `;
@@ -119,17 +119,17 @@ function buildGameCard(g) {
   return `
     <a href="/games/${g.slug}" style="text-decoration:none;display:block;">
       <div class="game-tile" style="
-        position:relative;overflow:hidden;border-radius:12px;height:160px;
+        position:relative;overflow:hidden;border-radius:14px;height:200px;
         background:${accent};cursor:pointer;transition:transform 0.16s ease, box-shadow 0.16s ease;
-      " onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px ${accent}55';" onmouseout="this.style.transform='';this.style.boxShadow='';">
-        <div style="position:absolute;bottom:-10px;right:-10px;font-size:120px;opacity:0.1;transform:rotate(-12deg);line-height:1;transition:opacity 0.2s,transform 0.2s;" class="tile-bg-emoji">${g.icon}</div>
+      " onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 28px ${accent}55';" onmouseout="this.style.transform='';this.style.boxShadow='';">
+        <div style="position:absolute;bottom:-10px;right:-10px;font-size:140px;opacity:0.1;transform:rotate(-12deg);line-height:1;transition:opacity 0.2s,transform 0.2s;" class="tile-bg-emoji">${g.icon}</div>
         <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,0.35) 0%, transparent 100%);pointer-events:none;"></div>
-        <div style="position:absolute;bottom:12px;left:12px;right:12px;z-index:1;">
-          <div style="font-size:32px;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));margin-bottom:4px;">${g.icon}</div>
-          <div style="color:#fff;font-weight:700;font-size:15px;text-shadow:0 1px 3px rgba(0,0,0,0.3);line-height:1.2;">${g.name}</div>
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px;">
-            <span style="color:rgba(255,255,255,0.7);font-size:10px;">${g.category}</span>
-            <span class="tile-play-cta" style="color:#fff;font-size:10px;font-weight:900;opacity:0;transform:translateX(-8px);transition:opacity 0.15s,transform 0.15s;">PLAY →</span>
+        <div style="position:absolute;bottom:14px;left:14px;right:14px;z-index:1;">
+          <div style="font-size:40px;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));margin-bottom:6px;">${g.icon}</div>
+          <div style="color:#fff;font-weight:700;font-size:18px;text-shadow:0 1px 3px rgba(0,0,0,0.3);line-height:1.2;">${g.name}</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
+            <span style="color:rgba(255,255,255,0.8);font-size:13px;">${g.category}</span>
+            <span class="tile-play-cta" style="color:#fff;font-size:13px;font-weight:900;opacity:0;transform:translateX(-8px);transition:opacity 0.15s,transform 0.15s;">PLAY →</span>
           </div>
         </div>
       </div>
