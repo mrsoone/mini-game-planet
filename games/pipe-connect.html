@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Pipe Connect Online — Play Instantly | MiniGamePlanet</title>
+  <meta name="description" content="Play Pipe Connect free online. Rotate pipe segments to connect the water flow from source to drain. Three grid sizes with increasing difficulty.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/pipe-connect">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500});gtag('config','G-XXXXXXXXXX');</script>
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
+  <meta property="og:type" content="website"><meta property="og:title" content="Free Pipe Connect Online | MiniGamePlanet"><meta property="og:description" content="Play Pipe Connect free. Rotate pipes to connect water flow."><meta property="og:url" content="https://minigameplanet.com/games/pipe-connect"><meta property="og:site_name" content="MiniGamePlanet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Pipe Connect","url":"https://minigameplanet.com/games/pipe-connect","description":"Play Pipe Connect free online. Rotate pipe segments to connect water flow.","genre":"Puzzle","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <style>
+    .hero-grad{background:linear-gradient(135deg,#0891B2 0%,#2563EB 22%,#7C3AED 44%,#E11D48 66%,#EA580C 82%,#D97706 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:heroShift 8s ease-in-out infinite}
+    @keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+    .pipe-cell{border:1px solid #E2E8F0;cursor:pointer;transition:transform 0.15s ease;position:relative;overflow:hidden}
+    .pipe-cell:hover{background:#F8FAFC}
+    .pipe-cell:active{transform:scale(0.95)}
+    .pipe-cell.connected{background:#EFF6FF}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;" id="game-wrap">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <div><h1 style="font-size:22px;font-weight:700;margin:0;">🔧 Pipe Connect</h1>
+        <p style="font-size:12px;color:#94A3B8;margin:2px 0 0;">Click to rotate · Connect all pipes</p></div>
+        <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊 Sound</button>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+        <button class="sz-btn" data-sz="5" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #2563EB;background:#2563EB;color:#fff;cursor:pointer;font-family:inherit;">5×5</button>
+        <button class="sz-btn" data-sz="7" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">7×7</button>
+        <button class="sz-btn" data-sz="9" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">9×9</button>
+        <button id="new-game" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">🔄 New</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:10px;padding:6px 10px;background:#F8FAFC;border-radius:8px;flex-wrap:wrap;">
+        <span style="font-family:'DM Mono',monospace;font-size:13px;font-weight:600;">🔢 Moves: <span id="moves">0</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;">⏱ <span id="timer">0:00</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;">🔥 <span id="streak">0</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;">🏆 <span id="best">---</span></span>
+      </div>
+      <div id="near-miss" style="display:none;text-align:center;padding:3px;font-size:12px;font-weight:600;color:#D97706;margin-bottom:4px;"></div>
+      <div style="display:flex;justify-content:center;margin-bottom:12px;"><div id="board" style="display:inline-grid;gap:0;"></div></div>
+      <div id="game-over" style="display:none;text-align:center;padding:20px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;">
+        <div id="go-title" style="font-size:24px;font-weight:700;margin-bottom:4px;"></div>
+        <div id="go-sub" style="font-size:14px;color:#64748B;margin-bottom:12px;"></div>
+        <div id="session-stats" style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;text-align:left;max-width:220px;margin:0 auto 16px;padding:12px;background:#fff;border-radius:8px;"></div>
+        <button id="play-again" style="padding:10px 28px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">▶ Play Again</button>
+        <p style="font-size:11px;color:#94A3B8;margin-top:6px;">Enter or Space to restart</p>
+      </div>
+    </div>
+  </main>
+
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play Pipe Connect</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>Pipe Connect is a rotation-based puzzle where you arrange a network of pipes by clicking to rotate them until every pipe is properly connected. The goal is to create a fully connected network with no loose ends — every opening of every pipe must connect to an adjacent pipe's opening. Think of it as plumbing: water needs to flow through every piece without leaking anywhere.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">How to Play</h3>
+      <p>Each cell contains a pipe segment: straight pipes connect two opposite sides, corner pipes connect two adjacent sides, T-pipes connect three sides, and cross pipes connect all four. Click any cell to rotate its pipe 90° clockwise. Keep rotating until all pipes form a single connected network. The board starts scrambled — every pipe has been randomly rotated, so the solution exists but needs to be uncovered through rotation.</p>
+      <p>Connected pipes glow blue to show water flow. When every pipe on the board is connected, you win. Choose from 5×5, 7×7, or 9×9 grids for increasing challenge.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">History &amp; Origin</h3>
+      <p>Pipe puzzles trace their lineage to the classic Windows game "Pipe Dream" (also known as "Pipe Mania"), released in 1989 by The Assembly Line for Lucasfilm Games. In that version, you placed pipe pieces before water started flowing. The rotation variant — where all pieces are already placed but need to be oriented — became popular in the 2000s through web and mobile games. The concept has appeared in countless puzzle collections, escape rooms, and even as minigames within larger titles like BioShock and Mass Effect. Read more puzzle history in our <a href="/blog/best-puzzle-games-online" class="text-blue-600 underline">best puzzle games online</a> article.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Strategy &amp; Tips</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Start from the edges and corners.</strong> Edge pipes have fewer valid orientations because some directions face off the board. Corner cells are even more constrained — solve those first.</li>
+        <li><strong>Use the blue glow.</strong> Connected pipes highlight in blue. Extend the connected region outward from what's already solved.</li>
+        <li><strong>Dead ends are clues.</strong> If a pipe has an opening facing off the board or into a wall, it must be rotated. These forced moves cascade into solving adjacent cells.</li>
+        <li><strong>Work systematically.</strong> Solve row by row or corner to corner. Random clicking wastes moves.</li>
+      </ul>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Frequently Asked Questions</h3>
+      <h4 class="font-semibold text-slate-800">Is every Pipe Connect puzzle solvable?</h4>
+      <p>Yes. Puzzles are generated by first creating a valid connected network, then randomly rotating each piece. The original orientation always serves as the solution.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">What is the best size to start with?</h4>
+      <p>Start with 5×5 to learn the patterns, then graduate to 7×7 and 9×9. Larger grids aren't necessarily harder — they just have more cells, but edges and corners still provide strong starting points.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">Is Pipe Connect the same as Pipe Dream?</h4>
+      <p>No. Pipe Dream is a real-time game where you place pipes before water flows. Pipe Connect is a turn-based puzzle where all pipes are placed but need rotating. Both involve pipes, but they are fundamentally different game types.</p>
+      <p class="mt-6">Play Pipe Connect free in your browser. Rotate pipes, trace the flow, and connect every piece.</p>
+    </div>
+  </article>
+  <div id="related-games"></div>
+  <div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playDrop, playLock, playFlip } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+  document.addEventListener('click',()=>initAudio(),{once:true});
+  initToolPage('pipe-connect'); initConsent(); trackGameView('pipe-connect','Puzzle');
+
+  // Directions: 0=up, 1=right, 2=down, 3=left
+  const DR=[-1,0,1,0], DC=[0,1,0,-1];
+  const OPP=[2,3,0,1];
+
+  // Pipe types: array of directions connected
+  // straight: [0,2] or [1,3]
+  // corner: [0,1],[1,2],[2,3],[3,0]
+  // tee: [0,1,2],[1,2,3],[2,3,0],[3,0,1]
+  // cross: [0,1,2,3]
+
+  let size=5, grid=[], moveCount=0, timerInterval, seconds=0, gameActive=false, gameStarted=false;
+  let streak=0, best={5:null,7:null,9:null};
+  let session={rounds:0,wins:0,totalTime:0,startTime:Date.now()};
+
+  document.getElementById('sound-btn').addEventListener('click',()=>{initAudio();const m=muteAll();document.getElementById('sound-btn').textContent=m?'🔇 Sound':'🔊 Sound';});
+
+  document.querySelectorAll('.sz-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      size=parseInt(btn.dataset.sz);
+      document.querySelectorAll('.sz-btn').forEach(b=>{b.style.background='#fff';b.style.color='#334155';b.style.borderColor='#E5E7EB';});
+      btn.style.background='#2563EB';btn.style.color='#fff';btn.style.borderColor='#2563EB';
+      newGame();
+    });
+  });
+  document.getElementById('new-game').addEventListener('click',()=>newGame());
+
+  function rng(min,max){const a=new Uint32Array(1);crypto.getRandomValues(a);return min+a[0]%(max-min+1);}
+
+  function generateMaze(){
+    const visited=Array(size*size).fill(false);
+    const connections=Array.from({length:size*size},()=>new Set());
+    const stack=[];
+    const start=0;
+    visited[start]=true;stack.push(start);
+
+    while(stack.length>0){
+      const cur=stack[stack.length-1];
+      const r=Math.floor(cur/size),c=cur%size;
+      const neighbors=[];
+      for(let d=0;d<4;d++){
+        const nr=r+DR[d],nc=c+DC[d];
+        if(nr>=0&&nr<size&&nc>=0&&nc<size&&!visited[nr*size+nc])neighbors.push({d,idx:nr*size+nc});
+      }
+      if(neighbors.length===0){stack.pop();continue;}
+      const {d,idx}=neighbors[rng(0,neighbors.length-1)];
+      visited[idx]=true;
+      connections[cur].add(d);
+      connections[idx].add(OPP[d]);
+      stack.push(idx);
+    }
+
+    // Optionally add some extra connections for more interesting puzzles
+    for(let i=0;i<Math.floor(size*size*0.15);i++){
+      const r=rng(0,size-1),c=rng(0,size-1);
+      const d=rng(0,3);
+      const nr=r+DR[d],nc=c+DC[d];
+      if(nr>=0&&nr<size&&nc>=0&&nc<size){
+        connections[r*size+c].add(d);
+        connections[nr*size+nc].add(OPP[d]);
+      }
+    }
+
+    return connections;
+  }
+
+  function newGame(){
+    const connections=generateMaze();
+    grid=connections.map(dirs=>{
+      const sorted=[...dirs].sort();
+      return {dirs:sorted,rotation:0};
+    });
+
+    // Scramble by rotating each piece randomly
+    for(let i=0;i<grid.length;i++){
+      const rots=rng(1,3);
+      for(let r=0;r<rots;r++){
+        grid[i].dirs=grid[i].dirs.map(d=>(d+1)%4).sort();
+        grid[i].rotation=(grid[i].rotation+1)%4;
+      }
+    }
+    // Store solution directions
+    grid.forEach((cell,i)=>{cell.solution=[...connections[i]].sort();});
+
+    moveCount=0;seconds=0;gameActive=true;gameStarted=false;
+    clearInterval(timerInterval);
+    document.getElementById('moves').textContent='0';
+    document.getElementById('timer').textContent='0:00';
+    document.getElementById('game-over').style.display='none';
+    document.getElementById('near-miss').style.display='none';
+    updateBest();render();
+  }
+
+  function getConnected(){
+    const visited=new Set();
+    const queue=[0];
+    visited.add(0);
+    while(queue.length){
+      const cur=queue.shift();
+      const r=Math.floor(cur/size),c=cur%size;
+      for(const d of grid[cur].dirs){
+        const nr=r+DR[d],nc=c+DC[d];
+        if(nr<0||nr>=size||nc<0||nc>=size)continue;
+        const nIdx=nr*size+nc;
+        if(visited.has(nIdx))continue;
+        if(grid[nIdx].dirs.includes(OPP[d])){visited.add(nIdx);queue.push(nIdx);}
+      }
+    }
+    return visited;
+  }
+
+  function checkWin(){
+    for(let i=0;i<grid.length;i++){
+      const r=Math.floor(i/size),c=i%size;
+      for(const d of grid[i].dirs){
+        const nr=r+DR[d],nc=c+DC[d];
+        if(nr<0||nr>=size||nc<0||nc>=size)return false;
+        if(!grid[nr*size+nc].dirs.includes(OPP[d]))return false;
+      }
+    }
+    return true;
+  }
+
+  function drawPipe(canvas,dirs,isConnected){
+    const ctx=canvas.getContext('2d');
+    const w=canvas.width,h=canvas.height;
+    const cx=w/2,cy=h/2;
+    const pipeW=w*0.28;
+
+    ctx.clearRect(0,0,w,h);
+    ctx.lineCap='round';
+    ctx.lineJoin='round';
+
+    const color=isConnected?'#2563EB':'#94A3B8';
+    const bgColor=isConnected?'#DBEAFE':'#F1F5F9';
+
+    ctx.fillStyle=bgColor;
+    ctx.beginPath();ctx.arc(cx,cy,pipeW*0.7,0,Math.PI*2);ctx.fill();
+
+    ctx.strokeStyle=color;ctx.lineWidth=pipeW;
+
+    for(const d of dirs){
+      ctx.beginPath();ctx.moveTo(cx,cy);
+      if(d===0)ctx.lineTo(cx,0);
+      else if(d===1)ctx.lineTo(w,cy);
+      else if(d===2)ctx.lineTo(cx,h);
+      else ctx.lineTo(0,cy);
+      ctx.stroke();
+    }
+
+    ctx.fillStyle=color;
+    ctx.beginPath();ctx.arc(cx,cy,pipeW*0.5,0,Math.PI*2);ctx.fill();
+    if(isConnected){
+      ctx.fillStyle='#1D4ED8';
+      ctx.beginPath();ctx.arc(cx,cy,pipeW*0.2,0,Math.PI*2);ctx.fill();
+    }
+  }
+
+  function render(){
+    const board=document.getElementById('board');
+    board.innerHTML='';
+    const cellSize=Math.min(56,Math.floor((window.innerWidth-64)/size));
+    board.style.gridTemplateColumns=`repeat(${size},${cellSize}px)`;
+    board.style.gridTemplateRows=`repeat(${size},${cellSize}px)`;
+
+    const connected=getConnected();
+
+    let correctCount=0;
+    for(let i=0;i<grid.length;i++){
+      const r=Math.floor(i/size),c=i%size;
+      const cell=document.createElement('div');
+      cell.className='pipe-cell';
+      if(connected.has(i))cell.classList.add('connected');
+      cell.style.width=cellSize+'px';cell.style.height=cellSize+'px';
+
+      const canvas=document.createElement('canvas');
+      canvas.width=cellSize*2;canvas.height=cellSize*2;
+      canvas.style.width=cellSize+'px';canvas.style.height=cellSize+'px';
+      drawPipe(canvas,grid[i].dirs,connected.has(i));
+      cell.appendChild(canvas);
+
+      cell.addEventListener('click',()=>handleClick(i));
+      board.appendChild(cell);
+
+      if(JSON.stringify(grid[i].dirs)===JSON.stringify(grid[i].solution))correctCount++;
+    }
+
+    // Near miss
+    const pct=connected.size/grid.length;
+    if(gameActive&&pct>=0.85&&pct<1){
+      document.getElementById('near-miss').style.display='block';
+      document.getElementById('near-miss').textContent=pct>=0.95?'⚡ Almost connected!':'🔥 Nearly there!';
+    } else document.getElementById('near-miss').style.display='none';
+  }
+
+  function handleClick(i){
+    if(!gameActive)return;
+    if(!gameStarted){gameStarted=true;trackGameStart('pipe-connect','Puzzle');timerInterval=setInterval(()=>{seconds++;const m=Math.floor(seconds/60),s=seconds%60;document.getElementById('timer').textContent=`${m}:${String(s).padStart(2,'0')}`;},1000);}
+    grid[i].dirs=grid[i].dirs.map(d=>(d+1)%4).sort();
+    moveCount++;
+    document.getElementById('moves').textContent=moveCount;
+    playFlip();
+    render();
+    if(checkWin())endGame();
+  }
+
+  function endGame(){
+    gameActive=false;clearInterval(timerInterval);session.rounds++;session.wins++;session.totalTime+=seconds;streak++;
+    if(!best[size]||moveCount<best[size]){
+      best[size]=moveCount;
+      document.getElementById('go-title').textContent='🏆 NEW BEST!';document.getElementById('go-title').style.color='#D97706';
+      playPerfect();setTimeout(()=>playLevelUp(),300);
+    } else{
+      document.getElementById('go-title').textContent='🔧 All Connected!';document.getElementById('go-title').style.color='#059669';
+      playSuccess();
+    }
+    document.getElementById('go-sub').textContent=`Solved in ${moveCount} moves · ${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`;
+    document.getElementById('streak').textContent=streak;updateBest();
+    trackGameOver('pipe-connect','Puzzle',moveCount,seconds);
+    const elapsed=Math.round((Date.now()-session.startTime)/1000);const mins=Math.floor(elapsed/60),secs=elapsed%60;
+    document.getElementById('session-stats').innerHTML=`🎮 This Session<br>─────────────────────<br>Rounds played   ${session.rounds}<br>Wins            ${session.wins}<br>Best (${size}×${size})   ${best[size]||'---'} moves<br>Current streak  ${streak} ${streak>=3?'🔥':''}<br>Time played     ${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+    document.getElementById('game-over').style.display='block';document.getElementById('play-again').focus();
+  }
+
+  function formatBest(){return best[size]?best[size]+' moves':'---';}
+  function updateBest(){document.getElementById('best').textContent=formatBest();}
+
+  document.getElementById('play-again').addEventListener('click',()=>{playClick();newGame();});
+  document.addEventListener('keydown',e=>{if(!gameActive&&(e.key==='Enter'||e.key===' ')){e.preventDefault();playClick();newGame();}});
+
+  newGame();
+  </script>
+</body>
+</html>

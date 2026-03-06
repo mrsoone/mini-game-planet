@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Nonogram Online — Play Instantly | MiniGamePlanet</title>
+  <meta name="description" content="Play free Nonogram puzzles online. Reveal hidden pictures by filling cells using number clues. Sizes from 5x5 to 15x15. Also known as Picross.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/nonogram">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500});gtag('config','G-XXXXXXXXXX');</script>
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
+  <meta property="og:type" content="website"><meta property="og:title" content="Free Nonogram Online | MiniGamePlanet"><meta property="og:description" content="Play free Nonogram puzzles. Reveal hidden pictures by filling cells using number clues."><meta property="og:url" content="https://minigameplanet.com/games/nonogram"><meta property="og:site_name" content="MiniGamePlanet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Nonogram","url":"https://minigameplanet.com/games/nonogram","description":"Play free Nonogram puzzles online. Also known as Picross.","genre":"Puzzle","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <style>
+    .hero-grad{background:linear-gradient(135deg,#0891B2 0%,#2563EB 22%,#7C3AED 44%,#E11D48 66%,#EA580C 82%,#D97706 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:heroShift 8s ease-in-out infinite}
+    @keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+    .ng-cell{border:1px solid #CBD5E1;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background 0.1s;user-select:none}
+    .ng-cell.filled{background:#2563EB}
+    .ng-cell.marked{background:#F1F5F9}
+    .ng-cell.marked::after{content:'✕';color:#94A3B8;font-size:10px;font-weight:700}
+    .ng-cell:hover{background:#DBEAFE}
+    .ng-cell.filled:hover{background:#1D4ED8}
+    .clue-cell{display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:11px;font-weight:600;color:#64748B}
+    .clue-cell.done{color:#059669}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;" id="game-wrap">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <div><h1 style="font-size:22px;font-weight:700;margin:0;">🖼 Nonogram</h1>
+        <p style="font-size:12px;color:#94A3B8;margin:2px 0 0;">Left-click fill · Right-click mark X</p></div>
+        <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊 Sound</button>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+        <button class="sz-btn" data-sz="5" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #2563EB;background:#2563EB;color:#fff;cursor:pointer;font-family:inherit;">5×5</button>
+        <button class="sz-btn" data-sz="10" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">10×10</button>
+        <button class="sz-btn" data-sz="15" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">15×15</button>
+        <button id="new-puzzle" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">🔄 New</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:10px;padding:6px 10px;background:#F8FAFC;border-radius:8px;">
+        <span style="font-family:'DM Mono',monospace;font-size:13px;font-weight:600;">⏱ <span id="timer">0:00</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;">🔥 Streak: <span id="streak">0</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;">🏆 <span id="best">---</span></span>
+      </div>
+      <div id="near-miss" style="display:none;text-align:center;padding:3px;font-size:12px;font-weight:600;color:#D97706;margin-bottom:4px;"></div>
+      <div style="display:flex;justify-content:center;overflow-x:auto;margin-bottom:12px;"><div id="board"></div></div>
+      <div id="game-over" style="display:none;text-align:center;padding:20px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;">
+        <div id="go-title" style="font-size:24px;font-weight:700;margin-bottom:4px;"></div>
+        <div id="go-sub" style="font-size:14px;color:#64748B;margin-bottom:12px;"></div>
+        <div id="session-stats" style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;text-align:left;max-width:220px;margin:0 auto 16px;padding:12px;background:#fff;border-radius:8px;"></div>
+        <button id="play-again" style="padding:10px 28px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">▶ Play Again</button>
+        <p style="font-size:11px;color:#94A3B8;margin-top:6px;">Enter or Space to restart</p>
+      </div>
+    </div>
+  </main>
+
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play Nonogram</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>Nonograms — also called Picross, Griddlers, or Paint by Numbers — are logic puzzles where you reveal a hidden picture by filling in cells on a grid. The numbers along each row and column tell you how many consecutive filled cells appear in that line and in what order. By cross-referencing the row and column clues, you can deduce exactly which cells should be filled and which should remain empty. The result is a pixel-art image that emerges from pure logic.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">How to Play</h3>
+      <p>Each row and column has a set of numbers as clues. Each number represents a consecutive group of filled cells in that line. For example, a clue of "3 1" means there is a group of 3 filled cells, at least one empty cell, then a group of 1 filled cell. Left-click a cell to fill it (turns blue). Right-click or long-press to mark it with an X (indicating you know it should be empty). The puzzle is solved when every filled cell matches the hidden picture.</p>
+      <p>Three sizes are available: 5×5 for beginners, 10×10 for intermediate players, and 15×15 for a serious challenge. Each size has multiple built-in puzzles that generate different pictures.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">History &amp; Origin</h3>
+      <p>Nonograms were independently invented by two people in 1987. Japanese graphics editor Non Ishida won a competition with a puzzle she created by turning on and off lights in a skyscraper to form an image, while Japanese puzzle enthusiast Tetsuya Nishio invented the same concept around the same time. The puzzles were first published in Japan under the name "Window Art Puzzles" and quickly spread worldwide. Nintendo popularized the format with their Picross game series starting in 1995. To learn more, read our article on <a href="/blog/what-is-a-nonogram" class="text-blue-600 underline">What Is a Nonogram?</a></p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Strategy &amp; Tips</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Start with the largest clues.</strong> A clue of "7" on a 10-wide row means at least 7 cells must be filled — the overlap technique tells you which cells are guaranteed filled regardless of position.</li>
+        <li><strong>Use the overlap method.</strong> Slide the clue groups as far left as possible, then as far right. Any cells that are filled in both positions must be filled.</li>
+        <li><strong>Mark empty cells with X.</strong> Confirmed empty cells are just as valuable as confirmed filled cells. They narrow down possibilities for other clues.</li>
+        <li><strong>Check completed lines.</strong> When a line's clues are fully satisfied, mark all remaining empty cells with X.</li>
+      </ul>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Frequently Asked Questions</h3>
+      <h4 class="font-semibold text-slate-800">Do nonograms always have a unique solution?</h4>
+      <p>Well-designed nonograms have exactly one solution that can be reached through logic alone, without guessing. All puzzles on MiniGamePlanet are guaranteed to have unique solutions.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">Are nonograms good for your brain?</h4>
+      <p>Yes. Nonograms exercise logical deduction, spatial reasoning, and pattern recognition. They are a popular brain-training activity recommended by cognitive scientists.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">What is the difference between Nonogram and Picross?</h4>
+      <p>They are the same puzzle. "Picross" is Nintendo's trademarked name for their version. "Nonogram" is the generic name used everywhere else. Griddlers, Hanjie, and Paint by Numbers are other common names for the same concept.</p>
+      <p class="mt-6">Play Nonogram free in your browser — no download needed. Pick a grid size, study the clues, and start revealing the hidden picture.</p>
+    </div>
+  </article>
+  <div id="related-games"></div>
+  <div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playDrop, playLock } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+  document.addEventListener('click',()=>initAudio(),{once:true});
+  initToolPage('nonogram'); initConsent(); trackGameView('nonogram','Puzzle');
+
+  // Predefined puzzle patterns (1=filled)
+  const PUZZLES = {
+    5: [
+      [0,1,1,1,0, 1,0,0,0,1, 1,0,0,0,1, 1,0,0,0,1, 0,1,1,1,0],
+      [0,0,1,0,0, 0,1,1,1,0, 1,1,1,1,1, 0,1,1,1,0, 0,0,1,0,0],
+      [1,0,0,0,1, 0,1,0,1,0, 0,0,1,0,0, 0,1,0,1,0, 1,0,0,0,1],
+      [1,1,1,1,1, 1,0,0,0,0, 1,1,1,0,0, 1,0,0,0,0, 1,1,1,1,1],
+      [0,1,1,1,0, 1,0,0,0,1, 1,1,1,1,1, 1,0,1,0,1, 0,1,0,1,0],
+    ],
+    10: [
+      // Heart
+      [0,0,0,0,0,0,0,0,0,0, 0,1,1,0,0,0,1,1,0,0, 1,1,1,1,0,1,1,1,1,0, 1,1,1,1,1,1,1,1,1,0, 1,1,1,1,1,1,1,1,1,0, 0,1,1,1,1,1,1,1,0,0, 0,0,1,1,1,1,1,0,0,0, 0,0,0,1,1,1,0,0,0,0, 0,0,0,0,1,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0],
+      // Arrow
+      [0,0,0,0,1,0,0,0,0,0, 0,0,0,1,1,0,0,0,0,0, 0,0,1,1,1,0,0,0,0,0, 0,1,0,0,1,0,0,0,0,0, 1,0,0,0,1,1,1,1,1,1, 0,0,0,0,1,1,1,1,1,1, 0,1,0,0,1,0,0,0,0,0, 0,0,1,1,1,0,0,0,0,0, 0,0,0,1,1,0,0,0,0,0, 0,0,0,0,1,0,0,0,0,0],
+      // Star
+      [0,0,0,0,1,0,0,0,0,0, 0,0,0,1,1,1,0,0,0,0, 0,0,0,0,1,0,0,0,0,0, 1,1,1,1,1,1,1,1,1,0, 0,1,1,1,1,1,1,1,0,0, 0,0,1,1,1,1,1,0,0,0, 0,1,1,0,1,0,1,1,0,0, 1,1,0,0,0,0,0,1,1,0, 1,0,0,0,0,0,0,0,1,0, 0,0,0,0,0,0,0,0,0,0],
+    ],
+    15: [
+      // Smiley face 15x15
+      [...Array(15).fill(0),
+       0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,
+       0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,
+       0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,
+       0,1,0,0,1,1,0,0,0,1,1,0,0,1,0,
+       0,1,0,0,1,1,0,0,0,1,1,0,0,1,0,
+       0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,
+       0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,
+       0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,
+       0,1,0,1,0,0,0,0,0,0,0,1,0,1,0,
+       0,0,1,0,1,0,0,0,0,0,1,0,1,0,0,
+       0,0,0,1,0,1,1,1,1,1,0,1,0,0,0,
+       0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,
+       0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,
+       ...Array(15).fill(0)].slice(0,225),
+    ]
+  };
+
+  let size=5, target=[], userFilled=[], userMarked=[], timerInterval, seconds=0, gameActive=false, gameStarted=false;
+  let streak=0, best={5:null,10:null,15:null};
+  let session={rounds:0,wins:0,totalTime:0,startTime:Date.now()};
+  let combo=0, puzzleIdx={5:0,10:0,15:0};
+
+  document.getElementById('sound-btn').addEventListener('click',()=>{initAudio();const m=muteAll();document.getElementById('sound-btn').textContent=m?'🔇 Sound':'🔊 Sound';});
+
+  document.querySelectorAll('.sz-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      size=parseInt(btn.dataset.sz);
+      document.querySelectorAll('.sz-btn').forEach(b=>{b.style.background='#fff';b.style.color='#334155';b.style.borderColor='#E5E7EB';});
+      btn.style.background='#2563EB';btn.style.color='#fff';btn.style.borderColor='#2563EB';
+      newGame();
+    });
+  });
+  document.getElementById('new-puzzle').addEventListener('click',()=>{puzzleIdx[size]=(puzzleIdx[size]+1)%PUZZLES[size].length;newGame();});
+
+  function getClues(line){const clues=[];let run=0;for(const v of line){if(v)run++;else if(run){clues.push(run);run=0;}}if(run)clues.push(run);return clues.length?clues:[0];}
+
+  function newGame(){
+    const puzzles=PUZZLES[size];
+    target=puzzles[puzzleIdx[size]%puzzles.length].slice(0,size*size);
+    while(target.length<size*size)target.push(0);
+    userFilled=Array(size*size).fill(false);
+    userMarked=Array(size*size).fill(false);
+    seconds=0;clearInterval(timerInterval);gameActive=true;gameStarted=false;combo=0;
+    document.getElementById('timer').textContent='0:00';
+    document.getElementById('game-over').style.display='none';
+    document.getElementById('near-miss').style.display='none';
+    updateBest();
+    render();
+  }
+
+  function render(){
+    const rowClues=[],colClues=[];
+    for(let r=0;r<size;r++){const row=[];for(let c=0;c<size;c++)row.push(target[r*size+c]);rowClues.push(getClues(row));}
+    for(let c=0;c<size;c++){const col=[];for(let r=0;r<size;r++)col.push(target[r*size+c]);colClues.push(getClues(col));}
+    const maxRowClue=Math.max(...rowClues.map(r=>r.length));
+    const maxColClue=Math.max(...colClues.map(c=>c.length));
+    const cellSize=size<=5?36:size<=10?28:22;
+    const totalCols=maxRowClue+size;
+    const totalRows=maxColClue+size;
+
+    const board=document.getElementById('board');
+    board.innerHTML='';
+    board.style.display='inline-grid';
+    board.style.gridTemplateColumns=`repeat(${totalCols},${cellSize}px)`;
+    board.style.gridTemplateRows=`repeat(${totalRows},${cellSize}px)`;
+
+    // Check completed lines
+    const rowDone=rowClues.map((clues,r)=>{const user=[];for(let c=0;c<size;c++)user.push(userFilled[r*size+c]?1:0);return JSON.stringify(getClues(user))===JSON.stringify(clues);});
+    const colDone=colClues.map((clues,c)=>{const user=[];for(let r=0;r<size;r++)user.push(userFilled[r*size+c]?1:0);return JSON.stringify(getClues(user))===JSON.stringify(clues);});
+
+    // Top-left empty corner
+    for(let r=0;r<maxColClue;r++)for(let c=0;c<maxRowClue;c++){const d=document.createElement('div');board.appendChild(d);}
+    // Col clues
+    for(let r=0;r<maxColClue;r++)for(let c=0;c<size;c++){
+      const d=document.createElement('div');d.className='clue-cell';
+      const clue=colClues[c];const idx=r-(maxColClue-clue.length);
+      if(idx>=0)d.textContent=clue[idx];
+      if(colDone[c])d.classList.add('done');
+      board.appendChild(d);
+    }
+    // Rows
+    for(let r=0;r<size;r++){
+      const clue=rowClues[r];
+      for(let c=0;c<maxRowClue;c++){
+        const d=document.createElement('div');d.className='clue-cell';
+        const idx=c-(maxRowClue-clue.length);
+        if(idx>=0)d.textContent=clue[idx];
+        if(rowDone[r])d.classList.add('done');
+        board.appendChild(d);
+      }
+      for(let c=0;c<size;c++){
+        const idx=r*size+c;
+        const d=document.createElement('div');d.className='ng-cell';
+        d.style.width=cellSize+'px';d.style.height=cellSize+'px';
+        if(userFilled[idx])d.classList.add('filled');
+        else if(userMarked[idx])d.classList.add('marked');
+        if(c%5===0&&c>0)d.style.borderLeft='2px solid #94A3B8';
+        if(r%5===0&&r>0)d.style.borderTop='2px solid #94A3B8';
+        d.addEventListener('click',(e)=>{e.preventDefault();handleClick(idx);});
+        d.addEventListener('contextmenu',(e)=>{e.preventDefault();handleMark(idx);});
+        let lpt;
+        d.addEventListener('touchstart',()=>{lpt=setTimeout(()=>{handleMark(idx);lpt=-1;},400);},{passive:true});
+        d.addEventListener('touchend',(e)=>{if(lpt===-1){e.preventDefault();return;}clearTimeout(lpt);});
+        board.appendChild(d);
+      }
+    }
+
+    // Near miss
+    const filled=userFilled.filter(Boolean).length;
+    const totalFilled=target.filter(v=>v===1).length;
+    if(totalFilled>0){
+      const pct=filled/totalFilled;
+      if(pct>=0.85&&pct<1&&gameActive){
+        document.getElementById('near-miss').style.display='block';
+        document.getElementById('near-miss').textContent=pct>=0.95?'⚡ Almost done!':'🔥 Close to finishing!';
+      } else document.getElementById('near-miss').style.display='none';
+    }
+  }
+
+  function handleClick(idx){
+    if(!gameActive)return;
+    if(!gameStarted){gameStarted=true;trackGameStart('nonogram','Puzzle');timerInterval=setInterval(()=>{seconds++;const m=Math.floor(seconds/60),s=seconds%60;document.getElementById('timer').textContent=`${m}:${String(s).padStart(2,'0')}`;},1000);}
+    if(userMarked[idx]){userMarked[idx]=false;}
+    userFilled[idx]=!userFilled[idx];
+    if(userFilled[idx]&&target[idx]===1){combo++;if(combo>=5)playSuccess();else playScoreUp(combo*60);playLock();}
+    else if(userFilled[idx]&&target[idx]===0){combo=0;playError();}
+    else{combo=0;playClick();}
+    render();
+    if(checkWin())endGame(true);
+  }
+  function handleMark(idx){
+    if(!gameActive||userFilled[idx])return;
+    userMarked[idx]=!userMarked[idx];playClick();render();
+  }
+
+  function checkWin(){
+    for(let i=0;i<size*size;i++){if(target[i]===1&&!userFilled[i])return false;if(target[i]===0&&userFilled[i])return false;}
+    return true;
+  }
+
+  function endGame(won){
+    gameActive=false;clearInterval(timerInterval);session.rounds++;session.totalTime+=seconds;
+    if(won){session.wins++;streak++;
+      if(!best[size]||seconds<best[size]){best[size]=seconds;document.getElementById('go-title').textContent='🏆 NEW PERSONAL BEST!';document.getElementById('go-title').style.color='#D97706';playPerfect();setTimeout(()=>playLevelUp(),300);}
+      else{document.getElementById('go-title').textContent='✅ Puzzle Complete!';document.getElementById('go-title').style.color='#059669';playSuccess();}
+      const m=Math.floor(seconds/60),s=seconds%60;document.getElementById('go-sub').textContent=`Solved in ${m}:${String(s).padStart(2,'0')}`;
+    } else{streak=0;document.getElementById('go-title').textContent='❌ Not Quite';document.getElementById('go-title').style.color='#DC2626';playGameOver();}
+    document.getElementById('streak').textContent=streak;updateBest();
+    trackGameOver('nonogram','Puzzle',won?seconds:0,seconds);
+    const elapsed=Math.round((Date.now()-session.startTime)/1000);const mins=Math.floor(elapsed/60),secs=elapsed%60;
+    document.getElementById('session-stats').innerHTML=`🎮 This Session<br>─────────────────────<br>Rounds played   ${session.rounds}<br>Wins            ${session.wins}<br>Best time       ${formatBest()}<br>Current streak  ${streak} ${streak>=3?'🔥':''}<br>Time played     ${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+    document.getElementById('game-over').style.display='block';document.getElementById('play-again').focus();
+  }
+
+  function formatBest(){if(!best[size])return'---';const m=Math.floor(best[size]/60),s=best[size]%60;return`${m}:${String(s).padStart(2,'0')}`;}
+  function updateBest(){document.getElementById('best').textContent=formatBest();}
+
+  document.getElementById('play-again').addEventListener('click',()=>{playClick();puzzleIdx[size]=(puzzleIdx[size]+1)%PUZZLES[size].length;newGame();});
+  document.addEventListener('keydown',e=>{if(!gameActive&&(e.key==='Enter'||e.key===' ')){e.preventDefault();playClick();puzzleIdx[size]=(puzzleIdx[size]+1)%PUZZLES[size].length;newGame();}});
+
+  newGame();
+  </script>
+</body>
+</html>

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Tower of Hanoi Online — Play Instantly | MiniGamePlanet</title>
+  <meta name="description" content="Play the Tower of Hanoi free online. Move discs between pegs without placing larger on smaller. 3 to 7 discs with move counter and optimal tracking.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/tower-of-hanoi">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500});gtag('config','G-XXXXXXXXXX');</script>
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
+  <meta property="og:type" content="website"><meta property="og:title" content="Free Tower of Hanoi Online | MiniGamePlanet"><meta property="og:description" content="Play Tower of Hanoi free. Move discs between pegs — 3 to 7 discs."><meta property="og:url" content="https://minigameplanet.com/games/tower-of-hanoi"><meta property="og:site_name" content="MiniGamePlanet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Tower of Hanoi","url":"https://minigameplanet.com/games/tower-of-hanoi","description":"Play the Tower of Hanoi free online. Move discs between pegs.","genre":"Puzzle","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <style>
+    .hero-grad{background:linear-gradient(135deg,#0891B2 0%,#2563EB 22%,#7C3AED 44%,#E11D48 66%,#EA580C 82%,#D97706 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:heroShift 8s ease-in-out infinite}
+    @keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+    .peg-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;min-height:200px;cursor:pointer;padding:8px 4px;border-radius:8px;transition:background 0.15s}
+    .peg-area:hover{background:#F1F5F9}
+    .peg-area.highlight{background:#DBEAFE}
+    .peg-rod{width:6px;background:#94A3B8;border-radius:3px;position:absolute;bottom:0}
+    .disc{border-radius:6px;height:24px;margin-bottom:2px;transition:all 0.15s ease;cursor:grab}
+    .disc:active{cursor:grabbing}
+    .peg-base{width:100%;height:6px;background:#94A3B8;border-radius:3px;margin-top:4px}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;" id="game-wrap">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <div><h1 style="font-size:22px;font-weight:700;margin:0;">🗼 Tower of Hanoi</h1>
+        <p style="font-size:12px;color:#94A3B8;margin:2px 0 0;">Click a peg to pick up, click another to place</p></div>
+        <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊 Sound</button>
+      </div>
+      <!-- Disc count -->
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+        <button class="disc-btn" data-n="3" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #2563EB;background:#2563EB;color:#fff;cursor:pointer;font-family:inherit;">3 Discs</button>
+        <button class="disc-btn" data-n="4" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">4 Discs</button>
+        <button class="disc-btn" data-n="5" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">5 Discs</button>
+        <button class="disc-btn" data-n="6" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">6 Discs</button>
+        <button class="disc-btn" data-n="7" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">7 Discs</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:10px;padding:6px 10px;background:#F8FAFC;border-radius:8px;flex-wrap:wrap;">
+        <span style="font-family:'DM Mono',monospace;font-size:13px;font-weight:600;">🔢 Moves: <span id="moves">0</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;">⭐ Optimal: <span id="optimal">7</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;">⏱ <span id="timer">0:00</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;">🔥 <span id="streak">0</span></span>
+      </div>
+      <div id="near-miss" style="display:none;text-align:center;padding:3px;font-size:12px;font-weight:600;color:#D97706;margin-bottom:4px;"></div>
+      <!-- Pegs -->
+      <div id="pegs" style="display:flex;gap:8px;margin-bottom:12px;min-height:220px;"></div>
+      <!-- Game Over -->
+      <div id="game-over" style="display:none;text-align:center;padding:20px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;">
+        <div id="go-title" style="font-size:24px;font-weight:700;margin-bottom:4px;"></div>
+        <div id="go-sub" style="font-size:14px;color:#64748B;margin-bottom:12px;"></div>
+        <div id="session-stats" style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;text-align:left;max-width:220px;margin:0 auto 16px;padding:12px;background:#fff;border-radius:8px;"></div>
+        <button id="play-again" style="padding:10px 28px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">▶ Play Again</button>
+        <p style="font-size:11px;color:#94A3B8;margin-top:6px;">Enter or Space to restart</p>
+      </div>
+    </div>
+  </main>
+
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play Tower of Hanoi</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>The Tower of Hanoi is a classic mathematical puzzle that has fascinated mathematicians, computer scientists, and puzzle lovers for over a century. The goal is deceptively simple: move a stack of discs from one peg to another, one disc at a time, without ever placing a larger disc on top of a smaller one. With just three discs it takes a minimum of 7 moves. With seven discs, you need at least 127 perfectly planned moves.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">How to Play</h3>
+      <p>Click on a peg to pick up its top disc (it will lift and highlight). Then click on another peg to place it there. You can only place a disc on an empty peg or on top of a larger disc. The puzzle is solved when all discs are moved from the leftmost peg to the rightmost peg. You can choose between 3 and 7 discs — more discs means exponentially more moves required.</p>
+      <p>The optimal number of moves for n discs is 2ⁿ - 1. The game displays this target so you can try to match it. Solving in exactly the optimal number of moves is the mark of a perfect solution.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">History &amp; Origin</h3>
+      <p>The Tower of Hanoi was invented in 1883 by French mathematician Édouard Lucas. He sold it as a toy puzzle accompanied by a legend about monks in a temple moving 64 golden discs between three diamond pegs, following the same rules. According to the legend, when the monks complete the puzzle, the world will end — which, at one move per second, would take over 584 billion years. The puzzle became a fundamental example in computer science for teaching recursive algorithms, as the optimal solution is naturally expressed as a recursive function.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Strategy &amp; Tips</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Think recursively.</strong> To move n discs: move n-1 discs to the middle peg, move the largest disc to the target, then move n-1 discs from the middle to the target.</li>
+        <li><strong>Smallest disc moves first.</strong> In the optimal solution, the smallest disc moves on every odd-numbered turn, always in the same direction (clockwise for odd numbers of discs, counterclockwise for even).</li>
+        <li><strong>Start with 3 discs.</strong> Master the pattern with 3 discs (7 moves) before attempting higher counts.</li>
+        <li><strong>Never undo your last move.</strong> If you're following the optimal path, you should never need to reverse a move.</li>
+      </ul>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Frequently Asked Questions</h3>
+      <h4 class="font-semibold text-slate-800">How many moves does it take to solve Tower of Hanoi?</h4>
+      <p>The minimum number of moves is 2ⁿ - 1, where n is the number of discs. So 3 discs = 7 moves, 4 = 15, 5 = 31, 6 = 63, and 7 = 127 moves minimum.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">Why is Tower of Hanoi important in computer science?</h4>
+      <p>It is the textbook example of recursion — a problem-solving technique where a function calls itself to break a problem into smaller sub-problems. Every computer science student learns the Tower of Hanoi as their introduction to recursive thinking.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">Is there a non-recursive strategy?</h4>
+      <p>Yes. An iterative approach exists: alternate between moving the smallest disc and making the only valid non-smallest-disc move. This yields the optimal solution without recursive thinking. For more puzzle strategies, see our <a href="/blog/best-puzzle-games-online" class="text-blue-600 underline">best puzzle games</a> roundup.</p>
+      <p class="mt-6">Play Tower of Hanoi free in your browser. Choose your disc count, plan your moves, and aim for the optimal solution.</p>
+    </div>
+  </article>
+  <div id="related-games"></div>
+  <div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playDrop, playLock } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+  document.addEventListener('click',()=>initAudio(),{once:true});
+  initToolPage('tower-of-hanoi'); initConsent(); trackGameView('tower-of-hanoi','Puzzle');
+
+  const DISC_COLORS=['#2563EB','#0891B2','#0D9488','#059669','#D97706','#EA580C','#DC2626'];
+  let numDiscs=3, pegs=[[],[],[]], selectedPeg=-1, moveCount=0, timerInterval, seconds=0, gameActive=false, gameStarted=false;
+  let streak=0, best={}, session={rounds:0,wins:0,totalTime:0,startTime:Date.now()};
+
+  document.getElementById('sound-btn').addEventListener('click',()=>{initAudio();const m=muteAll();document.getElementById('sound-btn').textContent=m?'🔇 Sound':'🔊 Sound';});
+
+  document.querySelectorAll('.disc-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      numDiscs=parseInt(btn.dataset.n);
+      document.querySelectorAll('.disc-btn').forEach(b=>{b.style.background='#fff';b.style.color='#334155';b.style.borderColor='#E5E7EB';});
+      btn.style.background='#2563EB';btn.style.color='#fff';btn.style.borderColor='#2563EB';
+      newGame();
+    });
+  });
+
+  function optimal(){return Math.pow(2,numDiscs)-1;}
+
+  function newGame(){
+    pegs=[[],[],[]];
+    for(let i=numDiscs;i>=1;i--)pegs[0].push(i);
+    selectedPeg=-1;moveCount=0;seconds=0;gameActive=true;gameStarted=false;
+    clearInterval(timerInterval);
+    document.getElementById('moves').textContent='0';
+    document.getElementById('optimal').textContent=optimal();
+    document.getElementById('timer').textContent='0:00';
+    document.getElementById('game-over').style.display='none';
+    document.getElementById('near-miss').style.display='none';
+    render();
+  }
+
+  function render(){
+    const pegsEl=document.getElementById('pegs');
+    pegsEl.innerHTML='';
+    for(let p=0;p<3;p++){
+      const area=document.createElement('div');
+      area.className='peg-area';
+      if(p===selectedPeg)area.classList.add('highlight');
+      area.addEventListener('click',()=>handlePegClick(p));
+
+      const stack=document.createElement('div');
+      stack.style.display='flex';stack.style.flexDirection='column-reverse';stack.style.alignItems='center';stack.style.width='100%';
+
+      pegs[p].forEach((disc,i)=>{
+        const d=document.createElement('div');
+        d.className='disc';
+        const widthPct=30+((disc/numDiscs)*65);
+        d.style.width=widthPct+'%';
+        d.style.background=DISC_COLORS[(disc-1)%DISC_COLORS.length];
+        if(p===selectedPeg&&i===pegs[p].length-1){
+          d.style.transform='translateY(-10px)';d.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)';
+        }
+        stack.appendChild(d);
+      });
+
+      const base=document.createElement('div');base.className='peg-base';
+      area.appendChild(stack);area.appendChild(base);
+      pegsEl.appendChild(area);
+    }
+
+    // Near miss
+    if(gameActive&&pegs[2].length>=numDiscs*0.7&&pegs[2].length<numDiscs){
+      document.getElementById('near-miss').style.display='block';
+      document.getElementById('near-miss').textContent=pegs[2].length>=numDiscs-1?'⚡ One more!':'🔥 Almost there!';
+    } else document.getElementById('near-miss').style.display='none';
+  }
+
+  function handlePegClick(p){
+    if(!gameActive)return;
+    if(selectedPeg===-1){
+      if(pegs[p].length===0)return;
+      selectedPeg=p;playClick();
+    } else {
+      if(p===selectedPeg){selectedPeg=-1;playClick();render();return;}
+      const disc=pegs[selectedPeg][pegs[selectedPeg].length-1];
+      const topTarget=pegs[p].length>0?pegs[p][pegs[p].length-1]:Infinity;
+      if(disc>topTarget){playError();selectedPeg=-1;render();return;}
+
+      if(!gameStarted){gameStarted=true;trackGameStart('tower-of-hanoi','Puzzle');timerInterval=setInterval(()=>{seconds++;const m=Math.floor(seconds/60),s=seconds%60;document.getElementById('timer').textContent=`${m}:${String(s).padStart(2,'0')}`;},1000);}
+
+      pegs[selectedPeg].pop();pegs[p].push(disc);
+      selectedPeg=-1;moveCount++;
+      document.getElementById('moves').textContent=moveCount;
+      playDrop();
+
+      render();
+      if(pegs[2].length===numDiscs)endGame();
+    }
+    render();
+  }
+
+  // Keyboard: 1,2,3 for pegs
+  document.addEventListener('keydown',e=>{
+    if(!gameActive&&(e.key==='Enter'||e.key===' ')){e.preventDefault();playClick();newGame();return;}
+    if(e.key>='1'&&e.key<='3')handlePegClick(parseInt(e.key)-1);
+  });
+
+  function endGame(){
+    gameActive=false;clearInterval(timerInterval);session.rounds++;session.wins++;session.totalTime+=seconds;streak++;
+    const opt=optimal();const isOptimal=moveCount===opt;
+    const key=numDiscs;
+    if(!best[key]||moveCount<best[key]){
+      best[key]=moveCount;
+      document.getElementById('go-title').textContent=isOptimal?'⭐ PERFECT — Optimal!':'🏆 NEW BEST!';
+      document.getElementById('go-title').style.color='#D97706';
+      if(isOptimal){playPerfect();setTimeout(()=>playLevelUp(),300);}else{playSuccess();}
+    } else{
+      document.getElementById('go-title').textContent=isOptimal?'⭐ Optimal Solution!':'✅ Puzzle Complete!';
+      document.getElementById('go-title').style.color='#059669';playSuccess();
+    }
+    document.getElementById('go-sub').textContent=`${moveCount} moves (optimal: ${opt}) · ${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`;
+    document.getElementById('streak').textContent=streak;
+    trackGameOver('tower-of-hanoi','Puzzle',moveCount,seconds);
+    const elapsed=Math.round((Date.now()-session.startTime)/1000);const mins=Math.floor(elapsed/60),secs=elapsed%60;
+    document.getElementById('session-stats').innerHTML=`🎮 This Session<br>─────────────────────<br>Rounds played   ${session.rounds}<br>Wins            ${session.wins}<br>Best (${numDiscs}d)      ${best[key]||'---'} moves<br>Current streak  ${streak} ${streak>=3?'🔥':''}<br>Time played     ${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+    document.getElementById('game-over').style.display='block';document.getElementById('play-again').focus();
+  }
+
+  document.getElementById('play-again').addEventListener('click',()=>{playClick();newGame();});
+  newGame();
+  </script>
+</body>
+</html>

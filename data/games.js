@@ -284,7 +284,7 @@ export const games = [
     icon: '🖼',
     accent: '#2563EB',
     keywords: ['nonogram', 'picross', 'griddler', 'picture logic'],
-    built: false
+    built: true
   },
   {
     name: 'Sliding Puzzle',
@@ -304,7 +304,7 @@ export const games = [
     icon: '🗼',
     accent: '#2563EB',
     keywords: ['tower of hanoi', 'disc puzzle', 'math puzzle', 'brain teaser'],
-    built: false
+    built: true
   },
   {
     name: 'Lights Out',
@@ -314,7 +314,7 @@ export const games = [
     icon: '💡',
     accent: '#2563EB',
     keywords: ['lights out', 'toggle puzzle', 'grid puzzle', 'logic game'],
-    built: false
+    built: true
   },
   {
     name: 'Pipe Connect',
@@ -324,7 +324,7 @@ export const games = [
     icon: '🔧',
     accent: '#2563EB',
     keywords: ['pipe puzzle', 'plumber game', 'connect pipes', 'rotation puzzle'],
-    built: false
+    built: true
   },
   {
     name: 'Color Flood',
