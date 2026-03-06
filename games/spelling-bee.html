@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Spelling Bee Online — Word Puzzle Game | MiniGamePlanet</title>
+  <meta name="description" content="Play Spelling Bee free online. Find words using 7 letters in a honeycomb. One center letter required. Score points for word length and pangrams. Reach Genius rank.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/spelling-bee">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500});gtag('config','G-XXXXXXXXXX');</script>
+  <!-- AdSense — uncomment after approval -->
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Free Spelling Bee Online | MiniGamePlanet">
+  <meta property="og:description" content="Find words using 7 letters in a honeycomb. Score points for word length and pangrams. Reach Genius rank.">
+  <meta property="og:url" content="https://minigameplanet.com/games/spelling-bee">
+  <meta property="og:site_name" content="MiniGamePlanet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Spelling Bee","url":"https://minigameplanet.com/games/spelling-bee","description":"Find words using 7 letters in a honeycomb. One center letter required. Score for word length and pangrams.","genre":"Word","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <style>
+    .sb-hex{width:52px;height:60px;clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:22px;font-weight:800;text-transform:uppercase;cursor:pointer;transition:all 0.15s;color:#1E293B;background:#FDE68A;border:2px solid #F59E0B;user-select:none}
+    .sb-hex:hover{transform:scale(1.08);background:#FCD34D;box-shadow:0 4px 12px rgba(245,158,11,0.4)}
+    .sb-hex.center{background:#F59E0B;color:#fff;border-color:#D97706;font-size:24px}
+    .sb-hex.center:hover{background:#D97706}
+    .sb-hex.disabled{opacity:0.5;cursor:default;pointer-events:none}
+    @keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}}.sb-pop{animation:pop 0.2s}
+    @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}.sb-shake{animation:shake 0.3s}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-2xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:20px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+        <h1 style="font-size:22px;font-weight:700;margin:0;">🐝 Spelling Bee</h1>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <button id="shuffle-btn" style="padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">🔀 Shuffle</button>
+          <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊 Sound</button>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:16px;flex-wrap:wrap;">
+        <div style="text-align:center;">
+          <div style="font-family:'DM Mono',monospace;font-size:28px;font-weight:800;color:#F59E0B;"><span id="score">0</span></div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:0.5px;color:#94A3B8;text-transform:uppercase;">Score</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-family:'DM Mono',monospace;font-size:18px;font-weight:700;color:#0F172A;"><span id="rank">Beginner</span></div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:0.5px;color:#94A3B8;text-transform:uppercase;">Rank</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-family:'DM Mono',monospace;font-size:14px;font-weight:600;color:#64748B;"><span id="found-count">0</span>/<span id="total-count">0</span></div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:0.5px;color:#94A3B8;text-transform:uppercase;">Words</div>
+        </div>
+      </div>
+      <!-- Honeycomb -->
+      <div id="honeycomb" style="display:flex;flex-direction:column;align-items:center;margin-bottom:20px;"></div>
+      <!-- Input -->
+      <div style="text-align:center;margin-bottom:12px;">
+        <input type="text" id="word-input" maxlength="15" placeholder="Type or click letters..." autocomplete="off" style="font-family:'DM Mono',monospace;font-size:18px;padding:12px 20px;border:2px solid #E5E7EB;border-radius:10px;width:100%;max-width:320px;text-align:center;text-transform:uppercase;">
+      </div>
+      <div id="message" style="text-align:center;min-height:28px;font-size:14px;font-weight:600;margin-bottom:12px;"></div>
+      <!-- Found words -->
+      <div style="margin-top:16px;">
+        <div style="font-size:12px;font-weight:700;color:#64748B;margin-bottom:8px;letter-spacing:0.5px;">FOUND WORDS</div>
+        <div id="found-words" style="display:flex;flex-wrap:wrap;gap:6px;min-height:40px;font-family:'DM Mono',monospace;font-size:14px;color:#334155;"></div>
+      </div>
+      <!-- New puzzle -->
+      <div style="text-align:center;margin-top:16px;">
+        <button id="new-puzzle" style="padding:10px 24px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">🐝 New Puzzle</button>
+      </div>
+      <!-- Session stats -->
+      <div id="session-stats" style="margin-top:16px;padding:12px;background:#F8FAFC;border-radius:8px;font-family:'DM Mono',monospace;font-size:11px;color:#64748B;"></div>
+    </div>
+  </main>
+
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play Spelling Bee</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>Spelling Bee is a word puzzle where you find as many words as possible using exactly seven letters arranged in a honeycomb. One letter sits in the center and must appear in every word you submit. The six outer letters surround it. Words must be at least four letters long and may only use letters from the honeycomb. Longer words score more points, and pangrams — words that use all seven letters — earn a bonus. Your goal is to reach the highest rank, from Beginner to Genius.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">How to Play</h3>
+      <p>When a puzzle loads, you see seven letters in a hexagonal honeycomb layout. The center letter (often highlighted in amber) is required in every valid word. Type your guesses using the keyboard or click the hexagons to build words. Press Enter to submit. Words must be at least four letters long and can only contain letters from the honeycomb. Each letter may be used more than once in a word. Use the Shuffle button to rearrange the outer letters if the layout feels awkward. Click New Puzzle to get a fresh set of letters with zero friction — no confirmation, no delay.</p>
+      <p>Scoring: 4-letter words earn 1 point, 5-letter words earn 2 points, 6-letter words earn 3 points, and words of 7 or more letters earn 5 points. Pangrams — words that use all seven letters at least once — earn an extra 7-point bonus. Your rank advances as your score increases: Beginner, Good Start, Moving Up, Good, Solid, Nice, Great, Amazing, and Genius.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">History</h3>
+      <p>The Spelling Bee puzzle format was popularized by The New York Times, which has run a daily Spelling Bee game since 2014. The concept draws on the long tradition of spelling bees — competitive events where contestants spell words aloud, often associated with American schools since the 19th century. The honeycomb layout and "one center letter" rule create a constrained but open-ended puzzle that rewards vocabulary, pattern recognition, and persistence. Unlike a traditional spelling bee, you are not given words to spell; you discover them yourself from the available letters.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Strategy &amp; Tips</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Start with the center letter.</strong> Every valid word must include it. Try common prefixes and suffixes: RE-, -ING, -ED, -ER, -EST, UN-, -LY, -TION.</li>
+        <li><strong>Look for pangrams first.</strong> Pangrams use all seven letters and give a 7-point bonus. Finding one early often unlocks the puzzle and suggests shorter words.</li>
+        <li><strong>Think of word families.</strong> If you find "RATE," try "RATED," "RATES," "RATING." If you find "LONG," try "LONGER," "LONGEST."</li>
+        <li><strong>Use the Shuffle button.</strong> Rearranging outer letters can spark new word ideas. Sometimes a different visual layout helps.</li>
+        <li><strong>Common letter combinations.</strong> Watch for -TION, -ING, -NESS, -ABLE, -MENT, -LESS, -FUL. These suffixes work with many stems.</li>
+      </ul>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Frequently Asked Questions</h3>
+      <h4 class="font-semibold text-slate-800">What is a pangram?</h4>
+      <p>A pangram is a word that uses all seven letters of the honeycomb at least once. For example, if the letters are R, A, C, E, I, L, N with R in the center, "CARLINE" (using C-A-R-L-I-N-E) would be a pangram. Pangrams earn a 7-point bonus on top of the normal word-length score.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">Can I use the same letter more than once?</h4>
+      <p>Yes. Words may repeat letters. For example, "BEE" would not count (only 3 letters), but "BEES" or "BEEF" would if those letters are in the honeycomb. The only rule is that you may only use the seven letters provided.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">What rank is Genius?</h4>
+      <p>Genius is the highest rank. The score needed varies by puzzle, since each puzzle has a different number of total points. Reaching Genius means you have found enough words to hit the top tier for that puzzle. A streak tracks how many puzzles in a row you have reached Genius.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">Are the puzzles the same every day?</h4>
+      <p>This version includes multiple pre-built puzzles. Each time you click New Puzzle, a random puzzle is selected using secure randomness. You can play as many different puzzles as you like in one session.</p>
+      <p class="mt-6">Play Spelling Bee free in your browser. Find words, score points, and reach Genius rank.</p>
+    </div>
+  </article>
+  <div id="related-games"></div>
+  <div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playError, playScoreUp, playLevelUp, playPerfect, playCollect } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+  document.addEventListener('click',()=>initAudio(),{once:true});
+  initToolPage('spelling-bee'); initConsent(); trackGameView('spelling-bee','Word');
+
+  const RANK_PCTS = [
+    { name:'Beginner', pct:0 },
+    { name:'Good Start', pct:0.02 },
+    { name:'Moving Up', pct:0.05 },
+    { name:'Good', pct:0.12 },
+    { name:'Solid', pct:0.25 },
+    { name:'Nice', pct:0.40 },
+    { name:'Great', pct:0.50 },
+    { name:'Amazing', pct:0.60 },
+    { name:'Genius', pct:0.70 }
+  ];
+
+  const PUZZLES = [
+    { center:'R', outer:['A','C','E','I','L','N'], words:['RAIN','REIN','RAIL','RILE','RICE','RACE','ACRE','CARE','REAL','LIAR','LAIR','NAIL','LAIN','LINE','LIEN','CARNIE','CARLINE','RECLINE','RELIANCE','CLARINE','RACINE','LANCER','CLEANER','RANCILE'] },
+    { center:'T', outer:['A','E','H','I','N','S'], words:['THAN','THEN','THIN','HEAT','HATE','NEAT','SEAT','EAST','TEAS','SATE','TANS','TENS','NETS','SENT','TENT','HINT','SHIN','SHINE','THINE','HINTS','SATIN','STAIN','SAINT','TAINTS','ATHENIANS'] },
+    { center:'L', outer:['A','E','I','O','P','T'], words:['LATE','LEAP','LEAT','LITE','LOPE','LOTE','LOOP','LOOT','PLOT','POLE','POET','PALE','PEAL','PATE','TAPE','PILOT','POLITE','APLITE','OPALITE','PALETTE','PELOTA','TOPAIL','PETAL','PLEAT','PLATE','LEAPT'] },
+    { center:'B', outer:['A','E','I','L','N','O'], words:['BANE','BEAN','BALE','ABLE','BEAL','BONE','BOLE','BOIL','BAIL','BILE','BINE','BANAL','BINAL','BONEL','BONIE','BONNIE'] },
+    { center:'D', outer:['E','I','N','O','R','U'], words:['DONE','DUNE','DINE','DORE','DIRE','DURN','DERN','REDO','RIDE','RIND','REND','UNDO','DINER','DINERO','DONOR','DRONE','ROUND','UNRODE','ROUNDED','UNDERDO'] },
+    { center:'G', outer:['A','E','I','N','R','T'], words:['GATE','GEAR','GENT','GIRT','GNAR','GNAT','GRAN','GREAT','GRATE','GRANT','TANGER','TANGIER','TEARING','GRATING','GRANITE','INGRATE','TANGERINE'] },
+    { center:'M', outer:['A','E','I','O','P','R'], words:['MARE','MORE','MOPE','ROAM','REAM','RAMP','ROPE','REAP','PEAR','AMORE','OPERA','PRIME','PRIMER','REPAIR','IMPAIR','IMPERIA'] },
+    { center:'S', outer:['A','C','E','I','L','T'], words:['SALE','SEAL','SEAT','SITE','SLAT','SLIT','STILE','STALE','STEAL','TILES','SLICE','LACES','LACETS','CASTLE','LATICES','ELASTIC','CITADELS'] }
+  ];
+
+  function rng(max){const a=new Uint32Array(1);crypto.getRandomValues(a);return a[0]%max;}
+  function pickPuzzle(){return PUZZLES[rng(PUZZLES.length)];}
+
+  function scoreWord(w,letterSet){
+    const len=w.length;
+    if(len<4)return 0;
+    const pts=len===4?1:len===5?2:len===6?3:5;
+    const used=new Set(w.toUpperCase());
+    const all7=[...letterSet].every(l=>used.has(l));
+    return pts+(all7?7:0);
+  }
+
+  function getRank(score,total){
+    const pct=total>0?score/total:0;
+    let rank='Beginner';
+    for(let i=RANK_PCTS.length-1;i>=0;i--){
+      if(pct>=RANK_PCTS[i].pct){rank=RANK_PCTS[i].name;break;}
+    }
+    return rank;
+  }
+
+  let puzzle,letters,validSet,found,score,totalPoints,gameStarted;
+  let session={puzzles:0,geniusStreak:0,geniusTotal:0,startTime:Date.now()};
+  const stored=JSON.parse(localStorage.getItem('mgp_sb_session')||'{}');
+  if(stored.geniusStreak)session.geniusStreak=stored.geniusStreak;
+  if(stored.geniusTotal)session.geniusTotal=stored.geniusTotal;
+
+  function initPuzzle(){
+    puzzle=pickPuzzle();
+    letters=[puzzle.center,...puzzle.outer];
+    validSet=new Set(puzzle.words.map(w=>w.toUpperCase()));
+    found=new Set();
+    score=0;
+    const letterSet=new Set([puzzle.center,...puzzle.outer]);
+    totalPoints=puzzle.words.reduce((s,w)=>s+scoreWord(w,letterSet),0);
+    gameStarted=false;
+    session.puzzles++;
+    document.getElementById('word-input').value='';
+    trackGameStart('spelling-bee','Word');
+    render();
+  }
+
+  function render(){
+    document.getElementById('score').textContent=score;
+    document.getElementById('rank').textContent=getRank(score,totalPoints);
+    document.getElementById('found-count').textContent=found.size;
+    document.getElementById('total-count').textContent=puzzle.words.length;
+    document.getElementById('message').textContent='';
+
+    const hc=document.getElementById('honeycomb');
+    hc.innerHTML='';
+    const outer=[...puzzle.outer];
+    function mkHex(l,isCenter){
+      const h=document.createElement('div');
+      h.className=isCenter?'sb-hex center':'sb-hex';
+      h.textContent=l;h.dataset.letter=l;
+      h.addEventListener('click',()=>addLetter(l));
+      return h;
+    }
+    const row1=document.createElement('div');
+    row1.style.display='flex';row1.style.gap='6px';row1.style.marginBottom='-14px';row1.style.justifyContent='center';
+    row1.appendChild(mkHex(outer[0],false));row1.appendChild(mkHex(outer[1],false));
+    hc.appendChild(row1);
+    const row2=document.createElement('div');
+    row2.style.display='flex';row2.style.gap='6px';row2.style.marginBottom='-14px';row2.style.justifyContent='center';
+    row2.appendChild(mkHex(outer[2],false));row2.appendChild(mkHex(puzzle.center,true));row2.appendChild(mkHex(outer[3],false));
+    hc.appendChild(row2);
+    const row3=document.createElement('div');
+    row3.style.display='flex';row3.style.gap='6px';row3.style.justifyContent='center';
+    row3.appendChild(mkHex(outer[4],false));row3.appendChild(mkHex(outer[5],false));
+    hc.appendChild(row3);
+
+    const fw=document.getElementById('found-words');
+    fw.innerHTML='';
+    [...found].sort().forEach(w=>{
+      const s=document.createElement('span');
+      s.textContent=w;s.style.background='#FEF3C7';s.style.padding='2px 8px';s.style.borderRadius='4px';
+      fw.appendChild(s);
+    });
+
+    const ss=document.getElementById('session-stats');
+    const elapsed=Math.round((Date.now()-session.startTime)/1000);
+    const m=Math.floor(elapsed/60),s=elapsed%60;
+    ss.innerHTML=`Session: ${session.puzzles} puzzles | Genius streak: ${session.geniusStreak} | Genius total: ${session.geniusTotal} | Time: ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  }
+
+  function addLetter(l){
+    const inp=document.getElementById('word-input');
+    inp.value+=l.toUpperCase();
+    inp.focus();
+    playClick();
+  }
+
+  function submitWord(){
+    const inp=document.getElementById('word-input');
+    const w=inp.value.trim().toUpperCase();
+    if(!w)return;
+    if(w.length<4){showMsg('Too short. Use 4+ letters.',true);return;}
+    const allowed=new Set(letters);
+    for(const c of w){if(!allowed.has(c)){showMsg('Invalid letters.',true);return;}}
+    if(!w.includes(puzzle.center)){showMsg('Must include center letter.',true);return;}
+    if(!validSet.has(w)){showMsg('Not in word list.',true);return;}
+    if(found.has(w)){showMsg('Already found.',true);return;}
+    gameStarted=true;
+    found.add(w);
+    const letterSet=new Set([puzzle.center,...puzzle.outer]);
+    const pts=scoreWord(w,letterSet);
+    score+=pts;
+    playSuccess();
+    if(pts>=12)playCollect();
+    showMsg(`+${pts} pts!`,false);
+    inp.value='';
+    render();
+    const rank=getRank(score,totalPoints);
+    if(rank==='Genius'){
+      session.geniusStreak++;
+      session.geniusTotal++;
+      localStorage.setItem('mgp_sb_session',JSON.stringify({geniusStreak:session.geniusStreak,geniusTotal:session.geniusTotal}));
+      playPerfect();
+      trackGameOver('spelling-bee','Word',1,score);
+    }
+  }
+
+  function showMsg(txt,err){
+    const m=document.getElementById('message');
+    m.textContent=txt;
+    m.style.color=err?'#DC2626':'#059669';
+    m.className=err?'sb-shake':'sb-pop';
+    setTimeout(()=>{m.textContent='';m.className='';},1200);
+    if(err)playError();
+  }
+
+  function shuffleOuter(){
+    const outer=[...puzzle.outer];
+    for(let i=outer.length-1;i>0;i--){const j=rng(i+1);[outer[i],outer[j]]=[outer[j],outer[i]];}
+    puzzle.outer=outer;
+    letters=[puzzle.center,...puzzle.outer];
+    playClick();
+    render();
+  }
+
+  document.getElementById('word-input').addEventListener('input',e=>{
+    const allowed=new Set([puzzle.center,...puzzle.outer]);
+    e.target.value=e.target.value.toUpperCase().replace(/[^A-Z]/g,'').split('').filter(c=>allowed.has(c)).join('');
+  });
+  document.getElementById('word-input').addEventListener('keydown',e=>{
+    if(e.key==='Enter'){e.preventDefault();submitWord();}
+    if(e.key==='Backspace')playClick();
+  });
+
+  document.getElementById('shuffle-btn').addEventListener('click',shuffleOuter);
+  document.getElementById('sound-btn').addEventListener('click',()=>{initAudio();const m=muteAll();document.getElementById('sound-btn').textContent=m?'🔇 Sound':'🔊 Sound';});
+  document.getElementById('new-puzzle').addEventListener('click',()=>{
+    playClick();
+    if(puzzle&&getRank(score,totalPoints)!=='Genius')session.geniusStreak=0;
+    initPuzzle();
+  });
+
+  initPuzzle();
+  </script>

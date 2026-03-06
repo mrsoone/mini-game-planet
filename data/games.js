@@ -397,7 +397,7 @@ export const games = [
     icon: '📝',
     accent: '#D97706',
     keywords: ['word guess', 'five letter word', 'daily word game', 'word puzzle'],
-    built: false
+    built: true
   },
   {
     name: 'Hangman',
@@ -407,7 +407,7 @@ export const games = [
     icon: '🪢',
     accent: '#D97706',
     keywords: ['hangman', 'word guessing', 'letter game', 'vocabulary game'],
-    built: false
+    built: true
   },
   {
     name: 'Word Search',
@@ -427,7 +427,7 @@ export const games = [
     icon: '🔠',
     accent: '#D97706',
     keywords: ['anagram', 'word scramble', 'unscramble', 'letter puzzle'],
-    built: false
+    built: true
   },
   {
     name: 'Typing Race',
@@ -437,7 +437,7 @@ export const games = [
     icon: '⌨',
     accent: '#D97706',
     keywords: ['typing test', 'typing race', 'wpm test', 'typing speed'],
-    built: false
+    built: true
   },
   {
     name: 'Mini Crossword',
@@ -447,7 +447,7 @@ export const games = [
     icon: '✏',
     accent: '#D97706',
     keywords: ['mini crossword', 'crossword puzzle', 'word puzzle', 'clue game'],
-    built: false
+    built: true
   },
   {
     name: 'Word Chain',
@@ -457,7 +457,7 @@ export const games = [
     icon: '🔗',
     accent: '#D97706',
     keywords: ['word chain', 'word ladder', 'letter change', 'word transform'],
-    built: false
+    built: true
   },
   {
     name: 'Spelling Bee',
@@ -467,7 +467,7 @@ export const games = [
     icon: '🐝',
     accent: '#D97706',
     keywords: ['spelling bee', 'honeycomb', 'word finder', 'vocabulary'],
-    built: false
+    built: true
   },
 
   // ─── CASINO (8) ───────────────────────────────────────────────

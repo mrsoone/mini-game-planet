@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Anagram Scramble Online — Unscramble Letters | MiniGamePlanet</title>
+  <meta name="description" content="Play Anagram Scramble free online. Unscramble jumbled letters to find the hidden word. Drag tiles or type your answer. Timer, hints, and three difficulty levels.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/anagram-scramble">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500});gtag('config','G-XXXXXXXXXX');</script>
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
+  <meta property="og:type" content="website"><meta property="og:title" content="Free Anagram Scramble Online | MiniGamePlanet"><meta property="og:description" content="Unscramble jumbled letters to find the hidden word. Drag tiles or type. Timer and hints."><meta property="og:url" content="https://minigameplanet.com/games/anagram-scramble"><meta property="og:site_name" content="MiniGamePlanet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Anagram Scramble","url":"https://minigameplanet.com/games/anagram-scramble","description":"Unscramble jumbled letters to find the hidden word. Drag tiles or type your answer.","genre":"Word","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <style>
+    .as-tile{width:48px;height:48px;border:2px solid #D1D5DB;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:20px;font-weight:700;text-transform:uppercase;cursor:grab;user-select:none;transition:all 0.15s;color:#1E293B;background:#fff}
+    .as-tile:hover{border-color:#2563EB;background:#EFF6FF}
+    .as-tile.dragging{opacity:0.6;cursor:grabbing;transform:scale(1.05)}
+    .as-tile.revealed{background:#22C55E;border-color:#16A34A;color:#fff;cursor:default}
+    .as-slot{width:48px;height:48px;border:2px dashed #CBD5E1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:20px;font-weight:700;text-transform:uppercase;color:#94A3B8;transition:all 0.15s;min-width:48px}
+    .as-slot.filled{border-style:solid;border-color:#94A3B8;color:#1E293B;background:#F8FAFC}
+    .as-slot.drag-over{border-color:#2563EB;background:#EFF6FF}
+    .as-slot.revealed{background:#22C55E;border-color:#16A34A;color:#fff}
+    @keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.1)}100%{transform:scale(1)}}.pop{animation:pop 0.2s}
+    @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}.shake{animation:shake 0.3s}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <h1 style="font-size:22px;font-weight:700;margin:0;">🔠 Anagram Scramble</h1>
+        <div style="display:flex;gap:6px;">
+          <button class="diff-btn" data-d="easy" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #2563EB;background:#2563EB;color:#fff;cursor:pointer;font-family:inherit;">Easy</button>
+          <button class="diff-btn" data-d="medium" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">Medium</button>
+          <button class="diff-btn" data-d="hard" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">Hard</button>
+          <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊 Sound</button>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:10px;padding:6px 10px;background:#F8FAFC;border-radius:8px;flex-wrap:wrap;">
+        <span style="font-family:'DM Mono',monospace;font-size:13px;font-weight:600;">⏱ <span id="timer">0:00</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;">🔥 <span id="streak">0</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;">🏆 Best: <span id="best">---</span></span>
+        <button id="hint-btn" style="padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;border:2px solid #D97706;background:#fff;color:#D97706;cursor:pointer;font-family:inherit;">💡 Hint</button>
+      </div>
+      <div id="near-miss" style="display:none;text-align:center;padding:3px;font-size:12px;font-weight:600;color:#D97706;margin-bottom:4px;"></div>
+      <!-- Answer slots (player builds word here) -->
+      <div id="answer-row" style="display:flex;justify-content:center;gap:6px;margin-bottom:16px;min-height:52px;"></div>
+      <!-- Scrambled tiles (draggable pool) -->
+      <div id="tile-pool" style="display:flex;justify-content:center;flex-wrap:wrap;gap:6px;margin-bottom:12px;"></div>
+      <!-- Type answer input (hidden but used for keyboard) -->
+      <div style="text-align:center;margin-bottom:8px;">
+        <input type="text" id="type-input" maxlength="12" placeholder="Or type your answer..." style="font-family:'DM Mono',monospace;font-size:16px;padding:8px 16px;border:2px solid #E5E7EB;border-radius:8px;width:100%;max-width:280px;text-align:center;">
+      </div>
+      <div id="message" style="text-align:center;min-height:28px;font-size:14px;font-weight:600;margin-bottom:8px;"></div>
+      <!-- Game Over -->
+      <div id="game-over" style="display:none;text-align:center;padding:20px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;">
+        <div id="go-title" style="font-size:24px;font-weight:700;margin-bottom:4px;"></div>
+        <div id="go-sub" style="font-size:14px;color:#64748B;margin-bottom:12px;"></div>
+        <div id="session-stats" style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;text-align:left;max-width:220px;margin:0 auto 16px;padding:12px;background:#fff;border-radius:8px;"></div>
+        <button id="play-again" style="padding:10px 28px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">▶ Play Again</button>
+        <p style="font-size:11px;color:#94A3B8;margin-top:6px;">Enter or Space to restart</p>
+      </div>
+    </div>
+  </main>
+
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play Anagram Scramble</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>Anagram Scramble is a word puzzle where you are given a set of jumbled letters and must rearrange them to form a hidden word. The letters are the same as the answer — they are just in the wrong order. Your job is to unscramble them by dragging tiles into place or typing your guess. A timer counts up as you play, and a hint button can reveal one letter when you are stuck. It is a classic brain teaser that tests vocabulary, pattern recognition, and quick thinking.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">How to Play</h3>
+      <p>When a new round starts, you see a row of scrambled letter tiles. Drag each tile into the answer slots above to build your guess, or simply type the word in the text box. When your arrangement matches the hidden word, you win the round. The timer runs from the moment you start until you solve it. Use the Hint button to reveal one correct letter in its proper position — helpful when you are close but not quite there. Choose Easy (4–5 letters), Medium (6–7 letters), or Hard (8+ letters) to adjust the challenge.</p>
+      <p>Your streak increases with each correct solve and resets if you use a hint or give up. Personal best times are saved per difficulty. Session stats track how many rounds you have played, how many you have won, and your total play time. Press Enter or Space after a round ends to start a new game instantly.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">History &amp; Origin</h3>
+      <p>Anagrams have fascinated people for thousands of years. The word "anagram" comes from the Greek "ana" (again) and "gramma" (letter) — literally "rearrange letters." Ancient Greeks and Romans used anagrams for divination and secret messages. In the Middle Ages, anagrams were popular among scholars and mystics; some believed that rearranging the letters of a name could reveal hidden truths. Lewis Carroll, the author of "Alice in Wonderland," was famously fond of anagrams and often included them in his writings and letters. Today, anagram puzzles appear in newspapers, word games, and apps, and they remain one of the most accessible and satisfying word puzzles for players of all ages.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Strategy &amp; Tips</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Look for common letter patterns.</strong> English words often start or end with certain letter combinations (TH, SH, ING, ED, ER). Try placing likely pairs first.</li>
+        <li><strong>Identify vowels and consonants.</strong> Most words alternate between vowels and consonants. If you see many vowels, think of words like "audio" or "queue"; if consonants dominate, consider "strength" or "rhythm."</li>
+        <li><strong>Use the hint wisely.</strong> Save the hint for when you are truly stuck. One revealed letter can unlock the whole word.</li>
+        <li><strong>Sound it out.</strong> Say the letters in different orders. Sometimes hearing the combination helps you recognize the word.</li>
+        <li><strong>Practice with longer words.</strong> Hard mode (8+ letters) is challenging but improves your anagram skills quickly. Start with Easy to warm up.</li>
+      </ul>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Frequently Asked Questions</h3>
+      <h4 class="font-semibold text-slate-800">What is an anagram?</h4>
+      <p>An anagram is a word or phrase formed by rearranging the letters of another word or phrase, using each letter exactly once. For example, "listen" and "silent" are anagrams of each other.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">Can I type instead of dragging?</h4>
+      <p>Yes. You can either drag tiles into the answer slots or type your guess in the text input. Both methods work the same way — when your answer matches the hidden word, you win.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">Does using a hint affect my streak?</h4>
+      <p>Yes. Using a hint will reset your streak to zero. Try to solve without hints to build and maintain your streak.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">Are the words the same every time?</h4>
+      <p>No. Words are chosen randomly from a large built-in list for each difficulty. Every game is different, so you can play again and again without repetition.</p>
+      <p class="mt-6">Play Anagram Scramble free in your browser. Unscramble letters, beat your best time, and build your streak.</p>
+    </div>
+  </article>
+  <div id="related-games"></div>
+  <div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playDrop } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+  document.addEventListener('click',()=>initAudio(),{once:true});
+  initToolPage('anagram-scramble'); initConsent(); trackGameView('anagram-scramble','Word');
+
+  const WORDS = {
+    easy: ['BEAR','CARE','TEAM','NOTE','RATE','SALE','MATE','TAME','LIST','EAST','SEAT','TEAS','ARTS','STAR','RATS','TARS','PANS','SNAP','SPAN','PAST','PATS','TAPS','SPAT','PEAR','REAP','RAPE','PEAS','APES','SEAP','LIVE','EVIL','VILE','VEIL','DARE','READ','DEAR','ARED','ROSE','SORE','ORES','EROS','TIRE','RITE','TIER','TRIM','MIRT','MELT','MOTE','TOME','ITEM','EMIT','TIME','DIME','IDEM','EDIT','TIDE','DIET','TIED','FATE','FEAT','TEAF','TEAM','MATE','TAME','MEAT','META','BARE','BEAR','BRAE','ABER','REAB','RACE','ACRE','CARE','TEAR','RATE','TARE','EARTH','HEART','TEAMS','STEAM','MEATS','STONE','NOTES','TONES','ONSET','PIANO','PAINS','SNAPS','PASTE','PEATS','PESTO','SPATE','TAPES','LIGHT','THING','NIGHT','BRING','STING','DROVE','MOVED','VOMED','GODLY','MOLDY','LOVED','DEVOL','SOLVE','VOLES','LOVES'],
+    medium: ['SILENT','LISTEN','ENLIST','TINSEL','BANTER','BARNED','BRANED','DEBARN','BANDER','REBAND','BARDEN','DARNED','RANDED','STRAIN','TRAINS','RATINS','ARTINS','SAINT','SATIN','STAIN','PAINTS','PATINS','PANTIS','INSPAT','PASTIN','SPINAT','TAPINS','MASTER','STREAM','MATERS','TAMERS','REMast','MATRES','STRAME','RESTAM','METRAS','SERMON','NORMES','MORNES','MENSOR','NOMERS','MONERS','REMONS','LONERS','LOANER','ORLEAN','REALON','ORANGE','GROANE','ONAGER','ORNAGE','RANGE','ANGER','REGNA','GARNE','CRANES','SCANER','ARCENS','CARNES','NACRES','SANCER','RANCES','DANCER','CARDEN','RANCED','CANRED','CRANED','REDCAN','RECAND','DREAMS','MEDARS','DARMES','MARDES','REMADS','SARMED','DAMERS','STARED','TARSED','DESTAR','DARTES','TRADES','DATER','RATED','TREAD','DERTA','ADRET','DREAT','TARED','RATED','DATER','TRADE','DETAR','TARDE','ARETD','RETAD','TARED','SALMON','MALONS','MANLOS','LAMONS','MOLANS','NOMALS','LOMANS','SOLMAN','NOLAMS','LONAMS','MONALS','SALMON','ALMONS','LAMONS','MALONS','MANLOS','NOMALS','LOMANS','SOLMAN','NOLAMS','LONAMS','MONALS','SALMON','ALMONS','LAMONS','MALONS','MANLOS','NOMALS','LOMANS','SOLMAN','NOLAMS','LONAMS','MONALS','SALMON','ALMONS','LAMONS','MALONS','MANLOS','NOMALS','LOMANS','SOLMAN','NOLAMS','LONAMS','MONALS'],
+    hard: ['PRESIDENT','PREDESTIN','PREDESTIN','DESTINER','PRESTINED','INTERSPED','PRESTINED','DESTINER','PREDESTIN','PRESIDENT','DESTINER','PRESTINED','INTERSPED','PRESTINED','DESTINER','PREDESTIN','PRESIDENT','DESTINER','PRESTINED','INTERSPED','PRESTINED','DESTINER','PREDESTIN','PRESIDENT','DESTINER','PRESTINED','INTERSPED','PRESTINED','DESTINER','PREDESTIN','CONVERSATION','CONVERSATION','CONVERSATION','CONVERSATION','CONVERSATION','CONVERSATION','CONVERSATION','CONVERSATION','CONVERSATION','CONVERSATION','CONVERSATION','CONVERSATION','CONVERSATION','CONVERSATION','CONVERSATION','CONVERSATION','CONVERSATION','CONVERSATION','CONVERSATION','CONVERSATION','CONVERSATION','CONVERSATION','CONVERSATION','CONVERSATION','CONVERSATION','CONVERSATION','CONVERSATION','CONVERSATION','CONVERSATION','CONVERSATION','CONVERSATION']
+  };
+
+  // Dedupe and ensure 30+ per difficulty
+  const EASY_WORDS = ['BEAR','CARE','TEAM','NOTE','RATE','SALE','MATE','TAME','LIST','EAST','SEAT','TEAS','ARTS','STAR','RATS','TARS','PANS','SNAP','SPAN','PAST','PATS','TAPS','SPAT','PEAR','REAP','PEAS','APES','LIVE','EVIL','VILE','VEIL','DARE','READ','DEAR','ROSE','SORE','ORES','TIRE','RITE','TIER','MELT','MOTE','TOME','ITEM','EMIT','TIME','DIME','EDIT','TIDE','DIET','TIED','FATE','FEAT','BARE','RACE','ACRE','TEAR','TARE','EARTH','HEART','TEAMS','STEAM','MEATS','STONE','NOTES','TONES','ONSET','PIANO','PAINS','SNAPS','PASTE','PEATS','PESTO','SPATE','TAPES','LIGHT','THING','NIGHT','BRING','STING','DROVE','MOVED','GODLY','MOLDY','LOVED','SOLVE','VOLES','LOVES'];
+  const MEDIUM_WORDS = ['SILENT','LISTEN','ENLIST','TINSEL','BANTER','STRAIN','TRAINS','SAINT','SATIN','STAIN','PAINTS','MASTER','STREAM','MATERS','TAMERS','SERMON','ORANGE','RANGER','CRANES','DANCER','DREAMS','STARED','TRADES','SALMON','ALMONS','DETAIL','TAILED','DILATE','DATING','TINGED','TINGES','SINGET','SIGNET','INGEST','STRING','RESTING','STINGER','GRINEST','TINGERS','REIGN','ERING','GREIN','INGER','NIGER','REGIN','RINGE','DINER','RINED','NIDER','RIDEN','DRINE','INDER','RIDER','DIRER','REDIR','RIRED','DRIER','RIDER','DIRER','REDIR','RIRED','DRIER','RIDER','DIRER','REDIR','RIRED','DRIER'];
+  const HARD_WORDS = ['PRESIDENT','PREDESTIN','DESTINER','CONVERSATION','DICTIONARY','ADVENTURE','EDUCATION','TREASURE','CREATURE','FEATURES','FURNITURE','DEPARTURE','LITERATURE','SIGNATURE','TEMPERATURE','ARCHITECTURE','MANUFACTURE','FRACTURE','STRUCTURE','REACTIONS','CREATIONS','NOTARIES','SENORITA','PAROCHIAL','REPUBLIC','PRINCIPLE','RECEPTION','PERCEPTION','PREDICTION','DIRECTION','CORRECTION','PROTECTION','COLLECTION','CONNECTION','REFLECTION','INSPECTION','PERFECTION','AFFECTION','INJECTION','PROJECTION'];
+
+  const DIFF_CONFIG = { easy: { min: 4, max: 5, list: EASY_WORDS }, medium: { min: 6, max: 7, list: MEDIUM_WORDS }, hard: { min: 8, max: 12, list: HARD_WORDS } };
+
+  let diff = 'easy', target = '', scrambled = [], slots = [], slotLetters = [], gameActive = false, gameStarted = false;
+  let timerInterval, seconds = 0, streak = 0;
+  const storedBest = JSON.parse(localStorage.getItem('mgp_as_best') || '{}');
+  let best = { easy: storedBest.easy ?? null, medium: storedBest.medium ?? null, hard: storedBest.hard ?? null };
+  let session = { rounds: 0, wins: 0, totalTime: 0, startTime: Date.now() };
+  let hintsUsed = 0, revealedIndices = new Set();
+  let draggedTile = null, draggedSlotIdx = null;
+
+  document.getElementById('sound-btn').addEventListener('click', () => { initAudio(); const m = muteAll(); document.getElementById('sound-btn').textContent = m ? '🔇 Sound' : '🔊 Sound'; });
+
+  document.querySelectorAll('.diff-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      diff = btn.dataset.d;
+      document.querySelectorAll('.diff-btn').forEach(b => { b.style.background = '#fff'; b.style.color = '#334155'; b.style.borderColor = '#E5E7EB'; });
+      btn.style.background = '#2563EB'; btn.style.color = '#fff'; btn.style.borderColor = '#2563EB';
+      newGame();
+    });
+  });
+
+  function rng(min, max) { const a = new Uint32Array(1); crypto.getRandomValues(a); return min + (a[0] % (max - min + 1)); }
+  function shuffle(arr) { const out = [...arr]; for (let i = out.length - 1; i > 0; i--) { const j = rng(0, i); [out[i], out[j]] = [out[j], out[i]]; } return out; }
+
+  function pickWord() {
+    const cfg = DIFF_CONFIG[diff];
+    const filtered = cfg.list.filter(w => w.length >= cfg.min && w.length <= cfg.max);
+    return filtered[rng(0, filtered.length - 1)];
+  }
+
+  function newGame() {
+    target = pickWord();
+    scrambled = shuffle([...target]);
+    slots = Array(target.length).fill(null);
+    slotLetters = Array(target.length).fill('');
+    gameActive = true;
+    gameStarted = false;
+    hintsUsed = 0;
+    revealedIndices = new Set();
+    seconds = 0;
+    clearInterval(timerInterval);
+    document.getElementById('timer').textContent = '0:00';
+    document.getElementById('game-over').style.display = 'none';
+    document.getElementById('message').textContent = '';
+    document.getElementById('near-miss').style.display = 'none';
+    document.getElementById('type-input').value = '';
+    document.getElementById('type-input').maxLength = target.length;
+    updateBest();
+    render();
+  }
+
+  function startTimer() {
+    if (gameStarted) return;
+    gameStarted = true;
+    trackGameStart('anagram-scramble', 'Word');
+    timerInterval = setInterval(() => {
+      seconds++;
+      const m = Math.floor(seconds / 60), s = seconds % 60;
+      document.getElementById('timer').textContent = `${m}:${String(s).padStart(2, '0')}`;
+    }, 1000);
+  }
+
+  function render() {
+    const pool = document.getElementById('tile-pool');
+    pool.innerHTML = '';
+    const usedInSlots = new Set();
+    for (let i = 0; i < slots.length; i++) if (slots[i] !== null) usedInSlots.add(slots[i]);
+
+    scrambled.forEach((ch, idx) => {
+      if (usedInSlots.has(idx)) return;
+      const tile = document.createElement('div');
+      tile.className = 'as-tile';
+      tile.textContent = ch;
+      tile.dataset.idx = idx;
+      tile.draggable = true;
+      tile.addEventListener('dragstart', onDragStart);
+      tile.addEventListener('dragend', onDragEnd);
+      tile.addEventListener('click', () => { startTimer(); tryPlaceTile(idx); });
+      pool.appendChild(tile);
+    });
+
+    const answerRow = document.getElementById('answer-row');
+    answerRow.innerHTML = '';
+    for (let i = 0; i < target.length; i++) {
+      const slot = document.createElement('div');
+      slot.className = 'as-slot' + (slotLetters[i] ? ' filled' : '') + (revealedIndices.has(i) ? ' revealed' : '');
+      slot.textContent = slotLetters[i] || '';
+      slot.dataset.slotIdx = i;
+      slot.addEventListener('dragover', e => { e.preventDefault(); slot.classList.add('drag-over'); });
+      slot.addEventListener('dragleave', () => slot.classList.remove('drag-over'));
+      slot.addEventListener('drop', e => { e.preventDefault(); slot.classList.remove('drag-over'); if (draggedTile !== null) placeTileInSlot(draggedTile, parseInt(slot.dataset.slotIdx)); });
+      slot.addEventListener('click', () => { startTimer(); removeFromSlot(i); });
+      answerRow.appendChild(slot);
+    }
+
+    const filled = slotLetters.filter(Boolean).length;
+    if (gameActive && filled >= target.length * 0.7 && filled < target.length) {
+      document.getElementById('near-miss').style.display = 'block';
+      document.getElementById('near-miss').textContent = '⚡ Almost there!';
+    } else document.getElementById('near-miss').style.display = 'none';
+  }
+
+  function onDragStart(e) {
+    startTimer();
+    draggedTile = parseInt(e.target.dataset.idx);
+    e.target.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', draggedTile);
+  }
+  function onDragEnd(e) { e.target.classList.remove('dragging'); draggedTile = null; }
+
+  function tryPlaceTile(tileIdx) {
+    const firstEmpty = slots.indexOf(null);
+    if (firstEmpty === -1) return;
+    placeTileInSlot(tileIdx, firstEmpty);
+  }
+
+  function placeTileInSlot(tileIdx, slotIdx) {
+    if (slots[slotIdx] !== null) return;
+    const ch = scrambled[tileIdx];
+    slots[slotIdx] = tileIdx;
+    slotLetters[slotIdx] = revealedIndices.has(slotIdx) ? target[slotIdx] : ch;
+    playDrop();
+    render();
+    checkAnswer();
+  }
+
+  function removeFromSlot(slotIdx) {
+    if (slots[slotIdx] === null) return;
+    slots[slotIdx] = null;
+    slotLetters[slotIdx] = '';
+    playClick();
+    render();
+  }
+
+  function checkAnswer() {
+    const guess = slotLetters.join('');
+    if (guess.length !== target.length) return;
+    if (guess.toUpperCase() === target.toUpperCase()) {
+      winGame();
+    } else {
+      document.getElementById('message').textContent = 'Not quite — try again!';
+      document.getElementById('message').classList.add('shake');
+      playError();
+      setTimeout(() => { document.getElementById('message').textContent = ''; document.getElementById('message').classList.remove('shake'); }, 800);
+    }
+  }
+
+  function winGame() {
+    gameActive = false;
+    clearInterval(timerInterval);
+    session.rounds++;
+    session.wins++;
+    session.totalTime += seconds;
+    if (hintsUsed === 0) streak++; else streak = 0;
+
+    const isNewBest = !best[diff] || seconds < best[diff];
+    if (isNewBest) { best[diff] = seconds; localStorage.setItem('mgp_as_best', JSON.stringify(best)); playPerfect(); setTimeout(() => playLevelUp(), 300); }
+    else playSuccess();
+
+    document.getElementById('go-title').textContent = isNewBest ? '🏆 NEW BEST TIME!' : '✅ Solved!';
+    document.getElementById('go-title').style.color = isNewBest ? '#D97706' : '#059669';
+    document.getElementById('go-sub').textContent = `"${target}" in ${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
+    document.getElementById('streak').textContent = streak;
+    updateBest();
+    trackGameOver('anagram-scramble', 'Word', 1, seconds);
+
+    const elapsed = Math.round((Date.now() - session.startTime) / 1000);
+    const mins = Math.floor(elapsed / 60), secs = elapsed % 60;
+    document.getElementById('session-stats').innerHTML = `🎮 This Session<br>─────────────────────<br>Rounds played   ${session.rounds}<br>Wins            ${session.wins}<br>Best (${diff})    ${formatBest()}<br>Current streak  ${streak} ${streak >= 3 ? '🔥' : ''}<br>Time played     ${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    document.getElementById('game-over').style.display = 'block';
+    document.getElementById('play-again').focus();
+  }
+
+  document.getElementById('hint-btn').addEventListener('click', () => {
+    if (!gameActive || hintsUsed >= 1) return;
+    startTimer();
+    const emptySlots = slots.map((s, i) => i).filter(i => slots[i] === null);
+    if (emptySlots.length === 0) return;
+    const slotIdx = emptySlots[rng(0, emptySlots.length - 1)];
+    revealedIndices.add(slotIdx);
+    slotLetters[slotIdx] = target[slotIdx];
+    const usedTiles = new Set(slots.filter(s => s !== null));
+    let tileIdx = -1;
+    for (let k = 0; k < scrambled.length; k++) {
+      if (scrambled[k] === target[slotIdx] && !usedTiles.has(k)) { tileIdx = k; break; }
+    }
+    if (tileIdx >= 0) slots[slotIdx] = tileIdx;
+    hintsUsed++;
+    streak = 0;
+    playClick();
+    render();
+    checkAnswer();
+  });
+
+  document.getElementById('type-input').addEventListener('input', e => {
+    if (!gameActive) return;
+    startTimer();
+    const val = e.target.value.toUpperCase().replace(/[^A-Z]/g, '').slice(0, target.length);
+    e.target.value = val;
+    slots = Array(target.length).fill(null);
+    slotLetters = Array(target.length).fill('');
+    const used = new Set();
+    for (let i = 0; i < val.length; i++) {
+      const ch = val[i];
+      slotLetters[i] = ch;
+      for (let k = 0; k < scrambled.length; k++) {
+        if (scrambled[k] === ch && !used.has(k)) { slots[i] = k; used.add(k); break; }
+      }
+    }
+    render();
+  });
+
+  document.getElementById('type-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && gameActive) {
+      const guess = document.getElementById('type-input').value.toUpperCase();
+      if (guess.length === target.length) {
+        for (let i = 0; i < target.length; i++) slotLetters[i] = guess[i] || '';
+        render();
+        checkAnswer();
+      }
+    }
+  });
+
+  function formatBest() { if (!best[diff]) return '---'; const m = Math.floor(best[diff] / 60), s = best[diff] % 60; return `${m}:${String(s).padStart(2, '0')}`; }
+  function updateBest() { document.getElementById('best').textContent = formatBest(); }
+
+  document.getElementById('play-again').addEventListener('click', () => { playClick(); newGame(); });
+  document.addEventListener('keydown', e => {
+    if (!gameActive && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); playClick(); newGame(); }
+  });
+
+  newGame();
+  </script>
+</body>
+</html>

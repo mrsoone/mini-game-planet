@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini Crossword - Free 5x5 Crossword Puzzle Game | Mini Game Planet</title>
+  <meta name="description" content="Play Mini Crossword - a free 5x5 crossword puzzle game. Solve small crossword puzzles, track your time, and improve your word skills. No download required.">
+  <link rel="canonical" href="https://minigameplanet.com/games/crossword-mini.html">
+  <!-- Open Graph -->
+  <meta property="og:title" content="Mini Crossword - Free 5x5 Crossword Puzzle Game">
+  <meta property="og:description" content="Solve quick 5x5 crossword puzzles. Track streaks, beat your best time, and enjoy bite-sized word fun.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/crossword-mini.html">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <!-- Google AdSense - uncomment when ready -->
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXX" crossorigin="anonymous"></script> -->
+  <!-- GA4 Consent Mode -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('consent', 'default', {
+      'analytics_storage': 'denied',
+      'ad_storage': 'denied',
+      'ad_user_data': 'denied',
+      'ad_personalization': 'denied',
+      'wait_for_update': 500
+    });
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Mini Crossword",
+    "description": "A free 5x5 crossword puzzle game. Solve small crossword puzzles with across and down clues.",
+    "applicationCategory": "Game",
+    "operatingSystem": "Any",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    .crossword-cell { aspect-ratio: 1; min-width: 2.5rem; min-height: 2.5rem; }
+    .crossword-cell.blocked { background: #1c1917; cursor: default; }
+    .crossword-cell.active { background: #fef08a; }
+    .crossword-cell.active-word { background: #fef9c3; }
+    .crossword-cell.correct { background: #bbf7d0; }
+    .crossword-cell.wrong { background: #fecaca; }
+  </style>
+</head>
+<body class="min-h-screen text-stone-800">
+  <div id="nav-container"></div>
+
+  <main class="max-w-2xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+      <header class="text-center mb-6">
+        <h1 class="text-2xl md:text-3xl font-bold text-stone-900">Mini Crossword</h1>
+        <p class="text-stone-600 mt-1">5×5 word puzzles</p>
+      </header>
+
+      <!-- Stats bar -->
+      <div class="flex flex-wrap gap-4 justify-center mb-6 text-sm">
+        <div class="flex items-center gap-2">
+          <span class="text-stone-500">Time</span>
+          <span id="timer" class="font-mono font-semibold">0:00</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-stone-500">Streak</span>
+          <span id="streak" class="font-mono font-semibold">0</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-stone-500">Best</span>
+          <span id="best-time" class="font-mono font-semibold">--</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="sound-toggle" type="button" class="text-stone-500 hover:text-stone-700" title="Toggle sound">🔊</button>
+        </div>
+      </div>
+
+      <!-- Clues -->
+      <div class="grid md:grid-cols-2 gap-6 mb-6">
+        <div>
+          <h3 class="font-semibold text-stone-700 mb-2">Across</h3>
+          <ul id="clues-across" class="space-y-1 text-sm text-stone-600"></ul>
+        </div>
+        <div>
+          <h3 class="font-semibold text-stone-700 mb-2">Down</h3>
+          <ul id="clues-down" class="space-y-1 text-sm text-stone-600"></ul>
+        </div>
+      </div>
+
+      <!-- Grid -->
+      <div class="flex justify-center mb-6">
+        <div id="grid-container" class="inline-grid gap-0.5 p-2 bg-stone-200 rounded-lg"></div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex flex-wrap gap-3 justify-center">
+        <button id="check-btn" type="button" class="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-lg transition-colors">
+          Check
+        </button>
+        <button id="reveal-btn" type="button" class="px-6 py-2.5 bg-stone-200 hover:bg-stone-300 text-stone-700 font-semibold rounded-lg transition-colors">
+          Reveal
+        </button>
+        <button id="new-game-btn" type="button" class="px-6 py-2.5 bg-stone-200 hover:bg-stone-300 text-stone-700 font-semibold rounded-lg transition-colors">
+          New Puzzle
+        </button>
+      </div>
+
+      <!-- Session stats -->
+      <div id="session-stats" class="mt-6 p-4 bg-stone-50 rounded-lg text-sm text-stone-600 hidden">
+        <h4 class="font-semibold text-stone-700 mb-2">Session</h4>
+        <p id="session-text"></p>
+      </div>
+
+      <!-- Message -->
+      <div id="message" class="mt-4 text-center text-sm font-medium hidden"></div>
+    </div>
+
+    <!-- SEO Article -->
+    <article class="mt-8 bg-white rounded-2xl shadow-lg p-6 md:p-8 text-stone-700">
+      <h2 class="text-xl font-bold text-stone-900 mb-4">How to Play Mini Crossword</h2>
+      <p class="mb-4">
+        Mini Crossword is a compact 5×5 word puzzle that brings the classic crossword experience into a quick, bite-sized format. Each puzzle features a small grid where some cells may be blocked (black), and your goal is to fill in the white cells with letters that satisfy both the across and down clues. Click any cell to select it, then type to enter letters. Use the Tab key to switch between across and down directions, and arrow keys to move between cells. When you think you've solved the puzzle, hit Check to validate your answers. The timer starts when you make your first input, so you can take your time reading the clues before the clock begins.
+      </p>
+
+      <h3 class="text-lg font-semibold text-stone-900 mt-6 mb-2">History of Crossword Puzzles</h3>
+      <p class="mb-4">
+        The first crossword puzzle was published on December 21, 1913, in the New York World newspaper, created by journalist Arthur Wynne. It was originally called a "word-cross" and featured a diamond-shaped grid. The puzzle quickly gained popularity and spread to other publications. By the 1920s, crosswords had become a cultural phenomenon, with newspapers competing to feature the best puzzles. The New York Times began publishing its famous daily crossword in 1942, and the "mini" format emerged later as a way to offer a quicker solve for busy solvers. Today, mini crosswords are beloved for their accessibility and the satisfaction of completing a full puzzle in just a few minutes.
+      </p>
+
+      <h3 class="text-lg font-semibold text-stone-900 mt-6 mb-2">Strategy Tips</h3>
+      <p class="mb-4">
+        Start with the clues that have the fewest letters or the most obvious answers—these often provide anchor points for the rest of the grid. Fill in words you're confident about first, then use the crossing letters to help with trickier clues. If you're stuck, look for common letter patterns: vowels like E, A, and O appear frequently, while Q is almost always followed by U. Pay attention to plural forms and verb tenses in the clues. For mini crosswords specifically, the small grid means each letter matters more; one wrong letter can block multiple words. Use the Check button strategically—if you're unsure, try a few possibilities before validating. Building a streak requires consistency: solve daily and aim to beat your personal best time.
+      </p>
+
+      <h3 class="text-lg font-semibold text-stone-900 mt-6 mb-2">FAQ</h3>
+      <dl class="space-y-3">
+        <dt class="font-semibold text-stone-800">How many puzzles are there?</dt>
+        <dd>Mini Crossword includes multiple pre-built puzzles. Each time you start a new game, a random puzzle is selected. Play again to discover different grids and clues.</dd>
+        <dt class="font-semibold text-stone-800">What counts as a near-miss?</dt>
+        <dd>A near-miss occurs when you're close to solving the puzzle—for example, when only one or two letters are incorrect. The game tracks these to help you see how close you were.</dd>
+        <dt class="font-semibold text-stone-800">Is my progress saved?</dt>
+        <dd>Your personal best time and session statistics are stored in your browser's local storage. They persist between sessions on the same device.</dd>
+        <dt class="font-semibold text-stone-800">Can I play without sound?</dt>
+        <dd>Yes. Use the sound toggle in the stats bar to mute or unmute game sounds. Your preference is remembered for future visits.</dd>
+      </dl>
+    </article>
+  </main>
+
+  <div id="related-games"></div>
+  <div id="footer-container"></div>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playLock } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('crossword-mini');
+    initConsent();
+    trackGameView('crossword-mini', 'Word');
+
+    const STORAGE_KEY = 'crossword-mini';
+    const STORAGE_BEST = 'crossword-mini-best';
+    const STORAGE_STREAK = 'crossword-mini-streak';
+    const STORAGE_LAST_DATE = 'crossword-mini-last';
+    const STORAGE_SOUND = 'crossword-mini-sound';
+
+    const puzzles = [
+      {
+        blocks: [],
+        across: [
+          { num: 1, clue: 'Organ that pumps blood', answer: 'HEART', cells: [[0,0],[0,1],[0,2],[0,3],[0,4]] },
+          { num: 2, clue: 'Glowing coal', answer: 'EMBER', cells: [[1,0],[1,1],[1,2],[1,3],[1,4]] },
+          { num: 3, clue: 'Mistreatment', answer: 'ABUSE', cells: [[2,0],[2,1],[2,2],[2,3],[2,4]] },
+          { num: 4, clue: 'Tree secretion', answer: 'RESIN', cells: [[3,0],[3,1],[3,2],[3,3],[3,4]] },
+          { num: 5, clue: 'General direction', answer: 'TREND', cells: [[4,0],[4,1],[4,2],[4,3],[4,4]] },
+        ],
+        down: [
+          { num: 1, clue: 'Organ that pumps blood', answer: 'HEART', cells: [[0,0],[1,0],[2,0],[3,0],[4,0]] },
+          { num: 2, clue: 'Glowing coal', answer: 'EMBER', cells: [[0,1],[1,1],[2,1],[3,1],[4,1]] },
+          { num: 3, clue: 'Mistreatment', answer: 'ABUSE', cells: [[0,2],[1,2],[2,2],[3,2],[4,2]] },
+          { num: 4, clue: 'Tree secretion', answer: 'RESIN', cells: [[0,3],[1,3],[2,3],[3,3],[4,3]] },
+          { num: 5, clue: 'General direction', answer: 'TREND', cells: [[0,4],[1,4],[2,4],[3,4],[4,4]] },
+        ],
+      },
+      {
+        blocks: [],
+        across: [
+          { num: 1, clue: 'Rail transport', answer: 'TRAIN', cells: [[0,0],[0,1],[0,2],[0,3],[0,4]] },
+          { num: 2, clue: 'Very fast', answer: 'RAPID', cells: [[1,0],[1,1],[1,2],[1,3],[1,4]] },
+          { num: 3, clue: 'Apart from', answer: 'ASIDE', cells: [[2,0],[2,1],[2,2],[2,3],[2,4]] },
+          { num: 4, clue: 'Internal', answer: 'INNER', cells: [[3,0],[3,1],[3,2],[3,3],[3,4]] },
+          { num: 5, clue: 'Studious types', answer: 'NERDS', cells: [[4,0],[4,1],[4,2],[4,3],[4,4]] },
+        ],
+        down: [
+          { num: 1, clue: 'Rail transport', answer: 'TRAIN', cells: [[0,0],[1,0],[2,0],[3,0],[4,0]] },
+          { num: 2, clue: 'Very fast', answer: 'RAPID', cells: [[0,1],[1,1],[2,1],[3,1],[4,1]] },
+          { num: 3, clue: 'Apart from', answer: 'ASIDE', cells: [[0,2],[1,2],[2,2],[3,2],[4,2]] },
+          { num: 4, clue: 'Internal', answer: 'INNER', cells: [[0,3],[1,3],[2,3],[3,3],[4,3]] },
+          { num: 5, clue: 'Studious types', answer: 'NERDS', cells: [[0,4],[1,4],[2,4],[3,4],[4,4]] },
+        ],
+      },
+      {
+        blocks: [[1,1],[1,3],[3,1],[3,3]],
+        across: [
+          { num: 1, clue: 'Gaze at', answer: 'STARE', cells: [[0,0],[0,1],[0,2],[0,3],[0,4]] },
+          { num: 2, clue: 'Tree type', answer: 'OAK', cells: [[1,0],[1,2],[1,4]] },
+          { num: 3, clue: 'Precipitation', answer: 'RAINS', cells: [[2,0],[2,1],[2,2],[2,3],[2,4]] },
+          { num: 4, clue: 'Spider creation', answer: 'WEB', cells: [[3,0],[3,2],[3,4]] },
+          { num: 5, clue: 'Reverberations', answer: 'ECHOS', cells: [[4,0],[4,1],[4,2],[4,3],[4,4]] },
+        ],
+        down: [
+          { num: 1, clue: 'Gaze at', answer: 'STARE', cells: [[0,0],[1,0],[2,0],[3,0],[4,0]] },
+          { num: 2, clue: 'Tree type', answer: 'OAK', cells: [[0,1],[2,1],[4,1]] },
+          { num: 3, clue: 'Precipitation', answer: 'RAINS', cells: [[0,2],[1,2],[2,2],[3,2],[4,2]] },
+          { num: 4, clue: 'Spider creation', answer: 'WEB', cells: [[0,3],[2,3],[4,3]] },
+          { num: 5, clue: 'Reverberations', answer: 'ECHOS', cells: [[0,4],[1,4],[2,4],[3,4],[4,4]] },
+        ],
+      },
+      {
+        blocks: [[1,1],[1,3],[3,1],[3,3]],
+        across: [
+          { num: 1, clue: 'Fix your eyes on', answer: 'STARE', cells: [[0,0],[0,1],[0,2],[0,3],[0,4]] },
+          { num: 2, clue: 'Nut-bearing tree', answer: 'OAK', cells: [[1,0],[1,2],[1,4]] },
+          { num: 3, clue: 'Falls from clouds', answer: 'RAINS', cells: [[2,0],[2,1],[2,2],[2,3],[2,4]] },
+          { num: 4, clue: 'Spider\'s trap', answer: 'WEB', cells: [[3,0],[3,2],[3,4]] },
+          { num: 5, clue: 'Reverberations', answer: 'ECHOS', cells: [[4,0],[4,1],[4,2],[4,3],[4,4]] },
+        ],
+        down: [
+          { num: 1, clue: 'Fix your eyes on', answer: 'STARE', cells: [[0,0],[1,0],[2,0],[3,0],[4,0]] },
+          { num: 2, clue: 'Nut-bearing tree', answer: 'OAK', cells: [[0,1],[2,1],[4,1]] },
+          { num: 3, clue: 'Falls from clouds', answer: 'RAINS', cells: [[0,2],[1,2],[2,2],[3,2],[4,2]] },
+          { num: 4, clue: 'Spider\'s trap', answer: 'WEB', cells: [[0,3],[2,3],[4,3]] },
+          { num: 5, clue: 'Reverberations', answer: 'ECHOS', cells: [[0,4],[1,4],[2,4],[3,4],[4,4]] },
+        ],
+      },
+      {
+        blocks: [[1,1],[1,3],[3,1],[3,3]],
+        across: [
+          { num: 1, clue: 'Look fixedly', answer: 'STARE', cells: [[0,0],[0,1],[0,2],[0,3],[0,4]] },
+          { num: 2, clue: 'Tree type', answer: 'OAK', cells: [[1,0],[1,2],[1,4]] },
+          { num: 3, clue: 'Precipitation', answer: 'RAINS', cells: [[2,0],[2,1],[2,2],[2,3],[2,4]] },
+          { num: 4, clue: 'Spider trap', answer: 'WEB', cells: [[3,0],[3,2],[3,4]] },
+          { num: 5, clue: 'Sound reflections', answer: 'ECHOS', cells: [[4,0],[4,1],[4,2],[4,3],[4,4]] },
+        ],
+        down: [
+          { num: 1, clue: 'Look fixedly', answer: 'STARE', cells: [[0,0],[1,0],[2,0],[3,0],[4,0]] },
+          { num: 2, clue: 'Tree type', answer: 'OAK', cells: [[0,1],[2,1],[4,1]] },
+          { num: 3, clue: 'Precipitation', answer: 'RAINS', cells: [[0,2],[1,2],[2,2],[3,2],[4,2]] },
+          { num: 4, clue: 'Spider trap', answer: 'WEB', cells: [[0,3],[2,3],[4,3]] },
+          { num: 5, clue: 'Sound reflections', answer: 'ECHOS', cells: [[0,4],[1,4],[2,4],[3,4],[4,4]] },
+        ],
+      },
+      {
+      blocks: [],
+      across: [
+        { num: 1, clue: 'Large body of water', answer: 'OCEAN', cells: [[0,0],[0,1],[0,2],[0,3],[0,4]] },
+        { num: 2, clue: 'Feline mammal', answer: 'CIVET', cells: [[1,0],[1,1],[1,2],[1,3],[1,4]] },
+        { num: 3, clue: 'Mournful poem', answer: 'ELEGY', cells: [[2,0],[2,1],[2,2],[2,3],[2,4]] },
+        { num: 4, clue: 'Go in', answer: 'ENTER', cells: [[3,0],[3,1],[3,2],[3,3],[3,4]] },
+        { num: 5, clue: 'Snakes', answer: 'NATES', cells: [[4,0],[4,1],[4,2],[4,3],[4,4]] },
+      ],
+      down: [
+        { num: 1, clue: 'Large body of water', answer: 'OCEAN', cells: [[0,0],[1,0],[2,0],[3,0],[4,0]] },
+        { num: 2, clue: 'Feline mammal', answer: 'CIVET', cells: [[0,1],[1,1],[2,1],[3,1],[4,1]] },
+        { num: 3, clue: 'Mournful poem', answer: 'ELEGY', cells: [[0,2],[1,2],[2,2],[3,2],[4,2]] },
+        { num: 4, clue: 'Go in', answer: 'ENTER', cells: [[0,3],[1,3],[2,3],[3,3],[4,3]] },
+        { num: 5, clue: 'Snakes', answer: 'NATES', cells: [[0,4],[1,4],[2,4],[3,4],[4,4]] },
+      ],
+    };
+
+    function pickRandomPuzzle() {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return puzzles[arr[0] % puzzles.length];
+    }
+
+    let state = {
+      puzzle: null,
+      grid: [],
+      selected: null,
+      direction: 'across',
+      timerId: null,
+      seconds: 0,
+      started: false,
+      solved: false,
+      streak: parseInt(localStorage.getItem(STORAGE_STREAK) || '0', 10),
+      bestTime: parseInt(localStorage.getItem(STORAGE_BEST) || '0', 10),
+      sessionSolved: 0,
+      sessionNearMiss: 0,
+      sessionPlayed: 0,
+      soundOn: localStorage.getItem(STORAGE_SOUND) !== 'false',
+    };
+
+    function isBlocked(r, c) {
+      return state.puzzle.blocks.some(([br, bc]) => br === r && bc === c);
+    }
+
+    function buildGrid() {
+      const g = Array(5).fill(null).map(() => Array(5).fill(''));
+      for (const [r, c] of state.puzzle.blocks || []) {
+        g[r][c] = '#';
+      }
+      return g;
+    }
+
+    function getWordAt(r, c) {
+      if (isBlocked(r, c)) return null;
+      const dir = state.direction;
+      const list = dir === 'across' ? state.puzzle.across : state.puzzle.down;
+      for (const w of list) {
+        const idx = w.cells.findIndex(([cr, cc]) => cr === r && cc === c);
+        if (idx >= 0) return w;
+      }
+      return null;
+    }
+
+    function getActiveWordCells() {
+      const w = state.selected ? getWordAt(state.selected[0], state.selected[1]) : null;
+      return w ? w.cells : [];
+    }
+
+    function renderClues() {
+      const acrossEl = document.getElementById('clues-across');
+      const downEl = document.getElementById('clues-down');
+      acrossEl.innerHTML = state.puzzle.across.map(w => `<li><span class="font-mono font-semibold">${w.num}.</span> ${w.clue}</li>`).join('');
+      downEl.innerHTML = state.puzzle.down.map(w => `<li><span class="font-mono font-semibold">${w.num}.</span> ${w.clue}</li>`).join('');
+    }
+
+    function renderGrid() {
+      const container = document.getElementById('grid-container');
+      container.innerHTML = '';
+      container.style.gridTemplateColumns = `repeat(5, minmax(2.5rem, 1fr))`;
+      const activeCells = getActiveWordCells();
+
+      for (let r = 0; r < 5; r++) {
+        for (let c = 0; c < 5; c++) {
+          const cell = document.createElement('div');
+          cell.dataset.row = r;
+          cell.dataset.col = c;
+          cell.className = 'crossword-cell flex items-center justify-center font-mono text-lg font-semibold border border-stone-300 bg-white select-none';
+          if (isBlocked(r, c)) {
+            cell.classList.add('blocked');
+            cell.textContent = '';
+          } else {
+            const val = state.grid[r][c];
+            cell.textContent = val === '#' ? '' : val.toUpperCase();
+            const isActive = state.selected && state.selected[0] === r && state.selected[1] === c;
+            const inActiveWord = activeCells.some(([ar, ac]) => ar === r && ac === c);
+            if (isActive) cell.classList.add('active');
+            else if (inActiveWord) cell.classList.add('active-word');
+            cell.addEventListener('click', () => selectCell(r, c));
+          }
+          container.appendChild(cell);
+        }
+      }
+    }
+
+    function selectCell(r, c) {
+      if (state.solved || isBlocked(r, c)) return;
+      state.selected = [r, c];
+      const w = getWordAt(r, c);
+      if (w && w.cells.length > 1) {
+        state.direction = w.cells[0][0] === w.cells[1][0] ? 'across' : 'down';
+      }
+      renderGrid();
+      playClick();
+    }
+
+    function moveSelection(dr, dc) {
+      if (!state.selected) return;
+      let [r, c] = state.selected;
+      const w = getWordAt(r, c);
+      if (!w) return;
+      const idx = w.cells.findIndex(([cr, cc]) => cr === r && cc === c);
+      if (idx < 0) return;
+      let next = idx + (dr !== 0 ? dr : dc);
+      if (next < 0) next = 0;
+      if (next >= w.cells.length) next = w.cells.length - 1;
+      const [nr, nc] = w.cells[next];
+      selectCell(nr, nc);
+    }
+
+    function handleKeydown(e) {
+      if (state.solved) return;
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        state.direction = state.direction === 'across' ? 'down' : 'across';
+        renderGrid();
+        playClick();
+        return;
+      }
+      if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) {
+        e.preventDefault();
+        if (!state.selected) return;
+        const map = { ArrowUp: [-1,0], ArrowDown: [1,0], ArrowLeft: [0,-1], ArrowRight: [0,1] };
+        const [dr, dc] = map[e.key];
+        const w = getWordAt(state.selected[0], state.selected[1]);
+        if (w && w.cells.length > 1) {
+          const isAcross = w.cells[0][0] === w.cells[1][0];
+          if (isAcross) moveSelection(0, dc);
+          else moveSelection(dr, 0);
+        }
+        return;
+      }
+      if (e.key.length === 1 && /^[a-zA-Z]$/.test(e.key)) {
+        e.preventDefault();
+        if (!state.selected || isBlocked(state.selected[0], state.selected[1])) return;
+        if (!state.started) {
+          state.started = true;
+          startTimer();
+          trackGameStart('crossword-mini');
+        }
+        const w = getWordAt(state.selected[0], state.selected[1]);
+        if (!w) return;
+        const idx = w.cells.findIndex(([cr, cc]) => cr === state.selected[0] && cc === state.selected[1]);
+        if (idx < 0) return;
+        const [r, c] = w.cells[idx];
+        state.grid[r][c] = e.key.toUpperCase();
+        if (idx < w.cells.length - 1) {
+          const [nr, nc] = w.cells[idx + 1];
+          state.selected = [nr, nc];
+        }
+        renderGrid();
+        playClick();
+      }
+      if (e.key === 'Backspace') {
+        e.preventDefault();
+        if (!state.selected) return;
+        const w = getWordAt(state.selected[0], state.selected[1]);
+        if (!w) return;
+        const idx = w.cells.findIndex(([cr, cc]) => cr === state.selected[0] && cc === state.selected[1]);
+        if (idx >= 0) {
+          const [r, c] = w.cells[idx];
+          state.grid[r][c] = '';
+          if (idx > 0) {
+            const [pr, pc] = w.cells[idx - 1];
+            state.selected = [pr, pc];
+          }
+        }
+        renderGrid();
+        playClick();
+      }
+    }
+
+    function startTimer() {
+      state.timerId = setInterval(() => {
+        state.seconds++;
+        document.getElementById('timer').textContent = formatTime(state.seconds);
+      }, 1000);
+    }
+
+    function stopTimer() {
+      if (state.timerId) {
+        clearInterval(state.timerId);
+        state.timerId = null;
+      }
+    }
+
+    function formatTime(s) {
+      const m = Math.floor(s / 60);
+      const sec = s % 60;
+      return `${m}:${sec.toString().padStart(2, '0')}`;
+    }
+
+    function checkSolved() {
+      for (const w of [...state.puzzle.across, ...state.puzzle.down]) {
+        const filled = w.cells.map(([r, c]) => state.grid[r]?.[c] || '').join('');
+        if (filled.toUpperCase() !== w.answer) return false;
+      }
+      return true;
+    }
+
+    function countWrong() {
+      let wrong = 0;
+      for (const w of [...state.puzzle.across, ...state.puzzle.down]) {
+        const filled = w.cells.map(([r, c]) => state.grid[r]?.[c] || '').join('');
+        if (filled && filled.toUpperCase() !== w.answer) wrong++;
+      }
+      return wrong;
+    }
+
+    function onCheck() {
+      if (state.solved) return;
+      playClick();
+      if (checkSolved()) {
+        state.solved = true;
+        stopTimer();
+        state.sessionSolved++;
+        state.sessionPlayed++;
+        state.streak++;
+        const today = new Date().toDateString();
+        const last = localStorage.getItem(STORAGE_LAST_DATE);
+        if (last !== today) {
+          state.streak = 1;
+        }
+        localStorage.setItem(STORAGE_LAST_DATE, today);
+        localStorage.setItem(STORAGE_STREAK, String(state.streak));
+        if (state.seconds > 0 && (state.bestTime === 0 || state.seconds < state.bestTime)) {
+          state.bestTime = state.seconds;
+          localStorage.setItem(STORAGE_BEST, String(state.seconds));
+        }
+        document.getElementById('best-time').textContent = formatTime(state.bestTime);
+        document.getElementById('streak').textContent = state.streak;
+        showMessage('Correct! Well done!', 'text-green-600');
+        playSuccess();
+        trackGameOver('crossword-mini', { solved: true, time: state.seconds });
+        updateSessionStats();
+      } else {
+        const wrong = countWrong();
+        if (wrong === 1) {
+          state.sessionNearMiss++;
+          showMessage('So close! One word off.', 'text-amber-600');
+          playError();
+        } else {
+          showMessage('Not quite. Keep trying!', 'text-red-600');
+          playError();
+        }
+      }
+    }
+
+    function onReveal() {
+      if (state.solved) return;
+      playClick();
+      state.streak = 0;
+      localStorage.setItem(STORAGE_STREAK, '0');
+      for (const w of [...state.puzzle.across, ...state.puzzle.down]) {
+        w.cells.forEach(([r, c], i) => {
+          state.grid[r][c] = w.answer[i];
+        });
+      }
+      state.solved = true;
+      stopTimer();
+      state.sessionPlayed++;
+      document.getElementById('streak').textContent = state.streak;
+      renderGrid();
+      showMessage('Puzzle revealed.', 'text-stone-600');
+      playGameOver();
+      trackGameOver('crossword-mini', { solved: false });
+      updateSessionStats();
+    }
+
+    function updateSessionStats() {
+      const el = document.getElementById('session-stats');
+      const text = document.getElementById('session-text');
+      el.classList.remove('hidden');
+      text.textContent = `Solved: ${state.sessionSolved} | Played: ${state.sessionPlayed} | Near-misses: ${state.sessionNearMiss}`;
+    }
+
+    function showMessage(msg, cls) {
+      const el = document.getElementById('message');
+      el.textContent = msg;
+      el.className = 'mt-4 text-center text-sm font-medium ' + cls;
+      el.classList.remove('hidden');
+    }
+
+    function newGame() {
+      stopTimer();
+      state.puzzle = pickRandomPuzzle();
+      state.grid = buildGrid();
+      state.selected = null;
+      state.direction = 'across';
+      state.seconds = 0;
+      state.started = false;
+      state.solved = false;
+      document.getElementById('timer').textContent = '0:00';
+      document.getElementById('message').classList.add('hidden');
+      document.getElementById('streak').textContent = state.streak;
+      document.getElementById('best-time').textContent = state.bestTime > 0 ? formatTime(state.bestTime) : '--';
+      renderClues();
+      renderGrid();
+      playClick();
+    }
+
+    function initSound() {
+      initAudio().then(() => {
+        if (!state.soundOn) muteAll();
+      }).catch(() => {});
+    }
+
+    document.getElementById('check-btn').addEventListener('click', onCheck);
+    document.getElementById('reveal-btn').addEventListener('click', onReveal);
+    document.getElementById('new-game-btn').addEventListener('click', newGame);
+    document.addEventListener('keydown', handleKeydown);
+
+    document.getElementById('sound-toggle').addEventListener('click', () => {
+      state.soundOn = !state.soundOn;
+      localStorage.setItem(STORAGE_SOUND, state.soundOn ? 'true' : 'false');
+      if (state.soundOn) initSound();
+      else muteAll();
+      document.getElementById('sound-toggle').textContent = state.soundOn ? '🔊' : '🔇';
+    });
+
+    state.bestTime = parseInt(localStorage.getItem(STORAGE_BEST) || '0', 10);
+    document.getElementById('best-time').textContent = state.bestTime > 0 ? formatTime(state.bestTime) : '--';
+    document.getElementById('streak').textContent = state.streak;
+    document.getElementById('sound-toggle').textContent = state.soundOn ? '🔊' : '🔇';
+
+    initSound();
+    newGame();
+  </script>
+</body>
+</html>

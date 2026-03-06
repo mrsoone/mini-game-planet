@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Hangman Online — Play Instantly | MiniGamePlanet</title>
+  <meta name="description" content="Play Hangman free online. Guess letters to reveal the hidden word before the drawing completes. Multiple categories and hundreds of words.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/hangman">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500});gtag('config','G-XXXXXXXXXX');</script>
+  <meta property="og:type" content="website"><meta property="og:title" content="Free Hangman Online | MiniGamePlanet"><meta property="og:description" content="Guess letters to reveal the hidden word."><meta property="og:url" content="https://minigameplanet.com/games/hangman"><meta property="og:site_name" content="MiniGamePlanet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Hangman","url":"https://minigameplanet.com/games/hangman","description":"Play Hangman free online.","genre":"Word","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <style>
+    .hm-letter{font-family:'DM Mono',monospace;font-size:28px;font-weight:800;letter-spacing:4px;border-bottom:3px solid #1E293B;display:inline-block;width:28px;text-align:center;margin:0 4px;text-transform:uppercase}
+    .hm-letter.revealed{color:#059669}
+    .kb-letter{width:36px;height:36px;border-radius:6px;border:2px solid #D1D5DB;background:#fff;font-family:'DM Mono',monospace;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.1s;color:#1E293B}
+    .kb-letter:hover:not(:disabled){background:#DBEAFE;border-color:#2563EB}
+    .kb-letter:disabled{opacity:0.3;cursor:not-allowed}
+    .kb-letter.correct{background:#D1FAE5;border-color:#059669;color:#059669}
+    .kb-letter.wrong{background:#FEE2E2;border-color:#DC2626;color:#DC2626}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <h1 style="font-size:22px;font-weight:700;margin:0;">🪢 Hangman</h1>
+        <div style="display:flex;gap:6px;">
+          <button id="new-btn" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">🔄 New</button>
+          <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊</button>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;padding:4px 8px;background:#F8FAFC;border-radius:6px;flex-wrap:wrap;justify-content:center;">
+        <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;">❌ <span id="wrong">0</span>/6</span>
+        <span style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;">📂 <span id="category"></span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;">🔥 <span id="streak">0</span></span>
+      </div>
+      <div id="near-miss" style="display:none;text-align:center;padding:3px;font-size:12px;font-weight:600;color:#D97706;margin-bottom:4px;"></div>
+      <!-- Hangman drawing -->
+      <div style="text-align:center;margin-bottom:12px;">
+        <canvas id="hangman-canvas" width="180" height="180" style="border-radius:8px;"></canvas>
+      </div>
+      <!-- Word -->
+      <div id="word-display" style="text-align:center;margin-bottom:16px;min-height:40px;"></div>
+      <!-- Message -->
+      <div id="message" style="text-align:center;min-height:24px;font-size:14px;font-weight:700;margin-bottom:8px;"></div>
+      <!-- Keyboard -->
+      <div id="keyboard" style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center;max-width:400px;margin:0 auto 12px;"></div>
+      <div id="game-over-area" style="display:none;text-align:center;">
+        <button id="play-again" style="padding:8px 24px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">▶ Play Again</button>
+      </div>
+    </div>
+  </main>
+
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play Hangman</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>Hangman is a classic word guessing game. A word is hidden and you guess one letter at a time. Correct letters are revealed in their positions. Wrong guesses add body parts to the hangman figure. Six wrong guesses and the game is over. Guess the entire word before that happens to win.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Strategy</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Start with common letters.</strong> E, A, R, I, O, T, N, S are the most frequent English letters.</li>
+        <li><strong>Look at word length.</strong> Short words have fewer possibilities. Use the revealed pattern to narrow down options.</li>
+        <li><strong>Pay attention to the category hint</strong> for thematic context.</li>
+      </ul>
+      <p class="mt-6">Play Hangman free — guess letters, save the figure, reveal the word.</p>
+    </div>
+  </article>
+  <div id="related-games"></div>
+  <div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+  document.addEventListener('click',()=>initAudio(),{once:true});
+  initToolPage('hangman'); initConsent(); trackGameView('hangman','Word');
+
+  const CATEGORIES=[
+    {name:'Animals',words:['ELEPHANT','GIRAFFE','PENGUIN','DOLPHIN','LEOPARD','CHEETAH','BUFFALO','HAMSTER','GORILLA','PANTHER','RACCOON','OCTOPUS','SPARROW','PELICAN','LOBSTER']},
+    {name:'Countries',words:['GERMANY','AUSTRALIA','PORTUGAL','THAILAND','COLOMBIA','ARGENTINA','ETHIOPIA','MALAYSIA','SINGAPORE','VIETNAM','MOROCCO','FINLAND','HUNGARY','IRELAND','ROMANIA']},
+    {name:'Foods',words:['AVOCADO','BROCCOLI','MUSHROOM','SANDWICH','CINNAMON','PANCAKES','SPAGHETTI','BLUEBERRY','CHOCOLATE','POPCORN','PUMPKIN','ALMOND','PRETZEL','BISCUIT','LASAGNA']},
+    {name:'Sports',words:['BASEBALL','FOOTBALL','SWIMMING','BADMINTON','HANDBALL','LACROSSE','WRESTLING','CLIMBING','ARCHERY','FENCING','CRICKET','BOWLING','SURFING','CYCLING','SKATING']},
+    {name:'Music',words:['ACOUSTIC','SYMPHONY','HARMONICA','KEYBOARD','CLARINET','MANDOLIN','MARIMBA','TROMBONE','UKULELE','DRUMLINE','CONCERTO','BASSLINE','MELODIC','BARITONE','RHYTHMIC']},
+    {name:'Science',words:['MOLECULE','ELECTRON','NITROGEN','HYDROGEN','CHEMICAL','MAGNETIC','PHOTON','PROTEIN','NEUTRON','CATALYST','FRICTION','SPECTRUM','GRAVITY','QUANTUM','NUCLEUS']},
+  ];
+
+  let word='', guessedLetters=new Set(), wrongCount=0, gameActive=false, streak=0, catName='';
+
+  document.getElementById('sound-btn').addEventListener('click',()=>{initAudio();const m=muteAll();document.getElementById('sound-btn').textContent=m?'🔇':'🔊';});
+  document.getElementById('new-btn').addEventListener('click',()=>newGame());
+  document.getElementById('play-again').addEventListener('click',()=>{playClick();newGame();});
+
+  function rng(min,max){const a=new Uint32Array(1);crypto.getRandomValues(a);return min+a[0]%(max-min+1);}
+
+  function newGame(){
+    const cat=CATEGORIES[rng(0,CATEGORIES.length-1)];
+    catName=cat.name;
+    word=cat.words[rng(0,cat.words.length-1)];
+    guessedLetters=new Set();wrongCount=0;gameActive=true;
+    document.getElementById('category').textContent=catName;
+    document.getElementById('wrong').textContent='0';
+    document.getElementById('message').textContent='';
+    document.getElementById('game-over-area').style.display='none';
+    document.getElementById('near-miss').style.display='none';
+    trackGameStart('hangman','Word');
+    buildKeyboard();renderWord();drawHangman();
+  }
+
+  function buildKeyboard(){
+    const kb=document.getElementById('keyboard');kb.innerHTML='';
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(l=>{
+      const btn=document.createElement('button');btn.className='kb-letter';btn.textContent=l;btn.id='hk-'+l;
+      btn.addEventListener('click',()=>guessLetter(l));
+      kb.appendChild(btn);
+    });
+  }
+
+  function renderWord(){
+    const display=document.getElementById('word-display');
+    display.innerHTML=word.split('').map(l=>{
+      const revealed=guessedLetters.has(l);
+      return`<span class="hm-letter${revealed?' revealed':''}">${revealed?l:'&nbsp;'}</span>`;
+    }).join('');
+  }
+
+  function guessLetter(l){
+    if(!gameActive||guessedLetters.has(l))return;
+    guessedLetters.add(l);
+    const btn=document.getElementById('hk-'+l);
+
+    if(word.includes(l)){
+      btn.className='kb-letter correct';btn.disabled=true;
+      playScoreUp(100);renderWord();
+      // Check win
+      if(word.split('').every(c=>guessedLetters.has(c))){
+        gameActive=false;streak++;
+        document.getElementById('message').textContent='🎉 You got it!';
+        document.getElementById('message').style.color='#059669';
+        if(wrongCount===0)playPerfect();else playSuccess();
+        if(wrongCount<=2)setTimeout(()=>playLevelUp(),300);
+        document.getElementById('game-over-area').style.display='block';
+        trackGameOver('hangman','Word',1,0);
+      }
+      // Near miss
+      const remaining=word.split('').filter(c=>!guessedLetters.has(c));
+      const unique=[...new Set(remaining)];
+      if(unique.length===1&&gameActive){
+        document.getElementById('near-miss').style.display='block';
+        document.getElementById('near-miss').textContent='⚡ One letter left!';
+      }
+    } else{
+      btn.className='kb-letter wrong';btn.disabled=true;
+      wrongCount++;document.getElementById('wrong').textContent=wrongCount;
+      playError();drawHangman();
+      if(wrongCount>=6){
+        gameActive=false;streak=0;
+        document.getElementById('message').innerHTML=`The word was <strong>${word}</strong>`;
+        document.getElementById('message').style.color='#DC2626';
+        playGameOver();
+        // Reveal all letters
+        guessedLetters=new Set(word.split(''));renderWord();
+        document.getElementById('game-over-area').style.display='block';
+        trackGameOver('hangman','Word',0,0);
+      } else if(wrongCount>=4){
+        document.getElementById('near-miss').style.display='block';
+        document.getElementById('near-miss').textContent=wrongCount===5?'😬 Last chance!':'🔥 Running out of guesses!';
+      }
+    }
+    document.getElementById('streak').textContent=streak;
+  }
+
+  function drawHangman(){
+    const c=document.getElementById('hangman-canvas');
+    const ctx=c.getContext('2d');
+    ctx.clearRect(0,0,180,180);
+    ctx.strokeStyle='#1E293B';ctx.lineWidth=3;ctx.lineCap='round';
+
+    // Base
+    ctx.beginPath();ctx.moveTo(20,170);ctx.lineTo(80,170);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(50,170);ctx.lineTo(50,20);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(50,20);ctx.lineTo(130,20);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(130,20);ctx.lineTo(130,40);ctx.stroke();
+
+    if(wrongCount>=1){ctx.beginPath();ctx.arc(130,55,15,0,Math.PI*2);ctx.stroke();}
+    if(wrongCount>=2){ctx.beginPath();ctx.moveTo(130,70);ctx.lineTo(130,120);ctx.stroke();}
+    if(wrongCount>=3){ctx.beginPath();ctx.moveTo(130,80);ctx.lineTo(105,100);ctx.stroke();}
+    if(wrongCount>=4){ctx.beginPath();ctx.moveTo(130,80);ctx.lineTo(155,100);ctx.stroke();}
+    if(wrongCount>=5){ctx.beginPath();ctx.moveTo(130,120);ctx.lineTo(110,150);ctx.stroke();}
+    if(wrongCount>=6){ctx.beginPath();ctx.moveTo(130,120);ctx.lineTo(150,150);ctx.stroke();}
+  }
+
+  document.addEventListener('keydown',e=>{
+    if(e.ctrlKey||e.altKey||e.metaKey)return;
+    if(/^[a-zA-Z]$/.test(e.key))guessLetter(e.key.toUpperCase());
+    if(!gameActive&&(e.key==='Enter'||e.key===' ')){e.preventDefault();playClick();newGame();}
+  });
+
+  newGame();
+  </script>
+</body>
+</html>

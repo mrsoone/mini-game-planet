@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Typing Race Online — Speed Test & WPM Challenge | MiniGamePlanet</title>
+  <meta name="description" content="Play Typing Race free online. Test your typing speed with real-time WPM and accuracy. Race against the clock, track streaks, and beat your personal best.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/typing-race">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500});gtag('config','G-XXXXXXXXXX');</script>
+  <meta property="og:type" content="website"><meta property="og:title" content="Free Typing Race Online | MiniGamePlanet"><meta property="og:description" content="Test your typing speed with real-time WPM and accuracy."><meta property="og:url" content="https://minigameplanet.com/games/typing-race"><meta property="og:site_name" content="MiniGamePlanet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Typing Race","url":"https://minigameplanet.com/games/typing-race","description":"Typing speed test with real-time WPM and accuracy.","genre":"Word","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <!-- AdSense placeholder: <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXX" crossorigin="anonymous"></script> -->
+  <style>
+    .tr-char{font-family:'DM Mono',monospace;font-size:18px;display:inline;transition:color 0.1s}
+    .tr-char.correct{color:#22C55E}
+    .tr-char.wrong{color:#DC2626;background:rgba(220,38,38,0.15);border-radius:2px}
+    .tr-char.pending{color:#94A3B8}
+    .tr-char.current{color:#0F172A;border-bottom:2px solid #2563EB}
+    .tr-progress-bar{height:8px;background:#E2E8F0;border-radius:4px;overflow:hidden}
+    .tr-progress-fill{height:100%;background:linear-gradient(90deg,#2563EB,#22C55E);transition:width 0.15s}
+    .tr-car-track{height:60px;background:linear-gradient(180deg,#E2E8F0 0%,#CBD5E1 100%);border-radius:8px;position:relative;overflow:hidden}
+    .tr-car{position:absolute;bottom:8px;width:36px;height:24px;background:#2563EB;border-radius:4px;transition:left 0.1s;box-shadow:0 2px 4px rgba(0,0,0,0.2)}
+    .tr-car::before{content:'';position:absolute;top:4px;left:4px;right:4px;height:6px;background:#1E40AF;border-radius:2px}
+    @keyframes tr-pulse{0%,100%{opacity:1}50%{opacity:0.7}}
+    .tr-typing-area{min-height:80px;padding:12px;background:#F8FAFC;border-radius:8px;border:2px solid #E2E8F0;font-family:'DM Mono',monospace;line-height:1.8;word-wrap:break-word}
+    .tr-typing-area:focus{outline:none;border-color:#2563EB}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <h1 style="font-size:22px;font-weight:700;margin:0;">⌨️ Typing Race</h1>
+        <div style="display:flex;gap:6px;">
+          <button id="restart-btn" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">🔄 Restart</button>
+          <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊</button>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;padding:4px 8px;background:#F8FAFC;border-radius:6px;flex-wrap:wrap;justify-content:center;">
+        <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;">WPM: <span id="wpm">0</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;">Accuracy: <span id="accuracy">100</span>%</span>
+        <span style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;">⏱ <span id="timer">0.0</span>s</span>
+        <span style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;">🔥 <span id="streak">0</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;">🏆 PB: <span id="pb">0</span> WPM</span>
+      </div>
+      <!-- Car race progress -->
+      <div class="tr-car-track" style="margin-bottom:12px;">
+        <div id="tr-car" class="tr-car" style="left:0;"></div>
+      </div>
+      <div class="tr-progress-bar" style="margin-bottom:12px;">
+        <div id="tr-progress-fill" class="tr-progress-fill" style="width:0%;"></div>
+      </div>
+      <!-- Typing area -->
+      <div id="typing-prompt" class="tr-typing-area" tabindex="0" contenteditable="false" style="cursor:text;">
+        <span id="char-container"></span>
+      </div>
+      <input type="text" id="typing-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;">
+      <div id="start-hint" style="text-align:center;margin-top:8px;font-size:13px;color:#64748B;">Click below and start typing to begin the race.</div>
+      <div id="game-over-area" style="display:none;text-align:center;margin-top:16px;padding:16px;background:#F8FAFC;border-radius:8px;">
+        <h3 style="font-size:18px;font-weight:700;margin-bottom:12px;">Race Complete!</h3>
+        <div style="display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin-bottom:12px;">
+          <span style="font-family:'DM Mono',monospace;">WPM: <strong id="final-wpm">0</strong></span>
+          <span style="font-family:'DM Mono',monospace;">Accuracy: <strong id="final-accuracy">0</strong>%</span>
+          <span style="font-family:'DM Mono',monospace;">Time: <strong id="final-time">0</strong>s</span>
+        </div>
+        <div style="font-size:12px;color:#64748B;margin-bottom:12px;">Session: <span id="session-count">0</span> races | Best: <span id="session-best">0</span> WPM</div>
+        <button id="play-again" style="padding:8px 24px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">▶ Race Again</button>
+      </div>
+    </div>
+  </main>
+
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play Typing Race</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>Typing Race is a free online typing speed test that measures your words per minute (WPM) and accuracy in real time. You'll see a sentence or paragraph on screen, and your job is to type it exactly as shown. The timer starts the moment you press your first key, so there's no countdown—just focus and type.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">How It Works</h3>
+      <p>Each character you type is checked instantly. Correct characters turn green, mistakes turn red, and characters you haven't reached yet stay gray. A progress bar and car animation show how far you've gotten. Your WPM and accuracy update live as you type. WPM is calculated using the standard of five characters per word, so even short sentences contribute to your score.</p>
+      <p>The game includes over forty sample sentences and paragraphs of varying length, from short pangrams like "The quick brown fox jumps over the lazy dog" to longer tongue twisters and proverbs. Each race picks a random passage, so you'll rarely see the same text twice in a row. This variety helps you practice different letter combinations and punctuation.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Improving Your Typing Speed</h3>
+      <p>Consistency matters more than raw speed at first. Aim for high accuracy before pushing for faster WPM. Many typists find that slowing down slightly actually improves their overall score because fewer errors mean less backtracking. Use proper touch typing technique: keep your fingers on the home row (ASDF and JKL;) and let each finger handle its designated keys.</p>
+      <p>Professional typists often reach 60 to 80 WPM with high accuracy. Competitive typists can exceed 120 WPM. Whatever your current level, Typing Race gives you instant feedback so you know exactly where you stand. The real-time stats let you adjust your pace mid-race if you notice your accuracy dropping.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Track Your Progress</h3>
+      <p>The game saves your personal best WPM in your browser, so you can see improvement over time. Streak tracking rewards consecutive accurate completions—finish with 95% accuracy or higher to extend your streak. Session stats show how many races you've done and your best result in the current session. Zero-friction restart lets you jump into another race immediately with a single click or keystroke.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Tips for Higher Scores</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Read ahead.</strong> Glance at the next few words while typing the current one so your brain stays ahead of your fingers.</li>
+        <li><strong>Don't fix mistakes mid-race.</strong> Finish the passage first; the game tracks accuracy but continuing smoothly often yields better WPM.</li>
+        <li><strong>Practice daily.</strong> Even five minutes of typing practice can improve speed and muscle memory over weeks.</li>
+        <li><strong>Use the car and progress bar.</strong> They give you a quick visual sense of how much text remains, helping you pace yourself.</li>
+      </ul>
+      <p class="mt-6">Play Typing Race free—test your speed, beat your personal best, and race against yourself. No sign-up required, no ads blocking the game, just pure typing practice whenever you need it.</p>
+    </div>
+  </article>
+  <div id="related-games"></div>
+  <div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+  document.addEventListener('click',()=>initAudio(),{once:true});
+  initToolPage('typing-race'); initConsent(); trackGameView('typing-race','Word');
+
+  const SENTENCES=[
+    'The quick brown fox jumps over the lazy dog.',
+    'Pack my box with five dozen liquor jugs.',
+    'How vexingly quick daft zebras jump!',
+    'Sphinx of black quartz, judge my vow.',
+    'The five boxing wizards jump quickly.',
+    'Bright vixens jump; dozy fowl quack.',
+    'Waltz, bad nymph, for quick jigs vex.',
+    'Glib jocks quiz nymph to vex dwarf.',
+    'Sphinx of black quartz, judge my vow.',
+    'Two driven jocks help fax my big quiz.',
+    'Five quacking zephyrs jolt my wax bed.',
+    'The jay, pig, fox, zebra and my wolves quack.',
+    'Crazy Frederick bought many very exquisite opal jewels.',
+    'We promptly judged antique ivory buckles for the next prize.',
+    'Jaded zombies acted quaintly but kept driving their oxen forward.',
+    'The job requires extra pluck and zeal from every young wage earner.',
+    'A quick movement of the enemy will jeopardize six gunboats.',
+    'All questions asked by five watched experts amaze the judge.',
+    'Back in June we delivered oxygen equipment of the same size.',
+    'Grumpy wizards make toxic brew for the evil queen and jack.',
+    'Whenever the black fox jumped the squirrel gazed suspiciously.',
+    'We have just quoted on nine dozen boxes of gray lap pins.',
+    'The explorer was frozen in his big kayak just after making queer discoveries.',
+    'The lazy dog slept under the warm blanket all afternoon.',
+    'She sells seashells by the seashore.',
+    'Peter Piper picked a peck of pickled peppers.',
+    'Red lorry, yellow lorry, red lorry, yellow lorry.',
+    'Unique New York, New York\'s unique.',
+    'Six sick hicks nick six slick bricks with picks and sticks.',
+    'I wish to wish the wish you wish to wish.',
+    'Fuzzy Wuzzy was a bear. Fuzzy Wuzzy had no hair.',
+    'How much wood would a woodchuck chuck if a woodchuck could chuck wood?',
+    'Betty Botter bought some butter but the butter was bitter.',
+    'A proper copper coffee pot.',
+    'The big black bug bit the big black bear.',
+    'Three free throws.',
+    'Lesser leather never weathered wetter weather better.',
+    'I scream, you scream, we all scream for ice cream.',
+    'Which witch is which?',
+    'The sixth sick sheikh\'s sixth sheep\'s sick.',
+    'Can you can a can as a canner can can a can?',
+    'I thought a thought but the thought I thought wasn\'t the thought I thought I thought.',
+    'If two witches would watch two watches, which witch would watch which watch?',
+    'A skunk sat on a stump and thunk the stump stunk, but the stump thunk the skunk stunk.',
+    'Bobby Bippy bought a bat. Bobby Bippy bought a ball.',
+    'Rubber baby buggy bumpers.',
+    'Toy boat. Toy boat. Toy boat.',
+    'The cat sat on the mat and watched the fat rat.',
+    'Learning to type quickly takes practice and patience.',
+    'Technology changes the way we work and communicate every day.',
+    'The best way to improve is to practice consistently.',
+  ];
+
+  let targetText='', typedLen=0, wrongCount=0, startTime=null, timerId=null, gameActive=false;
+  let streak=0, sessionCount=0, sessionBest=0;
+  const stats=JSON.parse(localStorage.getItem('mgp_tr_stats')||'{}');
+  let pb=stats.pb||0;
+  if(stats.streak)streak=stats.streak;
+
+  const charContainer=document.getElementById('char-container');
+  const typingInput=document.getElementById('typing-input');
+  const typingPrompt=document.getElementById('typing-prompt');
+
+  document.getElementById('sound-btn').addEventListener('click',()=>{initAudio();const m=muteAll();document.getElementById('sound-btn').textContent=m?'🔇':'🔊';});
+  document.getElementById('restart-btn').addEventListener('click',()=>{playClick();newRace();});
+  document.getElementById('play-again').addEventListener('click',()=>{playClick();newRace();});
+
+  function rng(max){const a=new Uint32Array(1);crypto.getRandomValues(a);return a[0]%max;}
+
+  function pickSentence(){return SENTENCES[rng(SENTENCES.length)];}
+
+  function newRace(){
+    targetText=pickSentence();
+    typedLen=0;wrongCount=0;startTime=null;gameActive=true;
+    if(timerId){clearInterval(timerId);timerId=null;}
+    document.getElementById('game-over-area').style.display='none';
+    document.getElementById('start-hint').style.display='block';
+    typingInput.value='';
+    typingInput.disabled=false;
+    typingPrompt.style.pointerEvents='auto';
+    trackGameStart('typing-race','Word');
+    renderChars();
+    updateProgress();
+    typingInput.focus();
+  }
+
+  function renderChars(){
+    charContainer.innerHTML='';
+    const chars=targetText.split('');
+    chars.forEach((c,i)=>{
+      const span=document.createElement('span');
+      span.className='tr-char pending';
+      span.textContent=c;
+      span.id='c'+i;
+      charContainer.appendChild(span);
+    });
+    if(chars.length>0)document.getElementById('c0').classList.add('current');
+  }
+
+  function updateChars(){
+    for(let i=0;i<targetText.length;i++){
+      const el=document.getElementById('c'+i);
+      if(!el)continue;
+      el.classList.remove('correct','wrong','pending','current');
+      if(i<typedLen){
+        const typedChar=typingInput.value[i];
+        el.classList.add(typedChar===targetText[i]?'correct':'wrong');
+      }else if(i===typedLen){
+        el.classList.add('current');
+      }else{
+        el.classList.add('pending');
+      }
+    }
+  }
+
+  function updateProgress(){
+    const pct=targetText.length?Math.min(100,(typedLen/targetText.length)*100):0;
+    document.getElementById('tr-progress-fill').style.width=pct+'%';
+    const trackW=document.querySelector('.tr-car-track').offsetWidth;
+    const carW=36;
+    document.getElementById('tr-car').style.left=Math.max(0,(pct/100)*(trackW-carW)-2)+'px';
+  }
+
+  function updateStats(){
+    if(!startTime||typedLen===0){
+      document.getElementById('wpm').textContent='0';
+      document.getElementById('accuracy').textContent='100';
+      document.getElementById('timer').textContent='0.0';
+    }else{
+      const elapsed=(Date.now()-startTime)/1000;
+      const words=(typedLen/5);
+      const wpm=elapsed>0?Math.round((words/elapsed)*60):0;
+      const acc=typedLen>0?Math.round(((typedLen-wrongCount)/typedLen)*100):100;
+      document.getElementById('wpm').textContent=wpm;
+      document.getElementById('accuracy').textContent=acc;
+      document.getElementById('timer').textContent=elapsed.toFixed(1);
+    }
+    document.getElementById('streak').textContent=streak;
+    document.getElementById('pb').textContent=pb;
+  }
+
+  function finishRace(){
+    gameActive=false;
+    if(timerId){clearInterval(timerId);timerId=null;}
+    typingInput.disabled=true;
+    typingPrompt.style.pointerEvents='none';
+    document.getElementById('start-hint').style.display='none';
+
+    const elapsed=(Date.now()-startTime)/1000;
+    const words=(typedLen/5);
+    const wpm=elapsed>0?Math.round((words/elapsed)*60):0;
+    const acc=typedLen>0?Math.round(((typedLen-wrongCount)/typedLen)*100):100;
+
+    sessionCount++;
+    if(wpm>sessionBest)sessionBest=wpm;
+    if(wpm>pb){pb=wpm;localStorage.setItem('mgp_tr_stats',JSON.stringify({pb,streak}));}
+    if(acc>=95){streak++;localStorage.setItem('mgp_tr_stats',JSON.stringify({pb,streak}));}else{streak=0;localStorage.setItem('mgp_tr_stats',JSON.stringify({pb,streak}));}
+
+    document.getElementById('final-wpm').textContent=wpm;
+    document.getElementById('final-accuracy').textContent=acc;
+    document.getElementById('final-time').textContent=elapsed.toFixed(1);
+    document.getElementById('session-count').textContent=sessionCount;
+    document.getElementById('session-best').textContent=sessionBest;
+    document.getElementById('game-over-area').style.display='block';
+
+    if(acc>=98)playPerfect();else if(acc>=90)playSuccess();else playGameOver();
+    if(wpm>=60)setTimeout(()=>playLevelUp(),300);
+    trackGameOver('typing-race','Word',acc>=90?1:0,wpm);
+  }
+
+  typingPrompt.addEventListener('click',()=>typingInput.focus());
+
+  typingInput.addEventListener('keydown',e=>{
+    if(!gameActive)return;
+    if(e.key==='Backspace'){
+      e.preventDefault();
+      if(typedLen>0){
+        if(typingInput.value[typedLen-1]!==targetText[typedLen-1])wrongCount--;
+        typedLen--;
+        typingInput.value=typingInput.value.slice(0,typedLen);
+        updateChars();updateProgress();updateStats();playClick();
+      }
+      return;
+    }
+    if(e.ctrlKey||e.altKey||e.metaKey)return;
+    if(e.key.length===1){
+      e.preventDefault();
+      if(!startTime){
+        startTime=Date.now();
+        document.getElementById('start-hint').style.display='none';
+        timerId=setInterval(updateStats,100);
+      }
+      const expected=targetText[typedLen];
+      if(e.key===expected){
+        typedLen++;
+        typingInput.value+=e.key;
+        updateChars();updateProgress();updateStats();
+        if(typedLen%10===0)playScoreUp(50);
+        if(typedLen>=targetText.length){finishRace();}
+      }else{
+        wrongCount++;
+        typedLen++;
+        typingInput.value+=e.key;
+        updateChars();updateProgress();updateStats();
+        playError();
+        if(typedLen>=targetText.length){finishRace();}
+      }
+    }
+  });
+
+  document.addEventListener('keydown',e=>{
+    if(!gameActive&&(e.key==='Enter'||e.key===' ')){e.preventDefault();playClick();newRace();typingInput.focus();}
+  });
+
+  newRace();
+  </script>
+</body>
+</html>

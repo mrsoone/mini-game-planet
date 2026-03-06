@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Word Chain - Word Ladder Puzzle Game | Mini Game Planet</title>
+  <meta name="description" content="Play Word Chain, a free word ladder puzzle game. Transform one word into another by changing one letter at a time. Challenge your vocabulary with 3, 4, and 5-letter puzzles.">
+  <link rel="canonical" href="https://minigameplanet.com/games/word-chain.html">
+  <!-- Open Graph -->
+  <meta property="og:title" content="Word Chain - Word Ladder Puzzle Game">
+  <meta property="og:description" content="Transform words one letter at a time in this addictive word ladder puzzle. Free to play!">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/word-chain.html">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+  </style>
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Word Chain",
+    "description": "Word ladder puzzle game - transform one word into another by changing one letter at a time.",
+    "applicationCategory": "Game",
+    "genre": "Puzzle",
+    "url": "https://minigameplanet.com/games/word-chain.html"
+  }
+  </script>
+  <!-- GA4 Consent Mode (defaults) -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('consent', 'default', {
+      'analytics_storage': 'denied',
+      'ad_storage': 'denied',
+      'ad_user_data': 'denied',
+      'ad_personalization': 'denied',
+      'wait_for_update': 500
+    });
+  </script>
+  <!-- AdSense (commented - uncomment when ready) -->
+  <!--
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXX" crossorigin="anonymous"></script>
+  -->
+</head>
+<body class="min-h-screen bg-[#F5F5F4] text-gray-800">
+  <div id="nav-container" class="bg-white shadow-sm border-b border-gray-200">
+    <nav class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="font-semibold text-lg text-gray-800 hover:text-amber-600 transition">Mini Game Planet</a>
+      <div class="flex items-center gap-4">
+        <button id="sound-toggle" class="p-2 rounded-lg hover:bg-gray-100 transition" title="Toggle sound" aria-label="Toggle sound">
+          <svg id="sound-on" class="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20"><path d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.776L4.925 14H2a1 1 0 01-1-1V7a1 1 0 011-1h2.925l3.458-2.776a1 1 0 011-.148zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414z"/></svg>
+          <svg id="sound-off" class="w-5 h-5 text-gray-400 hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.776L4.925 14H2a1 1 0 01-1-1V7a1 1 0 011-1h2.925l3.458-2.776a1 1 0 011-.148zM16.707 3.293a1 1 0 010 1.414L15.414 6l1.293 1.293a1 1 0 01-1.414 1.414L14 7.414l-1.293 1.293a1 1 0 01-1.414-1.414L12.586 6l-1.293-1.293a1 1 0 011.414-1.414L14 4.586l1.293-1.293a1 1 0 011.414 0z"/></svg>
+        </button>
+      </div>
+    </nav>
+  </div>
+
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 md:p-8">
+      <header class="text-center mb-8">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Word Chain</h1>
+        <p class="text-gray-600">Transform the start word into the target by changing one letter at a time. Each step must be a valid word.</p>
+      </header>
+
+      <!-- Stats bar -->
+      <div class="flex flex-wrap justify-center gap-4 md:gap-6 mb-6 text-sm">
+        <div class="flex items-center gap-2">
+          <span class="text-gray-500">Timer:</span>
+          <span id="timer" class="font-mono font-semibold text-amber-600">0:00</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-gray-500">Steps:</span>
+          <span id="move-count" class="font-mono font-semibold">0</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-gray-500">Streak:</span>
+          <span id="streak" class="font-mono font-semibold text-green-600">0</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-gray-500">Best:</span>
+          <span id="personal-best" class="font-mono font-semibold text-blue-600">—</span>
+        </div>
+      </div>
+
+      <!-- Puzzle display -->
+      <div class="mb-6 p-4 bg-gray-50 rounded-xl">
+        <div class="flex flex-wrap items-center justify-center gap-2 mb-4">
+          <span class="text-gray-500 text-sm">Start:</span>
+          <span id="start-word" class="font-mono text-xl font-bold text-gray-900 uppercase"></span>
+          <span class="text-gray-400 mx-1">→</span>
+          <span class="text-gray-500 text-sm">Target:</span>
+          <span id="target-word" class="font-mono text-xl font-bold text-amber-600 uppercase"></span>
+        </div>
+        <div id="chain-display" class="flex flex-wrap justify-center gap-2 min-h-[2.5rem] items-center">
+          <!-- Chain steps appear here -->
+        </div>
+      </div>
+
+      <!-- Input area -->
+      <div class="mb-6">
+        <label for="word-input" class="block text-sm font-medium text-gray-700 mb-2">Your next word:</label>
+        <div class="flex gap-2">
+          <input type="text" id="word-input" maxlength="5" autocomplete="off"
+            class="flex-1 px-4 py-3 font-mono text-lg uppercase border-2 border-gray-300 rounded-xl focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none transition"
+            placeholder="Type a word...">
+          <button id="submit-btn" class="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl transition">
+            Submit
+          </button>
+        </div>
+        <p id="hint" class="mt-2 text-sm text-gray-500 min-h-[1.25rem]"></p>
+      </div>
+
+      <!-- Near-miss / Session stats -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div id="near-miss" class="p-3 bg-amber-50 rounded-lg border border-amber-200 hidden">
+          <p class="text-sm font-medium text-amber-800">Near miss!</p>
+          <p class="text-xs text-amber-700">You were one letter away. Try again!</p>
+        </div>
+        <div class="p-3 bg-gray-50 rounded-lg border border-gray-200">
+          <p class="text-sm font-medium text-gray-700">Session stats</p>
+          <p class="text-xs text-gray-600">Puzzles solved: <span id="session-solved">0</span> | Avg steps: <span id="session-avg">—</span></p>
+        </div>
+      </div>
+
+      <!-- Zero-friction restart -->
+      <div class="flex justify-center gap-3">
+        <button id="restart-btn" class="px-6 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium rounded-xl transition">
+          New Puzzle
+        </button>
+        <button id="same-restart-btn" class="px-6 py-2.5 bg-amber-100 hover:bg-amber-200 text-amber-800 font-medium rounded-xl transition">
+          Retry Same
+        </button>
+      </div>
+    </div>
+
+    <!-- SEO Article (500+ words) -->
+    <article class="mt-12 prose prose-gray max-w-none">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4">What Is a Word Chain (Word Ladder) Puzzle?</h2>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        A word chain, also known as a word ladder, is a classic word puzzle invented by Lewis Carroll in 1877. The goal is simple: transform a start word into a target word by changing exactly one letter at a time. Each intermediate step must form a valid English word. For example, to change CAT into DOG, you might go: CAT → COT → DOT → DOG. Every step differs from the previous by just one letter, and every step is a real word.
+      </p>
+      <h3 class="text-xl font-semibold text-gray-900 mb-3">Why Play Word Chain?</h3>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        Word chain puzzles sharpen your vocabulary, spelling, and pattern recognition. They're perfect for students learning English, word game enthusiasts, and anyone who enjoys a quick mental workout. Unlike crossword puzzles, word ladders require no prior knowledge—just logic and a good grasp of common words. The puzzles range from easy (3-letter words like HOT to COT) to challenging (5-letter transformations like HEART to HEARD).
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        Teachers often use word ladders in the classroom to build phonemic awareness and spelling skills. The game encourages players to think about letter patterns and how small changes create new meanings. Whether you're commuting, taking a break, or looking for a family-friendly activity, word chain offers a satisfying challenge that fits into any schedule.
+      </p>
+      <h3 class="text-xl font-semibold text-gray-900 mb-3">How to Play</h3>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        Type your next word in the input box and press Submit or Enter. The game validates each word against a built-in dictionary of common 3, 4, and 5-letter words. If your word is valid and differs by exactly one letter from the previous step, it's added to your chain. Keep going until you reach the target word. Use fewer steps to improve your personal best and build your streak by solving puzzles consecutively.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        The timer runs from the moment you start, and the step counter tracks how many words you've added to your chain. Your personal best for each puzzle is saved in the browser, so you can compete against yourself. Session statistics show how many puzzles you've solved and your average step count, helping you track improvement over time.
+      </p>
+      <h3 class="text-xl font-semibold text-gray-900 mb-3">Tips for Success</h3>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        Look at which letters differ between the start and target words. Focus on changing one letter at a time in a logical order. Sometimes the shortest path isn't obvious—try different routes. Use the near-miss feedback to learn when you're close. Track your timer and steps to challenge yourself. With practice, you'll develop an intuition for common word transformations and solve puzzles faster.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        For 3-letter puzzles, common vowels (A, E, I, O, U) and high-frequency consonants (T, N, R, S) often appear in multiple valid words. For longer words, consider changing letters in the middle first—they sometimes open more possibilities than changing the first or last letter. If you get stuck, use "Retry Same" to attempt the puzzle again with a fresh perspective.
+      </p>
+      <p class="text-gray-600 leading-relaxed">
+        Word chain is free to play, works offline once loaded, and requires no sign-up. Enjoy the puzzle!
+      </p>
+    </article>
+
+    <div id="related-games" class="mt-8 p-4 bg-white rounded-xl border border-gray-200">
+      <h3 class="font-semibold text-gray-800 mb-2">Related Games</h3>
+      <div class="flex flex-wrap gap-2">
+        <a href="/games/wordle.html" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm transition">Wordle</a>
+        <a href="/games/spelling-bee.html" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm transition">Spelling Bee</a>
+        <a href="/games/anagrams.html" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm transition">Anagrams</a>
+      </div>
+    </div>
+  </main>
+
+  <footer id="footer-container" class="mt-12 py-6 border-t border-gray-200 text-center text-sm text-gray-500">
+    <p>© Mini Game Planet. Word Chain is free to play.</p>
+  </footer>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('word-chain');
+    initConsent();
+    trackGameView('word-chain', 'Word');
+
+    // Dictionary: common 3, 4, 5 letter words (lowercase)
+    const DICT = {
+      3: new Set(['cat','cot','dot','dog','hot','hat','hit','pit','pig','big','dig','bit','sit','sat','mat','bat','rat','pat','fat','eat','ate','tea','sea','see','bee','bed','red','led','get','net','met','wet','pet','let','bet','yet','set','men','man','can','pan','tan','ran','van','fan','fin','sin','pin','win','tin','bin','kin','inn','ant','act','apt','opt','art','arc','car','bar','far','war','jar','tar','ear','oar','our','out','put','cut','but','nut','rut','hut','gut','run','fun','sun','bun','gun','mug','bug','rug','tug','jug','log','fog','hog','jog','bog','cog','sog','ago','ego','soy','boy','toy','joy','coy','key','hey','lay','may','pay','say','way','day','bay','hay','ray','gay','law','maw','paw','raw','saw','jaw','few','new','dew','sew','hew','mew','pew','own','owl','how','now','cow','bow','row','sow','low','tow','woe','doe','foe','hoe','toe','roe','one','two','who','why','try','cry','dry','fry','spy','sky','sty','bye','dye','eye','aye','ice','ace','age','ago','aid','aim','air','ale','all','and','any','are','arm','ask','ate','bad','bag','ban','bar','bat','bay','bed','bee','beg','bet','bid','big','bin','bit','boa','bob','bod','bog','boo','bow','box','boy','bra','bud','bug','bum','bun','bus','but','buy','cab','cad','cam','can','cap','car','cat','caw','cod','cog','con','coo','cop','cot','cow','coy','cry','cub','cud','cue','cup','cur','cut','dab','dad','dag','dam','dan','dap','day','deb','den','dew','did','die','dig','dim','din','dip','dis','dit','doc','doe','dog','doh','dol','dom','don','doo','dot','dow','dry','dub','dud','due','dug','duh','dun','duo','dup','dye','ear','eat','ebb','eel','eff','egg','ego','eke','eld','elf','elk','ell','elm','emo','ems','emu','end','eng','ens','eon','era','ere','erg','ern','err','ers','ess','est','eta','eth','eve','ewe','eye','fab','fad','fag','fan','far','fas','fat','fax','fay','fed','fee','fen','fer','few','fey','fez','fib','fid','fie','fig','fil','fin','fir','fit','fix','fiz','flu','fly','fob','foe','fog','foh','fon','foo','fop','for','fou','fox','foy','fro','fry','fub','fud','fug','fun','fur','gab','gad','gag','gal','gam','gan','gap','gar','gas','gat','gay','ged','gee','gel','gem','gen','get','gey','ghi','gib','gid','gie','gig','gil','gin','gip','gis','git','gnu','goa','gob','god','goo','gor','got','gox','goy','gul','gum','gun','gup','gur','gus','gut','guv','guy','gym','gyn','gyp','had','hag','hah','haj','ham','han','hao','hap','has','hat','haw','hay','heh','hem','hen','hep','her','hes','het','hew','hex','hey','hid','hie','him','hin','hip','his','hit','hob','hod','hoe','hog','hoi','hol','hom','hon','hoo','hop','hot','how','hoy','hub','hue','hug','huh','hul','hum','hun','hup','hut','hyp','ice','ich','ick','icy','ids','iff','ifs','igg','ilk','ill','imp','ink','inn','ins','ion','ios','ire','irk','ism','its','ivy','jab','jag','jam','jar','jaw','jay','jee','jet','jeu','jew','jib','jig','jin','job','jog','jot','jow','joy','jug','jun','jus','jut','kab','kae','kaf','kai','kak','kam','kas','kat','kaw','kay','kea','keb','ked','kef','keg','ken','kep','ket','kex','key','khi','kid','kif','kin','kip','kir','kis','kit','koa','kob','koi','kop','kor','kos','kow','kue','lab','lac','lad','lag','lah','lam','lap','lar','las','lat','lav','law','lax','lay','lea','led','lee','leg','lei','lek','lep','les','let','leu','lev','lew','lex','ley','lez','lib','lid','lie','lig','lin','lip','lis','lit','lob','lod','log','loo','lop','lot','low','lox','loy','lud','lug','lum','lun','lur','luv','lux','lye','mac','mad','mae','mag','mak','man','map','mar','mas','mat','maw','max','may','med','mee','meg','mel','mem','men','mes','met','mew','mho','mib','mid','mig','mil','mim','min','mir','mis','mit','mix','moa','mob','mod','moe','mog','mol','mom','mon','moo','mop','mor','mos','mot','mow','moy','moz','mud','mug','mum','mun','mus','mut','myc','nab','nae','nag','nah','nam','nan','nap','nar','nas','nat','naw','nay','neb','ned','nee','neg','nek','nel','nem','nen','neo','nep','net','new','nib','nid','nie','nil','nim','nip','nis','nit','nix','nob','nod','nog','noh','nom','non','noo','nor','nos','not','now','noy','nth','nub','nun','nus','nut','nye','oaf','oak','oar','oat','oba','obb','obe','obi','obo','obs','oca','och','oda','odd','ode','ods','oes','off','oft','ohm','oho','ohs','oik','oil','oka','oke','old','ole','olm','oms','one','ono','ons','oof','ooh','oom','oon','oop','oor','oos','oot','ope','ops','opt','ora','orb','orc','ord','ore','orf','org','ors','ort','ose','oud','our','out','ova','owe','owl','own','owt','oxo','oxy','oye','oys','pac','pad','pah','pak','pal','pam','pan','pap','par','pas','pat','paw','pax','pay','pea','pec','ped','pee','peg','peh','pen','pep','per','pes','pet','pew','phi','pho','pht','pia','pic','pie','pig','pin','pip','pir','pis','pit','piu','pix','pla','ply','poa','pod','poh','poi','pol','pom','pon','poo','pop','por','pos','pot','pow','pox','poz','pra','pre','pro','pry','psi','pst','pub','pud','pug','pul','pun','pup','pur','pus','put','puy','pya','pyx','qat','qis','qua','rad','rag','rah','rai','raj','ram','ran','rap','ras','rat','raw','rax','ray','reb','rec','red','ree','ref','reg','reh','rei','rem','ren','reo','rep','res','ret','rev','rew','rex','rez','rhy','ria','rib','rid','rif','rig','rim','rin','rip','rit','rob','roc','rod','roe','rog','rom','roo','rot','row','rub','ruc','rud','rue','rug','rum','run','rut','rya','rye','sab','sac','sad','sae','sag','sai','sal','sam','san','sap','sar','sat','sau','sav','saw','sax','say','saz','sea','sec','sed','see','seg','sei','sel','sen','ser','set','sev','sew','sex','sey','sha','she','shh','shy','sib','sic','sid','sig','sim','sin','sip','sir','sis','sit','six','ska','ski','sky','sly','sma','sob','sod','soh','sol','som','son','sop','sot','sou','sow','sox','soy','spa','spy','sri','sty','sub','sue','sug','sum','sun','sup','suq','sur','sus','swy','sye','syn','tab','tad','tae','tag','tai','taj','tak','tam','tan','tao','tap','tar','tas','tat','taw','tax','tay','tea','tec','ted','tee','teg','tel','ten','tes','tet','tew','tex','they','tho','thy','tic','tie','tig','til','tin','tip','tis','tit','tix','toe','tog','tom','ton','too','top','tor','tot','tou','tow','toy','try','tsk','tub','tug','tui','tum','tun','tup','tut','tux','twa','two','tye','udo','ugh','ugs','uke','ulu','umm','ump','uni','uns','upo','ups','urb','urd','ure','urg','urn','urp','use','ush','usk','uta','ute','uts','vac','vag','van','var','vas','vat','vau','vav','vaw','vee','veg','vet','vex','via','vid','vie','vig','vim','vin','vis','voe','vol','vom','vor','vow','vox','vug','vum','wab','wad','wae','wag','wah','wai','wan','wap','war','was','wat','waw','wax','way','wea','web','wed','wee','weg','wei','wel','wen','wet','wey','wha','who','why','wig','win','wis','wit','wiz','woe','wok','won','woo','wop','wor','wos','wot','wow','wry','wud','wye','wyn','xed','xis','yag','yah','yak','yam','yap','yar','yaw','yay','yea','yeh','yen','yep','yer','yes','yet','yew','yex','ygo','yid','yin','yip','yob','yod','yok','yom','yon','yow','yox','yoy','yug','yuk','yum','yup','yus','yew','zag','zap','zar','zas','zed','zee','zek','zel','zen','zep','zet','zea','zig','zin','zip','zit','ziz','zoa','zoo','zuz','zzz']),
+      4: new Set(['cold','cord','word','ward','warm','hold','bold','gold','mold','sold','told','fish','fist','foot','food','good','hood','wood','mood','rood','door','poor','moor','boar','soar','roar','bear','dear','fear','gear','hear','near','pear','rear','sear','tear','wear','year','lead','load','goad','gold','head','heed','need','seed','weed','feed','deed','reed','meed','read','dead','bead','mead','lead','heat','beat','meat','neat','seat','peat','teat','heal','deal','meal','real','seal','teal','veal','weal','zeal','hear','bear','dear','fear','gear','near','pear','rear','sear','tear','wear','year','heart','heard','hears','heaps','helps','herbs','herds','herbs','hills','hints','hires','hives','hoard','hoars','hobby','hocks','holds','holes','homes','honey','honks','hoods','hooks','hoops','hoots','hopes','horns','horses','hosts','hours','house','hover','howls','hubs','hues','hugs','hums','hunt','hurl','hurt','hush','husk','huts','hymn','hype','ibis','iced','ices','icky','icon','idea','ides','idle','idly','idol','idyl','iffy','iglu','ikat','ilks','ills','illy','imam','immy','impi','imps','inby','inch','info','ingo','ings','inks','inky','inly','inns','inro','inti','into','ions','iota','ired','ires','irid','iris','irks','iron','isba','isle','isms','itch','item','iwis','ixia','izar','jabs','jack','jade','jags','jail','jake','jamb','jams','jane','jape','jarl','jars','jasp','jato','jauk','jaup','java','jaws','jays','jazz','jean','jeep','jeer','jees','jeez','jefe','jeff','jehu','jell','jems','jerk','jess','jest','jets','jeux','jews','jibb','jibe','jibs','jiff','jigs','jilt','jimp','jink','jinn','jins','jinx','jird','jive','jivy','jizz','jobs','jock','joes','joey','jogs','john','join','joke','joky','jole','jolt','josh','joss','jota','jots','jouk','jowl','jows','joys','juba','jube','judo','judy','juga','jugs','juju','juke','juku','jump','junk','jupe','jura','jury','just','jute','juts','jynx','kaas','kabs','kadi','kaes','kafs','kago','kagu','kaif','kail','kain','kaka','kaki','kale','kame','kami','kana','kane','kaon','kapa','kaph','karn','kart','kata','kats','kava','kawi','kays','kbar','keas','keck','keef','keek','keel','keen','keep','keet','kefs','kegs','keir','kelp','kelt','kemp','kens','kent','kepi','keps','kept','kerb','kerf','kern','kerr','keta','kete','keto','keys','khaf','khan','khat','khet','khis','kibe','kick','kids','kief','kier','kifs','kike','kill','kiln','kilo','kilt','kina','kind','kine','king','kink','kino','kins','kips','kirk','kirn','kirs','kiss','kist','kite','kits','kiva','kiwi','klik','knap','knar','knee','knew','knit','knob','knop','knot','know','knur','koan','koas','kobo','kobs','koel','koff','kohl','kois','koji','kola','kond','konk','kook','koph','kops','kora','kore','kors','koru','koss','koto','kows','krab','krai','kray','kris','ksar','kudo','kudu','kueh','kues','kufi','kugu','kula','kuna','kune','kuri','kuru','kuss','kutu','kuzu','kvas','kyak','kyar','kyat','kyes','kyte','kyus','labs','lace','lack','lacs','lacy','lade','lads','lady','lags','laic','laik','laid','lain','lair','lait','lake','lakh','laky','lall','lama','lamb','lame','lamp','lams','land','lane','lang','lank','laps','lard','lare','lark','larn','lars','larum','lase','lash','lass','last','late','lath','lati','lats','latu','laud','laugh','launch','laura','lavs','lawk','lawn','laws','lays','laze','lazy','lead','leaf','leak','leal','lean','leap','lear','leas','leat','lech','lede','leed','leek','leer','lees','leet','left','legs','lehr','leir','leis','leke','leks','leku','leme','lend','leng','leno','lens','lent','leps','lept','less','lest','lets','leud','leva','leve','levo','levy','lewd','leys','liar','lias','libs','lice','lich','lick','lido','lids','lied','lief','lien','lier','lies','lieu','life','lift','ligs','like','lill','lilo','lilt','lily','lima','limb','lime','limn','limo','limp','limy','lind','line','ling','link','linn','lino','lins','lint','liny','lion','lipa','lipe','lipo','lips','lira','lire','liri','lirk','lirks','lisp','list','lite','lith','lits','litu','live','load','loaf','loam','loan','lobe','lobi','lobo','lobs','loca','loch','loci','lock','lode','loess','loft','loge','logo','logs','logy','loid','loin','loir','loiter','loke','loll','lolo','loma','lomb','lome','lone','long','loof','look','loom','loon','loop','loos','loot','lope','lops','lord','lore','lorn','lorry','lory','lose','loss','lost','loti','loto','lots','loud','loun','loup','lour','lous','lout','love','lowd','lowe','lown','lows','lowt','lowy','loys','luau','lube','luce','luck','lude','ludic','ludo','luds','lues','luff','luge','lugs','lull','lulu','luma','lumb','lume','lump','luna','lune','lung','lunk','lunt','luny','lure','lurg','lurk','lush','lusky','lust','lute','lutz','luvs','luxe','lwei','lyam','lych','lyes','lyme','lyms','lyne','lyra','lyre','lyse','lyte','lythe']),
+      5: new Set(['stone','stole','store','stoke','stole','stool','stoop','stope','stops','storm','story','stout','stove','stow','stows','strap','straw','stray','strip','strop','strum','strut','stubs','stuck','stud','studs','study','stuff','stump','stung','stunk','stuns','stunt','styes','style','styli','suave','suber','sucks','sucky','sudor','sudsy','suede','suers','suets','suety','sugar','sugars','sughs','suing','suint','suite','suits','sulci','sulfa','sulks','sulky','sully','sulus','sumac','sumos','sumps','sunny','sunup','super','supes','supra','surah','sural','suras','surds','surer','surfs','surge','surgy','surly','surra','sused','suses','sushi','sutor','sutra','swabs','swack','swads','swage','swags','swail','swain','swale','swami','swamp','swamy','swang','swank','swans','swaps','sward','sware','swarf','swarm','swart','swash','swath','swats','sway','sways','sweal','swear','sweat','swede','sweep','sweer','sweet','sweir','swell','swelt','swept','swerf','sweys','swies','swift','swigs','swile','swill','swims','swine','swing','swink','swipe','swirl','swish','swiss','swith','swits','swive','swobs','swoln','swone','swoon','swoop','swoop','swops','sword','swore','sworn','swots','swoun','swung','sybbe','sybil','syboe','sybow','sycee','syces','sycon','syens','syker','sykes','sylph','sylva','symar','synch','syncs','synod','synth','syped','sypes','syrah','syren','syrup','sysop','sythe','syver','taals','taata','tabby','taber','tabes','tabid','tabla','table','taboo','tabor','tabun','tabus','tacan','taces','tacet','tache','tacho','tachs','tacit','tacks','tacky','tacos','tacts','taels','taffy','tafia','taggy','tagma','tahas','tahrs','taiga','taigs','taiko','tails','tains','taint','taira','taish','taits','tajes','takas','taken','taker','takes','takin','takis','takky','talak','talaq','talar','talas','talcs','talcy','talea','taler','tales','talks','talky','talls','tally','talma','talon','talpa','taluk','talus','tamal','tamed','tamer','tames','tamin','tamis','tammy','tamps','tanas','tanga','tangi','tango','tangs','tangy','tanhs','tanka','tanks','tanky','tanna','tansy','tanti','tanto','tapas','taped','tapen','taper','tapes','tapet','tapis','tappa','tapus','taras','tardo','tardy','tared','tares','targa','targe','tarns','taroc','tarok','taros','tarot','tarps','tarre','tarry','tarsi','tarts','tarty','tasar','tased','taser','tases','tasks','tassa','tasse','tasso','taste','tasty','tatar','tater','tates','taths','tatie','tatou','tatts','tatty','tatus','taube','tauld','taunt','tauon','taupe','tauts','tavah','taver','tawai','tawas','tawed','tawer','tawie','tawny','tawse','tawts','taxed','taxer','taxes','taxis','taxol','taxon','taxor','taxus','tayra','tazza','tazze','teach','teade','teads','teaks','teals','teams','tears','teary','tease','teats','teaze','techs','techy','tecta','teddy','teels','teems','teend','teens','teeny','teers','teeth','teffs','teggs','tegua','tegus','tehrs','teiid','teils','teind','teins','telae','telco','teles','telex','telia','telic','tells','telly','teloi','telos','temed','temes','tempi','tempo','temps','tempt','temse','tench','tends','tendu','tenes','tenet','tenge','tenia','tenne','tenno','tenny','tenon','tenor','tense','tenth','tents','tenty','tenue','tepal','tepas','tepee','tepid','tepoy','terai','teras','terce','terek','teres','terfe','terfs','terga','terms','terne','terns','terra','terry','terse','terts','tesla','testa','teste','tests','testy','tetes','teths','tetra','tetri','teuch','teugh','tewed','tewel','tewit','texas','texes','texts','thack','thagi','thaim','thale','thali','thana','thane','thang','thank','thans','thanx','tharm','thars','thaws','thawy','thebe','theca','theed','theek','thees','theft','thegn','theic','thein','their','thelf','thema','theme','thens','theow','there','therm','these','thesp','theta','thete','thews','thewy','they','thick','thief','thigh','thigs','thilk','thill','thine','thing','think','thins','thiol','third','thirl','thoft','thole','tholi','thong','thorn','thoro','thorp','those','thous','thowl','thrae','thraw','thread','threw','thrid','thrip','throb','throe','throw','thrum','thuds','thugs','thuja','thumb','thump','thunk','thurl','thuya','thymi','thymy','tians','tiars','tibia','tical','ticca','ticed','tices','tichy','ticks','ticky','tidal','tiddy','tided','tides','tiers','tiffs','tifos','tifts','tiger','tiges','tight','tigon','tikas','tikes','tikis','tikka','tilak','tilde','tiled','tiler','tiles','tills','tilly','tilth','tilts','timbo','timed','timer','times','timid','timon','timps','tinas','tinct','tinds','tinea','tined','tines','tinge','tings','tinks','tinny','tints','tinty','tipis','tippy','tipsy','tired','tires','tirls','tiros','tirrs','titan','titch','titer','tithe','titis','title','titre','titty','titup','tizzy','toads','toady','toast','toaze','tocks','tocky','tocos','todde','toddy','toeas','toffs','toffy','tofts','tofus','togae','togas','toged','toges','togue','toile','toils','toing','toise','toits','tokay','toked','token','toker','tokes','tolan','tolar','tolas','toled','toles','tolls','tolly','tolts','tolus','toman','tomas','tombs','tomes','tomia','tommy','tomos','tonal','tondi','tondo','toned','toner','tones','toney','tonga','tongs','tonic','tonka','tonks','tonne','tonus','tools','tooms','toons','tooth','toots','topaz','toped','topee','topek','toper','topes','tophe','tophi','tophs','topis','topoi','topos','toppy','toque','torah','toran','toras','torch','torcs','tores','toric','torii','toros','torot','torrs','torse','torsi','torsk','torso','torta','torte','torts','torus','tosas','tosed','toses','toshy','tossy','total','toted','totem','toter','totes','totty','touch','tough','touks','touns','tours','touse','tousy','touts','touze','touzy','towed','towel','tower','towie','towns','towny','towse','towsy','towts','towze','towzy','toxic','toxin','toyed','toyer','toyon','toyos','tozed','tozes','tozie','trace','track','tract','trade','tragi','traik','trail','train','trait','tramp','trams','trank','tranq','trans','trant','trape','traps','trapt','trash','trass','trats','tratt','trave','trawl','trayf','trays','tread','treat','treck','trees','trefa','treif','treks','trema','trems','trench','trend','tress','trest','trets','trews','treyf','treys','triac','triad','trial','tribe','trice','trick','tried','trier','tries','triff','trigo','trigs','trike','trild','trill','trims','trine','trins','triol','trior','trios','tripe','trips','tripy','trist','trite','troad','troak','troat','trock','trode','trods','trogs','trois','troke','troll','tromp','trona','tronc','trone','tronk','trons','troop','trooz','trope','troth','trots','trout','trove','trows','troys','truce','truck','trudge','trued','truer','trues','trugo','trugs','trull','truly','trump','trunk','truss','trust','truth','tryer','tryke','tryma','tryps','tryst','tsade','tsadi','tsars','tsked','tsuba','tsubo','tuans','tuart','tuath','tubae','tubal','tubar','tubas','tubby','tubed','tuber','tubes','tucks','tufas','tuffe','tuffs','tufts','tufty','tugra','tugrik','tuile','tuina','tuis','tulip','tulle','tulpa','tulsi','tumid','tummy','tumor','tumps','tumpy','tunas','tunds','tuned','tuner','tunes','tungs','tunic','tunny','tupek','tupik','tuple','tuque','turbo','turds','turfs','turfy','turgy','turks','turme','turms','turns','turnt','turps','turrs','tushy','tusks','tusky','tutee','tutor','tutti','tutty','tutus','tuxes','tuyer','twaes','twain','twals','twang','twank','twats','tways','tweel','tween','tweep','tweer','twees','tweet','twerk','twerp','twice','twier','twigs','twill','twilt','twine','twink','twins','twiny','twire','twirk','twirl','twirp','twist','twite','twits','twixt','twoer','twyer','tyees','tyers','tying','tyiyn','tyler','tyned','tynes','typal','typed','types','typey','typic','typos','typps','typto','tyran','tyred','tyres','tyros','tythe','tzars','heart','heard','hears','heaps','helps','house','horse','hoses','hosed','brain','grain','grains','drain','train','stain','chain','plain','slain','spain','crane','crate','trace','brace','grace','grape','grasp','grass','grate','great','treat','tread','bread','wheat','cheat','cleat','treat','tread','bread'])
+    };
+
+    // Puzzles: [start, target, minSteps]
+    const PUZZLES = [
+      ['cat', 'dog', 4],
+      ['hot', 'cot', 2],
+      ['hit', 'hat', 2],
+      ['man', 'can', 2],
+      ['sad', 'mad', 2],
+      ['fin', 'sin', 2],
+      ['cold', 'warm', 5],
+      ['fish', 'fist', 2],
+      ['foot', 'food', 2],
+      ['lead', 'gold', 4],
+      ['stone', 'store', 3],
+      ['heart', 'heard', 2],
+      ['house', 'horse', 2],
+      ['brain', 'grain', 2],
+      ['crane', 'crate', 2],
+    ];
+
+    let state = {
+      puzzle: null,
+      chain: [],
+      timerStart: null,
+      timerInterval: null,
+      moves: 0,
+      streak: 0,
+      sessionSolved: 0,
+      sessionSteps: [],
+      bestSteps: {},
+      nearMissShown: false,
+      completed: false,
+    };
+
+    const $ = (id) => document.getElementById(id);
+    const startWordEl = $('start-word');
+    const targetWordEl = $('target-word');
+    const chainDisplay = $('chain-display');
+    const wordInput = $('word-input');
+    const submitBtn = $('submit-btn');
+    const hintEl = $('hint');
+    const timerEl = $('timer');
+    const moveCountEl = $('move-count');
+    const streakEl = $('streak');
+    const personalBestEl = $('personal-best');
+    const nearMissEl = $('near-miss');
+    const sessionSolvedEl = $('session-solved');
+    const sessionAvgEl = $('session-avg');
+
+    function getRandomPuzzle() {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      const idx = arr[0] % PUZZLES.length;
+      return PUZZLES[idx];
+    }
+
+    function pickNewPuzzle(samePuzzle = false) {
+      if (!samePuzzle) {
+        state.puzzle = getRandomPuzzle();
+      }
+      const [start, target] = state.puzzle;
+      state.chain = [start];
+      state.moves = 0;
+      state.timerStart = Date.now();
+      state.completed = false;
+      state.nearMissShown = false;
+      if (state.timerInterval) clearInterval(state.timerInterval);
+      state.timerInterval = setInterval(updateTimer, 1000);
+      startWordEl.textContent = start;
+      targetWordEl.textContent = target;
+      renderChain();
+      updateStats();
+      wordInput.value = '';
+      wordInput.disabled = false;
+      submitBtn.disabled = false;
+      hintEl.textContent = '';
+      nearMissEl.classList.add('hidden');
+      trackGameStart('word-chain');
+    }
+
+    function updateTimer() {
+      if (!state.timerStart) return;
+      const s = Math.floor((Date.now() - state.timerStart) / 1000);
+      const m = Math.floor(s / 60);
+      timerEl.textContent = `${m}:${String(s % 60).padStart(2, '0')}`;
+    }
+
+    function renderChain() {
+      chainDisplay.innerHTML = state.chain.map((w, i) => {
+        const isTarget = w === state.puzzle[1];
+        const color = isTarget ? 'bg-green-500 text-white' : (i === 0 ? 'bg-gray-300 text-gray-800' : 'bg-amber-400 text-amber-900');
+        return `<span class="font-mono px-3 py-1 rounded-lg ${color} font-semibold">${w.toUpperCase()}</span>`;
+      }).join('');
+    }
+
+    function updateStats() {
+      moveCountEl.textContent = state.moves;
+      streakEl.textContent = state.streak;
+      const key = state.puzzle.join('→');
+      const best = state.bestSteps[key];
+      personalBestEl.textContent = best != null ? best : '—';
+      sessionSolvedEl.textContent = state.sessionSolved;
+      const avg = state.sessionSteps.length ? (state.sessionSteps.reduce((a,b)=>a+b,0) / state.sessionSteps.length).toFixed(1) : '—';
+      sessionAvgEl.textContent = avg;
+    }
+
+    function diffByOne(a, b) {
+      if (a.length !== b.length) return false;
+      let diff = 0;
+      for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) diff++;
+      return diff === 1;
+    }
+
+    function isValidWord(word) {
+      const len = word.length;
+      if (!DICT[len]) return false;
+      return DICT[len].has(word.toLowerCase());
+    }
+
+    function isNearMiss(word) {
+      const prev = state.chain[state.chain.length - 1];
+      if (word.length !== prev.length) return false;
+      let diff = 0;
+      for (let i = 0; i < word.length; i++) if (word[i] !== prev[i]) diff++;
+      return diff === 2 && isValidWord(word);
+    }
+
+    function onSubmit() {
+      const raw = wordInput.value.trim().toLowerCase();
+      if (!raw) return;
+      playClick();
+      const prev = state.chain[state.chain.length - 1];
+      const target = state.puzzle[1];
+      if (raw === target) {
+        if (!diffByOne(prev, raw)) {
+          hintEl.textContent = 'Must change exactly one letter from the previous word.';
+          playError();
+          return;
+        }
+        state.chain.push(raw);
+        state.moves++;
+        state.completed = true;
+        clearInterval(state.timerInterval);
+        renderChain();
+        updateStats();
+        const key = state.puzzle.join('→');
+        const prevBest = state.bestSteps[key];
+        if (prevBest == null || state.moves < prevBest) {
+          state.bestSteps[key] = state.moves;
+          personalBestEl.textContent = state.moves;
+        }
+        state.sessionSolved++;
+        state.sessionSteps.push(state.moves);
+        state.streak++;
+        playSuccess();
+        trackGameOver('word-chain', { steps: state.moves, completed: true });
+        wordInput.disabled = true;
+        submitBtn.disabled = true;
+        hintEl.textContent = 'Solved!';
+        return;
+      }
+      if (!isValidWord(raw)) {
+        hintEl.textContent = 'Not a valid word.';
+        playError();
+        return;
+      }
+      if (!diffByOne(prev, raw)) {
+        if (isNearMiss(raw)) {
+          nearMissEl.classList.remove('hidden');
+        }
+        hintEl.textContent = 'Must change exactly one letter from the previous word.';
+        playError();
+        return;
+      }
+      state.chain.push(raw);
+      state.moves++;
+      renderChain();
+      updateStats();
+      playClick();
+      wordInput.value = '';
+      hintEl.textContent = '';
+    }
+
+    function restart(samePuzzle = false) {
+      if (state.completed) state.streak = 0;
+      pickNewPuzzle(samePuzzle);
+    }
+
+    submitBtn.addEventListener('click', onSubmit);
+    wordInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') onSubmit(); });
+    $('restart-btn').addEventListener('click', () => restart(false));
+    $('same-restart-btn').addEventListener('click', () => restart(true));
+
+    $('sound-toggle').addEventListener('click', () => {
+      muteAll();
+      $('sound-on').classList.toggle('hidden');
+      $('sound-off').classList.toggle('hidden');
+    });
+
+    initAudio();
+    pickNewPuzzle();
+  </script>
+</body>
+</html>
