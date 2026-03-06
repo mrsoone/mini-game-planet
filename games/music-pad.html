@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Music Pad — Beat Maker & Sequencer | Mini Game Planet</title>
+  <meta name="description" content="Create beats with our free Music Pad beat maker. 4x4 tap pads, 16-step sequencer, multiple sound kits (Drums, Electronic, Lo-Fi), record mode, and BPM control. No download required.">
+  <link rel="canonical" href="https://minigameplanet.com/games/music-pad.html">
+  <meta property="og:title" content="Music Pad — Beat Maker & Sequencer | Mini Game Planet">
+  <meta property="og:description" content="Create beats with our free Music Pad beat maker. 4x4 tap pads, 16-step sequencer, multiple sound kits, and record mode.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/music-pad.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    .pad-active { transform: scale(0.95); box-shadow: inset 0 2px 8px rgba(0,0,0,0.3); }
+    .step-active { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important; }
+    .step-current { box-shadow: 0 0 0 2px #fbbf24; }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Music Pad",
+    "description": "Free online beat maker with 4x4 tap pads, 16-step sequencer, multiple sound kits, and record mode.",
+    "applicationCategory": "Game",
+    "operatingSystem": "Any",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+</head>
+<body class="min-h-screen text-gray-800">
+  <!-- AdSense placeholder (uncomment when ready)
+  <ins class="adsbygoogle" data-ad-client="ca-pub-XXXX" data-ad-slot="XXXX" data-ad-format="auto"></ins>
+  -->
+
+  <nav id="nav-container" class="bg-white/90 backdrop-blur border-b border-gray-200 sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="font-semibold text-lg text-indigo-600 hover:text-indigo-700">Mini Game Planet</a>
+      <div class="flex items-center gap-4">
+        <button id="sound-toggle" class="font-mono text-sm px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200" aria-label="Toggle sound">🔊 Sound On</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    <article class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 mb-8">
+      <header class="mb-8">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Music Pad</h1>
+        <p class="text-gray-600 font-mono text-sm">Beat Maker & 16-Step Sequencer</p>
+      </header>
+
+      <div class="space-y-6">
+        <!-- Kit selector -->
+        <div class="flex flex-wrap items-center gap-4">
+          <span class="font-mono text-sm text-gray-500">Kit:</span>
+          <div class="flex gap-2">
+            <button data-kit="drums" class="kit-btn px-4 py-2 rounded-lg font-mono text-sm bg-indigo-100 text-indigo-700 border-2 border-indigo-300">Drums</button>
+            <button data-kit="electronic" class="kit-btn px-4 py-2 rounded-lg font-mono text-sm bg-gray-100 text-gray-600 border-2 border-transparent hover:border-gray-300">Electronic</button>
+            <button data-kit="lofi" class="kit-btn px-4 py-2 rounded-lg font-mono text-sm bg-gray-100 text-gray-600 border-2 border-transparent hover:border-gray-300">Lo-Fi</button>
+          </div>
+        </div>
+
+        <!-- BPM & controls -->
+        <div class="flex flex-wrap items-center gap-6">
+          <div class="flex items-center gap-2">
+            <label class="font-mono text-sm text-gray-500">BPM</label>
+            <input type="range" id="bpm-slider" min="60" max="180" value="120" class="w-32 accent-indigo-600">
+            <span id="bpm-value" class="font-mono text-sm font-medium w-10">120</span>
+          </div>
+          <div class="flex gap-2">
+            <button id="play-btn" class="px-4 py-2 rounded-lg font-mono text-sm bg-green-600 text-white hover:bg-green-700">▶ Play</button>
+            <button id="stop-btn" class="px-4 py-2 rounded-lg font-mono text-sm bg-gray-200 text-gray-700 hover:bg-gray-300">■ Stop</button>
+            <button id="record-btn" class="px-4 py-2 rounded-lg font-mono text-sm bg-gray-200 text-gray-700 hover:bg-gray-300">● Record</button>
+            <button id="clear-btn" class="px-4 py-2 rounded-lg font-mono text-sm bg-gray-100 text-gray-600 hover:bg-gray-200">Clear</button>
+          </div>
+        </div>
+
+        <!-- 4x4 Pad grid -->
+        <div id="pad-grid" class="grid grid-cols-4 gap-3 max-w-sm mx-auto"></div>
+
+        <!-- 16-step sequencer (16 steps × 16 pads) -->
+        <div class="mt-8">
+          <p class="font-mono text-sm text-gray-500 mb-2">16-Step Sequencer — click cells to toggle</p>
+          <div id="sequencer" class="grid grid-cols-16 gap-1 max-w-full overflow-x-auto"></div>
+        </div>
+      </div>
+
+      <!-- SEO Article -->
+      <section class="mt-12 pt-8 border-t border-gray-100 prose prose-gray max-w-none">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Create Beats in Your Browser</h2>
+        <p>Music Pad is a free, browser-based beat maker and sequencer that lets you create rhythms and patterns without any downloads or installations. Whether you're a beginner exploring music production or an experienced producer looking for a quick sketchpad, Music Pad offers an intuitive interface with professional-grade features.</p>
+
+        <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-2">4x4 Tap Pads</h3>
+        <p>Our 4x4 grid of tap pads gives you 16 distinct sounds at your fingertips. Each pad triggers a unique sound—from kicks and snares to synths and FX—depending on the kit you select. Tap pads light up when pressed, giving you instant visual feedback. The pads respond to both mouse clicks and touch, making Music Pad fully mobile-friendly.</p>
+
+        <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-2">16-Step Sequencer</h3>
+        <p>The 16-step sequencer at the bottom of the interface lets you program patterns that play in a loop. Click any cell to toggle it on or off. When you press Play, the sequencer steps through each beat at your chosen BPM, triggering the corresponding pads. This classic step-sequencer workflow is the foundation of electronic music production, used in everything from drum machines to DAWs.</p>
+
+        <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-2">Multiple Sound Kits</h3>
+        <p>Music Pad includes three distinct sound kits: Drums, Electronic, and Lo-Fi. The Drums kit features punchy kicks, crisp snares, hi-hats, and percussion. The Electronic kit offers synthesized bass, leads, and FX for electronic and EDM-style beats. The Lo-Fi kit provides warm, vinyl-style sounds perfect for chill beats and lo-fi hip-hop. Switch between kits instantly to explore different sonic palettes.</p>
+
+        <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-2">Record & Replay</h3>
+        <p>Record mode captures your live pad taps and replays them in sync with the sequencer. Hit Record, play your pattern on the pads, then hit Stop. Your performance is saved and will play back when you start the sequencer. This lets you layer live improvisation on top of programmed patterns or capture spontaneous ideas for later refinement.</p>
+
+        <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-2">BPM Control</h3>
+        <p>Adjust the tempo from 60 to 180 BPM using the slider. This range covers everything from slow, ambient grooves to fast, energetic beats. The BPM affects both the sequencer playback and the timing of recorded performances, so you can match the tempo to your creative vision.</p>
+
+        <p class="mt-6">Music Pad runs entirely in your browser using the Web Audio API—no plugins or installations required. Start creating beats today at Mini Game Planet.</p>
+      </section>
+    </article>
+
+    <section id="related-games" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
+      <h2 class="text-lg font-bold text-gray-900 mb-4">Related Games</h2>
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <a href="/games/piano.html" class="p-3 rounded-lg bg-gray-50 hover:bg-gray-100 font-mono text-sm">Piano</a>
+        <a href="/games/drum-machine.html" class="p-3 rounded-lg bg-gray-50 hover:bg-gray-100 font-mono text-sm">Drum Machine</a>
+        <a href="/games/synth.html" class="p-3 rounded-lg bg-gray-50 hover:bg-gray-100 font-mono text-sm">Synth</a>
+      </div>
+    </section>
+  </main>
+
+  <footer id="footer-container" class="border-t border-gray-200 py-6">
+    <div class="max-w-4xl mx-auto px-4 text-center text-gray-500 font-mono text-sm">
+      <a href="/" class="hover:text-indigo-600">Mini Game Planet</a> — Free browser games
+    </div>
+  </footer>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart } from '/js/analytics.js';
+
+    initToolPage('music-pad');
+    initConsent();
+    trackGameView('music-pad', 'Builder');
+
+    // --- Web Audio API ---
+    let audioCtx = null;
+    let masterGain = null;
+    let soundOn = true;
+
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        masterGain = audioCtx.createGain();
+        masterGain.gain.value = 0.5;
+        masterGain.connect(audioCtx.destination);
+      }
+      return audioCtx;
+    }
+
+    const KITS = {
+      drums: [
+        { type: 'noise', freq: 80, decay: 0.15, color: 'from-amber-500 to-amber-700' },
+        { type: 'osc', freq: 200, decay: 0.08, color: 'from-stone-400 to-stone-600' },
+        { type: 'noise', freq: 8000, decay: 0.05, color: 'from-zinc-300 to-zinc-500' },
+        { type: 'noise', freq: 6000, decay: 0.06, color: 'from-zinc-400 to-zinc-600' },
+        { type: 'osc', freq: 150, decay: 0.12, color: 'from-amber-600 to-amber-800' },
+        { type: 'osc', freq: 400, decay: 0.1, color: 'from-stone-500 to-stone-700' },
+        { type: 'noise', freq: 10000, decay: 0.03, color: 'from-zinc-200 to-zinc-400' },
+        { type: 'noise', freq: 7000, decay: 0.04, color: 'from-zinc-300 to-zinc-500' },
+        { type: 'osc', freq: 100, decay: 0.2, color: 'from-amber-700 to-amber-900' },
+        { type: 'osc', freq: 350, decay: 0.09, color: 'from-stone-600 to-stone-800' },
+        { type: 'noise', freq: 9000, decay: 0.04, color: 'from-zinc-300 to-zinc-500' },
+        { type: 'noise', freq: 5000, decay: 0.07, color: 'from-zinc-500 to-zinc-700' },
+        { type: 'osc', freq: 120, decay: 0.18, color: 'from-amber-600 to-amber-800' },
+        { type: 'osc', freq: 300, decay: 0.11, color: 'from-stone-500 to-stone-700' },
+        { type: 'noise', freq: 12000, decay: 0.02, color: 'from-zinc-200 to-zinc-400' },
+        { type: 'noise', freq: 4000, decay: 0.08, color: 'from-zinc-400 to-zinc-600' },
+      ],
+      electronic: [
+        { type: 'osc', freq: 55, decay: 0.2, color: 'from-violet-500 to-violet-700' },
+        { type: 'osc', freq: 110, decay: 0.15, color: 'from-violet-400 to-violet-600' },
+        { type: 'osc', freq: 220, decay: 0.12, color: 'from-fuchsia-400 to-fuchsia-600' },
+        { type: 'osc', freq: 440, decay: 0.1, color: 'from-fuchsia-300 to-fuchsia-500' },
+        { type: 'osc', freq: 65, decay: 0.18, color: 'from-violet-600 to-violet-800' },
+        { type: 'osc', freq: 130, decay: 0.14, color: 'from-violet-500 to-violet-700' },
+        { type: 'osc', freq: 261, decay: 0.11, color: 'from-fuchsia-500 to-fuchsia-700' },
+        { type: 'osc', freq: 523, decay: 0.09, color: 'from-fuchsia-400 to-fuchsia-600' },
+        { type: 'osc', freq: 77, decay: 0.16, color: 'from-violet-500 to-violet-700' },
+        { type: 'osc', freq: 155, decay: 0.13, color: 'from-violet-400 to-violet-600' },
+        { type: 'osc', freq: 311, decay: 0.1, color: 'from-fuchsia-500 to-fuchsia-700' },
+        { type: 'osc', freq: 622, decay: 0.08, color: 'from-fuchsia-300 to-fuchsia-500' },
+        { type: 'osc', freq: 82, decay: 0.17, color: 'from-violet-600 to-violet-800' },
+        { type: 'osc', freq: 165, decay: 0.12, color: 'from-violet-500 to-violet-700' },
+        { type: 'osc', freq: 330, decay: 0.09, color: 'from-fuchsia-600 to-fuchsia-800' },
+        { type: 'osc', freq: 659, decay: 0.07, color: 'from-fuchsia-400 to-fuchsia-600' },
+      ],
+      lofi: [
+        { type: 'osc', freq: 60, decay: 0.25, color: 'from-rose-400 to-rose-600' },
+        { type: 'osc', freq: 120, decay: 0.2, color: 'from-rose-300 to-rose-500' },
+        { type: 'noise', freq: 3000, decay: 0.15, color: 'from-amber-300 to-amber-500' },
+        { type: 'noise', freq: 5000, decay: 0.12, color: 'from-amber-400 to-amber-600' },
+        { type: 'osc', freq: 72, decay: 0.22, color: 'from-rose-500 to-rose-700' },
+        { type: 'osc', freq: 144, decay: 0.18, color: 'from-rose-400 to-rose-600' },
+        { type: 'noise', freq: 4000, decay: 0.13, color: 'from-amber-400 to-amber-600' },
+        { type: 'noise', freq: 6000, decay: 0.1, color: 'from-amber-500 to-amber-700' },
+        { type: 'osc', freq: 55, decay: 0.28, color: 'from-rose-600 to-rose-800' },
+        { type: 'osc', freq: 110, decay: 0.23, color: 'from-rose-500 to-rose-700' },
+        { type: 'noise', freq: 2500, decay: 0.16, color: 'from-amber-300 to-amber-500' },
+        { type: 'noise', freq: 4500, decay: 0.11, color: 'from-amber-500 to-amber-700' },
+        { type: 'osc', freq: 66, decay: 0.24, color: 'from-rose-500 to-rose-700' },
+        { type: 'osc', freq: 132, decay: 0.19, color: 'from-rose-400 to-rose-600' },
+        { type: 'noise', freq: 3500, decay: 0.14, color: 'from-amber-400 to-amber-600' },
+        { type: 'noise', freq: 5500, decay: 0.09, color: 'from-amber-600 to-amber-800' },
+      ],
+    };
+
+    function playPadSound(padIndex) {
+      if (!soundOn) return;
+      const ctx = getAudioContext();
+      const kit = document.querySelector('.kit-btn.border-indigo-300')?.dataset.kit || 'drums';
+      const sound = KITS[kit][padIndex];
+      if (!sound) return;
+
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0.4, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + sound.decay);
+      gain.connect(masterGain);
+
+      if (sound.type === 'osc') {
+        const osc = ctx.createOscillator();
+        osc.type = 'sine';
+        osc.frequency.value = sound.freq;
+        osc.connect(gain);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + sound.decay);
+      } else {
+        const bufferSize = ctx.sampleRate * sound.decay;
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.3));
+        const noise = ctx.createBufferSource();
+        noise.buffer = buffer;
+        noise.connect(gain);
+        noise.start(ctx.currentTime);
+      }
+    }
+
+    // --- State ---
+    let currentKit = 'drums';
+    let bpm = 120;
+    let sequencerRunning = false;
+    let sequencerInterval = null;
+    let currentStep = 0;
+    let sequencerState = Array(16).fill(null).map(() => Array(16).fill(false));
+    let recording = false;
+    let recordedEvents = [];
+    let recordStartTime = 0;
+
+    // --- Pad grid ---
+    const padGrid = document.getElementById('pad-grid');
+    for (let i = 0; i < 16; i++) {
+      const btn = document.createElement('button');
+      btn.className = 'pad aspect-square rounded-xl font-mono text-lg font-bold transition-all duration-75 active:scale-95 shadow-lg hover:brightness-110';
+      btn.dataset.pad = i;
+      btn.textContent = i + 1;
+      const kit = KITS[currentKit][i];
+      btn.className += ` bg-gradient-to-br ${kit.color} text-white`;
+      btn.addEventListener('mousedown', () => handlePadPress(i, btn));
+      btn.addEventListener('touchstart', (e) => { e.preventDefault(); handlePadPress(i, btn); });
+      padGrid.appendChild(btn);
+    }
+
+    function handlePadPress(padIndex, el) {
+      playPadSound(padIndex);
+      el.classList.add('pad-active');
+      setTimeout(() => el.classList.remove('pad-active'), 80);
+      if (recording) {
+        recordedEvents.push({ pad: padIndex, time: Date.now() - recordStartTime });
+      }
+    }
+
+    function updatePadColors() {
+      const kit = KITS[currentKit];
+      padGrid.querySelectorAll('.pad').forEach((btn, i) => {
+        btn.className = btn.className.replace(/\s*bg-gradient-to-br\s+from-[\w-]+\s+to-[\w-]+/g, '').trim();
+        btn.className += ` bg-gradient-to-br ${kit[i].color} text-white`;
+      });
+    }
+
+    // --- Kit buttons ---
+    document.querySelectorAll('.kit-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.kit-btn').forEach(b => {
+          b.classList.remove('bg-indigo-100', 'text-indigo-700', 'border-indigo-300');
+          b.classList.add('bg-gray-100', 'text-gray-600', 'border-transparent');
+        });
+        btn.classList.remove('bg-gray-100', 'text-gray-600', 'border-transparent');
+        btn.classList.add('bg-indigo-100', 'text-indigo-700', 'border-indigo-300');
+        currentKit = btn.dataset.kit;
+        updatePadColors();
+      });
+    });
+
+    // --- BPM ---
+    const bpmSlider = document.getElementById('bpm-slider');
+    const bpmValue = document.getElementById('bpm-value');
+    bpmSlider.addEventListener('input', () => {
+      bpm = parseInt(bpmSlider.value);
+      bpmValue.textContent = bpm;
+      if (sequencerRunning) restartSequencer();
+    });
+
+    // --- Sequencer (16 steps × 16 pads: row=step, col=pad) ---
+    const sequencerEl = document.getElementById('sequencer');
+    for (let step = 0; step < 16; step++) {
+      for (let pad = 0; pad < 16; pad++) {
+        const cell = document.createElement('button');
+        cell.className = 'aspect-square rounded bg-gray-200 hover:bg-gray-300 transition-colors min-w-[16px] w-full';
+        cell.dataset.step = step;
+        cell.dataset.pad = pad;
+        cell.addEventListener('click', () => {
+          sequencerState[step][pad] = !sequencerState[step][pad];
+          cell.classList.toggle('step-active', sequencerState[step][pad]);
+        });
+        sequencerEl.appendChild(cell);
+      }
+    }
+
+    const seqCells = sequencerEl.querySelectorAll('[data-step]');
+
+    function runStep() {
+      seqCells.forEach(c => c.classList.remove('step-current'));
+      const stepCells = sequencerEl.querySelectorAll(`[data-step="${currentStep}"]`);
+      stepCells.forEach(c => c.classList.add('step-current'));
+      sequencerState[currentStep].forEach((on, pad) => {
+        if (on) {
+          playPadSound(pad);
+          const padBtn = padGrid.querySelector(`[data-pad="${pad}"]`);
+          if (padBtn) {
+            padBtn.classList.add('pad-active');
+            setTimeout(() => padBtn.classList.remove('pad-active'), 80);
+          }
+        }
+      });
+      currentStep = (currentStep + 1) % 16;
+    }
+
+    function restartSequencer() {
+      if (sequencerInterval) clearInterval(sequencerInterval);
+      const intervalMs = (60 / bpm) * 1000 / 4;
+      currentStep = 0;
+      sequencerInterval = setInterval(runStep, intervalMs);
+    }
+
+    document.getElementById('play-btn').addEventListener('click', () => {
+      trackGameStart('music-pad');
+      sequencerRunning = true;
+      restartSequencer();
+      // Replay recorded events (loop every bar)
+      if (recordedEvents.length > 0) {
+        const barMs = (60 / bpm) * 4 * 1000;
+        const maxTime = Math.max(...recordedEvents.map(e => e.time), 1);
+        const loops = Math.ceil(maxTime / barMs) + 2;
+        for (let loop = 0; loop < loops; loop++) {
+          recordedEvents.forEach(ev => {
+            const t = loop * barMs + (ev.time % barMs);
+            setTimeout(() => {
+              if (sequencerRunning) {
+                playPadSound(ev.pad);
+                const padBtn = padGrid.querySelector(`[data-pad="${ev.pad}"]`);
+                if (padBtn) {
+                  padBtn.classList.add('pad-active');
+                  setTimeout(() => padBtn.classList.remove('pad-active'), 80);
+                }
+              }
+            }, t);
+          });
+        }
+      }
+      document.getElementById('play-btn').classList.add('opacity-70');
+      document.getElementById('stop-btn').classList.remove('opacity-70');
+    });
+
+    document.getElementById('stop-btn').addEventListener('click', () => {
+      sequencerRunning = false;
+      if (sequencerInterval) clearInterval(sequencerInterval);
+      sequencerInterval = null;
+      seqCells.forEach(c => c.classList.remove('step-current'));
+      document.getElementById('play-btn').classList.remove('opacity-70');
+      document.getElementById('stop-btn').classList.add('opacity-70');
+    });
+
+    document.getElementById('record-btn').addEventListener('click', () => {
+      recording = !recording;
+      const btn = document.getElementById('record-btn');
+      if (recording) {
+        recordStartTime = Date.now();
+        recordedEvents = [];
+        btn.classList.add('bg-red-600', 'text-white');
+        btn.classList.remove('bg-gray-200', 'text-gray-700');
+      } else {
+        btn.classList.remove('bg-red-600', 'text-white');
+        btn.classList.add('bg-gray-200', 'text-gray-700');
+      }
+    });
+
+    document.getElementById('clear-btn').addEventListener('click', () => {
+      sequencerState = Array(16).fill(null).map(() => Array(16).fill(false));
+      recordedEvents = [];
+      seqCells.forEach(c => c.classList.remove('step-active', 'step-current'));
+    });
+
+    // --- Sound toggle ---
+    document.getElementById('sound-toggle').addEventListener('click', () => {
+      soundOn = !soundOn;
+      document.getElementById('sound-toggle').textContent = soundOn ? '🔊 Sound On' : '🔇 Sound Off';
+    });
+
+    // Init sequencer cell styling from state
+    sequencerState.forEach((row, step) => {
+      row.forEach((on, pad) => {
+        const cell = sequencerEl.querySelector(`[data-step="${step}"][data-pad="${pad}"]`);
+        if (cell && on) cell.classList.add('step-active');
+      });
+    });
+  </script>
+</body>
+</html>

@@ -852,7 +852,7 @@ export const games = [
     icon: '🎨',
     accent: '#0891B2',
     keywords: ['pixel art', 'drawing game', 'pixel painter', 'art maker'],
-    built: false
+    built: true
   },
   {
     name: 'Sand Simulation',
@@ -862,7 +862,7 @@ export const games = [
     icon: '⏳',
     accent: '#0891B2',
     keywords: ['sand simulation', 'falling sand', 'particle sandbox', 'physics sim'],
-    built: false
+    built: true
   },
   {
     name: 'Music Pad',
@@ -872,7 +872,7 @@ export const games = [
     icon: '🎹',
     accent: '#0891B2',
     keywords: ['music pad', 'drum machine', 'beat maker', 'sequencer'],
-    built: false
+    built: true
   },
   {
     name: 'Logic Circuit Builder',
@@ -882,7 +882,7 @@ export const games = [
     icon: '🔌',
     accent: '#0891B2',
     keywords: ['logic circuit', 'circuit builder', 'logic gates', 'digital logic'],
-    built: false
+    built: true
   },
 
   // ─── BOARD (6) ────────────────────────────────────────────────
@@ -895,7 +895,7 @@ export const games = [
     icon: '🐍',
     accent: '#4F46E5',
     keywords: ['snakes and ladders', 'chutes and ladders', 'board game', 'dice game'],
-    built: false
+    built: true
   },
   {
     name: 'Ludo',
@@ -905,7 +905,7 @@ export const games = [
     icon: '🎲',
     accent: '#4F46E5',
     keywords: ['ludo', 'board game', 'parcheesi', 'token race'],
-    built: false
+    built: true
   },
   {
     name: 'Yahtzee',
@@ -915,7 +915,7 @@ export const games = [
     icon: '🎲',
     accent: '#4F46E5',
     keywords: ['yahtzee', 'dice game', 'score game', 'category dice'],
-    built: false
+    built: true
   },
   {
     name: 'Backgammon',
@@ -925,7 +925,7 @@ export const games = [
     icon: '🎯',
     accent: '#4F46E5',
     keywords: ['backgammon', 'board game', 'dice strategy', 'checker game'],
-    built: false
+    built: true
   },
   {
     name: 'Chinese Checkers',
@@ -935,7 +935,7 @@ export const games = [
     icon: '⭐',
     accent: '#4F46E5',
     keywords: ['chinese checkers', 'star board', 'marble game', 'hop game'],
-    built: false
+    built: true
   },
   {
     name: 'Dominoes',
@@ -945,7 +945,7 @@ export const games = [
     icon: '🁣',
     accent: '#4F46E5',
     keywords: ['dominoes', 'domino game', 'tile game', 'matching game'],
-    built: false
+    built: true
   },
 
   // ─── MATH & LOGIC (5) ────────────────────────────────────────

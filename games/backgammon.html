@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Backgammon - Play Online | Mini Game Planet</title>
+  <meta name="description" content="Play Backgammon online free. Classic 24-point board game. 15 checkers per player. Roll dice, hit blots, bear off. Play vs AI. No download required.">
+  <link rel="canonical" href="https://minigameplanet.com/games/backgammon.html">
+  <!-- Open Graph -->
+  <meta property="og:title" content="Backgammon - Play Online | Mini Game Planet">
+  <meta property="og:description" content="Play Backgammon online. Classic dice board game. Roll, hit, bear off. Free vs AI.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/backgammon.html">
+  <!-- AdSense (commented) -->
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXX" crossorigin="anonymous"></script> -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    .point-light { background: linear-gradient(135deg, #D4A574 0%, #C4956A 100%); }
+    .point-dark { background: linear-gradient(135deg, #8B4513 0%, #6B3410 100%); }
+    .checker-white { background: radial-gradient(circle at 30% 30%, #F5F5F5, #D4D4D4); box-shadow: inset 0 1px 2px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.2); }
+    .checker-black { background: radial-gradient(circle at 30% 30%, #525252, #171717); box-shadow: inset 0 1px 2px rgba(255,255,255,0.15), 0 2px 4px rgba(0,0,0,0.4); }
+    .point:hover { filter: brightness(1.08); }
+    .valid-dest { box-shadow: inset 0 0 0 3px rgba(34, 197, 94, 0.8); }
+    .selected-checker { box-shadow: 0 0 0 3px #3B82F6, 0 0 12px rgba(59,130,246,0.5); }
+    .bar-area { background: linear-gradient(180deg, #78716C 0%, #57534E 100%); }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Backgammon",
+    "description": "Play Backgammon online. Classic 24-point board game with 15 checkers per player. Roll dice, hit blots, bear off.",
+    "applicationCategory": "Game",
+    "genre": "Strategy",
+    "url": "https://minigameplanet.com/games/backgammon.html"
+  }
+  </script>
+</head>
+<body class="min-h-screen text-stone-800">
+  <div class="max-w-5xl mx-auto px-4 py-6">
+    <nav id="nav-container" class="mb-6 flex items-center gap-4 text-sm">
+      <a href="/" class="text-stone-600 hover:text-stone-900">Home</a>
+      <a href="/games/" class="text-stone-600 hover:text-stone-900">Games</a>
+      <span class="text-stone-400">/ Backgammon</span>
+    </nav>
+
+    <main class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+      <h1 class="text-2xl md:text-3xl font-bold mb-2">Backgammon</h1>
+      <p class="text-stone-600 mb-6">Classic 24-point board game. Roll dice, click a checker to select, then click a valid destination point.</p>
+
+      <div class="flex flex-wrap gap-4 items-center mb-6">
+        <button id="roll-btn" class="px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-medium text-sm">Roll Dice</button>
+        <button id="restart" class="px-4 py-2 rounded-lg bg-stone-200 hover:bg-stone-300 font-medium text-sm">Restart</button>
+        <button id="sound-toggle" class="px-3 py-2 rounded-lg border border-stone-300 text-sm" aria-label="Toggle sound">🔊 Sound</button>
+        <div id="dice-display" class="font-mono text-lg flex gap-2 items-center">
+          <span id="die1" class="w-10 h-10 flex items-center justify-center rounded-lg bg-stone-200 font-bold">–</span>
+          <span id="die2" class="w-10 h-10 flex items-center justify-center rounded-lg bg-stone-200 font-bold">–</span>
+        </div>
+        <div class="font-mono text-sm text-stone-600 ml-auto">
+          <span id="session-stats">Games: 0 | Wins: 0 | Streak: 0</span>
+        </div>
+      </div>
+
+      <div class="flex flex-col md:flex-row gap-6 items-start">
+        <div class="flex-shrink-0">
+          <div id="board" class="inline-block relative rounded-lg overflow-hidden border-2 border-amber-900 shadow-xl" style="width: min(95vw, 480px);"></div>
+          <p id="status" class="mt-4 font-medium text-center">White to roll</p>
+        </div>
+        <div class="flex-1 min-w-0">
+          <article class="prose prose-stone max-w-none text-sm">
+            <h2 class="text-lg font-semibold mt-0">How to Play Backgammon</h2>
+            <p>Backgammon is one of the oldest known board games, with origins dating back nearly 5,000 years to Mesopotamia. The game combines luck and strategy in a race to bear off all your checkers while blocking and hitting your opponent's pieces. Each player has 15 checkers that move around a 24-point board in opposite directions.</p>
+            <h3 class="text-base font-semibold">The Board</h3>
+            <p>The board has 24 narrow triangles called points, grouped into four quadrants of six points each. The quadrants are the player's home board and outer board, and the opponent's home board and outer board. White moves from point 24 toward point 1; Black moves from point 1 toward point 24. The bar divides the board in half—hit checkers are placed here and must re-enter before any other move.</p>
+            <h3 class="text-base font-semibold">Rolling and Moving</h3>
+            <p>Players take turns rolling two dice. Each die allows you to move one checker the corresponding number of points. You can move one checker for both dice (if the intermediate point is open) or move two different checkers. If you roll doubles, you play the number four times. You must use both numbers if legally possible; if only one move is possible, you must make it. If no move is possible, you lose your turn.</p>
+            <h3 class="text-base font-semibold">Hitting and the Bar</h3>
+            <p>You can land on a point occupied by a single opponent checker (a blot). When you do, that checker is hit and sent to the bar. A point with two or more opponent checkers is closed—you cannot land there. Hit checkers must re-enter before any other move. White re-enters on points 19–24; Black re-enters on points 1–6. You must roll a number that corresponds to an open point in that range.</p>
+            <h3 class="text-base font-semibold">Bearing Off</h3>
+            <p>Once all 15 of your checkers are in your home board (points 1–6 for White, 19–24 for Black), you may start bearing off. Roll a number and remove a checker from the corresponding point. If that point is empty, you may bear off from a higher-numbered point. The first player to bear off all 15 checkers wins.</p>
+            <h3 class="text-base font-semibold">Strategy Tips</h3>
+            <p>Build primes (multiple consecutive points) to block your opponent. Hit blots when safe to slow them down. Advance your back checkers early. Avoid leaving single checkers (blots) when your opponent can hit them. In the endgame, race efficiently and bear off without leaving stragglers.</p>
+            <h3 class="text-base font-semibold">Play Online</h3>
+            <p>This free online Backgammon game runs in your browser with no download required. Challenge the AI, which uses basic strategy: it prefers hitting your blots, making points, and advancing its checkers. Click a checker to select it, then click a valid destination point to move. Roll the dice when it's your turn and plan your moves carefully!</p>
+          </article>
+        </div>
+      </div>
+
+      <div id="related-games" class="mt-8 pt-6 border-t border-stone-200">
+        <h3 class="text-sm font-semibold text-stone-600 mb-3">Related Games</h3>
+        <div class="flex flex-wrap gap-2">
+          <a href="/games/checkers.html" class="px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-sm">Checkers</a>
+          <a href="/games/chess.html" class="px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-sm">Chess</a>
+          <a href="/games/ludo.html" class="px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-sm">Ludo</a>
+          <a href="/games/mancala.html" class="px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-sm">Mancala</a>
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer-container" class="mt-6 text-center text-sm text-stone-500">
+      <p>© Mini Game Planet. Play Backgammon and other board games free online.</p>
+    </footer>
+  </div>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playGameOver, playCollect } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('backgammon');
+    initConsent();
+    initAudio?.();
+    trackGameView('backgammon', 'Board');
+
+    const WHITE = 1, BLACK = -1;
+    const POINT_COUNT = 24;
+
+    let points = [];
+    let bar = { white: 0, black: 0 };
+    let off = { white: 0, black: 0 };
+    let currentPlayer = WHITE;
+    let dice = [0, 0];
+    let diceUsed = [false, false];
+    let hasRolled = false;
+    let selectedPoint = null;
+    let validDests = [];
+    let sessionGames = 0, sessionWins = 0, sessionStreak = 0;
+    let soundOn = true;
+
+    const boardEl = document.getElementById('board');
+    const statusEl = document.getElementById('status');
+    const rollBtn = document.getElementById('roll-btn');
+    const restartEl = document.getElementById('restart');
+    const soundToggleEl = document.getElementById('sound-toggle');
+    const sessionStatsEl = document.getElementById('session-stats');
+    const die1El = document.getElementById('die1');
+    const die2El = document.getElementById('die2');
+
+    function secureRandom() {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] / (0xFFFFFFFF + 1);
+    }
+
+    function rollDie() {
+      return Math.floor(secureRandom() * 6) + 1;
+    }
+
+    function initBoard() {
+      points = Array(POINT_COUNT + 1).fill(null).map(() => ({ white: 0, black: 0 }));
+      points[24] = { white: 0, black: 2 };
+      points[13] = { white: 0, black: 5 };
+      points[8] = { white: 0, black: 3 };
+      points[6] = { white: 0, black: 5 };
+      points[1] = { white: 2, black: 0 };
+      points[12] = { white: 5, black: 0 };
+      points[17] = { white: 3, black: 0 };
+      points[19] = { white: 5, black: 0 };
+      bar = { white: 0, black: 0 };
+      off = { white: 0, black: 0 };
+      currentPlayer = WHITE;
+      dice = [0, 0];
+      diceUsed = [false, false];
+      hasRolled = false;
+      selectedPoint = null;
+      validDests = [];
+    }
+
+    function getCheckerCount(pt, player) {
+      return player === WHITE ? points[pt].white : points[pt].black;
+    }
+
+    function getOpponentCount(pt, player) {
+      return player === WHITE ? points[pt].black : points[pt].white;
+    }
+
+    function canLand(pt, player) {
+      if (pt < 1 || pt > 24) return false;
+      const opp = getOpponentCount(pt, player);
+      return opp === 0 || (opp === 1 && getCheckerCount(pt, player) === 0);
+    }
+
+    function allInHome(player) {
+      if (player === WHITE) {
+        for (let pt = 7; pt <= 24; pt++) if (points[pt].white > 0) return false;
+        if (bar.white > 0) return false;
+      } else {
+        for (let pt = 1; pt <= 18; pt++) if (points[pt].black > 0) return false;
+        if (bar.black > 0) return false;
+      }
+      return true;
+    }
+
+    function getMovesFromPoint(fromPt, player, usedDice) {
+      const moves = [];
+      const stepVal = player === WHITE ? -1 : 1;
+      for (let i = 0; i < 2; i++) {
+        if (usedDice[i]) continue;
+        const toPt = fromPt + dice[i] * stepVal;
+        if (player === WHITE && toPt < 1) {
+          if (allInHome(WHITE) && fromPt <= dice[i]) {
+            moves.push({ from: fromPt, to: 0, dieIdx: i, bearOff: true });
+          }
+        } else if (player === BLACK && toPt > 24) {
+          if (allInHome(BLACK) && fromPt >= 25 - dice[i]) {
+            moves.push({ from: fromPt, to: 25, dieIdx: i, bearOff: true });
+          }
+        } else if (toPt >= 1 && toPt <= 24 && canLand(toPt, player)) {
+          moves.push({ from: fromPt, to: toPt, dieIdx: i, bearOff: false });
+        }
+      }
+      if (dice[0] === dice[1] && !usedDice[0] && !usedDice[1]) {
+        const step = dice[0] * stepVal;
+        const midPt = fromPt + step;
+        const toPt = fromPt + step * 2;
+        if (player === WHITE && toPt < 1 && allInHome(WHITE)) {
+          moves.push({ from: fromPt, to: 0, dieIdx: 0, bearOff: true, usesBoth: true });
+        } else if (player === BLACK && toPt > 24 && allInHome(BLACK)) {
+          moves.push({ from: fromPt, to: 25, dieIdx: 0, bearOff: true, usesBoth: true });
+        } else if (midPt >= 1 && midPt <= 24 && toPt >= 1 && toPt <= 24 && canLand(midPt, player) && canLand(toPt, player)) {
+          moves.push({ from: fromPt, to: toPt, dieIdx: 0, bearOff: false, usesBoth: true });
+        }
+      }
+      return moves;
+    }
+
+    function getLegalMoves(player) {
+      const moves = [];
+      if (player === WHITE && bar.white > 0) {
+        for (let i = 0; i < 2; i++) {
+          const pt = 25 - dice[i];
+          if (pt >= 19 && pt <= 24 && canLand(pt, WHITE)) {
+            moves.push({ from: -1, to: pt, dieIdx: i, bearOff: false });
+          }
+        }
+        if (dice[0] === dice[1]) {
+          const pt = 25 - dice[0];
+          if (pt >= 19 && pt <= 24 && canLand(pt, WHITE)) {
+            moves.push({ from: -1, to: pt, dieIdx: 0, bearOff: false, usesBoth: true });
+          }
+        }
+        return moves;
+      }
+      if (player === BLACK && bar.black > 0) {
+        for (let i = 0; i < 2; i++) {
+          const pt = dice[i];
+          if (pt >= 1 && pt <= 6 && canLand(pt, BLACK)) {
+            moves.push({ from: -2, to: pt, dieIdx: i, bearOff: false });
+          }
+        }
+        if (dice[0] === dice[1]) {
+          const pt = dice[0];
+          if (pt >= 1 && pt <= 6 && canLand(pt, BLACK)) {
+            moves.push({ from: -2, to: pt, dieIdx: 0, bearOff: false, usesBoth: true });
+          }
+        }
+        return moves;
+      }
+
+      for (let pt = 1; pt <= 24; pt++) {
+        if (getCheckerCount(pt, player) === 0) continue;
+        const m = getMovesFromPoint(pt, player, [false, false]);
+        for (const mv of m) moves.push({ ...mv, from: pt });
+      }
+      return moves;
+    }
+
+    function doMove(move, player) {
+      const from = move.from;
+      const to = move.to;
+      const bearOff = move.bearOff;
+
+      if (from === -1 || from === -2) {
+        if (player === WHITE) bar.white--;
+        else bar.black--;
+      } else {
+        if (player === WHITE) points[from].white--;
+        else points[from].black--;
+      }
+
+      if (bearOff) {
+        if (player === WHITE) off.white++;
+        else off.black++;
+        if (soundOn) playSuccess?.();
+      } else {
+        const hit = getOpponentCount(to, player) === 1;
+        if (hit) {
+          if (player === WHITE) { points[to].black--; bar.black++; }
+          else { points[to].white--; bar.white++; }
+          if (soundOn) playCollect?.();
+        }
+        if (player === WHITE) points[to].white++;
+        else points[to].black++;
+        if (soundOn && !hit) playClick?.();
+      }
+
+      if (move.usesBoth) {
+        diceUsed[0] = true;
+        diceUsed[1] = true;
+      } else {
+        diceUsed[move.dieIdx] = true;
+      }
+    }
+
+    function gameOver() {
+      if (off.white === 15) return WHITE;
+      if (off.black === 15) return BLACK;
+      return null;
+    }
+
+    function getPointLayout() {
+      return [
+        [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24],
+        [12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+      ];
+    }
+
+    function render() {
+      const layout = getPointLayout();
+      const w = Math.min(480, boardEl.offsetWidth || 480);
+      const barW = 16;
+      const pointW = (w - barW) / 12;
+      const pointH = 90;
+      const h = pointH * 2;
+      const checkerR = Math.min(pointW * 0.4, 12);
+
+      boardEl.innerHTML = '';
+      boardEl.style.width = w + 'px';
+      boardEl.style.height = h + 'px';
+
+      const grid = document.createElement('div');
+      grid.className = 'grid gap-0 w-full h-full';
+      grid.style.gridTemplateColumns = `repeat(6, 1fr) ${barW}px repeat(6, 1fr)`;
+      grid.style.gridTemplateRows = `${pointH}px ${pointH}px`;
+
+      const barEl = document.createElement('div');
+      barEl.className = 'bar-area flex flex-col items-center justify-center cursor-default';
+      barEl.style.gridColumn = '7';
+      barEl.style.gridRow = '1 / 3';
+      barEl.innerHTML = `<span class="text-stone-300 font-mono text-xs">BAR</span><span class="text-white text-sm">${bar.white}</span><span class="text-stone-800 text-sm">${bar.black}</span>`;
+      grid.appendChild(barEl);
+
+      for (let row = 0; row < 2; row++) {
+        for (let col = 0; col < 12; col++) {
+          const ptVal = layout[row][col];
+          const gridCol = col < 6 ? col + 1 : col + 2;
+          const isLight = (row + col) % 2 === 0;
+          const pointEl = document.createElement('div');
+          pointEl.className = `point relative cursor-pointer ${isLight ? 'point-light' : 'point-dark'} ${validDests.includes(ptVal) ? 'valid-dest' : ''}`;
+          pointEl.style.gridColumn = gridCol;
+          pointEl.style.gridRow = row + 1;
+          pointEl.style.minHeight = pointH + 'px';
+          pointEl.dataset.point = ptVal;
+
+          const isTop = row === 0;
+          const dir = isTop ? 1 : -1;
+          const baseX = pointW / 2 - checkerR;
+          const baseY = pointH / 2 - checkerR;
+
+          for (let c = 0; c < points[ptVal].white; c++) {
+            const ch = document.createElement('div');
+            ch.className = `absolute rounded-full checker-white border-2 border-stone-300 pointer-events-auto cursor-pointer ${selectedPoint === ptVal ? 'selected-checker' : ''}`;
+            ch.style.width = (checkerR * 2) + 'px';
+            ch.style.height = (checkerR * 2) + 'px';
+            ch.style.left = (baseX + (c % 3) * (checkerR * 1.6)) + 'px';
+            ch.style.top = (baseY + Math.floor(c / 3) * (checkerR * 2) * dir) + 'px';
+            ch.dataset.point = ptVal;
+            ch.dataset.player = 'white';
+            pointEl.appendChild(ch);
+          }
+          for (let c = 0; c < points[ptVal].black; c++) {
+            const ch = document.createElement('div');
+            ch.className = `absolute rounded-full checker-black border-2 border-stone-800 pointer-events-auto cursor-pointer ${selectedPoint === ptVal ? 'selected-checker' : ''}`;
+            ch.style.width = (checkerR * 2) + 'px';
+            ch.style.height = (checkerR * 2) + 'px';
+            ch.style.left = (baseX + (c % 3) * (checkerR * 1.6)) + 'px';
+            ch.style.top = (baseY + Math.floor(c / 3) * (checkerR * 2) * dir) + 'px';
+            ch.dataset.point = ptVal;
+            ch.dataset.player = 'black';
+            pointEl.appendChild(ch);
+          }
+
+          grid.appendChild(pointEl);
+        }
+      }
+
+      boardEl.appendChild(grid);
+
+      const pointEls = grid.querySelectorAll('.point');
+      pointEls.forEach(el => {
+        el.addEventListener('click', (e) => {
+          if (e.target.closest('[data-player]')) return;
+          handlePointClick(parseInt(el.dataset.point, 10));
+        });
+      });
+      grid.querySelectorAll('[data-player]').forEach(el => {
+        el.addEventListener('click', (e) => {
+          e.stopPropagation();
+          handlePointClick(parseInt(el.dataset.point, 10));
+        });
+      });
+    }
+
+    function handlePointClick(pt) {
+      const winner = gameOver();
+      if (winner) return;
+      if (currentPlayer !== WHITE || !hasRolled) return;
+
+      const moves = getLegalMoves(WHITE);
+      const destMove = moves.find(m => {
+        if (m.bearOff) return m.from === selectedPoint && pt === selectedPoint;
+        return m.to === pt && (selectedPoint === m.from || (bar.white > 0 && m.from === -1));
+      });
+
+      if (destMove) {
+        doMove(destMove, WHITE);
+        selectedPoint = null;
+        validDests = [];
+        if (diceUsed.every(u => u)) {
+          currentPlayer = BLACK;
+          hasRolled = false;
+          statusEl.textContent = "Black's turn";
+          rollBtn.disabled = true;
+          die1El.textContent = '–';
+          die2El.textContent = '–';
+          render();
+          checkWinner();
+          if (!gameOver()) setTimeout(aiTurn, 500);
+        } else {
+          updateValidDests();
+          render();
+        }
+        return;
+      }
+
+      if (bar.white > 0) {
+        selectedPoint = null;
+        validDests = moves.map(m => m.to);
+      } else if (getCheckerCount(pt, WHITE) > 0) {
+        selectedPoint = pt;
+        updateValidDests();
+      } else {
+        selectedPoint = null;
+        validDests = [];
+      }
+      render();
+    }
+
+    function updateValidDests() {
+      const moves = getLegalMoves(WHITE);
+      if (bar.white > 0) {
+        validDests = moves.map(m => m.to);
+      } else if (selectedPoint !== null) {
+        validDests = moves.filter(m => m.from === selectedPoint).map(m => m.bearOff ? selectedPoint : m.to);
+      }
+    }
+
+    function checkWinner() {
+      const winner = gameOver();
+      if (winner) {
+        sessionGames++;
+        if (winner === WHITE) sessionWins++, sessionStreak++;
+        else sessionStreak = 0;
+        if (soundOn) playGameOver?.();
+        trackGameOver?.('backgammon', winner === WHITE ? 'win' : 'loss');
+        statusEl.textContent = winner === WHITE ? 'White wins!' : 'Black wins!';
+        rollBtn.disabled = true;
+        updateStats();
+      }
+    }
+
+    function updateStats() {
+      sessionStatsEl.textContent = `Games: ${sessionGames} | Wins: ${sessionWins} | Streak: ${sessionStreak}`;
+    }
+
+    function getAIMove() {
+      const moves = getLegalMoves(BLACK);
+      if (!moves.length) return null;
+
+      let best = moves[0];
+      let bestScore = -Infinity;
+
+      for (const m of moves) {
+        let score = 0;
+        if (m.bearOff) score += 50;
+        else if (m.to >= 19 && m.to <= 24) {
+          if (getOpponentCount(m.to, BLACK) === 1) score += 30;
+          else score += 15;
+        } else if (getOpponentCount(m.to, BLACK) === 1) score += 25;
+        score += m.to * 0.5;
+        if (score > bestScore) {
+          bestScore = score;
+          best = m;
+        }
+      }
+      return best;
+    }
+
+    function aiTurn() {
+      if (gameOver() || currentPlayer !== BLACK) return;
+      statusEl.textContent = 'Black thinking...';
+      dice = [rollDie(), rollDie()];
+      diceUsed = [false, false];
+      die1El.textContent = dice[0];
+      die2El.textContent = dice[1];
+
+      const move = getAIMove();
+      if (move) {
+        setTimeout(() => {
+          doMove(move, BLACK);
+          render();
+          checkWinner();
+          if (gameOver()) return;
+          if (diceUsed.every(u => u)) {
+            currentPlayer = WHITE;
+            hasRolled = false;
+            statusEl.textContent = 'White to roll';
+            rollBtn.disabled = false;
+            die1El.textContent = '–';
+            die2El.textContent = '–';
+          } else {
+            setTimeout(aiTurn, 400);
+          }
+        }, 400);
+      } else {
+        currentPlayer = WHITE;
+        hasRolled = false;
+        statusEl.textContent = 'White to roll';
+        rollBtn.disabled = false;
+        die1El.textContent = '–';
+        die2El.textContent = '–';
+        render();
+      }
+    }
+
+    rollBtn.addEventListener('click', () => {
+      if (currentPlayer !== WHITE || hasRolled || gameOver()) return;
+      dice = [rollDie(), rollDie()];
+      diceUsed = [false, false];
+      hasRolled = true;
+      die1El.textContent = dice[0];
+      die2El.textContent = dice[1];
+      const moves = getLegalMoves(WHITE);
+      if (!moves.length) {
+        currentPlayer = BLACK;
+        hasRolled = false;
+        statusEl.textContent = "No moves. Black's turn.";
+        rollBtn.disabled = true;
+        setTimeout(aiTurn, 500);
+      } else {
+        statusEl.textContent = 'Select a checker, then a destination.';
+        if (bar.white > 0) {
+          const barMoves = moves.filter(m => m.from === -1);
+          if (barMoves.length) validDests = barMoves.map(m => m.to);
+        }
+      }
+      render();
+    });
+
+    restartEl.addEventListener('click', () => {
+      initBoard();
+      hasRolled = false;
+      rollBtn.disabled = false;
+      die1El.textContent = '–';
+      die2El.textContent = '–';
+      statusEl.textContent = 'White to roll';
+      trackGameStart?.('backgammon');
+      render();
+    });
+
+    soundToggleEl.addEventListener('click', () => {
+      soundOn = !soundOn;
+      soundToggleEl.textContent = soundOn ? '🔊 Sound' : '🔇 Muted';
+      if (!soundOn) muteAll?.();
+    });
+
+    initBoard();
+    render();
+    updateStats();
+  </script>
+</body>
+</html>

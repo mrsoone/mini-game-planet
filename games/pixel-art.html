@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pixel Art Painter - Free Online Pixel Art Editor | Mini Game Planet</title>
+  <meta name="description" content="Create pixel art online with our free pixel art editor. Choose 8x8, 16x16, or 32x32 grids, use draw, fill, erase, and eyedropper tools. Download your artwork as PNG.">
+  <link rel="canonical" href="https://minigameplanet.com/games/pixel-art.html">
+  <!-- Open Graph -->
+  <meta property="og:title" content="Pixel Art Painter - Free Online Pixel Art Editor">
+  <meta property="og:description" content="Create pixel art online with our free pixel art editor. Draw, fill, erase, and download your pixel artwork as PNG.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/pixel-art.html">
+  <!-- JSON-LD -->
+  <!--
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Pixel Art Painter",
+    "description": "Free online pixel art editor with draw, fill, erase, and eyedropper tools.",
+    "applicationCategory": "Game",
+    "operatingSystem": "Any"
+  }
+  </script>
+  -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    .pixel-canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
+  </style>
+</head>
+<body class="min-h-screen text-gray-800">
+  <!-- AdSense placeholder (commented) -->
+  <!--
+  <ins class="adsbygoogle" data-ad-client="ca-pub-XXXXXXXX" data-ad-slot="XXXXXXXX" data-ad-format="auto"></ins>
+  -->
+
+  <nav id="nav-container" class="bg-white border-b border-gray-200 shadow-sm">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="font-semibold text-lg text-indigo-600 hover:text-indigo-700">Mini Game Planet</a>
+      <div class="flex items-center gap-4">
+        <button id="sound-toggle" class="text-sm text-gray-600 hover:text-gray-800" aria-label="Toggle sound">🔊 Sound</button>
+        <a href="/" class="text-sm text-gray-600 hover:text-gray-800">Home</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+      <div class="p-6 border-b border-gray-100">
+        <h1 class="text-2xl font-bold text-gray-900 mb-1">Pixel Art Painter</h1>
+        <p class="text-gray-600 text-sm">Create pixel art with draw, fill, erase, and eyedropper tools. Download as PNG.</p>
+      </div>
+
+      <div class="p-6 space-y-6">
+        <!-- Toolbar -->
+        <div class="flex flex-wrap gap-4 items-center">
+          <div class="flex gap-2">
+            <button data-tool="draw" class="tool-btn px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm font-medium">Draw</button>
+            <button data-tool="fill" class="tool-btn px-3 py-2 rounded-lg bg-gray-200 text-gray-700 text-sm hover:bg-gray-300">Fill</button>
+            <button data-tool="erase" class="tool-btn px-3 py-2 rounded-lg bg-gray-200 text-gray-700 text-sm hover:bg-gray-300">Erase</button>
+            <button data-tool="eyedropper" class="tool-btn px-3 py-2 rounded-lg bg-gray-200 text-gray-700 text-sm hover:bg-gray-300">Eyedropper</button>
+          </div>
+          <div class="flex gap-2 items-center">
+            <label class="text-sm text-gray-600">Grid:</label>
+            <select id="grid-size" class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
+              <option value="8">8×8</option>
+              <option value="16" selected>16×16</option>
+              <option value="32">32×32</option>
+            </select>
+          </div>
+          <div class="flex gap-2">
+            <button id="grid-toggle" class="px-3 py-2 rounded-lg bg-gray-200 text-gray-700 text-sm hover:bg-gray-300">Grid Lines</button>
+            <button id="clear-btn" class="px-3 py-2 rounded-lg bg-red-100 text-red-700 text-sm hover:bg-red-200">Clear</button>
+            <button id="undo-btn" class="px-3 py-2 rounded-lg bg-gray-200 text-gray-700 text-sm hover:bg-gray-300">Undo</button>
+            <button id="download-btn" class="px-3 py-2 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700">Download PNG</button>
+          </div>
+        </div>
+
+        <!-- Color palette -->
+        <div class="flex flex-wrap gap-2 items-center">
+          <span class="text-sm text-gray-600 mr-2">Colors:</span>
+          <div id="palette" class="flex flex-wrap gap-1"></div>
+          <label class="flex items-center gap-2 ml-4">
+            <span class="text-sm text-gray-600">Custom:</span>
+            <input type="color" id="custom-color" value="#000000" class="w-10 h-10 rounded border border-gray-300 cursor-pointer">
+          </label>
+        </div>
+
+        <!-- Canvas container -->
+        <div class="flex justify-center bg-gray-100 rounded-lg p-4 min-h-[320px]">
+          <canvas id="canvas" class="pixel-canvas border border-gray-300 bg-white"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEO Article -->
+    <article class="mt-8 bg-white rounded-xl shadow-lg border border-gray-200 p-6 md:p-8">
+      <h2 class="text-xl font-bold text-gray-900 mb-4">Pixel Art Painter: Create Stunning Pixel Art Online</h2>
+      <div class="prose prose-gray max-w-none text-gray-700 space-y-4 text-[15px] leading-relaxed">
+        <p>Pixel art has made a triumphant comeback in modern gaming and digital design. From indie games like Stardew Valley and Celeste to nostalgic retro aesthetics, pixel art continues to captivate creators and audiences alike. Our Pixel Art Painter gives you a powerful, free online tool to create pixel art without installing any software.</p>
+        <p>Whether you're designing game sprites, creating avatars, or exploring a new creative hobby, this pixel art editor provides everything you need. Choose from three grid sizes—8×8 for tiny icons and emojis, 16×16 for classic retro sprites, or 32×32 for more detailed artwork. Each size offers the perfect canvas for different projects.</p>
+        <p>Our intuitive toolset includes a draw tool for placing pixels one at a time, a flood fill tool for quickly coloring large areas, an erase tool for corrections, and an eyedropper to sample colors from your canvas. The built-in color palette features 16+ carefully selected colors, plus a custom color picker so you can match any shade you imagine.</p>
+        <p>Made a mistake? The undo feature stores your last 20 actions, so you can experiment freely without fear. Toggle grid lines on or off to see your artwork with or without guides. When you're done, download your creation as a PNG file—perfect for sharing on social media, using in game development, or printing.</p>
+        <p>Pixel art teaches valuable design principles: working within constraints breeds creativity, and every pixel matters. Start small with an 8×8 grid to learn the basics, then scale up as your skills grow. The Pixel Art Painter runs entirely in your browser—no account required, no limits on how many artworks you create.</p>
+        <p>Join thousands of creators who use Mini Game Planet's tools to bring their pixel art visions to life. Whether you're a seasoned pixel artist or just starting out, our editor makes the process simple and enjoyable.</p>
+      </div>
+    </article>
+
+    <section id="related-games" class="mt-8">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Related Games</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <a href="/games/color-by-number.html" class="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition">Color by Number</a>
+        <a href="/games/doodle.html" class="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition">Doodle</a>
+        <a href="/games/" class="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition">All Games</a>
+      </div>
+    </section>
+  </main>
+
+  <footer id="footer-container" class="border-t border-gray-200 mt-12 py-6">
+    <div class="max-w-4xl mx-auto px-4 text-center text-sm text-gray-500">
+      <p>© Mini Game Planet. Pixel Art Painter is free to use.</p>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart } from '/js/analytics.js';
+
+    initToolPage('pixel-art');
+    initConsent();
+    trackGameView('pixel-art', 'Builder');
+
+    // Pixel Art Painter Game Logic
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const paletteEl = document.getElementById('palette');
+    const customColorEl = document.getElementById('custom-color');
+    const gridSizeSelect = document.getElementById('grid-size');
+    const gridToggle = document.getElementById('grid-toggle');
+    const clearBtn = document.getElementById('clear-btn');
+    const undoBtn = document.getElementById('undo-btn');
+    const downloadBtn = document.getElementById('download-btn');
+    const soundToggle = document.getElementById('sound-toggle');
+
+    const PALETTE = [
+      '#000000', '#FFFFFF', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF',
+      '#FFA500', '#800080', '#FFC0CB', '#A52A2A', '#808080', '#C0C0C0', '#008000', '#000080',
+      '#FFD700', '#4B0082'
+    ];
+
+    let gridSize = 16;
+    let cellSize = 16;
+    let pixelData = [];
+    let currentColor = '#000000';
+    let currentTool = 'draw';
+    let showGrid = true;
+    let undoStack = [];
+    const MAX_UNDO = 20;
+    let isDrawing = false;
+
+    function initPalette() {
+      paletteEl.innerHTML = '';
+      PALETTE.forEach(color => {
+        const btn = document.createElement('button');
+        btn.className = 'w-8 h-8 rounded border-2 border-gray-300 hover:border-gray-500 transition';
+        btn.style.backgroundColor = color;
+        btn.dataset.color = color;
+        btn.addEventListener('click', () => {
+          currentColor = color;
+          updateToolButtons();
+        });
+        paletteEl.appendChild(btn);
+      });
+    }
+
+    customColorEl.addEventListener('input', (e) => {
+      currentColor = e.target.value;
+      updateToolButtons();
+    });
+
+    function updateToolButtons() {
+      document.querySelectorAll('.tool-btn').forEach(btn => {
+        const tool = btn.dataset.tool;
+        btn.className = 'tool-btn px-3 py-2 rounded-lg text-sm font-medium ' +
+          (tool === currentTool ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300');
+      });
+    }
+
+    document.querySelectorAll('.tool-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentTool = btn.dataset.tool;
+        updateToolButtons();
+        try { playClick(); } catch (_) {}
+      });
+    });
+
+    function createEmptyGrid(size) {
+      return Array(size).fill(null).map(() => Array(size).fill('#FFFFFF'));
+    }
+
+    function saveState() {
+      const state = pixelData.map(row => [...row]);
+      undoStack.push(state);
+      if (undoStack.length > MAX_UNDO) undoStack.shift();
+    }
+
+    function resizeCanvas() {
+      const size = gridSize * cellSize;
+      canvas.width = size;
+      canvas.height = size;
+      pixelData = createEmptyGrid(gridSize);
+      undoStack = [];
+      render();
+    }
+
+    function getCellCoords(e) {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const x = Math.floor((e.clientX - rect.left) * scaleX / cellSize);
+      const y = Math.floor((e.clientY - rect.top) * scaleY / cellSize);
+      return { x, y };
+    }
+
+    function isValidCell(x, y) {
+      return x >= 0 && x < gridSize && y >= 0 && y < gridSize;
+    }
+
+    function floodFill(startX, startY, fillColor) {
+      const targetColor = pixelData[startY][startX];
+      if (targetColor === fillColor) return;
+      saveState();
+      const stack = [[startX, startY]];
+      const visited = new Set();
+      visited.add(`${startX},${startY}`);
+      let count = 0;
+      const maxIter = gridSize * gridSize;
+      while (stack.length && count < maxIter) {
+        const [x, y] = stack.pop();
+        if (!isValidCell(x, y) || pixelData[y][x] !== targetColor) continue;
+        pixelData[y][x] = fillColor;
+        count++;
+        [[x+1,y],[x-1,y],[x,y+1],[x,y-1]].forEach(([nx,ny]) => {
+          const key = `${nx},${ny}`;
+          if (isValidCell(nx, ny) && !visited.has(key) && pixelData[ny][nx] === targetColor) {
+            visited.add(key);
+            stack.push([nx, ny]);
+          }
+        });
+      }
+      render();
+      try { playSuccess(); } catch (_) {}
+    }
+
+    function drawPixel(x, y) {
+      if (!isValidCell(x, y)) return;
+      const color = currentTool === 'erase' ? '#FFFFFF' : currentColor;
+      if (pixelData[y][x] !== color) {
+        pixelData[y][x] = color;
+        render();
+      }
+    }
+
+    canvas.addEventListener('mousedown', (e) => {
+      const { x, y } = getCellCoords(e);
+      if (!isValidCell(x, y)) return;
+      isDrawing = true;
+      if (currentTool === 'fill') {
+        floodFill(x, y, currentColor);
+      } else if (currentTool === 'eyedropper') {
+        currentColor = pixelData[y][x];
+        customColorEl.value = currentColor;
+        updateToolButtons();
+        try { playClick(); } catch (_) {}
+      } else {
+        saveState();
+        drawPixel(x, y);
+        try { playClick(); } catch (_) {}
+      }
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+      if (!isDrawing || currentTool === 'fill' || currentTool === 'eyedropper') return;
+      const { x, y } = getCellCoords(e);
+      drawPixel(x, y);
+    });
+
+    canvas.addEventListener('mouseup', () => { isDrawing = false; });
+    canvas.addEventListener('mouseleave', () => { isDrawing = false; });
+
+    gridSizeSelect.addEventListener('change', () => {
+      gridSize = parseInt(gridSizeSelect.value);
+      cellSize = Math.min(16, Math.floor(320 / gridSize));
+      resizeCanvas();
+      try { playClick(); } catch (_) {}
+    });
+
+    gridToggle.addEventListener('click', () => {
+      showGrid = !showGrid;
+      gridToggle.textContent = showGrid ? 'Grid Lines' : 'Hide Grid';
+      render();
+      try { playClick(); } catch (_) {}
+    });
+
+    clearBtn.addEventListener('click', () => {
+      saveState();
+      pixelData = createEmptyGrid(gridSize);
+      render();
+      try { playSuccess(); } catch (_) {}
+    });
+
+    undoBtn.addEventListener('click', () => {
+      if (undoStack.length === 0) return;
+      pixelData = undoStack.pop();
+      render();
+      try { playClick(); } catch (_) {}
+    });
+
+    downloadBtn.addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.download = 'pixel-art.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      try { playSuccess(); } catch (_) {}
+    });
+
+    function render() {
+      const size = gridSize * cellSize;
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, size, size);
+      for (let y = 0; y < gridSize; y++) {
+        for (let x = 0; x < gridSize; x++) {
+          ctx.fillStyle = pixelData[y][x];
+          ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+        }
+      }
+      if (showGrid) {
+        ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+        ctx.lineWidth = 1;
+        for (let i = 0; i <= gridSize; i++) {
+          ctx.beginPath();
+          ctx.moveTo(i * cellSize, 0);
+          ctx.lineTo(i * cellSize, size);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(0, i * cellSize);
+          ctx.lineTo(size, i * cellSize);
+          ctx.stroke();
+        }
+      }
+    }
+
+    initPalette();
+    resizeCanvas();
+    updateToolButtons();
+    trackGameStart('pixel-art');
+
+    soundToggle.addEventListener('click', () => {
+      try { muteAll(); } catch (_) {}
+    });
+  </script>
+</body>
+</html>

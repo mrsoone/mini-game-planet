@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logic Circuit Builder - Build Digital Circuits Online | Mini Game Planet</title>
+  <meta name="description" content="Learn digital logic with our free Logic Circuit Builder. Place AND, OR, NOT, XOR gates, connect wires, and solve challenges. Build half adders and more.">
+  <link rel="canonical" href="https://minigameplanet.com/games/circuit-builder.html">
+  <meta property="og:title" content="Logic Circuit Builder - Build Digital Circuits Online">
+  <meta property="og:description" content="Build logic circuits with interactive gates. Drag wires, toggle inputs, and solve challenges.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/circuit-builder.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { fontFamily: { sans: ['Space Grotesk', 'sans-serif'], mono: ['DM Mono', 'monospace'] } } }
+    }
+  </script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    #circuitCanvas { cursor: crosshair; touch-action: none; }
+    .gate { cursor: grab; user-select: none; }
+    .gate:active { cursor: grabbing; }
+    .wire-on { stroke: #22c55e; stroke-width: 3; }
+    .wire-off { stroke: #9ca3af; stroke-width: 2; }
+    .led-on { fill: #22c55e; filter: drop-shadow(0 0 6px #22c55e); }
+    .led-off { fill: #6b7280; }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Logic Circuit Builder",
+    "description": "Interactive logic gate simulator. Build digital circuits with AND, OR, NOT, XOR gates.",
+    "applicationCategory": "EducationalGame",
+    "operatingSystem": "Any"
+  }
+  </script>
+  <!-- AdSense placeholder: uncomment and add your publisher ID
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXX" crossorigin="anonymous"></script>
+  -->
+</head>
+<body class="min-h-screen text-gray-800">
+  <nav id="nav-container" class="bg-white/80 backdrop-blur border-b border-gray-200 sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="font-semibold text-lg">Mini Game Planet</a>
+      <div class="flex items-center gap-4">
+        <button id="soundToggle" class="text-sm px-3 py-1 rounded bg-gray-100 hover:bg-gray-200" aria-label="Toggle sound">🔊 Sound</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-6xl mx-auto px-4 py-8">
+    <article class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 mb-8">
+      <h1 class="text-3xl font-bold mb-4">Logic Circuit Builder</h1>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        Build digital logic circuits in your browser with our interactive Logic Circuit Builder. Whether you're learning computer science, preparing for exams, or just curious how computers think, this tool lets you experiment with the fundamental building blocks of digital electronics.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        Logic gates are the foundation of all digital systems. An AND gate outputs 1 only when both inputs are 1. An OR gate outputs 1 when at least one input is 1. A NOT gate inverts its single input. XOR (exclusive OR) outputs 1 when inputs differ. NAND and NOR are the negated versions of AND and OR. By combining these gates, you can build adders, multiplexers, and eventually entire processors.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        Our simulator features real-time signal propagation: toggle an input switch and watch the signal flow through your wires instantly. Wires turn green when carrying a 1 (high) and gray when carrying 0 (low). Output LEDs light up to show your circuit's result. Start in Sandbox mode to explore freely, then tackle our five challenge puzzles—including building a half adder and matching truth tables—to test your skills.
+      </p>
+      <p class="text-gray-600 leading-relaxed">
+        No installation required. Everything runs in your browser. Use the gate palette to add components, drag wires between connection points, and solve challenges. Perfect for students, hobbyists, and anyone interested in how logic circuits work.
+      </p>
+    </article>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
+      <div class="flex flex-wrap gap-4 items-center justify-between mb-4">
+        <div class="flex gap-2 flex-wrap">
+          <select id="modeSelect" class="px-3 py-2 rounded-lg border border-gray-200 font-mono text-sm">
+            <option value="sandbox">Sandbox</option>
+            <option value="challenge-1">Challenge 1: NOT Gate</option>
+            <option value="challenge-2">Challenge 2: AND Gate</option>
+            <option value="challenge-3">Challenge 3: OR Gate</option>
+            <option value="challenge-4">Challenge 4: XOR Gate</option>
+            <option value="challenge-5">Challenge 5: Half Adder</option>
+          </select>
+          <button id="clearBtn" class="px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-sm">Clear</button>
+        </div>
+        <div id="challengeDesc" class="text-sm text-gray-600 max-w-md hidden"></div>
+      </div>
+
+      <div class="flex gap-4 flex-wrap">
+        <div class="bg-gray-50 rounded-xl p-4 w-48 shrink-0">
+          <p class="text-xs font-semibold text-gray-500 uppercase mb-2">Gates</p>
+          <div id="gatePalette" class="space-y-2">
+            <button data-gate="AND" class="gate-btn w-full px-3 py-2 rounded-lg border border-gray-200 hover:bg-white text-left text-sm">AND</button>
+            <button data-gate="OR" class="gate-btn w-full px-3 py-2 rounded-lg border border-gray-200 hover:bg-white text-left text-sm">OR</button>
+            <button data-gate="NOT" class="gate-btn w-full px-3 py-2 rounded-lg border border-gray-200 hover:bg-white text-left text-sm">NOT</button>
+            <button data-gate="XOR" class="gate-btn w-full px-3 py-2 rounded-lg border border-gray-200 hover:bg-white text-left text-sm">XOR</button>
+            <button data-gate="NAND" class="gate-btn w-full px-3 py-2 rounded-lg border border-gray-200 hover:bg-white text-left text-sm">NAND</button>
+            <button data-gate="NOR" class="gate-btn w-full px-3 py-2 rounded-lg border border-gray-200 hover:bg-white text-left text-sm">NOR</button>
+          </div>
+          <p class="text-xs font-semibold text-gray-500 uppercase mt-4 mb-2">I/O</p>
+          <button data-gate="INPUT" class="gate-btn w-full px-3 py-2 rounded-lg border border-gray-200 hover:bg-white text-left text-sm">Input Switch</button>
+          <button data-gate="OUTPUT" class="gate-btn w-full px-3 py-2 rounded-lg border border-gray-200 hover:bg-white text-left text-sm">Output LED</button>
+        </div>
+
+        <div class="flex-1 min-w-0 overflow-auto">
+          <div class="relative bg-gray-100 rounded-xl overflow-hidden" style="min-height: 400px;">
+            <svg id="circuitCanvas" width="100%" height="500" class="block">
+              <defs>
+                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                  <polygon points="0 0, 10 3.5, 0 7" fill="#9ca3af" />
+                </marker>
+              </defs>
+              <g id="wiresLayer"></g>
+              <g id="componentsLayer"></g>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div id="challengeStatus" class="mt-4 p-3 rounded-lg hidden"></div>
+    </div>
+
+    <section id="related-games" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
+      <h2 class="text-xl font-bold mb-4">Related Games</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <a href="/games/binary-converter.html" class="p-3 rounded-xl border border-gray-100 hover:bg-gray-50">Binary Converter</a>
+        <a href="/games/truth-table.html" class="p-3 rounded-xl border border-gray-100 hover:bg-gray-50">Truth Table</a>
+        <a href="/games/simulator.html" class="p-3 rounded-xl border border-gray-100 hover:bg-gray-50">Logic Simulator</a>
+        <a href="/" class="p-3 rounded-xl border border-gray-100 hover:bg-gray-50">All Games</a>
+      </div>
+    </section>
+  </main>
+
+  <footer id="footer-container" class="border-t border-gray-200 py-6 mt-8">
+    <div class="max-w-6xl mx-auto px-4 text-center text-sm text-gray-500">
+      <p>© Mini Game Planet. Logic Circuit Builder for educational use.</p>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart } from '/js/analytics.js';
+
+    initToolPage('circuit-builder');
+    initConsent();
+    trackGameView('circuit-builder', 'Builder');
+
+    const CHALLENGES = {
+      'challenge-1': {
+        desc: 'Build a circuit: when input is 0, output must be 1; when input is 1, output must be 0.',
+        check: (state, propagate) => {
+          const ins = state.inputs, outs = state.outputs;
+          if (!ins?.[0] || !outs?.[0]) return false;
+          ins[0].value = 0; propagate();
+          if (outs[0].value !== 1) return false;
+          ins[0].value = 1; propagate();
+          if (outs[0].value !== 0) return false;
+          return true;
+        },
+        inputs: 1, outputs: 1
+      },
+      'challenge-2': {
+        desc: 'Build AND: output 1 only when both inputs are 1.',
+        check: (state, propagate) => {
+          const ins = state.inputs, outs = state.outputs;
+          if (!ins?.[0] || !ins?.[1] || !outs?.[0]) return false;
+          for (const [a, b] of [[0,0],[0,1],[1,0],[1,1]]) {
+            ins[0].value = a; ins[1].value = b; propagate();
+            const want = (a && b) ? 1 : 0;
+            if (outs[0].value !== want) return false;
+          }
+          return true;
+        },
+        inputs: 2, outputs: 1
+      },
+      'challenge-3': {
+        desc: 'Build OR: output 1 when at least one input is 1.',
+        check: (state, propagate) => {
+          const ins = state.inputs, outs = state.outputs;
+          if (!ins?.[0] || !ins?.[1] || !outs?.[0]) return false;
+          for (const [a, b] of [[0,0],[0,1],[1,0],[1,1]]) {
+            ins[0].value = a; ins[1].value = b; propagate();
+            const want = (a || b) ? 1 : 0;
+            if (outs[0].value !== want) return false;
+          }
+          return true;
+        },
+        inputs: 2, outputs: 1
+      },
+      'challenge-4': {
+        desc: 'Build XOR: output 1 when inputs differ.',
+        check: (state, propagate) => {
+          const ins = state.inputs, outs = state.outputs;
+          if (!ins?.[0] || !ins?.[1] || !outs?.[0]) return false;
+          for (const [a, b] of [[0,0],[0,1],[1,0],[1,1]]) {
+            ins[0].value = a; ins[1].value = b; propagate();
+            const want = (a !== b) ? 1 : 0;
+            if (outs[0].value !== want) return false;
+          }
+          return true;
+        },
+        inputs: 2, outputs: 1
+      },
+      'challenge-5': {
+        desc: 'Build a half adder: Sum = A XOR B, Carry = A AND B. Test all 4 input combos.',
+        check: (state, propagate) => {
+          const ins = state.inputs, outs = state.outputs;
+          if (!ins?.[0] || !ins?.[1] || !outs?.[0] || !outs?.[1]) return false;
+          const tryOrder = (sumIdx, carryIdx) => {
+            for (const [a, b] of [[0,0],[0,1],[1,0],[1,1]]) {
+              ins[0].value = a; ins[1].value = b; propagate();
+              const wantSum = (a !== b) ? 1 : 0, wantCarry = (a && b) ? 1 : 0;
+              if (outs[sumIdx].value !== wantSum || outs[carryIdx].value !== wantCarry) return false;
+            }
+            return true;
+          };
+          return tryOrder(0, 1) || tryOrder(1, 0);
+        },
+        inputs: 2, outputs: 2
+      }
+    };
+
+    const svg = document.getElementById('circuitCanvas');
+    const wiresLayer = document.getElementById('wiresLayer');
+    const componentsLayer = document.getElementById('componentsLayer');
+    const gatePalette = document.getElementById('gatePalette');
+    const modeSelect = document.getElementById('modeSelect');
+    const clearBtn = document.getElementById('clearBtn');
+    const challengeDesc = document.getElementById('challengeDesc');
+    const challengeStatus = document.getElementById('challengeStatus');
+
+    let components = [];
+    let wires = [];
+    let selectedGate = null;
+    let wireFrom = null;
+    let dragComp = null;
+    let dragOffset = { x: 0, y: 0 };
+    let idCounter = 0;
+
+    function genId() { return 'c' + (++idCounter); }
+
+    function getSVGPoint(e) {
+      const pt = svg.createSVGPoint();
+      pt.x = e.clientX ?? e.touches?.[0]?.clientX ?? 0;
+      pt.y = e.clientY ?? e.touches?.[0]?.clientY ?? 0;
+      return pt.matrixTransform(svg.getScreenCTM().inverse());
+    }
+
+    function snap(x, y) {
+      const g = 20;
+      return { x: Math.round(x / g) * g, y: Math.round(y / g) * g };
+    }
+
+    function evalGate(type, inputs) {
+      if (type === 'AND') return inputs.every(v => v === 1) ? 1 : 0;
+      if (type === 'OR') return inputs.some(v => v === 1) ? 1 : 0;
+      if (type === 'NOT') return inputs[0] === 1 ? 0 : 1;
+      if (type === 'XOR') return (inputs[0] !== inputs[1]) ? 1 : 0;
+      if (type === 'NAND') return inputs.every(v => v === 1) ? 0 : 1;
+      if (type === 'NOR') return inputs.some(v => v === 1) ? 0 : 1;
+      return 0;
+    }
+
+    function propagate() {
+      const outMap = {};
+      const getOut = (cid, port) => {
+        const k = cid + ':' + port;
+        if (outMap[k] !== undefined) return outMap[k];
+        const c = components.find(x => x.id === cid);
+        if (!c) return 0;
+        if (c.type === 'INPUT') { outMap[k] = c.value; return c.value; }
+        if (c.type === 'OUTPUT') return 0;
+        const ins = wires.filter(w => w.toId === cid && w.toPort !== undefined)
+          .map(w => getOut(w.fromId, w.fromPort));
+        outMap[k] = evalGate(c.type, ins);
+        return outMap[k];
+      };
+      wires.forEach(w => {
+        w.value = getOut(w.fromId, w.fromPort);
+      });
+      components.filter(c => c.type === 'OUTPUT').forEach(c => {
+        const w = wires.find(x => x.toId === c.id && x.toPort === 0);
+        c.value = w ? w.value : 0;
+      });
+      render();
+    }
+
+    function render() {
+      componentsLayer.innerHTML = '';
+      wiresLayer.innerHTML = '';
+
+      wires.forEach(w => {
+        const from = components.find(c => c.id === w.fromId);
+        const to = components.find(c => c.id === w.toId);
+        if (!from || !to) return;
+        const fp = getPortPos(from, 'out', w.fromPort);
+        const tp = getPortPos(to, 'in', w.toPort);
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        const mid = (fp.x + tp.x) / 2;
+        path.setAttribute('d', `M ${fp.x} ${fp.y} C ${mid} ${fp.y}, ${mid} ${tp.y}, ${tp.x} ${tp.y}`);
+        path.setAttribute('fill', 'none');
+        path.setAttribute('stroke', w.value === 1 ? '#22c55e' : '#9ca3af');
+        path.setAttribute('stroke-width', w.value === 1 ? 3 : 2);
+        path.classList.add(w.value === 1 ? 'wire-on' : 'wire-off');
+        wiresLayer.appendChild(path);
+      });
+
+      components.forEach(c => {
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.dataset.id = c.id;
+        g.classList.add('gate');
+        g.setAttribute('transform', `translate(${c.x},${c.y})`);
+
+        if (c.type === 'INPUT') {
+          const r = 12;
+          const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          circle.setAttribute('cx', 20 + r);
+          circle.setAttribute('cy', 20);
+          circle.setAttribute('r', r);
+          circle.setAttribute('fill', c.value ? '#22c55e' : '#6b7280');
+          circle.setAttribute('stroke', '#374151');
+          circle.setAttribute('stroke-width', 2);
+          g.appendChild(circle);
+          const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+          rect.setAttribute('x', 0);
+          rect.setAttribute('y', 0);
+          rect.setAttribute('width', 64);
+          rect.setAttribute('height', 40);
+          rect.setAttribute('fill', 'none');
+          rect.setAttribute('stroke', 'none');
+          g.appendChild(rect);
+          const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          txt.setAttribute('x', 4);
+          txt.setAttribute('y', 24);
+          txt.setAttribute('font-size', 10);
+          txt.textContent = 'IN';
+          g.appendChild(txt);
+        } else if (c.type === 'OUTPUT') {
+          const r = 10;
+          const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          circle.setAttribute('cx', 44);
+          circle.setAttribute('cy', 20);
+          circle.setAttribute('r', r);
+          circle.setAttribute('fill', c.value ? '#22c55e' : '#6b7280');
+          circle.setAttribute('stroke', '#374151');
+          circle.setAttribute('stroke-width', 2);
+          if (c.value) circle.classList.add('led-on');
+          else circle.classList.add('led-off');
+          g.appendChild(circle);
+          const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+          rect.setAttribute('x', 0);
+          rect.setAttribute('y', 0);
+          rect.setAttribute('width', 64);
+          rect.setAttribute('height', 40);
+          rect.setAttribute('fill', 'none');
+          rect.setAttribute('stroke', 'none');
+          g.appendChild(rect);
+          const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          txt.setAttribute('x', 50);
+          txt.setAttribute('y', 24);
+          txt.setAttribute('font-size', 10);
+          txt.textContent = 'OUT';
+          g.appendChild(txt);
+        } else {
+          drawGateShape(g, c.type);
+        }
+
+        g.addEventListener('mousedown', (e) => {
+          if (e.target.closest('.port')) return;
+          dragComp = c;
+          const pt = getSVGPoint(e);
+          dragOffset = { x: pt.x - c.x, y: pt.y - c.y };
+        });
+        g.addEventListener('click', (e) => {
+          if (c.type === 'INPUT' && e.target.tagName === 'circle') {
+            c.value = 1 - c.value;
+            propagate();
+            try { playClick(); } catch (_) {}
+          }
+        });
+
+        componentsLayer.appendChild(g);
+      });
+
+      addPortHandles();
+      checkChallenge();
+    }
+
+    function getPortPos(comp, dir, port) {
+      const w = 64, h = 40;
+      if (comp.type === 'INPUT') return { x: comp.x + w, y: comp.y + 20 };
+      if (comp.type === 'OUTPUT') return { x: comp.x, y: comp.y + 20 };
+      const numIn = ['NOT', 'NAND', 'NOR'].includes(comp.type) ? 1 : 2;
+      if (dir === 'in') {
+        if (numIn === 1) return { x: comp.x, y: comp.y + h / 2 };
+        return { x: comp.x, y: comp.y + (port === 0 ? h * 0.3 : h * 0.7) };
+      }
+      return { x: comp.x + w, y: comp.y + h / 2 };
+    }
+
+    function drawGateShape(g, type) {
+      const w = 64, h = 40;
+      const r = 12;
+      let path = '';
+      if (type === 'AND' || type === 'NAND') {
+        path = `M 0 8 L 0 32 L ${w-r-4} 32 Q ${w-4} 32 ${w-4} ${h/2} Q ${w-4} 8 ${w-r-4} 8 Z`;
+      } else if (type === 'OR' || type === 'NOR') {
+        path = `M 0 0 Q ${w*0.6} 0 ${w} ${h/2} Q ${w*0.6} ${h} 0 ${h} Q ${w*0.25} ${h/2} 0 0`;
+      } else if (type === 'NOT') {
+        path = `M 0 ${h/2} L ${w-r-6} ${h/2} L ${w-6} 0 L ${w-6} ${h} Z`;
+      } else if (type === 'XOR') {
+        path = `M 6 0 Q ${w*0.6} 0 ${w} ${h/2} Q ${w*0.6} ${h} 6 ${h} Q ${w*0.25} ${h/2} 6 0`;
+      }
+      if (path) {
+        const shape = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        shape.setAttribute('d', path);
+        shape.setAttribute('fill', '#fef3c7');
+        shape.setAttribute('stroke', '#92400e');
+        shape.setAttribute('stroke-width', 2);
+        g.appendChild(shape);
+      }
+      const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      label.setAttribute('x', w / 2 - (type.length * 3));
+      label.setAttribute('y', h / 2 + 4);
+      label.setAttribute('font-size', 10);
+      label.setAttribute('font-weight', 'bold');
+      label.textContent = type;
+      g.appendChild(label);
+    }
+
+    function addPortHandles() {
+      components.forEach(c => {
+        const g = componentsLayer.querySelector(`[data-id="${c.id}"]`);
+        if (!g) return;
+        const numIn = ['INPUT', 'OUTPUT'].includes(c.type) ? 0 : (['NOT', 'NAND', 'NOR'].includes(c.type) ? 1 : 2);
+        const hasOut = c.type !== 'OUTPUT';
+        if (hasOut) {
+          const pos = getPortPos(c, 'out', 0);
+          const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          dot.setAttribute('cx', pos.x - c.x);
+          dot.setAttribute('cy', pos.y - c.y);
+          dot.setAttribute('r', 6);
+          dot.setAttribute('fill', '#3b82f6');
+          dot.setAttribute('stroke', '#1e40af');
+          dot.classList.add('port');
+          dot.dataset.id = c.id;
+          dot.dataset.port = 'out';
+          dot.dataset.portIdx = '0';
+          dot.style.cursor = 'crosshair';
+          g.appendChild(dot);
+        }
+        for (let i = 0; i < numIn; i++) {
+          const pos = getPortPos(c, 'in', i);
+          const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          dot.setAttribute('cx', pos.x - c.x);
+          dot.setAttribute('cy', pos.y - c.y);
+          dot.setAttribute('r', 6);
+          dot.setAttribute('fill', '#f59e0b');
+          dot.setAttribute('stroke', '#b45309');
+          dot.classList.add('port');
+          dot.dataset.id = c.id;
+          dot.dataset.port = 'in';
+          dot.dataset.portIdx = String(i);
+          dot.style.cursor = 'crosshair';
+          g.appendChild(dot);
+        }
+        if (c.type === 'OUTPUT') {
+          const pos = getPortPos(c, 'in', 0);
+          const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          dot.setAttribute('cx', pos.x - c.x);
+          dot.setAttribute('cy', pos.y - c.y);
+          dot.setAttribute('r', 6);
+          dot.setAttribute('fill', '#f59e0b');
+          dot.setAttribute('stroke', '#b45309');
+          dot.classList.add('port');
+          dot.dataset.id = c.id;
+          dot.dataset.port = 'in';
+          dot.dataset.portIdx = '0';
+          dot.style.cursor = 'crosshair';
+          g.appendChild(dot);
+        }
+      });
+
+      document.querySelectorAll('.port').forEach(dot => {
+        dot.addEventListener('mousedown', (e) => {
+          e.stopPropagation();
+          const id = dot.dataset.id;
+          const port = dot.dataset.port;
+          const idx = parseInt(dot.dataset.portIdx, 10);
+          if (wireFrom) {
+            if (port === 'in' && id !== wireFrom.id) {
+              wires.push({ fromId: wireFrom.id, fromPort: wireFrom.port, toId: id, toPort: idx, value: 0 });
+              propagate();
+              try { playClick(); } catch (_) {}
+            }
+            wireFrom = null;
+          } else {
+            if (port === 'out') wireFrom = { id, port: idx };
+          }
+        });
+      });
+    }
+
+    function checkChallenge() {
+      const mode = modeSelect.value;
+      if (!mode.startsWith('challenge-')) return;
+      const ch = CHALLENGES[mode];
+      if (!ch) return;
+      const state = {
+        inputs: components.filter(c => c.type === 'INPUT').sort((a, b) => a.x - b.x || a.y - b.y),
+        outputs: components.filter(c => c.type === 'OUTPUT').sort((a, b) => a.x - b.x || a.y - b.y)
+      };
+      const ok = ch.check(state, propagate);
+      challengeStatus.classList.remove('hidden');
+      challengeStatus.className = 'mt-4 p-3 rounded-lg ' + (ok ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800');
+      challengeStatus.textContent = ok ? '✓ Challenge complete!' : 'Test all input combinations to pass.';
+      if (ok) try { playSuccess(); } catch (_) {}
+    }
+
+    function setupChallenge() {
+      const mode = modeSelect.value;
+      components = components.filter(c => !['INPUT', 'OUTPUT'].includes(c.type));
+      wires = wires.filter(w => {
+        const from = components.find(c => c.id === w.fromId);
+        const to = components.find(c => c.id === w.toId);
+        return from && to;
+      });
+      if (mode.startsWith('challenge-')) {
+        const ch = CHALLENGES[mode];
+        if (ch) {
+          challengeDesc.classList.remove('hidden');
+          challengeDesc.textContent = ch.desc;
+          for (let i = 0; i < ch.inputs; i++) {
+            components.push({ id: genId(), type: 'INPUT', x: 40, y: 80 + i * 60, value: 0 });
+          }
+          for (let i = 0; i < ch.outputs; i++) {
+            components.push({ id: genId(), type: 'OUTPUT', x: 500, y: 80 + i * 60, value: 0 });
+          }
+        }
+      } else {
+        challengeDesc.classList.add('hidden');
+        challengeStatus.classList.add('hidden');
+      }
+      propagate();
+    }
+
+    gatePalette.querySelectorAll('.gate-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        selectedGate = btn.dataset.gate;
+        try { playClick(); } catch (_) {}
+      });
+    });
+
+    svg.addEventListener('click', (e) => {
+      if (e.target.closest('.gate') || e.target.closest('.port')) return;
+      if (selectedGate) {
+        const pt = getSVGPoint(e);
+        const { x, y } = snap(pt.x, pt.y);
+        if (selectedGate === 'INPUT') {
+          components.push({ id: genId(), type: 'INPUT', x, y, value: 0 });
+        } else if (selectedGate === 'OUTPUT') {
+          components.push({ id: genId(), type: 'OUTPUT', x, y, value: 0 });
+        } else {
+          components.push({ id: genId(), type: selectedGate, x, y });
+        }
+        selectedGate = null;
+        propagate();
+      }
+    });
+
+    svg.addEventListener('mousemove', (e) => {
+      if (dragComp) {
+        const pt = getSVGPoint(e);
+        const { x, y } = snap(pt.x - dragOffset.x, pt.y - dragOffset.y);
+        dragComp.x = Math.max(0, x);
+        dragComp.y = Math.max(0, y);
+        propagate();
+      }
+    });
+
+    window.addEventListener('mouseup', () => { dragComp = null; });
+
+    clearBtn.addEventListener('click', () => {
+      components = [];
+      wires = [];
+      setupChallenge();
+      try { playClick(); } catch (_) {}
+    });
+
+    modeSelect.addEventListener('change', () => {
+      setupChallenge();
+      try { playClick(); } catch (_) {}
+    });
+
+    document.getElementById('soundToggle').addEventListener('click', () => {
+      try { muteAll(); } catch (_) {}
+    });
+
+    try { initAudio(); } catch (_) {}
+    trackGameStart('circuit-builder');
+    setupChallenge();
+    render();
+  </script>
+</body>
+</html>

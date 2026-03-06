@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ludo - Classic Board Game | Mini Game Planet</title>
+  <meta name="description" content="Play Ludo online - the classic dice board game for 2-4 players. Roll the dice, move your tokens, and be the first to get all four pieces home. Free to play!">
+  <link rel="canonical" href="https://minigameplanet.com/games/ludo.html">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="Ludo - Classic Board Game | Mini Game Planet">
+  <meta property="og:description" content="Play Ludo online - the classic dice board game. Roll, move, and win!">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/ludo.html">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Standard imports -->
+  <script src="/js/audio.js"></script>
+  <script src="/js/shared.js"></script>
+  <script src="/js/consent.js"></script>
+  <script src="/js/analytics.js"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    .ludo-cell { transition: all 0.15s ease; }
+    .ludo-cell:hover { filter: brightness(1.1); }
+    .token-selectable { cursor: pointer; }
+    .token-selectable:hover { transform: scale(1.1); }
+    .token-selected { outline: 3px solid #1f2937; outline-offset: 2px; }
+  </style>
+  
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Ludo - Classic Board Game",
+    "description": "Play Ludo online - the classic dice board game for 2-4 players. Roll the dice, move your tokens, and be the first to get all four pieces home.",
+    "url": "https://minigameplanet.com/games/ludo.html",
+    "applicationCategory": "Game",
+    "operatingSystem": "Any"
+  }
+  </script>
+  
+  <!-- AdSense (commented) -->
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXX" crossorigin="anonymous"></script> -->
+</head>
+<body class="min-h-screen text-gray-800">
+  <div id="nav-container"></div>
+
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-xl shadow-lg p-6 md:p-8 mb-8">
+      <h1 class="text-3xl font-bold mb-2">Ludo</h1>
+      <p class="text-gray-600 mb-6">Classic dice board game for 2-4 players</p>
+
+      <!-- Game controls -->
+      <div class="flex flex-wrap gap-4 items-center mb-6">
+        <div class="flex items-center gap-2">
+          <label class="text-sm font-medium">Players:</label>
+          <select id="playerCount" class="border rounded px-3 py-1.5 text-sm">
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4" selected>4</option>
+          </select>
+        </div>
+        <button id="newGameBtn" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium">New Game</button>
+        <div class="flex items-center gap-2 ml-auto">
+          <label class="text-sm">Sound</label>
+          <button id="soundToggle" class="w-10 h-6 bg-gray-300 rounded-full relative" aria-label="Toggle sound">
+            <span id="soundKnob" class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition"></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Game status -->
+      <div id="gameStatus" class="mb-4 p-3 bg-gray-100 rounded-lg font-mono text-sm"></div>
+
+      <!-- Board container -->
+      <div class="flex justify-center mb-6">
+        <div id="ludoBoard" class="relative"></div>
+      </div>
+
+      <!-- Dice & Roll -->
+      <div class="flex justify-center items-center gap-6">
+        <div id="diceDisplay" class="w-16 h-16 border-2 border-gray-300 rounded-lg flex items-center justify-center text-2xl font-bold bg-white">0</div>
+        <button id="rollBtn" class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold text-lg">Roll Dice</button>
+      </div>
+    </div>
+
+    <!-- SEO Article -->
+    <article class="bg-white rounded-xl shadow-lg p-6 md:p-8 mb-8">
+      <h2 class="text-2xl font-bold mb-4">How to Play Ludo: The Complete Guide</h2>
+      
+      <p class="mb-4">Ludo is one of the world's most beloved board games, tracing its origins to the ancient Indian game Pachisi. Played by millions across the globe, Ludo combines luck with strategy in a race to get all your tokens safely home. Whether you're a seasoned player or new to the game, this guide will help you master the rules and develop winning strategies.</p>
+      
+      <h3 class="text-xl font-semibold mt-6 mb-2">The Basics</h3>
+      <p class="mb-4">The Ludo board features four colored zones—Red, Blue, Green, and Yellow—each with a home area and a starting square. Each player has four tokens that begin in their home. The main track runs clockwise around the board, with a colored home stretch leading to the center for each player. The first player to get all four tokens into the center wins the game.</p>
+      
+      <h3 class="text-xl font-semibold mt-6 mb-2">Starting the Game</h3>
+      <p class="mb-4">To enter a token onto the board, you must roll a six. When you roll a six, you can either bring a new token out of your home or move an existing token. Rolling a six also earns you an extra roll. If you cannot make a legal move, your turn passes to the next player.</p>
+      
+      <h3 class="text-xl font-semibold mt-6 mb-2">Safe Squares and Capturing</h3>
+      <p class="mb-4">Certain squares on the board are safe zones—typically the starting squares and the first square of each home stretch. When your token lands on an opponent's token on a non-safe square, you capture it and send it back to their home. The captured token must roll a six again to re-enter. Landing on your own token is not allowed.</p>
+      
+      <h3 class="text-xl font-semibold mt-6 mb-2">The Home Stretch</h3>
+      <p class="mb-4">Once a token completes a full circuit of the board, it enters its colored home stretch—a path of five squares leading to the center. Only your tokens can use your home stretch. You must roll the exact number needed to reach the center; if you roll too high, your token stays put. Strategy matters: sometimes it's better to hold back a token to block opponents or to avoid being captured.</p>
+      
+      <h3 class="text-xl font-semibold mt-6 mb-2">Winning the Game</h3>
+      <p class="mb-4">The first player to get all four tokens into the center wins. In some variations, players continue until second and third place are determined. Ludo is a game of both chance and skill—while the dice determine your options, choosing which token to move and when to take risks can make all the difference.</p>
+      
+      <p class="mb-4">Play Ludo online now for free. Challenge the AI or enjoy a quick game whenever you like. No downloads required—just roll the dice and have fun!</p>
+    </article>
+
+    <div id="related-games" class="mb-8"></div>
+    <div id="footer-container"></div>
+  </main>
+
+  <script>
+    (function() {
+      if (typeof initToolPage === 'function') initToolPage('ludo');
+      if (typeof initConsent === 'function') initConsent();
+      if (typeof trackGameView === 'function') trackGameView('ludo', 'Board');
+    })();
+
+    const COLORS = ['#DC2626', '#2563EB', '#16A34A', '#EAB308'];
+    const COLOR_NAMES = ['Red', 'Blue', 'Green', 'Yellow'];
+
+    const BOARD_LAYOUT = {
+      mainPath: 52,
+      homeStretch: 5,
+      startPositions: [0, 13, 26, 39],
+      homeStretchStart: [51, 12, 25, 38],
+      safeSquares: [0, 8, 13, 21, 26, 34, 39, 47]
+    };
+
+    let state = {
+      players: 4,
+      currentPlayer: 0,
+      diceValue: 0,
+      hasRolled: false,
+      selectedToken: null,
+      tokens: [],
+      soundOn: true
+    };
+
+    function rollDice() {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return (arr[0] % 6) + 1;
+    }
+
+    function initBoard() {
+      const board = document.getElementById('ludoBoard');
+      board.innerHTML = '';
+      board.style.width = 'min(90vw, 420px)';
+      board.style.height = 'min(90vw, 420px)';
+
+      const grid = document.createElement('div');
+      grid.className = 'grid grid-cols-15 grid-rows-15 gap-0.5 w-full h-full';
+      grid.style.gridTemplateColumns = 'repeat(15, 1fr)';
+      grid.style.gridTemplateRows = 'repeat(15, 1fr)';
+
+      const cells = [];
+      for (let r = 0; r < 15; r++) {
+        for (let c = 0; c < 15; c++) {
+          const cell = document.createElement('div');
+          cell.className = 'ludo-cell rounded-sm border border-gray-300';
+          cell.dataset.r = r;
+          cell.dataset.c = c;
+          cell.style.minHeight = '20px';
+          cells.push(cell);
+          grid.appendChild(cell);
+        }
+      }
+
+      board.appendChild(grid);
+
+      const positions = getBoardPositions();
+      for (let i = 0; i < 225; i++) {
+        const pos = positions[i];
+        if (pos && cells[i]) {
+          cells[i].style.backgroundColor = pos.color || '#E5E7EB';
+          if (pos.pathIndex !== undefined) cells[i].dataset.pathIndex = pos.pathIndex;
+          if (pos.safe) cells[i].dataset.safe = '1';
+        }
+      }
+
+      const tokenContainer = document.createElement('div');
+      tokenContainer.id = 'tokenContainer';
+      tokenContainer.className = 'absolute inset-0 pointer-events-none';
+      board.appendChild(tokenContainer);
+
+      return { grid, cells, tokenContainer };
+    }
+
+    function getBoardPositions() {
+      const positions = new Array(225).fill(null).map(() => ({}));
+      const path = getMainPath();
+      path.forEach((p, i) => {
+        const idx = p.r * 15 + p.c;
+        positions[idx].pathIndex = i;
+        positions[idx].r = p.r;
+        positions[idx].c = p.c;
+        positions[idx].color = '#E5E7EB';
+        if (BOARD_LAYOUT.safeSquares.includes(i)) positions[idx].safe = true;
+      });
+
+      const corners = [
+        { color: '#DC2626', r0: 0, r1: 5, c0: 0, c1: 5 },
+        { color: '#2563EB', r0: 0, r1: 5, c0: 9, c1: 14 },
+        { color: '#16A34A', r0: 9, r1: 14, c0: 9, c1: 14 },
+        { color: '#EAB308', r0: 9, r1: 14, c0: 0, c1: 5 }
+      ];
+      corners.forEach(co => {
+        for (let r = co.r0; r <= co.r1; r++)
+          for (let c = co.c0; c <= co.c1; c++) {
+            const idx = r * 15 + c;
+            positions[idx].color = co.color;
+          }
+      });
+
+      const stretchCells = [
+        [{r:5,c:6},{r:4,c:6},{r:3,c:6},{r:2,c:6},{r:1,c:6}],
+        [{r:1,c:9},{r:2,c:9},{r:3,c:9},{r:4,c:9},{r:5,c:9}],
+        [{r:9,c:8},{r:10,c:8},{r:11,c:8},{r:12,c:8},{r:13,c:8}],
+        [{r:12,c:1},{r:11,c:1},{r:10,c:1},{r:9,c:1},{r:8,c:1}]
+      ];
+      stretchCells.forEach((cells, pi) => {
+        cells.forEach(c => {
+          const idx = c.r * 15 + c.c;
+          positions[idx].color = COLORS[pi];
+        });
+      });
+      positions[7 * 15 + 7].color = '#FEF3C7';
+
+      return positions;
+    }
+
+    function getMainPath() {
+      const path = [];
+      for (let i = 0; i <= 50; i++) path.push(pathIndexToCell(i));
+      return path;
+    }
+
+    function pathIndexToCell(i) {
+      if (i <= 5) return { r: 6, c: 6 + i };
+      if (i <= 12) return { r: 6 - (i - 6), c: 12 };
+      if (i <= 18) return { r: 0, c: 12 - (i - 13) };
+      if (i <= 24) return { r: i - 19, c: 8 };
+      if (i <= 31) return { r: 6, c: 7 - (i - 25) };
+      if (i <= 37) return { r: 7 + (i - 32), c: 0 };
+      if (i <= 43) return { r: 13, c: i - 37 };
+      if (i <= 50) return { r: 12 - (i - 44), c: 6 };
+      return { r: 6, c: 6 };
+    }
+
+    function initTokens() {
+      state.tokens = [];
+      for (let p = 0; p < state.players; p++) {
+        state.tokens[p] = [];
+        for (let t = 0; t < 4; t++) {
+          state.tokens[p][t] = {
+            pathIndex: -1,
+            homeStretchIndex: -1,
+            home: true
+          };
+        }
+      }
+      renderTokens();
+    }
+
+    function renderTokens() {
+      const container = document.getElementById('tokenContainer');
+      if (!container) return;
+      container.innerHTML = '';
+      const board = document.getElementById('ludoBoard');
+      const cellSize = board.offsetWidth / 15;
+
+      for (let p = 0; p < state.players; p++) {
+        for (let t = 0; t < 4; t++) {
+          const token = state.tokens[p][t];
+          const el = document.createElement('div');
+          el.className = 'absolute rounded-full border-2 border-gray-800 pointer-events-auto token-selectable';
+          el.style.width = (cellSize * 0.6) + 'px';
+          el.style.height = (cellSize * 0.6) + 'px';
+          el.style.backgroundColor = COLORS[p];
+          el.dataset.player = p;
+          el.dataset.token = t;
+
+          let r, c;
+          if (token.home) {
+            const homePos = getHomePosition(p, t);
+            r = homePos.r;
+            c = homePos.c;
+          } else if (token.homeStretchIndex >= 0) {
+            const pos = getHomeStretchPosition(p, token.homeStretchIndex);
+            r = pos.r;
+            c = pos.c;
+          } else {
+            const pos = pathIndexToCell(token.pathIndex);
+            r = pos.r;
+            c = pos.c;
+          }
+
+          el.style.left = (c * cellSize + cellSize * 0.2) + 'px';
+          el.style.top = (r * cellSize + cellSize * 0.2) + 'px';
+
+          el.addEventListener('click', () => onTokenClick(p, t));
+          container.appendChild(el);
+        }
+      }
+    }
+
+    function getHomePosition(player, tokenIdx) {
+      const offsets = [[0,0],[0,1],[1,0],[1,1]];
+      const bases = [[1,1],[1,10],[10,10],[10,1]];
+      const b = bases[player];
+      const o = offsets[tokenIdx];
+      return { r: b[0] + o[0], c: b[1] + o[1] };
+    }
+
+    function getHomeStretchPosition(player, idx) {
+      if (idx >= 5) return { r: 7, c: 7 };
+      const positions = [
+        [{r:5,c:6},{r:4,c:6},{r:3,c:6},{r:2,c:6},{r:1,c:6}],
+        [{r:1,c:9},{r:2,c:9},{r:3,c:9},{r:4,c:9},{r:5,c:9}],
+        [{r:9,c:8},{r:10,c:8},{r:11,c:8},{r:12,c:8},{r:13,c:8}],
+        [{r:12,c:1},{r:11,c:1},{r:10,c:1},{r:9,c:1},{r:8,c:1}]
+      ];
+      return positions[player][idx];
+    }
+
+    function onTokenClick(player, tokenIdx) {
+      if (state.currentPlayer !== 0) return;
+      if (!state.hasRolled) return;
+
+      const token = state.tokens[player][tokenIdx];
+      const dice = state.diceValue;
+
+      if (token.home) {
+        if (dice === 6) {
+          token.home = false;
+          token.pathIndex = BOARD_LAYOUT.startPositions[player];
+          state.hasRolled = false;
+          state.selectedToken = null;
+          if (state.soundOn && typeof playSound === 'function') playSound('move');
+        }
+      } else if (token.homeStretchIndex >= 0) {
+        const needed = 5 - token.homeStretchIndex;
+        if (dice === needed) {
+          token.homeStretchIndex = 5;
+          state.hasRolled = false;
+          state.selectedToken = null;
+          if (state.soundOn && typeof playSound === 'function') playSound('win');
+          checkWin();
+          nextTurn();
+        } else if (dice < needed) {
+          token.homeStretchIndex += dice;
+          state.hasRolled = false;
+          state.selectedToken = null;
+          if (state.soundOn && typeof playSound === 'function') playSound('move');
+          nextTurn();
+        }
+      } else {
+        const start = BOARD_LAYOUT.startPositions[player];
+        const steps = (token.pathIndex - start + 52) % 52;
+        const newSteps = steps + dice;
+
+        if (newSteps > 51) {
+          const intoStretch = Math.min(newSteps - 52, 5);
+          token.pathIndex = -1;
+          token.homeStretchIndex = intoStretch;
+        } else {
+          token.pathIndex = (start + newSteps) % 52;
+        }
+
+        const checkPathIndex = token.homeStretchIndex >= 0 ? -1 : token.pathIndex;
+        for (let op = 0; op < state.players; op++) {
+          if (op === player) continue;
+          for (let ot = 0; ot < 4; ot++) {
+            const other = state.tokens[op][ot];
+            if (other.home || other.homeStretchIndex >= 0) continue;
+            if (checkPathIndex >= 0 && other.pathIndex === checkPathIndex && BOARD_LAYOUT.safeSquares.indexOf(checkPathIndex) < 0) {
+              other.home = true;
+              other.pathIndex = -1;
+              other.homeStretchIndex = -1;
+              if (state.soundOn && typeof playSound === 'function') playSound('capture');
+            }
+          }
+        }
+
+        if (dice === 6) state.hasRolled = false;
+        else nextTurn();
+        state.selectedToken = null;
+        if (state.soundOn && typeof playSound === 'function') playSound('move');
+      }
+
+      updateStatus();
+      renderTokens();
+    }
+
+    function checkWin() {
+      const token = state.tokens[0];
+      if (token.every(t => t.homeStretchIndex === 5)) {
+        document.getElementById('gameStatus').textContent = 'You win!';
+        document.getElementById('rollBtn').disabled = true;
+      }
+    }
+
+    function nextTurn() {
+      state.currentPlayer = (state.currentPlayer + 1) % state.players;
+      if (state.currentPlayer === 0) {
+        state.hasRolled = false;
+        document.getElementById('rollBtn').disabled = false;
+      } else {
+        setTimeout(aiTurn, 500);
+      }
+    }
+
+    function aiTurn() {
+      const p = state.currentPlayer;
+      const dice = rollDice();
+      state.diceValue = dice;
+      document.getElementById('diceDisplay').textContent = dice;
+
+      const movable = [];
+      for (let t = 0; t < 4; t++) {
+        const token = state.tokens[p][t];
+        if (token.home && dice === 6) movable.push(t);
+        else if (!token.home && token.homeStretchIndex < 0) movable.push(t);
+        else if (token.homeStretchIndex >= 0 && token.homeStretchIndex < 5) {
+          const needed = 5 - token.homeStretchIndex;
+          if (dice <= needed) movable.push(t);
+        }
+      }
+
+      if (movable.length === 0) {
+        nextTurn();
+        updateStatus();
+        return;
+      }
+
+      const t = movable[Math.floor(Math.random() * movable.length)];
+      setTimeout(() => {
+        onTokenClick(p, t);
+      }, 300);
+    }
+
+    function updateStatus() {
+      const status = document.getElementById('gameStatus');
+      if (state.currentPlayer === 0) {
+        status.textContent = state.hasRolled
+          ? `You rolled ${state.diceValue}. Click a token to move.`
+          : 'Your turn. Roll the dice!';
+      } else {
+        status.textContent = `${COLOR_NAMES[state.currentPlayer]}'s turn...`;
+      }
+    }
+
+    document.getElementById('rollBtn').addEventListener('click', () => {
+      if (state.currentPlayer !== 0 || state.hasRolled) return;
+      const dice = rollDice();
+      state.diceValue = dice;
+      state.hasRolled = true;
+      document.getElementById('diceDisplay').textContent = dice;
+
+      let hasMove = false;
+      for (let t = 0; t < 4; t++) {
+        const token = state.tokens[0][t];
+        if (token.home && dice === 6) { hasMove = true; break; }
+        if (!token.home && token.homeStretchIndex < 0) { hasMove = true; break; }
+        if (token.homeStretchIndex >= 0 && token.homeStretchIndex < 5) {
+          if (dice <= (5 - token.homeStretchIndex)) { hasMove = true; break; }
+        }
+      }
+
+      if (!hasMove) {
+        state.hasRolled = false;
+        nextTurn();
+      }
+      updateStatus();
+      renderTokens();
+    });
+
+    document.getElementById('newGameBtn').addEventListener('click', () => {
+      state.players = parseInt(document.getElementById('playerCount').value);
+      state.currentPlayer = 0;
+      state.diceValue = 0;
+      state.hasRolled = false;
+      state.selectedToken = null;
+      initBoard();
+      initTokens();
+      document.getElementById('diceDisplay').textContent = '0';
+      document.getElementById('rollBtn').disabled = false;
+      updateStatus();
+    });
+
+    document.getElementById('soundToggle').addEventListener('click', () => {
+      state.soundOn = !state.soundOn;
+      const knob = document.getElementById('soundKnob');
+      knob.style.transform = state.soundOn ? 'translateX(1rem)' : 'translateX(0)';
+    });
+
+    initBoard();
+    initTokens();
+    updateStatus();
+  </script>
+</body>
+</html>

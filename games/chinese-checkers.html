@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chinese Checkers - Play Online | Mini Game Planet</title>
+  <meta name="description" content="Play Chinese Checkers online free. Star-shaped hexagonal board. 10 marbles per player. Step or hop to move. Get all marbles to the opposite triangle. Play vs AI.">
+  <link rel="canonical" href="https://minigameplanet.com/games/chinese-checkers.html">
+  <!-- Open Graph -->
+  <meta property="og:title" content="Chinese Checkers - Play Online | Mini Game Planet">
+  <meta property="og:description" content="Play Chinese Checkers online. Star-shaped board, step or hop moves. Free vs AI.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/chinese-checkers.html">
+  <!-- GA4 Consent defaults handled by initConsent() -->
+  <!-- AdSense (commented) -->
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXX" crossorigin="anonymous"></script> -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Chinese Checkers",
+    "description": "Play Chinese Checkers online. Star-shaped hexagonal board. Step or hop moves. Player vs AI.",
+    "applicationCategory": "Game",
+    "genre": "Board",
+    "url": "https://minigameplanet.com/games/chinese-checkers.html"
+  }
+  </script>
+</head>
+<body class="min-h-screen text-stone-800">
+  <div class="max-w-5xl mx-auto px-4 py-6">
+    <nav id="nav-container" class="mb-6 flex items-center gap-4 text-sm">
+      <a href="/" class="text-stone-600 hover:text-stone-900">Home</a>
+      <a href="/games/" class="text-stone-600 hover:text-stone-900">Games</a>
+      <span class="text-stone-400">/ Chinese Checkers</span>
+    </nav>
+
+    <main class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+      <h1 class="text-2xl md:text-3xl font-bold mb-2">Chinese Checkers</h1>
+      <p class="text-stone-600 mb-6">Star-shaped board. Click a marble to select, then click a highlighted spot to move. Step to adjacent or hop over marbles (chain hops allowed). Get all 10 marbles to the opposite triangle.</p>
+
+      <div class="flex flex-wrap gap-4 items-center mb-6">
+        <div class="flex gap-2">
+          <select id="difficulty" class="px-3 py-2 rounded-lg border border-stone-300 font-mono text-sm">
+            <option value="easy">AI Easy</option>
+            <option value="medium">AI Medium</option>
+            <option value="hard">AI Hard</option>
+          </select>
+          <button id="restart" class="px-4 py-2 rounded-lg bg-stone-200 hover:bg-stone-300 font-medium text-sm">Restart</button>
+        </div>
+        <button id="sound-toggle" class="px-3 py-2 rounded-lg border border-stone-300 text-sm" aria-label="Toggle sound">🔊 Sound</button>
+        <div class="font-mono text-sm text-stone-600 ml-auto">
+          <span id="session-stats">Games: 0 | Wins: 0 | Streak: 0</span>
+        </div>
+      </div>
+
+      <div class="flex flex-col md:flex-row gap-6 items-start">
+        <div class="flex-shrink-0">
+          <canvas id="board" class="rounded-lg border-2 border-stone-300 shadow-md cursor-pointer" width="420" height="420"></canvas>
+          <p id="status" class="mt-4 font-medium text-center">Your turn — select a marble</p>
+        </div>
+        <div class="flex-1 min-w-0">
+          <article class="prose prose-stone max-w-none text-sm">
+            <h2 class="text-lg font-semibold mt-0">How to Play Chinese Checkers</h2>
+            <p>Chinese Checkers is a classic strategy board game played on a star-shaped hexagonal board. Despite its name, the game originated in Germany in the 1890s and was marketed as "Stern-Halma." It became widely known as Chinese Checkers in the United States due to marketing that evoked an exotic appeal. The game is beloved for its simple rules and deep strategic possibilities.</p>
+            <h3 class="text-base font-semibold">The Board</h3>
+            <p>The board is shaped like a six-pointed star, with each point forming a triangular "home" zone. In the two-player version, you use two opposite triangles. Each player has 10 marbles in their home triangle at the start. Your goal is to move all 10 marbles into the opposite triangle—your opponent's home—before they do the same.</p>
+            <h3 class="text-base font-semibold">Moving Your Marbles</h3>
+            <p>On your turn, you may move one marble in two ways. A <strong>step</strong> move means moving to any adjacent empty hole. A <strong>hop</strong> means jumping over a single marble (yours or your opponent's) to the empty hole directly beyond it. Chain hops are allowed: if after a hop you can hop again, you may continue in the same turn. You cannot combine a step and a hop—each move is either all steps (just one step) or a sequence of hops.</p>
+            <h3 class="text-base font-semibold">Winning the Game</h3>
+            <p>The first player to get all 10 marbles into the opposite triangle wins. In our simplified two-player version, you play against the computer. The AI uses different strategies based on difficulty: Easy makes mostly random moves, Medium evaluates positions and prefers advancing marbles, and Hard looks several moves ahead to block you and race toward the goal.</p>
+            <h3 class="text-base font-semibold">Strategy Tips</h3>
+            <p>Advance your marbles in formation rather than leaving stragglers. Use hops whenever possible—they cover more distance. Chain hops can move a marble across much of the board in one turn. Block your opponent's path when you can. Try to create "ladders" of your own marbles to enable long hop chains. Avoid clustering marbles in the center if it blocks your own progress.</p>
+            <h3 class="text-base font-semibold">Play Online</h3>
+            <p>This free online Chinese Checkers game runs in your browser with no download required. Click a marble to select it—valid destinations will highlight in green. Click a highlighted spot to move. Challenge the AI at Easy, Medium, or Hard difficulty. Track your session stats and build winning streaks as you master this timeless board game.</p>
+            <h3 class="text-base font-semibold">Why Play Chinese Checkers?</h3>
+            <p>Chinese Checkers is perfect for quick games or longer strategic sessions. The rules are easy to learn in minutes, but mastering the game takes practice. Planning hop chains, blocking your opponent, and advancing your marbles efficiently creates satisfying moments of tactical play. Whether you're new to the game or a seasoned player, our online version offers a smooth, responsive experience with a clean star-shaped board and intuitive click-to-move controls. No sign-up or download needed—just open the page and play.</p>
+          </article>
+        </div>
+      </div>
+
+      <div id="related-games" class="mt-8 pt-6 border-t border-stone-200">
+        <h3 class="text-sm font-semibold text-stone-600 mb-3">Related Games</h3>
+        <div class="flex flex-wrap gap-2">
+          <a href="/games/checkers.html" class="px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-sm">Checkers</a>
+          <a href="/games/chess.html" class="px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-sm">Chess</a>
+          <a href="/games/mancala.html" class="px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-sm">Mancala</a>
+          <a href="/games/connect-four.html" class="px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-sm">Connect Four</a>
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer-container" class="mt-6 text-center text-sm text-stone-500">
+      <p>© Mini Game Planet. Play Chinese Checkers and other board games free online.</p>
+    </footer>
+  </div>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playGameOver, playCollect } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('chinese-checkers');
+    initConsent();
+    initAudio?.();
+    trackGameView('chinese-checkers', 'Board');
+
+    const PLAYER = 1, AI = -1;
+    const ROWS = 17;
+    const CENTER_COL = 8;
+
+    function startCol(r) {
+      if (r <= 8) return CENTER_COL - r;
+      return r - 8;
+    }
+    function endCol(r) { return CENTER_COL; }
+    function valid(r, c) {
+      return r >= 0 && r < ROWS && c >= startCol(r) && c <= endCol(r);
+    }
+
+    const HEX_NEIGHBORS = [
+      [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0]
+    ];
+
+    function getNeighbors(r, c) {
+      return HEX_NEIGHBORS
+        .map(([dr, dc]) => [r + dr, c + dc])
+        .filter(([nr, nc]) => valid(nr, nc));
+    }
+
+    function isInHome(r, c, player) {
+      if (player === PLAYER) return r >= 13 && r < ROWS && valid(r, c);
+      if (player === AI) return r >= 0 && r < 4 && valid(r, c);
+      return false;
+    }
+
+    function getHomePositions(player) {
+      const positions = [];
+      if (player === PLAYER) {
+        for (let r = 13; r < ROWS; r++)
+          for (let c = startCol(r); c <= endCol(r); c++) positions.push([r, c]);
+      } else {
+        for (let r = 0; r < 4; r++)
+          for (let c = startCol(r); c <= endCol(r); c++) positions.push([r, c]);
+      }
+      return positions;
+    }
+
+    function getStepMoves(r, c, board) {
+      return getNeighbors(r, c).filter(([nr, nc]) => board[nr][nc] === 0);
+    }
+
+    function getHopMoves(r, c, board) {
+      const moves = [];
+      const seen = new Set();
+      const key = (a, b) => `${a},${b}`;
+      function collect(fromR, fromC) {
+        for (const [nr, nc] of getNeighbors(fromR, fromC)) {
+          const jumpR = nr + (nr - fromR);
+          const jumpC = nc + (nc - fromC);
+          if (!valid(jumpR, jumpC)) continue;
+          if (board[nr][nc] !== 0 && board[jumpR][jumpC] === 0 && !seen.has(key(jumpR, jumpC))) {
+            seen.add(key(jumpR, jumpC));
+            moves.push([jumpR, jumpC]);
+            collect(jumpR, jumpC);
+          }
+        }
+      }
+      collect(r, c);
+      return moves;
+    }
+
+    function getAllMoves(r, c, board) {
+      const steps = getStepMoves(r, c, board);
+      const hops = getHopMoves(r, c, board);
+      const all = new Map();
+      for (const [nr, nc] of steps) all.set(`${nr},${nc}`, [nr, nc]);
+      for (const [nr, nc] of hops) all.set(`${nr},${nc}`, [nr, nc]);
+      return Array.from(all.values());
+    }
+
+    function hasWon(board, player) {
+      const home = getHomePositions(player === PLAYER ? AI : PLAYER);
+      return home.every(([r, c]) => board[r][c] === player);
+    }
+
+    function secureRandom() {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] / (0xFFFFFFFF + 1);
+    }
+
+    function initBoard() {
+      const board = Array(ROWS).fill(null).map(() => Array(2 * CENTER_COL + 1).fill(0));
+      const playerHome = getHomePositions(PLAYER);
+      const aiHome = getHomePositions(AI);
+      playerHome.forEach(([r, c]) => { board[r][c] = PLAYER; });
+      aiHome.forEach(([r, c]) => { board[r][c] = AI; });
+      return board;
+    }
+
+    let board = initBoard();
+    let currentPlayer = PLAYER;
+    let selected = null;
+    let validMoves = [];
+    let sessionGames = 0, sessionWins = 0, sessionStreak = 0;
+    let soundOn = true;
+
+    const canvas = document.getElementById('board');
+    const ctx = canvas.getContext('2d');
+    const statusEl = document.getElementById('status');
+    const difficultyEl = document.getElementById('difficulty');
+    const restartEl = document.getElementById('restart');
+    const soundToggleEl = document.getElementById('sound-toggle');
+    const sessionStatsEl = document.getElementById('session-stats');
+
+    const HEX_R = 12;
+    const PADDING = 28;
+
+    function rowToY(r) {
+      return PADDING + r * (HEX_R * 1.75);
+    }
+    function colToX(r, c) {
+      const sc = startCol(r);
+      return PADDING + (c - sc) * (HEX_R * 1.732) + HEX_R * 0.866;
+    }
+
+    function getHexCenter(r, c) {
+      return { x: colToX(r, c), y: rowToY(r) };
+    }
+
+    function hitTest(mx, my) {
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = startCol(r); c <= endCol(r); c++) {
+          const { x, y } = getHexCenter(r, c);
+          const dx = mx - x;
+          const dy = my - y;
+          if (dx * dx + dy * dy <= HEX_R * HEX_R) return [r, c];
+        }
+      }
+      return null;
+    }
+
+    function drawHex(x, y, fill, stroke, highlight) {
+      ctx.beginPath();
+      for (let i = 0; i < 6; i++) {
+        const a = (Math.PI / 3) * i - Math.PI / 6;
+        const px = x + HEX_R * Math.cos(a);
+        const py = y + HEX_R * Math.sin(a);
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+      if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+      if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = highlight ? 3 : 1; ctx.stroke(); }
+    }
+
+    function draw() {
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      const w = rect.width;
+      const h = rect.height;
+      if (canvas.width !== w * dpr || canvas.height !== h * dpr) {
+        canvas.width = w * dpr;
+        canvas.height = h * dpr;
+        ctx.scale(dpr, dpr);
+      }
+      ctx.clearRect(0, 0, w, h);
+
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = startCol(r); c <= endCol(r); c++) {
+          const { x, y } = getHexCenter(r, c);
+          const isPlayerHome = isInHome(r, c, PLAYER);
+          const isAIHome = isInHome(r, c, AI);
+          let fill = '#E7E5E4';
+          if (isPlayerHome) fill = '#DBEAFE';
+          if (isAIHome) fill = '#FEE2E2';
+          const isValid = validMoves.some(([mr, mc]) => mr === r && mc === c);
+          if (isValid) fill = 'rgba(34, 197, 94, 0.5)';
+          const isSelected = selected && selected[0] === r && selected[1] === c;
+          drawHex(x, y, fill, isSelected ? '#3B82F6' : '#78716C', isSelected);
+
+          const piece = board[r][c];
+          if (piece !== 0) {
+            const grad = ctx.createRadialGradient(x - 4, y - 4, 0, x, y, HEX_R * 0.9);
+            grad.addColorStop(0, piece === PLAYER ? '#60A5FA' : '#F87171');
+            grad.addColorStop(1, piece === PLAYER ? '#2563EB' : '#DC2626');
+            ctx.beginPath();
+            ctx.arc(x, y, HEX_R * 0.75, 0, Math.PI * 2);
+            ctx.fillStyle = grad;
+            ctx.fill();
+            ctx.strokeStyle = '#1E293B';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+          }
+        }
+      }
+    }
+
+    function updateStats() {
+      sessionStatsEl.textContent = `Games: ${sessionGames} | Wins: ${sessionWins} | Streak: ${sessionStreak}`;
+    }
+
+    function handleClick(mx, my) {
+      if (hasWon(board, PLAYER) || hasWon(board, AI)) return;
+      if (currentPlayer !== PLAYER) return;
+
+      const pos = hitTest(mx, my);
+      if (!pos) return;
+      const [r, c] = pos;
+
+      const move = validMoves.find(([mr, mc]) => mr === r && mc === c);
+      if (move) {
+        const [fromR, fromC] = selected;
+        board[fromR][fromC] = 0;
+        board[r][c] = PLAYER;
+        if (soundOn) playClick?.();
+        selected = null;
+        validMoves = [];
+        currentPlayer = AI;
+        statusEl.textContent = "AI's turn...";
+        draw();
+        if (hasWon(board, PLAYER)) {
+          sessionGames++;
+          sessionWins++;
+          sessionStreak++;
+          if (soundOn) playSuccess?.();
+          trackGameOver?.('chinese-checkers', 'win');
+          statusEl.textContent = 'You win!';
+          updateStats();
+          return;
+        }
+        setTimeout(aiTurn, 400);
+        return;
+      }
+
+      if (board[r][c] === PLAYER) {
+        validMoves = getAllMoves(r, c, board);
+        if (validMoves.length) {
+          selected = [r, c];
+          if (soundOn) playClick?.();
+        } else {
+          selected = null;
+          validMoves = [];
+        }
+      } else {
+        selected = null;
+        validMoves = [];
+      }
+      draw();
+    }
+
+    function getAIMoves() {
+      const moves = [];
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = startCol(r); c <= endCol(r); c++) {
+          if (board[r][c] !== AI) continue;
+          for (const [nr, nc] of getAllMoves(r, c, board)) {
+            moves.push({ from: [r, c], to: [nr, nc] });
+          }
+        }
+      }
+      return moves;
+    }
+
+    function scorePosition(b) {
+      const playerHome = getHomePositions(PLAYER);
+      const aiHome = getHomePositions(AI);
+      let score = 0;
+      for (const [r, c] of playerHome) {
+        if (b[r][c] === AI) score += 10;
+        if (b[r][c] === PLAYER) score -= 10;
+      }
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = startCol(r); c <= endCol(r); c++) {
+          if (b[r][c] === AI) score += (ROWS - r);
+          if (b[r][c] === PLAYER) score -= r;
+        }
+      }
+      return score;
+    }
+
+    function getAIMove() {
+      const moves = getAIMoves();
+      if (!moves.length) return null;
+
+      const diff = difficultyEl.value;
+      if (diff === 'easy') {
+        return moves[Math.floor(secureRandom() * moves.length)];
+      }
+
+      let best = moves[0];
+      let bestScore = -Infinity;
+
+      for (const m of moves) {
+        const sim = board.map(row => [...row]);
+        sim[m.from[0]][m.from[1]] = 0;
+        sim[m.to[0]][m.to[1]] = AI;
+        const s = scorePosition(sim);
+        const rnd = diff === 'medium' ? (secureRandom() - 0.5) * 4 : 0;
+        if (s + rnd > bestScore) {
+          bestScore = s + rnd;
+          best = m;
+        }
+      }
+      return best;
+    }
+
+    function aiTurn() {
+      if (hasWon(board, PLAYER) || hasWon(board, AI)) return;
+      if (currentPlayer !== AI) return;
+
+      const move = getAIMove();
+      if (!move) {
+        currentPlayer = PLAYER;
+        statusEl.textContent = 'Your turn — select a marble';
+        draw();
+        return;
+      }
+
+      board[move.from[0]][move.from[1]] = 0;
+      board[move.to[0]][move.to[1]] = AI;
+      if (soundOn) playClick?.();
+      currentPlayer = PLAYER;
+      statusEl.textContent = 'Your turn — select a marble';
+      draw();
+
+      if (hasWon(board, AI)) {
+        sessionGames++;
+        sessionStreak = 0;
+        if (soundOn) playGameOver?.();
+        trackGameOver?.('chinese-checkers', 'loss');
+        statusEl.textContent = 'AI wins!';
+        updateStats();
+      }
+    }
+
+    canvas.addEventListener('click', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+      handleClick(mx, my);
+    });
+
+    restartEl.addEventListener('click', () => {
+      board = initBoard();
+      currentPlayer = PLAYER;
+      selected = null;
+      validMoves = [];
+      draw();
+      statusEl.textContent = 'Your turn — select a marble';
+      trackGameStart?.('chinese-checkers');
+    });
+
+    soundToggleEl.addEventListener('click', () => {
+      soundOn = !soundOn;
+      soundToggleEl.textContent = soundOn ? '🔊 Sound' : '🔇 Muted';
+      if (!soundOn) muteAll?.();
+    });
+
+    difficultyEl.addEventListener('change', () => {
+      board = initBoard();
+      currentPlayer = PLAYER;
+      selected = null;
+      validMoves = [];
+      draw();
+      statusEl.textContent = 'Your turn — select a marble';
+    });
+
+    draw();
+    updateStats();
+  </script>
+</body>
+</html>

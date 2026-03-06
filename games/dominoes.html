@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dominoes - Play Block Game Online | Mini Game Planet</title>
+  <meta name="description" content="Play Dominoes Block game free online. Standard double-six set, 2 players vs AI. Match endpoints, score on multiples of 5. Click a tile, then click which end to play.">
+  <link rel="canonical" href="https://minigameplanet.com/games/dominoes.html">
+  <!-- Open Graph -->
+  <meta property="og:title" content="Dominoes - Play Block Game Online | Mini Game Planet">
+  <meta property="og:description" content="Play Dominoes Block game free. Match endpoints, score on 5s. Human vs AI.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/dominoes.html">
+  <!-- GA4 Consent defaults handled by initConsent() -->
+  <!-- AdSense (commented) -->
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXX" crossorigin="anonymous"></script> -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    .domino-tile {
+      display: inline-flex;
+      width: 44px;
+      height: 88px;
+      background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+      border: 2px solid #D97706;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .domino-tile:hover:not(.disabled) { transform: translateY(-4px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+    .domino-tile.selected { border-color: #2563EB; box-shadow: 0 0 0 3px rgba(37,99,235,0.5); transform: translateY(-6px); }
+    .domino-tile.disabled { opacity: 0.5; cursor: not-allowed; }
+    .domino-tile .half { flex: 1; display: flex; align-items: center; justify-content: center; width: 100%; position: relative; }
+    .domino-tile .half + .half { border-top: 2px solid #D97706; }
+    .pip { position: absolute; width: 6px; height: 6px; background: #1F2937; border-radius: 50%; }
+    .pip-0 { display: none; }
+    .pip-1 { left: 50%; top: 50%; transform: translate(-50%, -50%); }
+    .pip-2-1 { left: 20%; top: 25%; }
+    .pip-2-2 { right: 20%; bottom: 25%; }
+    .pip-3-1 { left: 20%; top: 20%; }
+    .pip-3-2 { left: 50%; top: 50%; transform: translate(-50%, -50%); }
+    .pip-3-3 { right: 20%; bottom: 20%; }
+    .pip-4-1 { left: 20%; top: 20%; }
+    .pip-4-2 { right: 20%; top: 20%; }
+    .pip-4-3 { left: 20%; bottom: 20%; }
+    .pip-4-4 { right: 20%; bottom: 20%; }
+    .pip-5-1 { left: 20%; top: 20%; }
+    .pip-5-2 { right: 20%; top: 20%; }
+    .pip-5-3 { left: 50%; top: 50%; transform: translate(-50%, -50%); }
+    .pip-5-4 { left: 20%; bottom: 20%; }
+    .pip-5-5 { right: 20%; bottom: 20%; }
+    .pip-6-1 { left: 20%; top: 15%; }
+    .pip-6-2 { right: 20%; top: 15%; }
+    .pip-6-3 { left: 20%; top: 50%; transform: translateY(-50%); }
+    .pip-6-4 { right: 20%; top: 50%; transform: translateY(-50%); }
+    .pip-6-5 { left: 20%; bottom: 15%; }
+    .pip-6-6 { right: 20%; bottom: 15%; }
+    .chain-end { cursor: pointer; padding: 8px 16px; min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; transition: all 0.15s; }
+    .chain-end:hover { background: rgba(34, 197, 94, 0.2); }
+    .chain-end.valid { outline: 2px dashed #22C55E; outline-offset: 4px; }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Dominoes",
+    "description": "Play Dominoes Block game online. Standard double-six set, match endpoints, score on multiples of 5. Human vs AI.",
+    "applicationCategory": "Game",
+    "genre": "Board",
+    "url": "https://minigameplanet.com/games/dominoes.html"
+  }
+  </script>
+</head>
+<body class="min-h-screen text-stone-800">
+  <div class="max-w-5xl mx-auto px-4 py-6">
+    <nav id="nav-container" class="mb-6 flex items-center gap-4 text-sm">
+      <a href="/" class="text-stone-600 hover:text-stone-900">Home</a>
+      <a href="/games/" class="text-stone-600 hover:text-stone-900">Games</a>
+      <span class="text-stone-400">/ Dominoes</span>
+    </nav>
+
+    <main class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+      <h1 class="text-2xl md:text-3xl font-bold mb-2">Dominoes</h1>
+      <p class="text-stone-600 mb-6">Block game. Click a tile in your hand, then click which end of the chain to play it. Match endpoints. Score on multiples of 5.</p>
+
+      <div class="flex flex-wrap gap-4 items-center mb-6">
+        <button id="restart" class="px-4 py-2 rounded-lg bg-stone-200 hover:bg-stone-300 font-medium text-sm">Restart</button>
+        <button id="sound-toggle" class="px-3 py-2 rounded-lg border border-stone-300 text-sm" aria-label="Toggle sound">🔊 Sound</button>
+        <div class="font-mono text-sm text-stone-600">
+          <span id="score-display">You: 0 | AI: 0</span>
+        </div>
+        <div class="font-mono text-sm text-stone-600 ml-auto">
+          <span id="boneyard-count">Boneyard: 14</span>
+        </div>
+      </div>
+
+      <div class="flex flex-col md:flex-row gap-6 items-start">
+        <div class="flex-shrink-0 w-full md:w-auto">
+          <div class="mb-4">
+            <p class="text-xs text-stone-500 mb-2">AI Hand (<span id="ai-count">7</span> tiles)</p>
+            <div id="ai-hand" class="flex flex-wrap gap-1 min-h-[50px] p-2 bg-stone-100 rounded-lg"></div>
+          </div>
+          <div id="chain-area" class="min-h-[120px] p-4 bg-stone-50 rounded-xl border-2 border-dashed border-stone-200 flex flex-wrap items-center justify-center gap-2 mb-4">
+            <p id="chain-placeholder" class="text-stone-400 text-sm">Chain will appear here</p>
+          </div>
+          <div class="mb-4">
+            <p class="text-xs text-stone-500 mb-2">Your Hand — click a tile, then click an end</p>
+            <div id="player-hand" class="flex flex-wrap gap-2 min-h-[100px] p-3 bg-amber-50 rounded-lg border border-amber-200"></div>
+          </div>
+          <div class="flex justify-center gap-2 mt-2 items-center">
+            <p id="status" class="font-medium">Your turn</p>
+            <button id="pass-btn" class="px-3 py-1 rounded-lg bg-stone-300 hover:bg-stone-400 text-sm hidden">Pass</button>
+          </div>
+        </div>
+        <div class="flex-1 min-w-0">
+          <article class="prose prose-stone max-w-none text-sm">
+            <h2 class="text-lg font-semibold mt-0">How to Play Dominoes (Block Game)</h2>
+            <p>Dominoes is one of the world's oldest tile-based games, with roots tracing back to 12th-century China. The Block game variant uses a standard double-six set of 28 tiles, where each tile has two ends marked with zero to six pips. Players take turns matching one end of a tile to an open end of the chain. The first player to empty their hand wins, or if both players are blocked, the player with the lowest total pip count in hand wins.</p>
+            <h3 class="text-base font-semibold">The Tiles</h3>
+            <p>A double-six set contains 28 unique tiles: every combination from [0-0] through [6-6]. Each tile can be played in two orientations—you may need to flip a tile so its matching end touches the chain. At the start, each player draws 7 tiles. The remaining tiles form the boneyard. The player with the highest double (or highest tile if no double) plays first, placing that tile as the starting piece.</p>
+            <h3 class="text-base font-semibold">Matching and Playing</h3>
+            <p>On your turn, you must play a tile from your hand that matches one of the two open ends of the chain. The open ends are the leftmost and rightmost values. For example, if the chain ends are 3 and 5, you can play any tile that has a 3 or a 5. Place your tile so the matching end touches the chain. If you cannot play, you must pass (draw from the boneyard until you can play, or pass if the boneyard is empty). In the Block game, passing means your turn ends with no play.</p>
+            <h3 class="text-base font-semibold">Scoring (Multiples of 5)</h3>
+            <p>This variant adds scoring: when the sum of the two open ends is a multiple of 5 (5, 10, 15, 20, 25, 30), the player who just played scores that many points. For example, if the ends are 3 and 2, the sum is 5—you score 5 points. If the ends are 6 and 4, the sum is 10—you score 10 points. The first player to reach a target score (e.g., 100) wins, or the first to empty their hand wins the round and scores the opponent's remaining pips.</p>
+            <h3 class="text-base font-semibold">Winning</h3>
+            <p>The first player to play all their tiles wins the round. If both players are blocked (no legal moves and boneyard empty), the player with the lower total pip count in hand wins. In scoring play, points are tallied each round. This free online Dominoes game lets you play against an AI opponent. Click a tile in your hand to select it, then click the left or right end of the chain to play it there. Plan your moves to score on multiples of 5 and block your opponent!</p>
+            <h3 class="text-base font-semibold">Strategy Tips</h3>
+            <p>Save high-value tiles when possible to avoid getting stuck. Try to create scoring opportunities (multiples of 5) when you play. Block your opponent by playing tiles that limit their options. If you hold the [6-6] or [5-5], consider when to play them—they can open or close the chain strategically.</p>
+          </article>
+        </div>
+      </div>
+
+      <div id="related-games" class="mt-8 pt-6 border-t border-stone-200">
+        <h3 class="text-sm font-semibold text-stone-600 mb-3">Related Games</h3>
+        <div class="flex flex-wrap gap-2">
+          <a href="/games/backgammon.html" class="px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-sm">Backgammon</a>
+          <a href="/games/checkers.html" class="px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-sm">Checkers</a>
+          <a href="/games/crazy-eights.html" class="px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-sm">Crazy Eights</a>
+          <a href="/games/mancala.html" class="px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-sm">Mancala</a>
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer-container" class="mt-6 text-center text-sm text-stone-500">
+      <p>© Mini Game Planet. Play Dominoes and other board games free online.</p>
+    </footer>
+  </div>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playGameOver } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('dominoes');
+    initConsent();
+    initAudio?.();
+    trackGameView('dominoes', 'Board');
+
+    function secureRandom() {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] / (0xFFFFFFFF + 1);
+    }
+
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(secureRandom() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    const TILES = [];
+    for (let a = 0; a <= 6; a++)
+      for (let b = a; b <= 6; b++)
+        TILES.push([a, b]);
+
+    let boneyard = [];
+    let playerHand = [];
+    let aiHand = [];
+    let chain = [];
+    let leftEnd = null;
+    let rightEnd = null;
+    let playerScore = 0;
+    let aiScore = 0;
+    let currentPlayer = 0;
+    let selectedTileIdx = null;
+    let consecutivePasses = 0;
+    let soundOn = true;
+    let gameOver = false;
+
+    const chainArea = document.getElementById('chain-area');
+    const chainPlaceholder = document.getElementById('chain-placeholder');
+    const playerHandEl = document.getElementById('player-hand');
+    const aiHandEl = document.getElementById('ai-hand');
+    const statusEl = document.getElementById('status');
+    const restartEl = document.getElementById('restart');
+    const soundToggleEl = document.getElementById('sound-toggle');
+    const scoreDisplayEl = document.getElementById('score-display');
+    const boneyardCountEl = document.getElementById('boneyard-count');
+    const aiCountEl = document.getElementById('ai-count');
+    const passBtn = document.getElementById('pass-btn');
+
+    function pipHTML(n) {
+      if (n === 0) return '<div class="half"><div class="pip pip-0"></div></div>';
+      const positions = {
+        1: ['pip-1'],
+        2: ['pip-2-1', 'pip-2-2'],
+        3: ['pip-3-1', 'pip-3-2', 'pip-3-3'],
+        4: ['pip-4-1', 'pip-4-2', 'pip-4-3', 'pip-4-4'],
+        5: ['pip-5-1', 'pip-5-2', 'pip-5-3', 'pip-5-4', 'pip-5-5'],
+        6: ['pip-6-1', 'pip-6-2', 'pip-6-3', 'pip-6-4', 'pip-6-5', 'pip-6-6']
+      };
+      const pips = positions[n].map(c => `<span class="pip ${c}"></span>`).join('');
+      return `<div class="half">${pips}</div>`;
+    }
+
+    function createTileEl(tile, vertical = false) {
+      const [a, b] = tile;
+      const div = document.createElement('div');
+      div.className = 'domino-tile';
+      div.style.flexDirection = vertical ? 'column' : 'column';
+      div.innerHTML = pipHTML(a) + pipHTML(b);
+      div.datasetLeft = a;
+      div.datasetRight = b;
+      return div;
+    }
+
+    function createChainTileEl(tile, isLeft) {
+      const [a, b] = tile;
+      const div = document.createElement('div');
+      div.className = 'domino-tile';
+      div.style.cursor = 'default';
+      const matchEnd = isLeft ? a : b;
+      const otherEnd = isLeft ? b : a;
+      div.innerHTML = pipHTML(a) + pipHTML(b);
+      div.dataset.endValue = String(matchEnd);
+      return div;
+    }
+
+    function canPlay(tile, end) {
+      if (end === null) return true;
+      const [a, b] = tile;
+      return a === end || b === end;
+    }
+
+    function scoreForEnds(l, r) {
+      const sum = l + r;
+      return sum % 5 === 0 ? sum : 0;
+    }
+
+    function deal() {
+      const deck = shuffle([...TILES]);
+      playerHand = deck.splice(0, 7);
+      aiHand = deck.splice(0, 7);
+      boneyard = deck;
+    }
+
+    function findFirstPlayer() {
+      let best = -1;
+      let bestPlayer = 0;
+      for (let i = 0; i < playerHand.length; i++) {
+        const [a, b] = playerHand[i];
+        if (a === b && a > best) { best = a; bestPlayer = 0; }
+      }
+      for (let i = 0; i < aiHand.length; i++) {
+        const [a, b] = aiHand[i];
+        if (a === b && a > best) { best = a; bestPlayer = 1; }
+      }
+      if (best >= 0) return bestPlayer;
+      let maxSum = -1;
+      for (let i = 0; i < playerHand.length; i++) {
+        const s = playerHand[i][0] + playerHand[i][1];
+        if (s > maxSum) { maxSum = s; bestPlayer = 0; }
+      }
+      for (let i = 0; i < aiHand.length; i++) {
+        const s = aiHand[i][0] + aiHand[i][1];
+        if (s > maxSum) { maxSum = s; bestPlayer = 1; }
+      }
+      return bestPlayer;
+    }
+
+    function initGame() {
+      deal();
+      chain = [];
+      leftEnd = null;
+      rightEnd = null;
+      selectedTileIdx = null;
+      consecutivePasses = 0;
+      gameOver = false;
+      currentPlayer = findFirstPlayer();
+
+      if (currentPlayer === 0) {
+        const idx = playerHand.findIndex(([a, b]) => a === b);
+        let tile;
+        if (idx >= 0) {
+          tile = playerHand.splice(idx, 1)[0];
+        } else {
+          const maxIdx = playerHand.reduce((best, t, i) =>
+            (t[0] + t[1] > playerHand[best][0] + playerHand[best][1]) ? i : best, 0);
+          tile = playerHand.splice(maxIdx, 1)[0];
+        }
+        chain.push(tile);
+        leftEnd = tile[0];
+        rightEnd = tile[1];
+        const pts = scoreForEnds(leftEnd, rightEnd);
+        if (pts > 0) playerScore += pts;
+        currentPlayer = 1;
+        statusEl.textContent = "AI's turn";
+        render();
+        setTimeout(aiTurn, 600);
+      } else {
+        const idx = aiHand.findIndex(([a, b]) => a === b);
+        let tile;
+        if (idx >= 0) {
+          tile = aiHand.splice(idx, 1)[0];
+        } else {
+          const maxIdx = aiHand.reduce((best, t, i) =>
+            (t[0] + t[1] > aiHand[best][0] + aiHand[best][1]) ? i : best, 0);
+          tile = aiHand.splice(maxIdx, 1)[0];
+        }
+        chain.push(tile);
+        leftEnd = tile[0];
+        rightEnd = tile[1];
+        const pts = scoreForEnds(leftEnd, rightEnd);
+        if (pts > 0) aiScore += pts;
+        currentPlayer = 0;
+        statusEl.textContent = 'Your turn';
+        render();
+      }
+    }
+
+    function renderChain() {
+      chainArea.innerHTML = '';
+      chainPlaceholder.style.display = chain.length ? 'none' : 'block';
+
+      if (chain.length === 0) return;
+
+      const leftEndEl = document.createElement('div');
+      leftEndEl.className = 'chain-end valid';
+      leftEndEl.dataset.side = 'left';
+      leftEndEl.innerHTML = `<div class="domino-tile" style="pointer-events:none;width:36px;height:72px">${pipHTML(leftEnd)}${pipHTML(leftEnd)}</div>`;
+      chainArea.appendChild(leftEndEl);
+
+      for (let i = 0; i < chain.length; i++) {
+        const tile = chain[i];
+        const isLeft = i === 0;
+        const el = createChainTileEl(tile, isLeft);
+        el.style.pointerEvents = 'none';
+        chainArea.appendChild(el);
+      }
+
+      const rightEndEl = document.createElement('div');
+      rightEndEl.className = 'chain-end valid';
+      rightEndEl.dataset.side = 'right';
+      rightEndEl.innerHTML = `<div class="domino-tile" style="pointer-events:none;width:36px;height:72px">${pipHTML(rightEnd)}${pipHTML(rightEnd)}</div>`;
+      chainArea.appendChild(rightEndEl);
+
+      leftEndEl.addEventListener('click', () => handleChainEndClick('left'));
+      rightEndEl.addEventListener('click', () => handleChainEndClick('right'));
+    }
+
+    function renderPlayerHand() {
+      playerHandEl.innerHTML = '';
+      const canPlayLeft = leftEnd !== null && playerHand.some(t => canPlay(t, leftEnd));
+      const canPlayRight = leftEnd !== null && rightEnd !== leftEnd && playerHand.some(t => canPlay(t, rightEnd));
+      const canPlayAny = leftEnd === null || canPlayLeft || canPlayRight;
+
+      playerHand.forEach((tile, idx) => {
+        const playable = canPlay(tile, leftEnd) || (rightEnd !== leftEnd && canPlay(tile, rightEnd));
+        const div = createTileEl(tile);
+        div.dataset.idx = idx;
+        if (selectedTileIdx === idx) div.classList.add('selected');
+        if (!playable && currentPlayer === 0 && canPlayAny) div.classList.add('disabled');
+        if (currentPlayer === 0 && playable) {
+          div.addEventListener('click', () => selectTile(idx));
+        }
+        playerHandEl.appendChild(div);
+      });
+    }
+
+    function renderAiHand() {
+      aiHandEl.innerHTML = '';
+      for (let i = 0; i < aiHand.length; i++) {
+        const div = document.createElement('div');
+        div.className = 'domino-tile';
+        div.style.opacity = '0.7';
+        div.innerHTML = '<div class="half"></div><div class="half"></div>';
+        div.style.width = '36px';
+        div.style.height = '72px';
+        div.style.background = 'linear-gradient(135deg,#78716C,#57534E)';
+        div.style.borderColor = '#44403C';
+        aiHandEl.appendChild(div);
+      }
+    }
+
+    function selectTile(idx) {
+      if (gameOver || currentPlayer !== 0) return;
+      const tile = playerHand[idx];
+      const playableLeft = canPlay(tile, leftEnd);
+      const playableRight = rightEnd !== leftEnd && canPlay(tile, rightEnd);
+      if (!playableLeft && !playableRight) return;
+
+      if (selectedTileIdx === idx) {
+        selectedTileIdx = null;
+      } else {
+        selectedTileIdx = idx;
+      }
+      render();
+    }
+
+    function handleChainEndClick(side) {
+      if (gameOver || currentPlayer !== 0 || selectedTileIdx === null) return;
+      const tile = playerHand[selectedTileIdx];
+      const end = side === 'left' ? leftEnd : rightEnd;
+      if (!canPlay(tile, end)) return;
+
+      const [a, b] = tile;
+      const matchA = a === end;
+      let newTile;
+      if (side === 'left') {
+        newTile = matchA ? [b, a] : [a, b];
+        chain.unshift(newTile);
+        leftEnd = newTile[0];
+      } else {
+        newTile = matchA ? [a, b] : [b, a];
+        chain.push(newTile);
+        rightEnd = newTile[1];
+      }
+
+      playerHand.splice(selectedTileIdx, 1);
+      selectedTileIdx = null;
+      consecutivePasses = 0;
+
+      const pts = scoreForEnds(leftEnd, rightEnd);
+      if (pts > 0) {
+        playerScore += pts;
+        if (soundOn) playSuccess?.();
+      } else if (soundOn) playClick?.();
+
+      if (playerHand.length === 0) {
+        endGame(true);
+        return;
+      }
+
+      currentPlayer = 1;
+      statusEl.textContent = "AI's turn";
+      render();
+      setTimeout(aiTurn, 500);
+    }
+
+    function getAiMove() {
+      const playLeft = aiHand.filter(t => canPlay(t, leftEnd));
+      const playRight = rightEnd !== leftEnd ? aiHand.filter(t => canPlay(t, rightEnd)) : [];
+      const moves = [];
+      aiHand.forEach((tile, idx) => {
+        if (canPlay(tile, leftEnd)) moves.push({ tile, idx, side: 'left' });
+        if (rightEnd !== leftEnd && canPlay(tile, rightEnd)) moves.push({ tile, idx, side: 'right' });
+      });
+      if (moves.length === 0) return null;
+      let best = moves[0];
+      let bestScore = -Infinity;
+      for (const m of moves) {
+        let score = 0;
+        const [a, b] = m.tile;
+        const end = m.side === 'left' ? leftEnd : rightEnd;
+        const newLeft = m.side === 'left' ? (a === end ? b : a) : leftEnd;
+        const newRight = m.side === 'right' ? (a === end ? b : a) : rightEnd;
+        const pts = scoreForEnds(newLeft, newRight);
+        score += pts * 2;
+        score -= (a + b) * 0.5;
+        if (score > bestScore) { bestScore = score; best = m; }
+      }
+      return best;
+    }
+
+    function aiTurn() {
+      if (gameOver || currentPlayer !== 1) return;
+
+      const move = getAiMove();
+      if (move) {
+        const { tile, idx, side } = move;
+        aiHand.splice(idx, 1);
+        const [a, b] = tile;
+        const end = side === 'left' ? leftEnd : rightEnd;
+        const matchA = a === end;
+        let newTile;
+        if (side === 'left') {
+          newTile = matchA ? [b, a] : [a, b];
+          chain.unshift(newTile);
+          leftEnd = newTile[0];
+        } else {
+          newTile = matchA ? [a, b] : [b, a];
+          chain.push(newTile);
+          rightEnd = newTile[1];
+        }
+
+        consecutivePasses = 0;
+        const pts = scoreForEnds(leftEnd, rightEnd);
+        if (pts > 0) aiScore += pts;
+
+        if (aiHand.length === 0) {
+          endGame(false);
+          return;
+        }
+
+        currentPlayer = 0;
+        statusEl.textContent = 'Your turn';
+      } else {
+        consecutivePasses++;
+        if (consecutivePasses >= 2 || (boneyard.length === 0 && playerHand.every(t => !canPlay(t, leftEnd) && (rightEnd === leftEnd || !canPlay(t, rightEnd))))) {
+          endGameByPips();
+          return;
+        }
+        currentPlayer = 0;
+        statusEl.textContent = "AI passed. Your turn.";
+      }
+      render();
+    }
+
+    function endGame(playerWon) {
+      gameOver = true;
+      if (soundOn) playGameOver?.();
+      trackGameOver?.('dominoes', playerWon ? 'win' : 'loss');
+      statusEl.textContent = playerWon ? 'You win!' : 'AI wins!';
+    }
+
+    function endGameByPips() {
+      gameOver = true;
+      const playerPips = playerHand.reduce((s, t) => s + t[0] + t[1], 0);
+      const aiPips = aiHand.reduce((s, t) => s + t[0] + t[1], 0);
+      const playerWon = playerPips < aiPips;
+      if (soundOn) playGameOver?.();
+      trackGameOver?.('dominoes', playerWon ? 'win' : 'loss');
+      statusEl.textContent = playerWon
+        ? `Blocked! You win (${playerPips} pips vs ${aiPips}).`
+        : `Blocked! AI wins (${aiPips} pips vs ${playerPips}).`;
+    }
+
+    function playerCanPlay() {
+      return playerHand.some(t => canPlay(t, leftEnd) || (rightEnd !== leftEnd && canPlay(t, rightEnd)));
+    }
+
+    function render() {
+      renderChain();
+      renderPlayerHand();
+      renderAiHand();
+      scoreDisplayEl.textContent = `You: ${playerScore} | AI: ${aiScore}`;
+      boneyardCountEl.textContent = `Boneyard: ${boneyard.length}`;
+      aiCountEl.textContent = aiHand.length;
+
+      if (currentPlayer === 0 && !gameOver) {
+        passBtn.classList.toggle('hidden', playerCanPlay());
+      } else {
+        passBtn.classList.add('hidden');
+      }
+    }
+
+    passBtn.addEventListener('click', () => {
+      if (gameOver || currentPlayer !== 0 || playerCanPlay()) return;
+      consecutivePasses++;
+      if (consecutivePasses >= 2) {
+        endGameByPips();
+        return;
+      }
+      currentPlayer = 1;
+      statusEl.textContent = "You passed. AI's turn.";
+      render();
+      setTimeout(aiTurn, 500);
+    });
+
+    restartEl.addEventListener('click', () => {
+      playerScore = 0;
+      aiScore = 0;
+      trackGameStart?.('dominoes');
+      initGame();
+    });
+
+    soundToggleEl.addEventListener('click', () => {
+      soundOn = !soundOn;
+      soundToggleEl.textContent = soundOn ? '🔊 Sound' : '🔇 Muted';
+      if (!soundOn) muteAll?.();
+    });
+
+    initGame();
+  </script>
+</body>
+</html>

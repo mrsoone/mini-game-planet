@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snakes and Ladders - Free Board Game Online | Mini Game Planet</title>
+  <meta name="description" content="Play Snakes and Ladders online free. Classic 10x10 board game with snakes and ladders. 1-4 players, human or AI. Roll the die, climb ladders, avoid snakes. First to 100 wins!">
+  <link rel="canonical" href="https://minigameplanet.com/games/snakes-and-ladders.html">
+  <!-- Open Graph -->
+  <meta property="og:title" content="Snakes and Ladders - Free Board Game Online">
+  <meta property="og:description" content="Play Snakes and Ladders online. Classic board game with snakes and ladders. 1-4 players, roll the die, first to 100 wins!">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/snakes-and-ladders.html">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    .cell { transition: transform 0.15s, box-shadow 0.15s; }
+    .cell:hover { transform: scale(1.02); }
+    .token { transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
+    @keyframes dice-roll { 0% { transform: rotate(0deg) scale(1); } 25% { transform: rotate(90deg) scale(1.1); } 50% { transform: rotate(180deg) scale(1); } 75% { transform: rotate(270deg) scale(1.1); } 100% { transform: rotate(360deg) scale(1); } }
+    .dice-rolling { animation: dice-roll 0.5s ease-out; }
+    .snake-path, .ladder-path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  </style>
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Snakes and Ladders",
+    "description": "Play Snakes and Ladders online - classic board game with snakes and ladders, 1-4 players",
+    "applicationCategory": "Game",
+    "genre": "Board",
+    "url": "https://minigameplanet.com/games/snakes-and-ladders.html"
+  }
+  </script>
+  <!-- AdSense placeholder - uncomment when ready
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXX" crossorigin="anonymous"></script>
+  -->
+</head>
+<body class="min-h-screen text-gray-800">
+  <div id="nav-container"></div>
+
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-8">
+      <header class="text-center mb-6">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Snakes and Ladders</h1>
+        <p class="text-gray-600">Classic board game — roll the die, climb ladders, avoid snakes. First to 100 wins!</p>
+      </header>
+
+      <div class="flex flex-wrap items-center justify-center gap-4 mb-6">
+        <div class="flex items-center gap-2">
+          <label class="text-sm font-medium text-gray-600">Players:</label>
+          <select id="player-count" class="rounded-lg border border-gray-300 px-3 py-2 text-sm font-mono bg-white">
+            <option value="1">1 Human</option>
+            <option value="2">2 Humans</option>
+            <option value="3">3 Humans</option>
+            <option value="4">4 Humans</option>
+          </select>
+        </div>
+        <div class="flex items-center gap-2">
+          <label class="text-sm font-medium text-gray-600">AI:</label>
+          <select id="ai-count" class="rounded-lg border border-gray-300 px-3 py-2 text-sm font-mono bg-white">
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+          </select>
+        </div>
+        <button id="sound-toggle" class="px-4 py-2 rounded-lg border border-gray-300 text-sm hover:bg-gray-50" title="Toggle sound">🔊 Sound</button>
+        <button id="restart-btn" class="px-4 py-2 rounded-lg bg-emerald-500 text-white font-medium hover:bg-emerald-600 transition">New Game</button>
+      </div>
+
+      <div id="game-status" class="text-center font-medium mb-4 min-h-[24px]">Player 1's turn — Roll the die!</div>
+
+      <div class="flex flex-col md:flex-row items-center justify-center gap-6 mb-6">
+        <div class="flex items-center gap-4">
+          <div id="dice-display" class="w-14 h-14 rounded-xl bg-white border-2 border-gray-300 flex items-center justify-center font-mono text-2xl font-bold text-gray-800 shadow-md">?</div>
+          <button id="roll-btn" class="px-6 py-3 rounded-xl bg-amber-500 text-white font-semibold hover:bg-amber-600 transition shadow-md">Roll Die</button>
+        </div>
+      </div>
+
+      <!-- 10x10 Board -->
+      <div class="max-w-2xl mx-auto mb-8">
+        <div class="relative">
+          <div id="board" class="inline-grid grid-cols-10 gap-1 p-2 bg-amber-100 rounded-xl border-2 border-amber-300 shadow-lg"></div>
+          <svg id="board-svg" class="absolute inset-0 pointer-events-none w-full h-full" viewBox="0 0 520 520"></svg>
+        </div>
+      </div>
+
+      <div id="player-tokens" class="flex flex-wrap justify-center gap-4 mb-4"></div>
+
+      <div id="related-games"></div>
+    </div>
+
+    <!-- SEO Article -->
+    <article class="bg-white rounded-2xl shadow-lg p-6 md:p-8 text-gray-700 leading-relaxed">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4">How to Play Snakes and Ladders</h2>
+      <p>Snakes and Ladders is one of the world's most beloved board games, enjoyed by children and adults alike for generations. The game originated in ancient India, where it was known as Moksha Patam and was used to teach moral lessons about virtue and vice. British colonialists brought the game to England in the late 19th century, where it was adapted and renamed Snakes and Ladders. Today, it remains a timeless classic that requires no strategy—just luck and a good roll of the dice.</p>
+      <p class="mt-4">The board consists of a 10×10 grid numbered from 1 to 100 in a zigzag pattern. Players start at square 1 (typically the bottom-left) and race toward square 100 at the top. On each turn, you roll a single six-sided die and move your token forward by that many squares. The path winds back and forth: row one goes left to right (1–10), row two goes right to left (11–20), and so on, creating the classic zigzag layout that makes the board easy to follow.</p>
+      <p class="mt-4">Ladders are your friends. When you land exactly on the bottom of a ladder, you immediately climb to the top. A ladder might take you from square 4 to 14, or from 28 to 84—a huge leap forward! Snakes are the opposite. Land on a snake's head, and you slide down to its tail. A snake might send you from 99 down to 9, or from 62 to 19. These twists of fate keep every game exciting and unpredictable.</p>
+      <p class="mt-4">To win, you must land exactly on square 100. If you roll a number that would take you past 100, you stay where you are and wait for your next turn. For example, if you're on 98 and roll a 5, you remain on 98. This rule adds tension to the final stretch—a single unlucky roll can cost you the game.</p>
+      <p class="mt-4">Our online version supports 1 to 4 players. You can play solo against AI opponents, or mix human and AI players—for example, two friends plus two AI bots for a full table. The AI rolls automatically on its turn, and all token movements are animated so you can follow the action. We use <code class="font-mono text-sm bg-gray-100 px-1 rounded">crypto.getRandomValues()</code> for cryptographically secure dice rolls, ensuring every outcome is fair and unpredictable. No sign-up, no download—just open the game and play. Whether you're introducing a child to board games or reliving childhood memories, Snakes and Ladders delivers simple, timeless fun. Perfect for family game night or a quick break at work.</p>
+    </article>
+  </main>
+
+  <div id="footer-container"></div>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('snakes-and-ladders');
+    initConsent();
+    trackGameView('snakes-and-ladders', 'Board');
+
+    // Standard snakes (head -> tail) and ladders (bottom -> top)
+    const SNAKES = { 99: 9, 97: 79, 93: 73, 64: 60, 62: 19, 56: 53, 49: 11, 48: 26, 16: 6 };
+    const LADDERS = { 2: 38, 4: 14, 9: 31, 21: 42, 28: 84, 36: 44, 51: 67, 71: 91, 80: 100 };
+
+    const PLAYER_COLORS = ['#3B82F6', '#EF4444', '#22C55E', '#F59E0B'];
+    const PLAYER_NAMES = ['Player 1', 'Player 2', 'Player 3', 'Player 4'];
+
+    function rollDice() {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return 1 + (arr[0] % 6);
+    }
+
+    function posToRowCol(n) {
+      const row = 9 - Math.floor((n - 1) / 10);
+      const rem = (n - 1) % 10;
+      const evenRow = (9 - row) % 2 === 0;
+      const col = evenRow ? rem : 9 - rem;
+      return { row, col };
+    }
+
+    let positions = [1, 1, 1, 1];
+    let currentPlayer = 0;
+    let humanCount = 1;
+    let aiCount = 0;
+    let totalPlayers = 1;
+    let gameOver = false;
+    let animating = false;
+    let soundEnabled = true;
+
+    const boardEl = document.getElementById('board');
+    const statusEl = document.getElementById('game-status');
+    const rollBtn = document.getElementById('roll-btn');
+    const diceDisplay = document.getElementById('dice-display');
+    const playerTokensEl = document.getElementById('player-tokens');
+    const playerCountEl = document.getElementById('player-count');
+    const aiCountEl = document.getElementById('ai-count');
+    const restartBtn = document.getElementById('restart-btn');
+    const soundToggle = document.getElementById('sound-toggle');
+
+    function isHuman(p) {
+      return p < humanCount;
+    }
+
+    function updatePlayerCounts() {
+      humanCount = Math.max(1, parseInt(playerCountEl.value) || 1);
+      aiCount = Math.min(parseInt(aiCountEl.value) || 0, 4 - humanCount);
+      totalPlayers = humanCount + aiCount;
+    }
+
+    function renderBoard() {
+      boardEl.innerHTML = '';
+      for (let r = 0; r < 10; r++) {
+        for (let c = 0; c < 10; c++) {
+          const n = rowColToNum(r, c);
+          const isSnake = SNAKES[n];
+          const isLadder = LADDERS[n];
+          const cell = document.createElement('div');
+          cell.className = 'cell relative w-12 h-12 md:w-14 md:h-14 rounded-lg flex items-center justify-center font-mono text-sm font-bold bg-white border border-amber-200 shadow-sm';
+          cell.dataset.num = n;
+          cell.style.background = isSnake ? 'linear-gradient(135deg,#FEE2E2,#FECACA)' : isLadder ? 'linear-gradient(135deg,#DCFCE7,#BBF7D0)' : '#FFFFFF';
+          cell.textContent = n;
+          boardEl.appendChild(cell);
+        }
+      }
+      const svg = document.getElementById('board-svg');
+      if (!svg) return;
+      svg.innerHTML = '';
+      const cellSize = 52;
+      function getCenter(n) {
+        const { row, col } = posToRowCol(n);
+        return { x: col * cellSize + cellSize / 2, y: row * cellSize + cellSize / 2 };
+      }
+      Object.entries(SNAKES).forEach(([head, tail]) => {
+        const a = getCenter(parseInt(head));
+        const b = getCenter(parseInt(tail));
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        const dx = Math.abs(a.x - b.x);
+        const ctrl = dx > 100 ? 40 : 20;
+        path.setAttribute('d', `M ${a.x} ${a.y} C ${a.x + ctrl} ${a.y}, ${b.x - ctrl} ${b.y}, ${b.x} ${b.y}`);
+        path.setAttribute('stroke', '#DC2626');
+        path.setAttribute('stroke-width', '6');
+        path.setAttribute('fill', 'none');
+        path.setAttribute('class', 'snake-path');
+        svg.appendChild(path);
+      });
+      Object.entries(LADDERS).forEach(([bot, top]) => {
+        const a = getCenter(parseInt(bot));
+        const b = getCenter(parseInt(top));
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', `M ${a.x} ${a.y} L ${b.x} ${b.y}`);
+        path.setAttribute('stroke', '#16A34A');
+        path.setAttribute('stroke-width', '5');
+        path.setAttribute('fill', 'none');
+        path.setAttribute('class', 'ladder-path');
+        svg.appendChild(path);
+      });
+    }
+
+    function rowColToNum(r, c) {
+      const base = (9 - r) * 10;
+      const evenRow = (9 - r) % 2 === 0;
+      const colOffset = evenRow ? c : 9 - c;
+      return base + colOffset + 1;
+    }
+
+    function getCellElement(n) {
+      const { row, col } = posToRowCol(n);
+      const idx = row * 10 + col;
+      return boardEl.children[idx];
+    }
+
+    function renderTokens() {
+      playerTokensEl.innerHTML = '';
+      for (let p = 0; p < totalPlayers; p++) {
+        const div = document.createElement('div');
+        div.className = 'flex items-center gap-2';
+        div.innerHTML = `
+          <span class="w-4 h-4 rounded-full border-2 border-gray-800" style="background:${PLAYER_COLORS[p]}"></span>
+          <span class="font-mono text-sm">${PLAYER_NAMES[p]}: <strong id="pos-${p}">${positions[p]}</strong></span>
+        `;
+        playerTokensEl.appendChild(div);
+      }
+      updateTokenPositions();
+    }
+
+    function updateTokenPositions() {
+      const tokens = boardEl.querySelectorAll('.token');
+      tokens.forEach(t => t.remove());
+      for (let p = 0; p < totalPlayers; p++) {
+        const cell = getCellElement(positions[p]);
+        if (cell) {
+          const token = document.createElement('div');
+          token.className = 'token absolute w-5 h-5 md:w-6 md:h-6 rounded-full border-2 border-gray-900 shadow-md z-10';
+          token.style.background = PLAYER_COLORS[p];
+          token.dataset.player = p;
+          const offset = p * 6;
+          token.style.left = `${offset}px`;
+          token.style.top = `${offset}px`;
+          cell.style.position = 'relative';
+          cell.appendChild(token);
+        }
+      }
+      for (let p = 0; p < totalPlayers; p++) {
+        const el = document.getElementById(`pos-${p}`);
+        if (el) el.textContent = positions[p];
+      }
+    }
+
+    async function animateMove(player, from, to) {
+      const steps = [];
+      let n = from;
+      const count = Math.min(to - from, 6);
+      for (let i = 0; i < count; i++) {
+        n++;
+        steps.push(n);
+      }
+      for (const step of steps) {
+        positions[player] = step;
+        updateTokenPositions();
+        if (soundEnabled) playClick?.();
+        await new Promise(r => setTimeout(r, 350));
+      }
+      if (SNAKES[positions[player]]) {
+        const tail = SNAKES[positions[player]];
+        if (soundEnabled) playError?.();
+        await new Promise(r => setTimeout(r, 300));
+        positions[player] = tail;
+        updateTokenPositions();
+        statusEl.textContent = `${PLAYER_NAMES[player]} slid down a snake to ${tail}!`;
+        await new Promise(r => setTimeout(r, 500));
+      } else if (LADDERS[positions[player]]) {
+        const top = LADDERS[positions[player]];
+        if (soundEnabled) playSuccess?.();
+        await new Promise(r => setTimeout(r, 300));
+        positions[player] = top;
+        updateTokenPositions();
+        statusEl.textContent = `${PLAYER_NAMES[player]} climbed a ladder to ${top}!`;
+        await new Promise(r => setTimeout(r, 500));
+      }
+    }
+
+    function nextPlayer() {
+      currentPlayer = (currentPlayer + 1) % totalPlayers;
+      if (gameOver) return;
+      if (isHuman(currentPlayer)) {
+        statusEl.textContent = `${PLAYER_NAMES[currentPlayer]}'s turn — Roll the die!`;
+        rollBtn.disabled = false;
+      } else {
+        statusEl.textContent = `${PLAYER_NAMES[currentPlayer]}'s turn...`;
+        rollBtn.disabled = true;
+        setTimeout(aiTurn, 800);
+      }
+    }
+
+    async function aiTurn() {
+      await new Promise(r => setTimeout(r, 500));
+      const roll = rollDice();
+      diceDisplay.textContent = roll;
+      diceDisplay.classList.add('dice-rolling');
+      setTimeout(() => diceDisplay.classList.remove('dice-rolling'), 500);
+      if (soundEnabled) playClick?.();
+      await new Promise(r => setTimeout(r, 600));
+      const target = Math.min(100, positions[currentPlayer] + roll);
+      if (target === 100) {
+        await animateMove(currentPlayer, positions[currentPlayer], 99);
+        positions[currentPlayer] = 100;
+        updateTokenPositions();
+        gameOver = true;
+        if (soundEnabled) playGameOver?.();
+        trackGameOver?.('snakes-and-ladders', { winner: currentPlayer });
+        statusEl.textContent = `${PLAYER_NAMES[currentPlayer]} wins!`;
+        return;
+      }
+      if (positions[currentPlayer] + roll > 100) {
+        statusEl.textContent = `${PLAYER_NAMES[currentPlayer]} rolled ${roll} — too high! Stay on ${positions[currentPlayer]}.`;
+        await new Promise(r => setTimeout(r, 1200));
+        nextPlayer();
+        return;
+      }
+      await animateMove(currentPlayer, positions[currentPlayer], target);
+      nextPlayer();
+    }
+
+    async function doRoll() {
+      if (animating || gameOver || !isHuman(currentPlayer)) return;
+      const roll = rollDice();
+      animating = true;
+      rollBtn.disabled = true;
+      diceDisplay.textContent = roll;
+      diceDisplay.classList.add('dice-rolling');
+      setTimeout(() => diceDisplay.classList.remove('dice-rolling'), 500);
+      if (soundEnabled) playClick?.();
+      await new Promise(r => setTimeout(r, 600));
+      const target = Math.min(100, positions[currentPlayer] + roll);
+      if (target === 100) {
+        await animateMove(currentPlayer, positions[currentPlayer], 99);
+        positions[currentPlayer] = 100;
+        updateTokenPositions();
+        gameOver = true;
+        if (soundEnabled) playGameOver?.();
+        trackGameOver?.('snakes-and-ladders', { winner: currentPlayer });
+        statusEl.textContent = `${PLAYER_NAMES[currentPlayer]} wins!`;
+        animating = false;
+        return;
+      }
+      if (positions[currentPlayer] + roll > 100) {
+        statusEl.textContent = `${PLAYER_NAMES[currentPlayer]} rolled ${roll} — too high! Stay on ${positions[currentPlayer]}.`;
+        await new Promise(r => setTimeout(r, 1200));
+        nextPlayer();
+        animating = false;
+        return;
+      }
+      await animateMove(currentPlayer, positions[currentPlayer], target);
+      nextPlayer();
+      animating = false;
+      if (isHuman(currentPlayer)) rollBtn.disabled = false;
+    }
+
+    function restart() {
+      gameOver = false;
+      animating = false;
+      for (let i = 0; i < 4; i++) positions[i] = 1;
+      updatePlayerCounts();
+      currentPlayer = 0;
+      statusEl.textContent = `${PLAYER_NAMES[0]}'s turn — Roll the die!`;
+      rollBtn.disabled = false;
+      diceDisplay.textContent = '?';
+      renderBoard();
+      renderTokens();
+      trackGameStart?.('snakes-and-ladders');
+    }
+
+    function syncAiOptions() {
+      const h = Math.max(1, parseInt(playerCountEl.value) || 1);
+      const maxAi = 4 - h;
+      aiCountEl.querySelectorAll('option').forEach((opt, i) => {
+        opt.disabled = i > maxAi;
+        if (i > maxAi && parseInt(opt.value) === parseInt(aiCountEl.value)) aiCountEl.value = maxAi;
+      });
+    }
+    playerCountEl.addEventListener('change', () => { syncAiOptions(); updatePlayerCounts(); restart(); });
+    aiCountEl.addEventListener('change', () => { updatePlayerCounts(); restart(); });
+
+    rollBtn.addEventListener('click', doRoll);
+    restartBtn.addEventListener('click', restart);
+
+    soundToggle.addEventListener('click', () => {
+      initAudio?.();
+      soundEnabled = !muteAll();
+      soundToggle.textContent = soundEnabled ? '🔊 Sound' : '🔇 Muted';
+    });
+
+    initAudio?.();
+    syncAiOptions();
+    updatePlayerCounts();
+    trackGameStart?.('snakes-and-ladders');
+    renderBoard();
+    renderTokens();
+  </script>
+</body>
+</html>

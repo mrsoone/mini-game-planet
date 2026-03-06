@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sand Simulation - Falling Sand Game | Mini Game Planet</title>
+  <meta name="description" content="Play a free falling sand simulation. Create sand, water, stone, and fire particles. Watch them interact in real-time. Physics-based particle sandbox game.">
+  <link rel="canonical" href="https://minigameplanet.com/games/sand-box.html">
+  <!-- Open Graph -->
+  <meta property="og:title" content="Sand Simulation - Falling Sand Game | Mini Game Planet">
+  <meta property="og:description" content="Play a free falling sand simulation. Create sand, water, stone, and fire particles. Watch them interact in real-time.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/sand-box.html">
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Sand Simulation",
+    "description": "Physics-based falling sand particle simulation. Create sand, water, stone, and fire. Watch particles interact in real-time.",
+    "applicationCategory": "Game",
+    "operatingSystem": "Any",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+  <!-- AdSense (commented)
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXX" crossorigin="anonymous"></script>
+  -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    #gameCanvas { display: block; cursor: crosshair; image-rendering: pixelated; image-rendering: crisp-edges; }
+  </style>
+</head>
+<body class="min-h-screen text-gray-800">
+  <nav id="nav-container" class="bg-white/90 backdrop-blur border-b border-gray-200 sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="font-semibold text-lg">Mini Game Planet</a>
+      <div class="flex items-center gap-4">
+        <button id="sound-toggle" class="text-sm px-3 py-1 rounded bg-gray-100 hover:bg-gray-200" aria-label="Toggle sound">🔊 Sound</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-8">
+      <div class="p-6 border-b border-gray-100">
+        <h1 class="text-2xl font-bold mb-2">Sand Simulation</h1>
+        <p class="text-gray-600 text-sm">Click or drag to place particles. Watch sand fall, water flow, and fire rise.</p>
+      </div>
+
+      <div class="p-4 flex flex-wrap items-center gap-4 bg-gray-50/50 border-b border-gray-100">
+        <div class="flex items-center gap-2">
+          <span class="text-sm font-medium text-gray-600">Element:</span>
+          <select id="element-select" class="font-mono text-sm px-3 py-1.5 rounded border border-gray-200 bg-white">
+            <option value="sand">Sand</option>
+            <option value="water">Water</option>
+            <option value="stone">Stone</option>
+            <option value="fire">Fire</option>
+          </select>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-sm font-medium text-gray-600">Brush:</span>
+          <input type="range" id="brush-size" min="1" max="8" value="3" class="w-24">
+          <span id="brush-value" class="font-mono text-sm w-6">3</span>
+        </div>
+        <button id="clear-btn" class="px-4 py-1.5 rounded bg-red-100 text-red-700 hover:bg-red-200 text-sm font-medium">Clear</button>
+      </div>
+
+      <div class="p-4 flex justify-center bg-gray-100/50">
+        <canvas id="gameCanvas" width="640" height="480"></canvas>
+      </div>
+    </div>
+
+    <article class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 md:p-8 mb-8">
+      <h2 class="text-xl font-bold mb-4">Falling Sand Simulation: A Physics Playground</h2>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        Sand simulation games have captivated players for decades, offering a mesmerizing blend of physics and creativity. Our free falling sand simulation brings this classic concept to your browser—no downloads, no installs. Simply load the page and start experimenting with particles that behave like real matter.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        The core of any sand sim is the particle grid. Each cell on the canvas represents a tiny piece of matter. Sand particles fall downward due to gravity, piling up when they hit the ground or other sand. Water flows more freely, spreading sideways and filling gaps. Stone remains solid and immovable—perfect for building structures. Fire rises upward, spreading to adjacent sand and creating chain reactions. These simple rules create surprisingly complex emergent behavior.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        Particle interactions add depth. When water meets fire, the fire is extinguished. When sand falls into water, it sinks to the bottom. Fire can ignite sand, turning it into more fire. These interactions mirror real-world physics in a simplified, satisfying way. Adjust your brush size to create fine details or broad strokes. Use the element selector to switch between materials on the fly. The clear button resets the canvas so you can start fresh experiments.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        Whether you're building dams, watching lava flow, or simply enjoying the hypnotic fall of sand, this sand simulation offers endless possibilities. It runs at 60 frames per second for smooth, responsive gameplay. The simulation uses cryptographically secure randomness for natural variation in particle movement, ensuring no two runs look exactly alike. Try combining elements in creative ways—pour water over a sand castle, light a trail of sand on fire, or build stone walls to channel water. The sandbox is yours to explore.
+      </p>
+      <p class="text-gray-600 leading-relaxed">
+        Mini Game Planet brings you this and many other browser-based games. No sign-up required. Play anytime, anywhere. Dive into the sand simulation and discover the joy of particle physics.
+      </p>
+    </article>
+
+    <section id="related-games" class="mb-8">
+      <h2 class="text-lg font-semibold mb-4">Related Games</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <a href="/games/" class="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md transition">More Games</a>
+      </div>
+    </section>
+  </main>
+
+  <footer id="footer-container" class="border-t border-gray-200 py-6 mt-8">
+    <div class="max-w-4xl mx-auto px-4 text-center text-sm text-gray-500">
+      <p>© Mini Game Planet. Free browser games.</p>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart } from '/js/analytics.js';
+
+    initToolPage('sand-box');
+    initConsent();
+    trackGameView('sand-box', 'Builder');
+    trackGameStart('sand-box');
+
+    const CELL = 2;
+    const COLS = Math.floor(640 / CELL);
+    const ROWS = Math.floor(480 / CELL);
+    const TARGET_FPS = 60;
+    const FRAME_MS = 1000 / TARGET_FPS;
+
+    const EMPTY = 0, SAND = 1, WATER = 2, STONE = 3, FIRE = 4;
+
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let grid = [];
+    let nextGrid = [];
+    let isDrawing = false;
+    let currentElement = SAND;
+    let brushSize = 3;
+    let lastTime = 0;
+    let soundEnabled = true;
+
+    function secureRandom() {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] / (0xFFFFFFFF + 1);
+    }
+
+    function initGrid() {
+      grid = Array(ROWS).fill(null).map(() => Array(COLS).fill(EMPTY));
+      nextGrid = Array(ROWS).fill(null).map(() => Array(COLS).fill(EMPTY));
+    }
+
+    function copyGrid() {
+      for (let r = 0; r < ROWS; r++)
+        for (let c = 0; c < COLS; c++)
+          nextGrid[r][c] = grid[r][c];
+    }
+
+    function swapGrid() {
+      [grid, nextGrid] = [nextGrid, grid];
+    }
+
+    function inBounds(r, c) {
+      return r >= 0 && r < ROWS && c >= 0 && c < COLS;
+    }
+
+    function setNext(r, c, val) {
+      if (inBounds(r, c)) nextGrid[r][c] = val;
+    }
+
+    function get(r, c) {
+      return inBounds(r, c) ? grid[r][c] : STONE;
+    }
+
+    function updateSand(r, c) {
+      const below = get(r + 1, c);
+      const belowL = get(r + 1, c - 1);
+      const belowR = get(r + 1, c + 1);
+      if (below === EMPTY || below === WATER) {
+        setNext(r + 1, c, SAND);
+        return;
+      }
+      if (belowL === EMPTY || belowL === WATER) {
+        setNext(r + 1, c - 1, SAND);
+        return;
+      }
+      if (belowR === EMPTY || belowR === WATER) {
+        setNext(r + 1, c + 1, SAND);
+        return;
+      }
+      setNext(r, c, SAND);
+    }
+
+    function updateWater(r, c) {
+      const below = get(r + 1, c);
+      const belowL = get(r + 1, c - 1);
+      const belowR = get(r + 1, c + 1);
+      const left = get(r, c - 1);
+      const right = get(r, c + 1);
+      if (below === EMPTY) {
+        setNext(r + 1, c, WATER);
+        return;
+      }
+      const dir = secureRandom() < 0.5 ? -1 : 1;
+      if (belowL === EMPTY && belowR === EMPTY) {
+        setNext(r + 1, c + dir, WATER);
+        return;
+      }
+      if (belowL === EMPTY) { setNext(r + 1, c - 1, WATER); return; }
+      if (belowR === EMPTY) { setNext(r + 1, c + 1, WATER); return; }
+      if (left === EMPTY && right === EMPTY) {
+        setNext(r, c + dir, WATER);
+        return;
+      }
+      if (left === EMPTY) { setNext(r, c - 1, WATER); return; }
+      if (right === EMPTY) { setNext(r, c + 1, WATER); return; }
+      setNext(r, c, WATER);
+    }
+
+    function updateFire(r, c) {
+      const above = get(r - 1, c);
+      const aboveL = get(r - 1, c - 1);
+      const aboveR = get(r - 1, c + 1);
+      const left = get(r, c - 1);
+      const right = get(r, c + 1);
+      const below = get(r + 1, c);
+      if (above === WATER || below === WATER || left === WATER || right === WATER) {
+        setNext(r, c, EMPTY);
+        return;
+      }
+      if (above === EMPTY) {
+        setNext(r - 1, c, FIRE);
+        return;
+      }
+      if (aboveL === EMPTY) { setNext(r - 1, c - 1, FIRE); return; }
+      if (aboveR === EMPTY) { setNext(r - 1, c + 1, FIRE); return; }
+      if (left === SAND) { setNext(r, c - 1, FIRE); return; }
+      if (right === SAND) { setNext(r, c + 1, FIRE); return; }
+      if (secureRandom() < 0.02) setNext(r, c, EMPTY);
+      else setNext(r, c, FIRE);
+    }
+
+    function simulate() {
+      copyGrid();
+      for (let r = ROWS - 1; r >= 0; r--) {
+        for (let c = 0; c < COLS; c++) {
+          const cell = grid[r][c];
+          if (cell === EMPTY || cell === STONE) continue;
+          if (nextGrid[r][c] !== grid[r][c]) continue;
+          nextGrid[r][c] = EMPTY;
+          if (cell === SAND) updateSand(r, c);
+          else if (cell === WATER) updateWater(r, c);
+          else if (cell === FIRE) updateFire(r, c);
+        }
+      }
+      swapGrid();
+    }
+
+    function draw() {
+      const imgData = ctx.createImageData(canvas.width, canvas.height);
+      const d = imgData.data;
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          let r0, g0, b0;
+          switch (grid[r][c]) {
+            case SAND: r0=237; g0=201; b0=132; break;
+            case WATER: r0=96; g0=165; b0=250; break;
+            case STONE: r0=107; g0=114; b0=128; break;
+            case FIRE: r0=251; g0=146; b0=60; break;
+            default: r0=245; g0=245; b0=244; break;
+          }
+          for (let dy = 0; dy < CELL; dy++)
+            for (let dx = 0; dx < CELL; dx++) {
+              const idx = ((r * CELL + dy) * canvas.width + (c * CELL + dx)) * 4;
+              d[idx] = r0; d[idx+1] = g0; d[idx+2] = b0; d[idx+3] = 255;
+            }
+        }
+      }
+      ctx.putImageData(imgData, 0, 0);
+    }
+
+    function placeParticles(x, y) {
+      const col = Math.floor(x / CELL);
+      const row = Math.floor(y / CELL);
+      const half = Math.floor(brushSize / 2);
+      for (let dr = -half; dr <= half; dr++) {
+        for (let dc = -half; dc <= half; dc++) {
+          if (dr * dr + dc * dc <= half * half + 0.5) {
+            const r = row + dr;
+            const c = col + dc;
+            if (inBounds(r, c)) grid[r][c] = currentElement;
+          }
+        }
+      }
+    }
+
+    function getCanvasCoords(e) {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      return {
+        x: (e.clientX - rect.left) * scaleX,
+        y: (e.clientY - rect.top) * scaleY
+      };
+    }
+
+    canvas.addEventListener('mousedown', (e) => {
+      isDrawing = true;
+      const { x, y } = getCanvasCoords(e);
+      placeParticles(x, y);
+      if (soundEnabled) playClick();
+    });
+    canvas.addEventListener('mousemove', (e) => {
+      if (isDrawing) {
+        const { x, y } = getCanvasCoords(e);
+        placeParticles(x, y);
+      }
+    });
+    canvas.addEventListener('mouseup', () => { isDrawing = false; });
+    canvas.addEventListener('mouseleave', () => { isDrawing = false; });
+
+    document.getElementById('element-select').addEventListener('change', (e) => {
+      const v = e.target.value;
+      currentElement = { sand: SAND, water: WATER, stone: STONE, fire: FIRE }[v];
+    });
+    document.getElementById('brush-size').addEventListener('input', (e) => {
+      brushSize = +e.target.value;
+      document.getElementById('brush-value').textContent = brushSize;
+    });
+    document.getElementById('clear-btn').addEventListener('click', () => {
+      initGrid();
+      if (soundEnabled) playClick();
+    });
+
+    document.getElementById('sound-toggle').addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      if (soundEnabled) initAudio(); else muteAll();
+      document.getElementById('sound-toggle').textContent = soundEnabled ? '🔊 Sound' : '🔇 Muted';
+    });
+
+    initGrid();
+    initAudio();
+
+    function gameLoop(timestamp) {
+      const elapsed = timestamp - lastTime;
+      if (elapsed >= FRAME_MS) {
+        lastTime = timestamp;
+        simulate();
+        draw();
+      }
+      requestAnimationFrame(gameLoop);
+    }
+    requestAnimationFrame(gameLoop);
+  </script>
+</body>
+</html>
