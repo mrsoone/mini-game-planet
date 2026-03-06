@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aim Trainer - Test Your Reflexes & Accuracy | Mini Game Planet</title>
+  <meta name="description" content="Free aim trainer game. Improve your mouse accuracy, reaction time, and hand-eye coordination. 30-second rounds with shrinking targets. Track hits, misses, and personal bests.">
+  <link rel="canonical" href="https://minigameplanet.com/games/aim-trainer.html">
+  <!-- Open Graph -->
+  <meta property="og:title" content="Aim Trainer - Test Your Reflexes | Mini Game Planet">
+  <meta property="og:description" content="Free aim trainer. Improve accuracy and reaction time. 30-second rounds with shrinking targets.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/aim-trainer.html">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    .target { position: absolute; border-radius: 50%; cursor: crosshair; transition: transform 0.1s linear; }
+    .target-small { width: 36px; height: 36px; margin-left: -18px; margin-top: -18px; }
+    .target-medium { width: 56px; height: 56px; margin-left: -28px; margin-top: -28px; }
+    .target-large { width: 76px; height: 76px; margin-left: -38px; margin-top: -38px; }
+    #arena { position: relative; overflow: hidden; min-height: 360px; touch-action: none; }
+  </style>
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Aim Trainer",
+    "description": "Free aim trainer game to improve mouse accuracy and reaction time. 30-second rounds with shrinking targets.",
+    "applicationCategory": "Game",
+    "operatingSystem": "Any",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+  <!-- AdSense (commented)
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXX" crossorigin="anonymous"></script>
+  -->
+</head>
+<body class="min-h-screen text-gray-800">
+  <div class="max-w-4xl mx-auto px-4 py-6">
+    <!-- Nav -->
+    <nav id="nav-container" class="flex items-center justify-between mb-6">
+      <a href="/" class="text-lg font-semibold text-gray-800 hover:text-gray-600">Mini Game Planet</a>
+      <div class="flex items-center gap-4">
+        <button id="sound-toggle" type="button" class="text-sm font-mono px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50" aria-label="Toggle sound">Sound: On</button>
+      </div>
+    </nav>
+
+    <!-- White Card -->
+    <main class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8">
+      <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Aim Trainer</h1>
+      <p class="text-gray-600 mb-6">Click targets as fast as you can. 30 seconds. Targets shrink over time.</p>
+
+      <!-- Controls -->
+      <div class="flex flex-wrap gap-4 items-center mb-4">
+        <select id="size-select" class="font-mono text-sm px-3 py-2 rounded border border-gray-300 bg-white">
+          <option value="large">Large</option>
+          <option value="medium" selected>Medium</option>
+          <option value="small">Small</option>
+        </select>
+        <button id="start-btn" class="font-mono px-4 py-2 rounded bg-emerald-600 text-white hover:bg-emerald-700 font-medium">Start Round</button>
+      </div>
+
+      <!-- Arena -->
+      <div id="arena" class="w-full rounded-lg bg-gray-100 border-2 border-dashed border-gray-300 mb-4">
+        <p id="arena-hint" class="absolute inset-0 flex items-center justify-center text-gray-500 font-mono text-sm">Click Start to begin</p>
+      </div>
+
+      <!-- Stats -->
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6 font-mono text-sm">
+        <div class="bg-gray-50 rounded-lg p-3">
+          <span class="text-gray-500 block">Hits</span>
+          <span id="stat-hits">0</span>
+        </div>
+        <div class="bg-gray-50 rounded-lg p-3">
+          <span class="text-gray-500 block">Misses</span>
+          <span id="stat-misses">0</span>
+        </div>
+        <div class="bg-gray-50 rounded-lg p-3">
+          <span class="text-gray-500 block">Accuracy</span>
+          <span id="stat-accuracy">—</span>
+        </div>
+        <div class="bg-gray-50 rounded-lg p-3">
+          <span class="text-gray-500 block">Avg Reaction</span>
+          <span id="stat-reaction">—</span>
+        </div>
+        <div class="bg-gray-50 rounded-lg p-3">
+          <span class="text-gray-500 block">Time Left</span>
+          <span id="stat-time">30s</span>
+        </div>
+      </div>
+
+      <!-- Session / Personal Best -->
+      <div class="flex flex-wrap gap-6 mb-8 font-mono text-sm">
+        <div>
+          <span class="text-gray-500">Session Best (hits):</span>
+          <span id="session-best">0</span>
+        </div>
+        <div>
+          <span class="text-gray-500">Personal Best (hits):</span>
+          <span id="personal-best">0</span>
+        </div>
+      </div>
+
+      <!-- SEO Article -->
+      <article class="prose prose-gray max-w-none pt-6 border-t border-gray-200">
+        <h2 class="text-xl font-semibold text-gray-900 mb-3">Why Play Aim Trainer?</h2>
+        <p class="text-gray-600 mb-3">
+          Aim Trainer is a fast-paced casual game designed to sharpen your mouse accuracy and reaction time. Whether you're a gamer looking to improve your FPS performance, a designer who needs precise cursor control, or simply someone who enjoys quick reflex challenges, this game offers a fun and measurable way to train your hand-eye coordination.
+        </p>
+        <p class="text-gray-600 mb-3">
+          Each round lasts 30 seconds. Targets appear at random positions on the screen—click them to score a hit. Miss a click and it counts as a miss. The game tracks your accuracy percentage, average reaction time per target, and total hits. Targets come in three sizes: Small, Medium, and Large. Choose larger targets for an easier warm-up or smaller ones for a tougher challenge.
+        </p>
+        <p class="text-gray-600 mb-3">
+          A unique twist: targets shrink over time if you don't click them quickly. This adds pressure and encourages faster reactions. Your session best and personal best (stored in your browser) let you compete against yourself and see improvement over time.
+        </p>
+        <p class="text-gray-600 mb-3">
+          The game uses <code class="font-mono text-sm bg-gray-100 px-1 rounded">crypto.getRandomValues()</code> for secure, unpredictable target placement. No ads, no sign-up—just pure aim training. Play on desktop or touch devices. Start a round, click targets, and watch your stats improve.
+        </p>
+        <p class="text-gray-600 mb-3">
+          Professional esports players and competitive gamers have long used aim trainers to maintain peak performance. Studies suggest that regular practice with targeted exercises can improve both speed and precision. Our aim trainer distills these principles into a simple, accessible format: no complex mechanics, no steep learning curve. Just you, a target, and the clock.
+        </p>
+        <p class="text-gray-600 mb-3">
+          Beyond gaming, improved mouse accuracy benefits anyone who works on a computer. Graphic designers, video editors, and developers often perform thousands of precise clicks per day. Training your aim can reduce fatigue and increase productivity. Even casual users may notice smoother, more confident cursor movement after a few sessions.
+        </p>
+        <p class="text-gray-600">
+          Mini Game Planet brings you free, lightweight browser games you can play anywhere. Aim Trainer is one of many casual games designed for quick sessions and skill building. Try different target sizes, beat your personal best, and enjoy the satisfaction of getting faster and more accurate with every round.
+        </p>
+      </article>
+    </main>
+
+    <!-- Related Games -->
+    <section id="related-games" class="mt-8">
+      <h2 class="text-lg font-semibold text-gray-800 mb-4">Related Games</h2>
+      <div class="flex flex-wrap gap-4">
+        <a href="/games/reaction-time.html" class="text-emerald-600 hover:underline font-mono">Reaction Time</a>
+        <a href="/games/click-counter.html" class="text-emerald-600 hover:underline font-mono">Click Counter</a>
+        <a href="/games/typing-test.html" class="text-emerald-600 hover:underline font-mono">Typing Test</a>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="footer-container" class="mt-8 py-6 text-center text-sm text-gray-500">
+      <p>© Mini Game Planet. Free casual games.</p>
+    </footer>
+  </div>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playPerfect } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('aim-trainer');
+    initConsent();
+    trackGameView('aim-trainer', 'Casual');
+
+    const ROUND_DURATION = 30;
+    const SHRINK_INTERVAL = 200;
+    const MIN_SCALE = 0.3;
+
+    const sizeMap = { small: 36, medium: 56, large: 76 };
+    const halfMap = { small: 18, medium: 28, large: 38 };
+
+    const arena = document.getElementById('arena');
+    const arenaHint = document.getElementById('arena-hint');
+    const startBtn = document.getElementById('start-btn');
+    const sizeSelect = document.getElementById('size-select');
+    const soundToggle = document.getElementById('sound-toggle');
+
+    const statHits = document.getElementById('stat-hits');
+    const statMisses = document.getElementById('stat-misses');
+    const statAccuracy = document.getElementById('stat-accuracy');
+    const statReaction = document.getElementById('stat-reaction');
+    const statTime = document.getElementById('stat-time');
+    const sessionBestEl = document.getElementById('session-best');
+    const personalBestEl = document.getElementById('personal-best');
+
+    let gameActive = false;
+    let timerId = null;
+    let shrinkId = null;
+    let hits = 0, misses = 0;
+    let reactionTimes = [];
+    let currentTarget = null;
+    let targetSpawnTime = 0;
+    let sessionBest = 0;
+    let personalBest = parseInt(localStorage.getItem('aim-trainer-pb') || '0', 10);
+
+    function secureRandom() {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] / (0xFFFFFFFF + 1);
+    }
+
+    function getRandomInRange(min, max) {
+      return min + secureRandom() * (max - min);
+    }
+
+    function updateStats() {
+      statHits.textContent = hits;
+      statMisses.textContent = misses;
+      const total = hits + misses;
+      statAccuracy.textContent = total > 0 ? Math.round((hits / total) * 100) + '%' : '—';
+      statReaction.textContent = reactionTimes.length > 0
+        ? (reactionTimes.reduce((a, b) => a + b, 0) / reactionTimes.length).toFixed(0) + 'ms'
+        : '—';
+      sessionBestEl.textContent = sessionBest;
+      personalBestEl.textContent = personalBest;
+    }
+
+    function removeTarget() {
+      if (currentTarget) {
+        currentTarget.remove();
+        currentTarget = null;
+      }
+    }
+
+    function spawnTarget() {
+      removeTarget();
+      const size = sizeSelect.value;
+      const baseSize = sizeMap[size];
+      const half = halfMap[size];
+      const rect = arena.getBoundingClientRect();
+      const padding = half + 8;
+      const x = padding + secureRandom() * (rect.width - padding * 2);
+      const y = padding + secureRandom() * (rect.height - padding * 2);
+
+      const el = document.createElement('div');
+      el.className = `target target-${size}`;
+      el.dataset.size = size;
+      el.dataset.baseSize = baseSize;
+      el.dataset.scale = '1';
+      el.style.left = x + 'px';
+      el.style.top = y + 'px';
+      el.style.width = baseSize + 'px';
+      el.style.height = baseSize + 'px';
+      el.style.marginLeft = -baseSize / 2 + 'px';
+      el.style.marginTop = -baseSize / 2 + 'px';
+      el.style.background = 'radial-gradient(circle at 30% 30%, #34d399, #059669)';
+      el.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)';
+
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (!gameActive || !currentTarget) return;
+        const rt = Date.now() - targetSpawnTime;
+        reactionTimes.push(rt);
+        hits++;
+        playSuccess();
+        if (hits > sessionBest) sessionBest = hits;
+        if (hits > personalBest) {
+          personalBest = hits;
+          localStorage.setItem('aim-trainer-pb', String(personalBest));
+          playScoreUp();
+        }
+        updateStats();
+        spawnTarget();
+      });
+
+      arena.appendChild(el);
+      currentTarget = el;
+      targetSpawnTime = Date.now();
+    }
+
+    function shrinkTargets() {
+      if (!currentTarget || !gameActive) return;
+      const el = currentTarget;
+      let scale = parseFloat(el.dataset.scale || '1');
+      scale = Math.max(MIN_SCALE, scale - 0.05);
+      el.dataset.scale = scale;
+      const baseSize = parseInt(el.dataset.baseSize, 10);
+      const w = Math.max(8, baseSize * scale);
+      el.style.width = w + 'px';
+      el.style.height = w + 'px';
+      el.style.marginLeft = -w / 2 + 'px';
+      el.style.marginTop = -w / 2 + 'px';
+    }
+
+    function endRound() {
+      gameActive = false;
+      if (timerId) clearInterval(timerId);
+      if (shrinkId) clearInterval(shrinkId);
+      timerId = shrinkId = null;
+      removeTarget();
+      arenaHint.classList.remove('hidden');
+      arenaHint.textContent = 'Round over! Click Start to play again.';
+      startBtn.disabled = false;
+      sizeSelect.disabled = false;
+      playGameOver();
+      trackGameOver('aim-trainer', { hits, misses, accuracy: hits + misses > 0 ? Math.round((hits / (hits + misses)) * 100) : 0 });
+    }
+
+    function tick() {
+      const left = parseInt(statTime.textContent, 10);
+      if (left <= 1) {
+        statTime.textContent = '0s';
+        endRound();
+        return;
+      }
+      statTime.textContent = (left - 1) + 's';
+    }
+
+    function startRound() {
+      if (gameActive) return;
+      hits = 0;
+      misses = 0;
+      reactionTimes = [];
+      gameActive = true;
+      arenaHint.classList.add('hidden');
+      startBtn.disabled = true;
+      sizeSelect.disabled = true;
+      statTime.textContent = ROUND_DURATION + 's';
+      updateStats();
+      trackGameStart('aim-trainer');
+      spawnTarget();
+      timerId = setInterval(tick, 1000);
+      shrinkId = setInterval(shrinkTargets, SHRINK_INTERVAL);
+    }
+
+    arena.addEventListener('click', (e) => {
+      if (!gameActive) return;
+      if (e.target === arena || e.target === arenaHint) {
+        misses++;
+        playError();
+        updateStats();
+      }
+    });
+
+    startBtn.addEventListener('click', () => {
+      playClick();
+      startRound();
+    });
+
+    soundToggle.addEventListener('click', () => {
+      const muted = muteAll();
+      soundToggle.textContent = muted ? 'Sound: Off' : 'Sound: On';
+    });
+
+    initAudio().then(() => {}).catch(() => {});
+    updateStats();
+  </script>
+</body>
+</html>

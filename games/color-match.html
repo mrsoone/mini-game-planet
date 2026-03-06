@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Color Match - Stroop Effect Game | Mini Game Planet</title>
+  <meta name="description" content="Test your brain with the Color Match Stroop effect game. Click the button that matches the ink color, not the word. Free online cognitive training.">
+  <link rel="canonical" href="https://minigameplanet.com/games/color-match.html">
+  <!-- Open Graph -->
+  <meta property="og:title" content="Color Match - Stroop Effect Game">
+  <meta property="og:description" content="Test your brain with the Stroop effect. Match the ink color, not the word. Free cognitive training game.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/color-match.html">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background-color: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    .stroop-word { font-weight: 700; font-size: clamp(1.5rem, 5vw, 2.5rem); transition: opacity 0.15s ease; }
+    .color-red { color: #DC2626; }
+    .color-blue { color: #2563EB; }
+    .color-green { color: #16A34A; }
+    .color-yellow { color: #CA8A04; }
+    .color-purple { color: #9333EA; }
+    .color-orange { color: #EA580C; }
+    .btn-red { background: #DC2626; }
+    .btn-blue { background: #2563EB; }
+    .btn-green { background: #16A34A; }
+    .btn-yellow { background: #CA8A04; }
+    .btn-purple { background: #9333EA; }
+    .btn-orange { background: #EA580C; }
+    .btn-red:hover { background: #B91C1C; }
+    .btn-blue:hover { background: #1D4ED8; }
+    .btn-green:hover { background: #15803D; }
+    .btn-yellow:hover { background: #A16207; }
+    .btn-purple:hover { background: #7E22CE; }
+    .btn-orange:hover { background: #C2410C; }
+  </style>
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Color Match - Stroop Effect Game",
+    "description": "A free online Stroop effect game. Match the ink color of words, not the word itself. Cognitive training and brain exercise.",
+    "applicationCategory": "Game",
+    "operatingSystem": "Any",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+  <!-- AdSense (commented)
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXX" crossorigin="anonymous"></script>
+  -->
+</head>
+<body class="min-h-screen text-gray-800 antialiased">
+  <div id="nav-container"></div>
+
+  <main class="max-w-2xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+      <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Color Match</h1>
+      <p class="text-gray-600 mb-6">Click the button that matches the <strong>ink color</strong>, not the word. 60 seconds. Build your streak!</p>
+
+      <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+        <div class="flex items-center gap-4">
+          <span class="font-mono text-lg">Score: <strong id="score">0</strong></span>
+          <span class="font-mono text-amber-600">Streak: <strong id="streak">0</strong></span>
+          <span class="font-mono text-gray-500">Best: <strong id="best">0</strong></span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="sound-toggle" class="px-3 py-1.5 rounded-lg bg-gray-200 hover:bg-gray-300 text-sm" aria-label="Toggle sound">🔊 Sound</button>
+          <span class="font-mono text-lg" id="timer">60</span>
+        </div>
+      </div>
+
+      <div id="game-area" class="text-center py-8">
+        <p id="stroop-word" class="stroop-word mb-8 min-h-[3rem]">—</p>
+        <div id="color-buttons" class="grid grid-cols-2 md:grid-cols-3 gap-3 max-w-md mx-auto">
+          <!-- Buttons injected by JS -->
+        </div>
+      </div>
+
+      <div id="start-area" class="text-center py-8">
+        <button id="start-btn" class="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl text-lg transition">Start Game</button>
+      </div>
+
+      <div id="game-over-area" class="hidden text-center py-8">
+        <h2 class="text-xl font-bold text-gray-900 mb-2">Time's Up!</h2>
+        <p class="font-mono text-2xl mb-4">Final Score: <strong id="final-score">0</strong></p>
+        <p class="text-gray-600 mb-4" id="final-message"></p>
+        <button id="play-again-btn" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl">Play Again</button>
+      </div>
+
+      <div id="session-stats" class="mt-6 pt-6 border-t border-gray-200 text-sm text-gray-500 font-mono">
+        <p>Session: <span id="session-games">0</span> games | Total points: <span id="session-points">0</span></p>
+      </div>
+    </div>
+
+    <article class="mt-8 bg-white rounded-2xl shadow-lg p-6 md:p-8 prose prose-gray max-w-none">
+      <h2 class="text-xl font-bold text-gray-900 mb-4">What Is the Stroop Effect?</h2>
+      <p>The Stroop effect is one of the most famous and studied phenomena in cognitive psychology. Named after John Ridley Stroop, who published his research in 1935, it reveals how our brains process conflicting information when reading words versus perceiving colors. The effect has been replicated countless times and remains a cornerstone of attention and executive function research.</p>
+      <p>In a classic Stroop task, you might see the word "BLUE" printed in red ink. Your brain has two competing responses: read the word (which says "blue") or identify the ink color (which is red). Because reading is such a well-practiced, automatic skill, it tends to interfere with color naming. Most people are slower and make more errors when the word and color don't match. This interference is measurable and consistent across populations.</p>
+      <h3 class="text-lg font-semibold mt-6 mb-2">Why Does It Happen?</h3>
+      <p>Psychologists explain the Stroop effect through the concept of automaticity. Reading words becomes so automatic that it happens without conscious effort. Color naming, however, requires more deliberate attention. When both are presented together and conflict, the automatic process (reading) wins the race and creates interference. Some theories also suggest that the brain's pathways for word recognition are simply faster than those for color perception, leading to a bottleneck when both are activated.</p>
+      <h3 class="text-lg font-semibold mt-6 mb-2">Uses in Research and Training</h3>
+      <p>The Stroop test is widely used to measure selective attention, cognitive flexibility, and processing speed. It appears in clinical assessments, brain training apps, and research on aging, ADHD, and other conditions. Practicing Stroop-like tasks may help improve your ability to suppress automatic responses and focus on the relevant dimension—a skill useful in many real-life situations, from driving to multitasking at work.</p>
+      <h3 class="text-lg font-semibold mt-6 mb-2">Tips for Better Performance</h3>
+      <p>To improve at Color Match and Stroop tasks in general, try to focus your eyes on the center of the word and consciously ignore the meaning of the text. Some players find it helps to say the ink color silently before clicking. With practice, you can train your brain to prioritize color over reading, though the effect never fully disappears. Staying calm and avoiding haste also reduces errors—accuracy matters as much as speed.</p>
+      <h3 class="text-lg font-semibold mt-6 mb-2">A Brief History</h3>
+      <p>Stroop's original 1935 paper described several experiments. In one, participants named the color of ink for color words; in another, they read the words regardless of ink. The interference from incongruent conditions was clear. Since then, researchers have adapted the task for digital platforms, added variations like emotional Stroop tests, and used it to study bilingualism and cognitive development.</p>
+      <h3 class="text-lg font-semibold mt-6 mb-2">How to Play Color Match</h3>
+      <p>In this game, a color word appears in a different ink color. Your job is to click the button that matches the <strong>ink color</strong>, not the word. For example, if you see "GREEN" in red ink, click the red button. Build streaks for bonus points, and watch the pace increase as you score higher. The game uses six colors: red, blue, green, yellow, purple, and orange. Good luck!</p>
+    </article>
+
+    <div id="related-games" class="mt-8"></div>
+  </main>
+
+  <div id="footer-container"></div>
+
+  <div id="consent-banner"></div>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playPerfect } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('color-match');
+    initConsent();
+    trackGameView('color-match', 'Casual');
+
+    const COLORS = [
+      { name: 'Red', class: 'color-red', btnClass: 'btn-red', value: 'red' },
+      { name: 'Blue', class: 'color-blue', btnClass: 'btn-blue', value: 'blue' },
+      { name: 'Green', class: 'color-green', btnClass: 'btn-green', value: 'green' },
+      { name: 'Yellow', class: 'color-yellow', btnClass: 'btn-yellow', value: 'yellow' },
+      { name: 'Purple', class: 'color-purple', btnClass: 'btn-purple', value: 'purple' },
+      { name: 'Orange', class: 'color-orange', btnClass: 'btn-orange', value: 'orange' },
+    ];
+
+    const BEST_KEY = 'color-match-best';
+    const SESSION_KEY = 'color-match-session';
+
+    function secureRandom(max) {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] % max;
+    }
+
+    function getBest() {
+      return parseInt(localStorage.getItem(BEST_KEY) || '0', 10);
+    }
+
+    function setBest(v) {
+      localStorage.setItem(BEST_KEY, String(v));
+    }
+
+    function getSession() {
+      try {
+        return JSON.parse(sessionStorage.getItem(SESSION_KEY) || '{"games":0,"points":0}');
+      } catch {
+        return { games: 0, points: 0 };
+      }
+    }
+
+    function setSession(data) {
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify(data));
+    }
+
+    const stroopWord = document.getElementById('stroop-word');
+    const colorButtons = document.getElementById('color-buttons');
+    const scoreEl = document.getElementById('score');
+    const streakEl = document.getElementById('streak');
+    const bestEl = document.getElementById('best');
+    const timerEl = document.getElementById('timer');
+    const startArea = document.getElementById('start-area');
+    const gameArea = document.getElementById('game-area');
+    const gameOverArea = document.getElementById('game-over-area');
+    const finalScoreEl = document.getElementById('final-score');
+    const finalMessageEl = document.getElementById('final-message');
+    const startBtn = document.getElementById('start-btn');
+    const playAgainBtn = document.getElementById('play-again-btn');
+    const soundToggle = document.getElementById('sound-toggle');
+    const sessionGamesEl = document.getElementById('session-games');
+    const sessionPointsEl = document.getElementById('session-points');
+
+    let score = 0;
+    let streak = 0;
+    let timeLeft = 60;
+    let timerId = null;
+    let currentInkColor = null;
+    let isPlaying = false;
+    let speedMs = 2500;
+
+    function renderButtons() {
+      const shuffled = [...COLORS].sort(() => secureRandom(2) - 1);
+      colorButtons.innerHTML = shuffled.map(c => `
+        <button class="color-btn px-4 py-3 rounded-xl text-white font-semibold transition ${c.btnClass}" data-color="${c.value}">${c.name}</button>
+      `).join('');
+      colorButtons.querySelectorAll('.color-btn').forEach(btn => {
+        btn.addEventListener('click', () => handleAnswer(btn.dataset.color));
+      });
+    }
+
+    function pickStroop() {
+      const inkIdx = secureRandom(COLORS.length);
+      let wordIdx = secureRandom(COLORS.length);
+      while (wordIdx === inkIdx) wordIdx = secureRandom(COLORS.length);
+      const ink = COLORS[inkIdx];
+      const word = COLORS[wordIdx];
+      currentInkColor = ink.value;
+      stroopWord.textContent = word.name.toUpperCase();
+      stroopWord.className = 'stroop-word ' + ink.class + ' mb-8 min-h-[3rem]';
+      stroopWord.style.opacity = '1';
+    }
+
+    function handleAnswer(clicked) {
+      if (!isPlaying) return;
+      playClick();
+      if (clicked === currentInkColor) {
+        score++;
+        streak++;
+        if (streak >= 5) playPerfect();
+        else if (streak >= 3) playScoreUp();
+        else playSuccess();
+        const best = getBest();
+        if (score > best) {
+          setBest(score);
+          bestEl.textContent = score;
+        }
+        scoreEl.textContent = score;
+        streakEl.textContent = streak;
+        speedMs = Math.max(800, 2500 - score * 40);
+        stroopWord.style.opacity = '0';
+        setTimeout(() => {
+          pickStroop();
+        }, 150);
+      } else {
+        playError();
+        streak = 0;
+        streakEl.textContent = '0';
+      }
+    }
+
+    function tick() {
+      timeLeft--;
+      timerEl.textContent = timeLeft;
+      if (timeLeft <= 0) endGame();
+    }
+
+    function endGame() {
+      isPlaying = false;
+      if (timerId) clearInterval(timerId);
+      timerId = null;
+      playGameOver();
+      gameArea.classList.add('hidden');
+      gameOverArea.classList.remove('hidden');
+      finalScoreEl.textContent = score;
+      let msg = 'Nice effort!';
+      if (score >= 30) msg = 'Outstanding! Your brain is on fire.';
+      else if (score >= 20) msg = 'Great job! Strong Stroop skills.';
+      else if (score >= 10) msg = 'Good run! Keep practicing.';
+      finalMessageEl.textContent = msg;
+      trackGameOver('color-match', score);
+      const sess = getSession();
+      sess.games++;
+      sess.points += score;
+      setSession(sess);
+      sessionGamesEl.textContent = sess.games;
+      sessionPointsEl.textContent = sess.points;
+    }
+
+    function startGame() {
+      trackGameStart('color-match');
+      score = 0;
+      streak = 0;
+      timeLeft = 60;
+      speedMs = 2500;
+      isPlaying = true;
+      scoreEl.textContent = '0';
+      streakEl.textContent = '0';
+      timerEl.textContent = '60';
+      bestEl.textContent = getBest();
+      startArea.classList.add('hidden');
+      gameOverArea.classList.add('hidden');
+      gameArea.classList.remove('hidden');
+      renderButtons();
+      pickStroop();
+      if (timerId) clearInterval(timerId);
+      timerId = setInterval(tick, 1000);
+    }
+
+    startBtn.addEventListener('click', startGame);
+    playAgainBtn.addEventListener('click', startGame);
+
+    soundToggle.addEventListener('click', () => {
+      muteAll();
+      soundToggle.textContent = soundToggle.textContent === '🔊 Sound' ? '🔇 Muted' : '🔊 Sound';
+    });
+
+    bestEl.textContent = getBest();
+    const sess = getSession();
+    sessionGamesEl.textContent = sess.games;
+    sessionPointsEl.textContent = sess.points;
+  </script>
+</body>
+</html>

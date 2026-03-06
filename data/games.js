@@ -666,7 +666,7 @@ export const games = [
     icon: '✊',
     accent: '#E11D48',
     keywords: ['rock paper scissors', 'rps', 'hand game', 'quick game'],
-    built: false
+    built: true
   },
   {
     name: 'Clicker Game',
@@ -676,7 +676,7 @@ export const games = [
     icon: '👆',
     accent: '#E11D48',
     keywords: ['clicker game', 'idle game', 'incremental', 'clicking game'],
-    built: false
+    built: true
   },
   {
     name: 'Reaction Time Test',
@@ -686,7 +686,7 @@ export const games = [
     icon: '⚡',
     accent: '#E11D48',
     keywords: ['reaction time', 'reflex test', 'speed test', 'reaction game'],
-    built: false
+    built: true
   },
   {
     name: 'Aim Trainer',
@@ -696,7 +696,7 @@ export const games = [
     icon: '🎯',
     accent: '#E11D48',
     keywords: ['aim trainer', 'aim practice', 'mouse accuracy', 'click speed'],
-    built: false
+    built: true
   },
   {
     name: 'Color Match',
@@ -706,7 +706,7 @@ export const games = [
     icon: '🌈',
     accent: '#E11D48',
     keywords: ['color match', 'stroop test', 'brain game', 'color game'],
-    built: false
+    built: true
   },
   {
     name: 'Simon Says',
@@ -716,7 +716,7 @@ export const games = [
     icon: '🔴',
     accent: '#E11D48',
     keywords: ['simon says', 'memory game', 'sequence game', 'pattern game'],
-    built: false
+    built: true
   },
   {
     name: 'Trivia Quiz',
@@ -726,7 +726,7 @@ export const games = [
     icon: '❓',
     accent: '#E11D48',
     keywords: ['trivia quiz', 'quiz game', 'knowledge test', 'general knowledge'],
-    built: false
+    built: true
   },
   {
     name: 'Number Memory',
@@ -736,7 +736,7 @@ export const games = [
     icon: '🔢',
     accent: '#E11D48',
     keywords: ['number memory', 'digit span', 'memory test', 'brain game'],
-    built: false
+    built: true
   },
   {
     name: 'Sequence Memory',
@@ -746,7 +746,7 @@ export const games = [
     icon: '🟦',
     accent: '#E11D48',
     keywords: ['sequence memory', 'pattern memory', 'tile memory', 'brain game'],
-    built: false
+    built: true
   },
   {
     name: 'Spot the Difference',
@@ -756,7 +756,7 @@ export const games = [
     icon: '🔎',
     accent: '#E11D48',
     keywords: ['spot the difference', 'find difference', 'observation game', 'visual puzzle'],
-    built: false
+    built: true
   },
 
   // ─── ACTION (8) ───────────────────────────────────────────────

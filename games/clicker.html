@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clicker Game - Idle Incremental Clicker | Mini Game Planet</title>
+  <meta name="description" content="Play our free idle clicker game! Click for points, buy upgrades, unlock auto-clickers, and prestige for permanent bonuses. Addictive incremental game.">
+  <link rel="canonical" href="https://minigameplanet.com/games/clicker.html">
+  <!-- Open Graph -->
+  <meta property="og:title" content="Clicker Game - Idle Incremental Clicker">
+  <meta property="og:description" content="Click for points, buy upgrades, and prestige for permanent bonuses. Free idle clicker game.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/clicker.html">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    }
+  </script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    .clicker-btn {
+      transition: transform 0.08s ease-out;
+      user-select: none;
+    }
+    .clicker-btn:active { transform: scale(0.92); }
+    .clicker-btn.pulse { animation: pulse 0.15s ease-out; }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+  </style>
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Clicker Game",
+    "description": "Idle incremental clicker game. Click for points, buy upgrades, auto-clickers, and prestige for permanent bonuses.",
+    "applicationCategory": "Game",
+    "genre": "Casual",
+    "url": "https://minigameplanet.com/games/clicker.html"
+  }
+  </script>
+  <!-- AdSense (commented) -->
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXX" crossorigin="anonymous"></script> -->
+</head>
+<body class="min-h-screen text-gray-800">
+  <!-- GA4 Consent defaults handled by initConsent() -->
+
+  <nav id="nav-container" class="bg-white/80 backdrop-blur border-b border-gray-200 sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="font-semibold text-lg">Mini Game Planet</a>
+      <div class="flex items-center gap-4">
+        <button id="sound-toggle" class="text-sm px-3 py-1 rounded border border-gray-300 hover:bg-gray-100" aria-label="Toggle sound">🔊 Sound On</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 md:p-8">
+      <h1 class="text-2xl md:text-3xl font-bold mb-2">Clicker Game</h1>
+      <p class="text-gray-600 mb-6">Click for points, buy upgrades, and prestige for permanent bonuses!</p>
+
+      <!-- Stats -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+          <div class="text-xs text-gray-500 uppercase tracking-wide">Total Points</div>
+          <div id="total-points" class="font-mono text-xl font-semibold">0</div>
+        </div>
+        <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+          <div class="text-xs text-gray-500 uppercase tracking-wide">Per Click</div>
+          <div id="per-click" class="font-mono text-xl font-semibold">1</div>
+        </div>
+        <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+          <div class="text-xs text-gray-500 uppercase tracking-wide">Per Second</div>
+          <div id="per-second" class="font-mono text-xl font-semibold">0</div>
+        </div>
+        <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+          <div class="text-xs text-gray-500 uppercase tracking-wide">Prestige</div>
+          <div id="prestige-level" class="font-mono text-xl font-semibold">0</div>
+        </div>
+      </div>
+
+      <!-- Main Click Button -->
+      <div class="flex justify-center mb-8">
+        <button id="clicker-btn" class="clicker-btn w-48 h-48 md:w-64 md:h-64 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 text-white text-2xl font-bold shadow-lg hover:shadow-xl active:from-amber-500 active:to-orange-600 select-none">
+          CLICK!
+        </button>
+      </div>
+
+      <!-- Upgrade Shop -->
+      <div class="mb-8">
+        <h2 class="text-lg font-semibold mb-4">Upgrade Shop</h2>
+        <div class="space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
+            <div>
+              <div class="font-medium">Click Power</div>
+              <div class="text-sm text-gray-500">Doubles your click value</div>
+            </div>
+            <button id="upgrade-click" class="px-4 py-2 bg-amber-500 text-white rounded-lg font-medium hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+              Buy (<span id="cost-click">10</span>)
+            </button>
+          </div>
+          <div class="flex flex-wrap items-center justify-between gap-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
+            <div>
+              <div class="font-medium">Auto Clicker</div>
+              <div class="text-sm text-gray-500">+1 point per second</div>
+            </div>
+            <button id="upgrade-auto" class="px-4 py-2 bg-amber-500 text-white rounded-lg font-medium hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+              Buy (<span id="cost-auto">50</span>)
+            </button>
+          </div>
+          <div class="flex flex-wrap items-center justify-between gap-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
+            <div>
+              <div class="font-medium">Multiplier</div>
+              <div class="text-sm text-gray-500">+25% to all income</div>
+            </div>
+            <button id="upgrade-mult" class="px-4 py-2 bg-amber-500 text-white rounded-lg font-medium hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+              Buy (<span id="cost-mult">200</span>)
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Prestige -->
+      <div class="p-4 bg-purple-50 rounded-xl border border-purple-100">
+        <h2 class="text-lg font-semibold mb-2">Prestige</h2>
+        <p class="text-sm text-gray-600 mb-3">Reset progress for a permanent +10% bonus. Unlocks at 10,000 points.</p>
+        <button id="prestige-btn" class="px-4 py-2 bg-purple-500 text-white rounded-lg font-medium hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+          Prestige (need 10,000)
+        </button>
+      </div>
+    </div>
+
+    <!-- SEO Article -->
+    <article class="mt-12 prose prose-gray max-w-none">
+      <h2 class="text-xl font-bold mb-4">What Is a Clicker Game?</h2>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        A clicker game, also known as an idle game or incremental game, is a casual genre where players earn points or currency by clicking a button. The core loop is simple: click to earn, spend earnings on upgrades, and watch your income grow. What makes clickers addictive is the sense of constant progress—even when you're not actively playing, auto-clickers and passive income keep the numbers climbing.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        Our Clicker Game follows this classic formula. You start with a single point per click. As you accumulate points, you can purchase three types of upgrades: Click Power doubles your per-click value, Auto Clicker adds passive income per second, and the Multiplier boosts all income by 25%. Each upgrade becomes more expensive as you buy more, creating a satisfying challenge of balancing immediate gains with long-term investments.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        The prestige system adds another layer of strategy. When you reach 10,000 points, you can reset your progress in exchange for a permanent 10% bonus to all income. This bonus stacks with each prestige, so dedicated players can eventually reach astronomical numbers. Prestige rewards patience and planning—knowing when to reset versus when to push for one more upgrade is part of the fun.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        Idle games have become hugely popular on mobile and web. Titles like Cookie Clicker, Adventure Capitalist, and Idle Miner have millions of players. They're perfect for short sessions—check in, click a few times, buy an upgrade, and come back later. The low barrier to entry and satisfying feedback loops make them ideal for casual gamers and anyone who enjoys watching numbers go up.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        Strategy matters in clicker games. Early on, focus on Click Power to maximize each tap. Once you have a steady income, Auto Clickers become valuable—they work while you're away. The Multiplier is a force multiplier for everything, so buying it when you can afford it accelerates your growth. Before prestiging, consider whether one more upgrade will pay off faster than resetting.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        Our version runs entirely in your browser with no downloads required. Your progress is saved automatically to your device, so you can pick up right where you left off. Whether you're killing time during a commute or optimizing your prestige strategy, the Clicker Game offers a relaxing yet engaging experience. Give it a try and see how high you can climb!
+      </p>
+    </article>
+
+    <!-- Related Games -->
+    <section id="related-games" class="mt-12">
+      <h2 class="text-lg font-semibold mb-4">Related Games</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <a href="/games/" class="block p-4 bg-white rounded-xl border border-gray-200 hover:shadow-md transition">More Games</a>
+      </div>
+    </section>
+  </main>
+
+  <footer id="footer-container" class="border-t border-gray-200 mt-12 py-6">
+    <div class="max-w-4xl mx-auto px-4 text-center text-sm text-gray-500">
+      <p>© Mini Game Planet. Free casual games to play in your browser.</p>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playCollect, playLevelUp } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart } from '/js/analytics.js';
+
+    initToolPage('clicker');
+    initConsent();
+    initAudio();
+    trackGameView('clicker', 'Casual');
+
+    // Game state
+    const STORAGE_KEY = 'clicker_save';
+    let state = {
+      points: 0,
+      clickPower: 1,
+      clickPowerLevel: 0,
+      autoClickers: 0,
+      multiplierLevel: 0,
+      prestigeLevel: 0,
+      totalClicks: 0,
+    };
+
+    // Costs: base * (multiplier ^ level)
+    const COST_BASE = { click: 10, auto: 50, mult: 200 };
+    const COST_MULT = 1.5;
+    const PRESTIGE_THRESHOLD = 10000;
+    const PRESTIGE_BONUS = 0.1;
+
+    function getCost(type) {
+      const base = COST_BASE[type];
+      const lvl = type === 'click' ? state.clickPowerLevel : type === 'auto' ? state.autoClickers : state.multiplierLevel;
+      return Math.floor(base * Math.pow(COST_MULT, lvl));
+    }
+
+    function getMultiplier() {
+      return 1 + state.multiplierLevel * 0.25 + state.prestigeLevel * PRESTIGE_BONUS;
+    }
+
+    function getPerClick() {
+      return Math.floor(state.clickPower * getMultiplier());
+    }
+
+    function getPerSecond() {
+      return Math.floor(state.autoClickers * getMultiplier());
+    }
+
+    function addPoints(amt) {
+      state.points += amt;
+    }
+
+    function canAfford(cost) {
+      return state.points >= cost;
+    }
+
+    function updateUI() {
+      document.getElementById('total-points').textContent = formatNum(state.points);
+      document.getElementById('per-click').textContent = formatNum(getPerClick());
+      document.getElementById('per-second').textContent = formatNum(getPerSecond());
+      document.getElementById('prestige-level').textContent = state.prestigeLevel;
+
+      document.getElementById('cost-click').textContent = formatNum(getCost('click'));
+      document.getElementById('cost-auto').textContent = formatNum(getCost('auto'));
+      document.getElementById('cost-mult').textContent = formatNum(getCost('mult'));
+
+      document.getElementById('upgrade-click').disabled = !canAfford(getCost('click'));
+      document.getElementById('upgrade-auto').disabled = !canAfford(getCost('auto'));
+      document.getElementById('upgrade-mult').disabled = !canAfford(getCost('mult'));
+
+      const prestigeBtn = document.getElementById('prestige-btn');
+      prestigeBtn.disabled = state.points < PRESTIGE_THRESHOLD;
+      prestigeBtn.textContent = `Prestige (need ${formatNum(PRESTIGE_THRESHOLD)})`;
+    }
+
+    function formatNum(n) {
+      if (n >= 1e12) return (n / 1e12).toFixed(2) + 'T';
+      if (n >= 1e9) return (n / 1e9).toFixed(2) + 'B';
+      if (n >= 1e6) return (n / 1e6).toFixed(2) + 'M';
+      if (n >= 1e3) return (n / 1e3).toFixed(2) + 'K';
+      return Math.floor(n).toString();
+    }
+
+    function save() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {}
+    }
+
+    function load() {
+      try {
+        const s = localStorage.getItem(STORAGE_KEY);
+        if (s) {
+          const parsed = JSON.parse(s);
+          state = { ...state, ...parsed };
+        }
+      } catch (e) {}
+    }
+
+    function handleClick() {
+      state.totalClicks++;
+      if (state.totalClicks === 1) trackGameStart('clicker');
+      const gain = getPerClick();
+      addPoints(gain);
+      playClick();
+      const btn = document.getElementById('clicker-btn');
+      btn.classList.add('pulse');
+      setTimeout(() => btn.classList.remove('pulse'), 150);
+      updateUI();
+      save();
+    }
+
+    function buyUpgrade(type) {
+      const cost = getCost(type);
+      if (!canAfford(cost)) return;
+      state.points -= cost;
+      if (type === 'click') {
+        state.clickPowerLevel++;
+        state.clickPower = Math.pow(2, state.clickPowerLevel);
+      } else if (type === 'auto') {
+        state.autoClickers++;
+      } else {
+        state.multiplierLevel++;
+      }
+      playSuccess();
+      updateUI();
+      save();
+    }
+
+    function prestige() {
+      if (state.points < PRESTIGE_THRESHOLD) return;
+      playLevelUp();
+      state.prestigeLevel++;
+      state.points = 0;
+      state.clickPower = 1;
+      state.clickPowerLevel = 0;
+      state.autoClickers = 0;
+      state.multiplierLevel = 0;
+      updateUI();
+      save();
+    }
+
+    // Auto-clicker loop
+    setInterval(() => {
+      const gain = getPerSecond();
+      if (gain > 0) {
+        addPoints(gain);
+        updateUI();
+        save();
+      }
+    }, 1000);
+
+    // Event listeners
+    document.getElementById('clicker-btn').addEventListener('click', handleClick);
+    document.getElementById('upgrade-click').addEventListener('click', () => buyUpgrade('click'));
+    document.getElementById('upgrade-auto').addEventListener('click', () => buyUpgrade('auto'));
+    document.getElementById('upgrade-mult').addEventListener('click', () => buyUpgrade('mult'));
+    document.getElementById('prestige-btn').addEventListener('click', prestige);
+
+    document.getElementById('sound-toggle').addEventListener('click', () => {
+      muteAll();
+      document.getElementById('sound-toggle').textContent = document.getElementById('sound-toggle').textContent.includes('On') ? '🔇 Sound Off' : '🔊 Sound On';
+    });
+
+    load();
+    updateUI();
+  </script>
+</body>
+</html>

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reaction Time Test - Measure Your Reflexes | Mini Game Planet</title>
+  <meta name="description" content="Test your reaction time with our free online reflex game. Wait for green, click as fast as you can. 5 rounds, track your average and best score. No download required.">
+  <link rel="canonical" href="https://minigameplanet.com/games/reaction-time.html">
+  <!-- Open Graph -->
+  <meta property="og:title" content="Reaction Time Test - Measure Your Reflexes">
+  <meta property="og:description" content="Test your reaction time. Wait for green, click as fast as you can. 5 rounds, track your average and best score.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/reaction-time.html">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    }
+  </script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    .reaction-zone {
+      transition: background-color 0.15s ease-out;
+      user-select: none;
+      min-height: 320px;
+    }
+    .reaction-zone.waiting { background: #dc2626; }
+    .reaction-zone.ready { background: #16a34a; cursor: pointer; }
+    .reaction-zone.too-soon { background: #b91c1c; }
+  </style>
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Reaction Time Test",
+    "description": "Free online reaction time test. Wait for green, click as fast as you can. 5 rounds, track average and best score.",
+    "applicationCategory": "Game",
+    "genre": "Casual",
+    "url": "https://minigameplanet.com/games/reaction-time.html"
+  }
+  </script>
+  <!-- AdSense (commented) -->
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXX" crossorigin="anonymous"></script> -->
+</head>
+<body class="min-h-screen text-gray-800">
+  <!-- GA4 Consent defaults handled by initConsent() -->
+
+  <nav id="nav-container" class="bg-white/80 backdrop-blur border-b border-gray-200 sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="font-semibold text-lg">Mini Game Planet</a>
+      <div class="flex items-center gap-4">
+        <button id="sound-toggle" class="text-sm px-3 py-1 rounded border border-gray-300 hover:bg-gray-100" aria-label="Toggle sound">🔊 Sound On</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 md:p-8">
+      <h1 class="text-2xl md:text-3xl font-bold mb-2">Reaction Time Test</h1>
+      <p class="text-gray-600 mb-6">Wait for the screen to turn green, then click as fast as you can. 5 rounds—don't click too early!</p>
+
+      <!-- Stats -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+          <div class="text-xs text-gray-500 uppercase tracking-wide">Round</div>
+          <div id="round-display" class="font-mono text-xl font-semibold">0 / 5</div>
+        </div>
+        <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+          <div class="text-xs text-gray-500 uppercase tracking-wide">Last</div>
+          <div id="last-time" class="font-mono text-xl font-semibold">—</div>
+        </div>
+        <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+          <div class="text-xs text-gray-500 uppercase tracking-wide">Average</div>
+          <div id="avg-time" class="font-mono text-xl font-semibold">—</div>
+        </div>
+        <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+          <div class="text-xs text-gray-500 uppercase tracking-wide">Best Avg</div>
+          <div id="best-avg" class="font-mono text-xl font-semibold">—</div>
+        </div>
+      </div>
+
+      <!-- Large Click Zone -->
+      <div id="reaction-zone" class="reaction-zone waiting rounded-2xl flex items-center justify-center text-white text-2xl md:text-3xl font-bold mb-6">
+        <span id="zone-text">Click to start</span>
+      </div>
+
+      <!-- Start / Play Again -->
+      <div class="flex justify-center">
+        <button id="start-btn" class="px-6 py-3 rounded-xl font-semibold bg-emerald-500 text-white hover:bg-emerald-600 transition shadow-md">
+          Start Test
+        </button>
+      </div>
+    </div>
+
+    <!-- SEO Article -->
+    <article class="mt-12 prose prose-gray max-w-none">
+      <h2 class="text-xl font-bold mb-4">What Is a Reaction Time Test?</h2>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        A reaction time test measures how quickly you can respond to a visual stimulus. It's one of the simplest yet most revealing ways to gauge your reflexes. The test works like this: you wait for a signal (in our case, a screen that turns from red to green), then you click or tap as fast as you can. The time between the signal and your response—measured in milliseconds—is your reaction time.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        Human reaction times typically fall between 200 and 300 milliseconds for simple visual stimuli. Elite athletes and esports players often achieve times under 200 ms, while the average person might land around 250–280 ms. Factors like fatigue, screen refresh rate, input lag, and practice all affect your score. Our test uses a random delay of 2–5 seconds before turning green, so you can't anticipate the exact moment—you must react when you see the change.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        Our Reaction Time Test runs five rounds per session. Each round, the screen starts red with a "Wait..." message. After a random delay generated with <strong>crypto.getRandomValues()</strong> for true unpredictability, the screen turns green. Click or tap immediately. If you click before the screen turns green, you'll see "Too soon!" and that round won't count toward your average. This penalty discourages guessing and rewards genuine reflexes.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        After five valid rounds, we calculate your average reaction time and display it alongside your best average ever. Your best average is saved in your browser's localStorage, so you can track improvement over time. Many people find that a few practice sessions help them shave 20–50 ms off their initial scores as they learn to focus and avoid false starts.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        Reaction time matters in many real-world activities. Drivers need fast reflexes to brake when something appears in the road. Gamers rely on quick reactions for competitive play. Athletes in sports like tennis, boxing, and racing depend on split-second responses. Even everyday tasks like catching a falling object benefit from good reaction time. While genetics play a role, practice, sleep, and focus can all improve your performance.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        Our test is free, runs entirely in your browser, and requires no downloads or accounts. The large colored area makes it easy to see the change from red to green, and the simple rules make it accessible to anyone. Try it on different devices—desktop, tablet, or phone—to see how input method and screen size affect your results. Challenge friends to beat your best average, or use it as a quick warm-up before gaming or sports. Give it a try and see how fast you can react!
+      </p>
+    </article>
+
+    <!-- Related Games -->
+    <section id="related-games" class="mt-12">
+      <h2 class="text-lg font-semibold mb-4">Related Games</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <a href="/games/clicker.html" class="block p-4 bg-white rounded-xl border border-gray-200 hover:shadow-md transition">Clicker</a>
+        <a href="/games/whack-a-mole.html" class="block p-4 bg-white rounded-xl border border-gray-200 hover:shadow-md transition">Whack a Mole</a>
+        <a href="/games/typing-race.html" class="block p-4 bg-white rounded-xl border border-gray-200 hover:shadow-md transition">Typing Race</a>
+        <a href="/games/" class="block p-4 bg-white rounded-xl border border-gray-200 hover:shadow-md transition">More Games</a>
+      </div>
+    </section>
+  </main>
+
+  <footer id="footer-container" class="border-t border-gray-200 mt-12 py-6">
+    <div class="max-w-4xl mx-auto px-4 text-center text-sm text-gray-500">
+      <p>© Mini Game Planet. Free casual games to play in your browser.</p>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playPerfect } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('reaction-time');
+    initConsent();
+    trackGameView('reaction-time', 'Casual');
+
+    const STORAGE_KEY = 'reaction_time_best_avg';
+    const ROUNDS = 5;
+    const MIN_DELAY_MS = 2000;
+    const MAX_DELAY_MS = 5000;
+
+    let state = {
+      phase: 'idle', // idle | waiting | ready | result
+      round: 0,
+      times: [],
+      greenAt: 0,
+      timeoutId: null,
+    };
+
+    const zone = document.getElementById('reaction-zone');
+    const zoneText = document.getElementById('zone-text');
+    const startBtn = document.getElementById('start-btn');
+
+    function getRandomDelayMs() {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      const t = arr[0] / (0xFFFFFFFF + 1);
+      return MIN_DELAY_MS + Math.floor(t * (MAX_DELAY_MS - MIN_DELAY_MS + 1));
+    }
+
+    function getBestAvg() {
+      try {
+        const s = localStorage.getItem(STORAGE_KEY);
+        return s ? parseFloat(s) : null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function setBestAvg(avg) {
+      try {
+        localStorage.setItem(STORAGE_KEY, avg.toString());
+      } catch (e) {}
+    }
+
+    function updateUI() {
+      document.getElementById('round-display').textContent = `${state.round} / ${ROUNDS}`;
+      const last = state.times.length > 0 ? state.times[state.times.length - 1] : null;
+      document.getElementById('last-time').textContent = last !== null ? `${last} ms` : '—';
+      const avg = state.times.length > 0
+        ? Math.round(state.times.reduce((a, b) => a + b, 0) / state.times.length)
+        : null;
+      document.getElementById('avg-time').textContent = avg !== null ? `${avg} ms` : '—';
+      const best = getBestAvg();
+      document.getElementById('best-avg').textContent = best !== null ? `${best} ms` : '—';
+    }
+
+    function startRound() {
+      if (state.phase !== 'idle' && state.phase !== 'result') return;
+      state.phase = 'waiting';
+      state.round++;
+      startBtn.classList.add('hidden');
+      zone.classList.remove('ready', 'too-soon');
+      zone.classList.add('waiting');
+      zoneText.textContent = 'Wait...';
+
+      const delay = getRandomDelayMs();
+      state.timeoutId = setTimeout(() => {
+        state.timeoutId = null;
+        state.phase = 'ready';
+        state.greenAt = performance.now();
+        zone.classList.remove('waiting');
+        zone.classList.add('ready');
+        zoneText.textContent = 'Click!';
+        playClick();
+      }, delay);
+    }
+
+    function handleZoneClick() {
+      if (state.phase === 'idle') {
+        initAudio();
+        trackGameStart('reaction-time');
+        startRound();
+        return;
+      }
+      if (state.phase === 'waiting') {
+        clearTimeout(state.timeoutId);
+        state.timeoutId = null;
+        zone.classList.remove('waiting');
+        zone.classList.add('too-soon');
+        zoneText.textContent = 'Too soon!';
+        playError();
+        state.phase = 'result';
+        setTimeout(showResultOrNext, 1500);
+        return;
+      }
+      if (state.phase === 'ready') {
+        const elapsed = Math.round(performance.now() - state.greenAt);
+        state.times.push(elapsed);
+        zone.classList.remove('ready');
+        zone.classList.add('waiting');
+        zoneText.textContent = `${elapsed} ms`;
+        if (elapsed < 200) playPerfect();
+        else playSuccess();
+        state.phase = 'result';
+        updateUI();
+        setTimeout(showResultOrNext, 1200);
+        return;
+      }
+    }
+
+    function showResultOrNext() {
+      if (state.round >= ROUNDS) {
+        endGame();
+        return;
+      }
+      startRound();
+    }
+
+    function endGame() {
+      state.phase = 'idle';
+      const avg = state.times.length > 0
+        ? Math.round(state.times.reduce((a, b) => a + b, 0) / state.times.length)
+        : null;
+      const best = getBestAvg();
+      if (avg !== null && (best === null || avg < best)) {
+        setBestAvg(avg);
+      }
+      updateUI();
+      zone.classList.remove('ready', 'too-soon');
+      zone.classList.add('waiting');
+      zoneText.textContent = avg !== null ? `Average: ${avg} ms` : 'Too soon on all rounds!';
+      startBtn.classList.remove('hidden');
+      startBtn.textContent = 'Play Again';
+      trackGameOver('reaction-time', { avg, rounds: state.times.length });
+      state.round = 0;
+      state.times = [];
+    }
+
+    function resetGame() {
+      if (state.timeoutId) clearTimeout(state.timeoutId);
+      state = { phase: 'idle', round: 0, times: [], greenAt: 0, timeoutId: null };
+      zone.classList.remove('ready', 'too-soon');
+      zone.classList.add('waiting');
+      zoneText.textContent = 'Click to start';
+      startBtn.classList.remove('hidden');
+      startBtn.textContent = 'Start Test';
+      updateUI();
+    }
+
+    zone.addEventListener('click', handleZoneClick);
+    startBtn.addEventListener('click', () => {
+      initAudio();
+      trackGameStart('reaction-time');
+      resetGame();
+      state.round = 0;
+      startRound();
+    });
+
+    document.getElementById('sound-toggle').addEventListener('click', () => {
+      muteAll();
+      document.getElementById('sound-toggle').textContent =
+        document.getElementById('sound-toggle').textContent.includes('On') ? '🔇 Sound Off' : '🔊 Sound On';
+    });
+
+    updateUI();
+  </script>
+</body>
+</html>

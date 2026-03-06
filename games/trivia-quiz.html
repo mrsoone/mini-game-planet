@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trivia Quiz - Test Your Knowledge | Mini Game Planet</title>
+  <meta name="description" content="Play our free trivia quiz with 50+ questions across Science, History, Geography, Entertainment, Sports & Technology. 15-second timer, streak bonuses, and personal best tracking.">
+  <link rel="canonical" href="https://minigameplanet.com/games/trivia-quiz.html">
+  <!-- Open Graph -->
+  <meta property="og:title" content="Trivia Quiz - Test Your Knowledge | Mini Game Planet">
+  <meta property="og:description" content="Challenge yourself with our free trivia quiz. Multiple choice questions, timer, streaks, and more!">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/trivia-quiz.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background-color: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    .timer-ring { transition: stroke-dashoffset 0.1s linear; }
+    .answer-correct { background-color: #22c55e !important; color: white !important; border-color: #16a34a !important; }
+    .answer-wrong { background-color: #ef4444 !important; color: white !important; border-color: #dc2626 !important; opacity: 0.8; }
+  </style>
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Trivia Quiz",
+    "description": "A free multiple-choice trivia quiz game with 50+ questions across Science, History, Geography, Entertainment, Sports, and Technology.",
+    "applicationCategory": "Game",
+    "operatingSystem": "Any",
+    "url": "https://minigameplanet.com/games/trivia-quiz.html",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+  <!--
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXX" crossorigin="anonymous"></script>
+  -->
+</head>
+<body class="min-h-screen text-gray-800 antialiased">
+  <nav id="nav-container" class="bg-white/80 backdrop-blur border-b border-gray-200 sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="font-semibold text-lg text-gray-800 hover:text-indigo-600 transition">Mini Game Planet</a>
+      <div class="flex items-center gap-3">
+        <button id="sound-toggle" class="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-sm font-medium transition" aria-label="Toggle sound">🔊 Sound</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    <article class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 mb-8">
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Trivia Quiz</h1>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        Test your knowledge with our free trivia quiz! Whether you're a science buff, history enthusiast, or pop culture expert, our game offers something for everyone. Each round features 10 randomly selected questions from a pool of 50+ across six categories: Science, History, Geography, Entertainment, Sports, and Technology.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        Every question comes with a 15-second countdown. Answer quickly to earn speed bonuses on top of your base score. Build consecutive correct answers to activate streak multipliers and watch your score soar. If you select the wrong answer, the correct one is highlighted in green so you can learn as you play.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        Your personal best score is saved in your browser, so you can challenge yourself to beat your own record. Session statistics track your performance across rounds, including total correct answers, average response time, and longest streak. We use secure randomness via <code class="font-mono text-sm bg-gray-100 px-1 rounded">crypto.getRandomValues</code> to ensure fair question selection.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        Science questions cover chemistry, physics, biology, and astronomy. History spans ancient civilizations, world wars, and notable figures. Geography tests your knowledge of capitals, landmarks, and natural wonders. Entertainment includes film, music, TV, and literature. Sports covers rules, records, and legendary athletes. Technology explores computing, the internet, and innovation.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        Scoring rewards both accuracy and speed. Each correct answer earns base points plus a bonus that decreases as the timer runs down. String together correct answers to build a streak—every consecutive correct answer increases your multiplier. A five-question streak can nearly double your points per question. Miss one and the streak resets, so stay focused!
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        All questions are multiple choice with four options. Wrong answers reveal the correct one in green, so you learn something new even when you miss. Rounds are short enough for a coffee break but challenging enough to keep you coming back. Compete against your own high score or share your results with friends.
+      </p>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        The trivia quiz is designed for casual play—no account required, no ads blocking the experience. Just load the page, hit Start, and see how much you know. Perfect for a quick brain break, a friendly competition with friends, or brushing up on facts across multiple subjects. Good luck, and have fun!
+      </p>
+    </article>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+      <div id="game-start" class="text-center">
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">Ready to Play?</h2>
+        <p class="text-gray-600 mb-6">10 questions · 15 seconds each · Streak bonuses</p>
+        <div class="flex flex-wrap justify-center gap-4 mb-6">
+          <div class="bg-gray-50 rounded-xl px-4 py-3 text-center">
+            <span class="font-mono text-2xl font-bold text-indigo-600" id="pb-display">0</span>
+            <p class="text-xs text-gray-500">Personal Best</p>
+          </div>
+          <div class="bg-gray-50 rounded-xl px-4 py-3 text-center">
+            <span class="font-mono text-2xl font-bold text-gray-700" id="session-correct">0</span>
+            <p class="text-xs text-gray-500">Session Correct</p>
+          </div>
+          <div class="bg-gray-50 rounded-xl px-4 py-3 text-center">
+            <span class="font-mono text-2xl font-bold text-gray-700" id="session-streak">0</span>
+            <p class="text-xs text-gray-500">Best Streak</p>
+          </div>
+        </div>
+        <button id="btn-start" class="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition shadow-md hover:shadow-lg">
+          Start Quiz
+        </button>
+      </div>
+
+      <div id="game-play" class="hidden">
+        <div class="flex justify-between items-center mb-6">
+          <div class="flex gap-4">
+            <span class="font-mono font-semibold">Score: <span id="score-display">0</span></span>
+            <span class="font-mono text-indigo-600">Streak: <span id="streak-display">0</span>×</span>
+          </div>
+          <span class="text-sm text-gray-500">Question <span id="q-num">1</span>/10</span>
+        </div>
+        <div class="relative mb-6">
+          <svg class="w-16 h-16 -rotate-90" viewBox="0 0 64 64">
+            <circle cx="32" cy="32" r="28" fill="none" stroke="#e5e7eb" stroke-width="6"/>
+            <circle id="timer-ring" cx="32" cy="32" r="28" fill="none" stroke="#6366f1" stroke-width="6" stroke-dasharray="176" stroke-dashoffset="0" stroke-linecap="round" class="timer-ring"/>
+          </svg>
+          <span id="timer-text" class="absolute inset-0 flex items-center justify-center font-mono text-xl font-bold">15</span>
+        </div>
+        <p id="question-text" class="text-xl font-semibold text-gray-900 mb-6 min-h-[3rem]"></p>
+        <div id="answers" class="grid gap-3">
+          <!-- Answers injected by JS -->
+        </div>
+      </div>
+
+      <div id="game-over" class="hidden text-center">
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">Round Complete!</h2>
+        <p class="text-4xl font-mono font-bold text-indigo-600 mb-2" id="final-score">0</p>
+        <p class="text-gray-600 mb-6" id="final-message"></p>
+        <div class="flex flex-wrap justify-center gap-4 mb-6">
+          <div class="bg-gray-50 rounded-xl px-4 py-3 text-center">
+            <span class="font-mono text-xl font-bold" id="final-correct">0</span>
+            <p class="text-xs text-gray-500">Correct</p>
+          </div>
+          <div class="bg-gray-50 rounded-xl px-4 py-3 text-center">
+            <span class="font-mono text-xl font-bold" id="final-streak">0</span>
+            <p class="text-xs text-gray-500">Best Streak</p>
+          </div>
+        </div>
+        <button id="btn-replay" class="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition shadow-md hover:shadow-lg">
+          Play Again
+        </button>
+      </div>
+    </div>
+
+    <section id="related-games" class="mt-12">
+      <h2 class="text-xl font-bold text-gray-900 mb-4">Related Games</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <a href="/games/wordle.html" class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:border-indigo-200 hover:shadow transition">Wordle</a>
+        <a href="/games/2048.html" class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:border-indigo-200 hover:shadow transition">2048</a>
+        <a href="/games/snake.html" class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:border-indigo-200 hover:shadow transition">Snake</a>
+        <a href="/games/memory.html" class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:border-indigo-200 hover:shadow transition">Memory</a>
+      </div>
+    </section>
+  </main>
+
+  <footer id="footer-container" class="border-t border-gray-200 mt-12 py-8">
+    <div class="max-w-4xl mx-auto px-4 text-center text-gray-500 text-sm">
+      <p>© Mini Game Planet. Free casual games for everyone.</p>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playPerfect } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('trivia-quiz');
+    initConsent();
+    trackGameView('trivia-quiz', 'Casual');
+
+    const QUESTIONS = [
+      { q: "What is the chemical symbol for gold?", a: ["Au", "Ag", "Fe", "Cu"], c: 0, cat: "Science" },
+      { q: "How many planets are in our solar system?", a: ["7", "8", "9", "10"], c: 1, cat: "Science" },
+      { q: "What is the speed of light in vacuum (approx)?", a: ["299,792 km/s", "150,000 km/s", "450,000 km/s", "100,000 km/s"], c: 0, cat: "Science" },
+      { q: "What is the smallest prime number?", a: ["0", "1", "2", "3"], c: 2, cat: "Science" },
+      { q: "Which gas do plants absorb from the air?", a: ["Oxygen", "Nitrogen", "Carbon dioxide", "Hydrogen"], c: 2, cat: "Science" },
+      { q: "What is the hardest natural substance on Earth?", a: ["Gold", "Iron", "Diamond", "Platinum"], c: 2, cat: "Science" },
+      { q: "How many bones are in the adult human body?", a: ["186", "206", "226", "246"], c: 1, cat: "Science" },
+      { q: "What is the chemical formula for water?", a: ["CO2", "H2O", "NaCl", "O2"], c: 1, cat: "Science" },
+      { q: "Which planet is known as the Red Planet?", a: ["Venus", "Jupiter", "Mars", "Saturn"], c: 2, cat: "Science" },
+      { q: "What is the powerhouse of the cell?", a: ["Nucleus", "Ribosome", "Mitochondria", "Golgi apparatus"], c: 2, cat: "Science" },
+      { q: "In what year did World War II end?", a: ["1943", "1944", "1945", "1946"], c: 2, cat: "History" },
+      { q: "Who was the first president of the United States?", a: ["Thomas Jefferson", "John Adams", "George Washington", "Benjamin Franklin"], c: 2, cat: "History" },
+      { q: "The Great Wall of China was built primarily to protect against which group?", a: ["Mongols", "Japanese", "Romans", "Persians"], c: 0, cat: "History" },
+      { q: "In what year did the Titanic sink?", a: ["1910", "1911", "1912", "1913"], c: 2, cat: "History" },
+      { q: "Who wrote the Declaration of Independence?", a: ["George Washington", "Benjamin Franklin", "Thomas Jefferson", "John Adams"], c: 2, cat: "History" },
+      { q: "Which ancient civilization built the pyramids at Giza?", a: ["Romans", "Greeks", "Egyptians", "Mesopotamians"], c: 2, cat: "History" },
+      { q: "In what year did the Berlin Wall fall?", a: ["1987", "1988", "1989", "1990"], c: 2, cat: "History" },
+      { q: "Who was the first woman to win a Nobel Prize?", a: ["Marie Curie", "Mother Teresa", "Malala Yousafzai", "Jane Addams"], c: 0, cat: "History" },
+      { q: "Which empire built Machu Picchu?", a: ["Aztec", "Maya", "Inca", "Olmec"], c: 2, cat: "History" },
+      { q: "When did Christopher Columbus reach the Americas?", a: ["1490", "1492", "1495", "1500"], c: 1, cat: "History" },
+      { q: "What is the capital of Japan?", a: ["Seoul", "Beijing", "Tokyo", "Osaka"], c: 2, cat: "Geography" },
+      { q: "Which is the largest ocean on Earth?", a: ["Atlantic", "Indian", "Arctic", "Pacific"], c: 3, cat: "Geography" },
+      { q: "What is the longest river in the world?", a: ["Amazon", "Nile", "Mississippi", "Yangtze"], c: 1, cat: "Geography" },
+      { q: "Which country has the most population?", a: ["India", "China", "USA", "Indonesia"], c: 0, cat: "Geography" },
+      { q: "What is the capital of Australia?", a: ["Sydney", "Melbourne", "Canberra", "Brisbane"], c: 2, cat: "Geography" },
+      { q: "Which continent is the Sahara Desert on?", a: ["Asia", "Australia", "Africa", "South America"], c: 2, cat: "Geography" },
+      { q: "What is the smallest country in the world?", a: ["Monaco", "San Marino", "Vatican City", "Liechtenstein"], c: 2, cat: "Geography" },
+      { q: "Which mountain is the tallest on Earth?", a: ["K2", "Everest", "Kangchenjunga", "Lhotse"], c: 1, cat: "Geography" },
+      { q: "What is the capital of Brazil?", a: ["Rio de Janeiro", "São Paulo", "Brasília", "Salvador"], c: 2, cat: "Geography" },
+      { q: "Which sea is the Dead Sea connected to?", a: ["Mediterranean", "Red Sea", "No sea (landlocked)", "Black Sea"], c: 2, cat: "Geography" },
+      { q: "Who directed the movie 'Inception'?", a: ["Steven Spielberg", "Christopher Nolan", "James Cameron", "Ridley Scott"], c: 1, cat: "Entertainment" },
+      { q: "Which band sang 'Bohemian Rhapsody'?", a: ["The Beatles", "Led Zeppelin", "Queen", "Pink Floyd"], c: 2, cat: "Entertainment" },
+      { q: "What year did the first iPhone release?", a: ["2005", "2006", "2007", "2008"], c: 2, cat: "Entertainment" },
+      { q: "Who played Jack in 'Titanic'?", a: ["Brad Pitt", "Leonardo DiCaprio", "Matt Damon", "Tom Cruise"], c: 1, cat: "Entertainment" },
+      { q: "Which TV show features the character Walter White?", a: ["The Sopranos", "Breaking Bad", "The Wire", "Mad Men"], c: 1, cat: "Entertainment" },
+      { q: "What is the highest-grossing film of all time (unadjusted)?", a: ["Titanic", "Avatar", "Avengers: Endgame", "Star Wars: The Force Awakens"], c: 2, cat: "Entertainment" },
+      { q: "Who wrote 'Harry Potter'?", a: ["J.R.R. Tolkien", "C.S. Lewis", "J.K. Rowling", "Philip Pullman"], c: 2, cat: "Entertainment" },
+      { q: "Which artist painted the Mona Lisa?", a: ["Michelangelo", "Raphael", "Leonardo da Vinci", "Donatello"], c: 2, cat: "Entertainment" },
+      { q: "What streaming service created 'Stranger Things'?", a: ["Hulu", "Amazon Prime", "Netflix", "Disney+"], c: 2, cat: "Entertainment" },
+      { q: "In which year did Michael Jackson release 'Thriller'?", a: ["1980", "1982", "1984", "1986"], c: 1, cat: "Entertainment" },
+      { q: "How many players are on a soccer team on the field?", a: ["9", "10", "11", "12"], c: 2, cat: "Sports" },
+      { q: "Which country has won the most FIFA World Cups?", a: ["Germany", "Italy", "Brazil", "Argentina"], c: 2, cat: "Sports" },
+      { q: "In which sport do you score a 'touchdown'?", a: ["Soccer", "Rugby", "American Football", "Australian Rules"], c: 2, cat: "Sports" },
+      { q: "How many Grand Slam tournaments are there in tennis per year?", a: ["2", "3", "4", "5"], c: 2, cat: "Sports" },
+      { q: "Which country invented the sport of badminton?", a: ["China", "India", "England", "Indonesia"], c: 2, cat: "Sports" },
+      { q: "What is the diameter of a basketball hoop in inches?", a: ["16", "18", "20", "22"], c: 1, cat: "Sports" },
+      { q: "Which country hosted the 2016 Summer Olympics?", a: ["China", "UK", "Brazil", "Japan"], c: 2, cat: "Sports" },
+      { q: "How many points is a touchdown worth in American football?", a: ["5", "6", "7", "8"], c: 1, cat: "Sports" },
+      { q: "Who has won the most NBA championships as a player?", a: ["Michael Jordan", "Bill Russell", "LeBron James", "Kareem Abdul-Jabbar"], c: 1, cat: "Sports" },
+      { q: "In which sport is the Stanley Cup awarded?", a: ["Soccer", "Basketball", "Hockey", "Baseball"], c: 2, cat: "Sports" },
+      { q: "What does HTML stand for?", a: ["Hyper Text Markup Language", "High Tech Modern Language", "Home Tool Markup Language", "Hyper Transfer Markup Language"], c: 0, cat: "Technology" },
+      { q: "Who is often called the father of the computer?", a: ["Steve Jobs", "Bill Gates", "Charles Babbage", "Alan Turing"], c: 2, cat: "Technology" },
+      { q: "What year was Google founded?", a: ["1996", "1997", "1998", "1999"], c: 2, cat: "Technology" },
+      { q: "Which company created the Android operating system?", a: ["Apple", "Microsoft", "Google", "Samsung"], c: 2, cat: "Technology" },
+      { q: "What does CPU stand for?", a: ["Central Processing Unit", "Computer Personal Unit", "Central Program Utility", "Core Processing Unit"], c: 0, cat: "Technology" },
+      { q: "Which programming language was created by Guido van Rossum?", a: ["Java", "Ruby", "Python", "JavaScript"], c: 2, cat: "Technology" },
+      { q: "What does VPN stand for?", a: ["Virtual Private Network", "Very Protected Network", "Virtual Public Network", "Verified Private Node"], c: 0, cat: "Technology" },
+      { q: "Which company developed the first commercial microprocessor?", a: ["IBM", "Intel", "AMD", "Motorola"], c: 1, cat: "Technology" },
+      { q: "What does URL stand for?", a: ["Uniform Resource Locator", "Universal Reference Link", "Unified Resource Link", "Universal Resource Locator"], c: 0, cat: "Technology" },
+      { q: "In what year was the first email sent?", a: ["1969", "1971", "1975", "1980"], c: 1, cat: "Technology" },
+    ];
+
+    const BASE_POINTS = 100;
+    const SPEED_BONUS_MAX = 50;
+    const STREAK_MULTIPLIER = 0.1;
+    const TIME_PER_QUESTION = 15;
+    const QUESTIONS_PER_ROUND = 10;
+
+    function secureRandom(max) {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] % max;
+    }
+
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = secureRandom(i + 1);
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function getRandomQuestions() {
+      const shuffled = shuffle(QUESTIONS);
+      return shuffled.slice(0, QUESTIONS_PER_ROUND);
+    }
+
+    let audioMuted = false;
+    let currentRound = [];
+    let qIndex = 0;
+    let score = 0;
+    let streak = 0;
+    let timerId = null;
+    let startTime = 0;
+    let answered = false;
+    let sessionCorrect = 0;
+    let sessionBestStreak = 0;
+    let roundCorrect = 0;
+    let roundBestStreak = 0;
+    const PB_KEY = 'trivia-quiz-pb';
+
+    function getPB() {
+      try {
+        return parseInt(localStorage.getItem(PB_KEY) || '0', 10);
+      } catch { return 0; }
+    }
+
+    function setPB(val) {
+      try { localStorage.setItem(PB_KEY, String(val)); } catch (_) {}
+    }
+
+    function updateSessionStats() {
+      document.getElementById('session-correct').textContent = sessionCorrect;
+      document.getElementById('session-streak').textContent = sessionBestStreak;
+      document.getElementById('pb-display').textContent = getPB();
+    }
+
+    const startScreen = document.getElementById('game-start');
+    const playScreen = document.getElementById('game-play');
+    const overScreen = document.getElementById('game-over');
+
+    document.getElementById('sound-toggle').addEventListener('click', () => {
+      audioMuted = !audioMuted;
+      muteAll(audioMuted);
+      document.getElementById('sound-toggle').textContent = audioMuted ? '🔇 Muted' : '🔊 Sound';
+      playClick();
+    });
+
+    function showScreen(id) {
+      startScreen.classList.add('hidden');
+      playScreen.classList.add('hidden');
+      overScreen.classList.add('hidden');
+      document.getElementById(id).classList.remove('hidden');
+    }
+
+    function startGame() {
+      initAudio();
+      trackGameStart('trivia-quiz');
+      currentRound = getRandomQuestions();
+      qIndex = 0;
+      score = 0;
+      streak = 0;
+      roundCorrect = 0;
+      roundBestStreak = 0;
+      showScreen('game-play');
+      updateSessionStats();
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      answered = false;
+      const q = currentRound[qIndex];
+      document.getElementById('question-text').textContent = q.q;
+      document.getElementById('q-num').textContent = qIndex + 1;
+      document.getElementById('score-display').textContent = score;
+      document.getElementById('streak-display').textContent = streak;
+
+      const answersEl = document.getElementById('answers');
+      answersEl.innerHTML = '';
+      const order = shuffle([0, 1, 2, 3]);
+      order.forEach((i) => {
+        const btn = document.createElement('button');
+        btn.className = 'w-full text-left px-4 py-3 rounded-xl border-2 border-gray-200 hover:border-indigo-300 hover:bg-indigo-50 transition font-medium';
+        btn.textContent = q.a[i];
+        btn.dataset.index = String(i);
+        btn.addEventListener('click', () => handleAnswer(btn, i === q.c));
+        answersEl.appendChild(btn);
+      });
+
+      startTimer();
+    }
+
+    function startTimer() {
+      const ring = document.getElementById('timer-ring');
+      const text = document.getElementById('timer-text');
+      const circumference = 2 * Math.PI * 28;
+      const step = circumference / (TIME_PER_QUESTION * 10);
+      let elapsed = 0;
+      startTime = Date.now();
+
+      const tick = () => {
+        if (answered) return;
+        elapsed += 0.1;
+        const remaining = Math.max(0, TIME_PER_QUESTION - elapsed);
+        text.textContent = Math.ceil(remaining);
+        ring.style.strokeDashoffset = circumference - (elapsed / TIME_PER_QUESTION) * circumference;
+        if (remaining <= 0) {
+          clearInterval(timerId);
+          handleTimeout();
+        }
+      };
+      tick();
+      timerId = setInterval(tick, 100);
+    }
+
+    function stopTimer() {
+      if (timerId) clearInterval(timerId);
+      timerId = null;
+    }
+
+    function handleAnswer(btn, correct) {
+      if (answered) return;
+      answered = true;
+      stopTimer();
+
+      const q = currentRound[qIndex];
+      const buttons = document.querySelectorAll('#answers button');
+      buttons.forEach((b) => b.disabled = true);
+
+      if (correct) {
+        const elapsed = (Date.now() - startTime) / 1000;
+        const speedBonus = Math.max(0, Math.round(SPEED_BONUS_MAX * (1 - elapsed / TIME_PER_QUESTION)));
+        streak++;
+        sessionBestStreak = Math.max(sessionBestStreak, streak);
+        roundBestStreak = Math.max(roundBestStreak, streak);
+        const mult = 1 + streak * STREAK_MULTIPLIER;
+        const pts = Math.round((BASE_POINTS + speedBonus) * mult);
+        score += pts;
+        sessionCorrect++;
+        roundCorrect++;
+        btn.classList.add('answer-correct');
+        if (streak >= 5) playPerfect();
+        else if (streak > 1) playScoreUp();
+        else playSuccess();
+      } else {
+        streak = 0;
+        btn.classList.add('answer-wrong');
+        const correctBtn = Array.from(buttons).find((b) => parseInt(b.dataset.index, 10) === q.c);
+        if (correctBtn) correctBtn.classList.add('answer-correct');
+        playError();
+      }
+
+      document.getElementById('score-display').textContent = score;
+      document.getElementById('streak-display').textContent = streak;
+      updateSessionStats();
+
+      setTimeout(() => {
+        qIndex++;
+        if (qIndex < currentRound.length) loadQuestion();
+        else endGame();
+      }, 1500);
+    }
+
+    function handleTimeout() {
+      if (answered) return;
+      answered = true;
+      stopTimer();
+      streak = 0;
+      const q = currentRound[qIndex];
+      const buttons = document.querySelectorAll('#answers button');
+      buttons.forEach((b) => b.disabled = true);
+      const correctBtn = Array.from(buttons).find((b) => parseInt(b.dataset.index, 10) === q.c);
+      if (correctBtn) correctBtn.classList.add('answer-correct');
+      playError();
+
+      document.getElementById('streak-display').textContent = '0';
+      updateSessionStats();
+
+      setTimeout(() => {
+        qIndex++;
+        if (qIndex < currentRound.length) loadQuestion();
+        else endGame();
+      }, 1500);
+    }
+
+    function endGame() {
+      stopTimer();
+      showScreen('game-over');
+      document.getElementById('final-score').textContent = score;
+      document.getElementById('final-correct').textContent = roundCorrect;
+      document.getElementById('final-streak').textContent = roundBestStreak;
+
+      const pb = getPB();
+      if (score > pb) {
+        setPB(score);
+        document.getElementById('final-message').textContent = 'New personal best! 🎉';
+      } else if (roundCorrect === QUESTIONS_PER_ROUND) {
+        document.getElementById('final-message').textContent = 'Perfect round! Amazing!';
+      } else {
+        document.getElementById('final-message').textContent = 'Great effort! Try again to beat your best.';
+      }
+
+      playGameOver();
+      trackGameOver('trivia-quiz', score);
+    }
+
+    document.getElementById('btn-start').addEventListener('click', () => {
+      playClick();
+      startGame();
+    });
+
+    document.getElementById('btn-replay').addEventListener('click', () => {
+      playClick();
+      startGame();
+    });
+
+    updateSessionStats();
+  </script>
+</body>
+</html>

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sequence Memory — Grid Memory Test | Mini Game Planet</title>
+  <meta name="description" content="Test your sequence memory with a 3×3 grid. Tiles light up one at a time—remember the order and tap them back. Each round adds one more. Wrong tap = game over.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/sequence-memory.html">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Sequence Memory — Grid Memory Test | Mini Game Planet">
+  <meta property="og:description" content="Test your sequence memory. A 3×3 grid of tiles lights up—remember the order and tap them back. Each round adds one more.">
+  <meta property="og:url" content="https://minigameplanet.com/games/sequence-memory.html">
+  <meta property="og:site_name" content="Mini Game Planet">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500});gtag('config','G-XXXXXXXXXX');</script>
+  <!-- AdSense (commented)
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+  -->
+  <!-- JSON-LD -->
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Sequence Memory","url":"https://minigameplanet.com/games/sequence-memory.html","description":"Sequence memory test. A 3×3 grid of tiles lights up one at a time. Remember and tap them in order. Each round adds one more.","applicationCategory":"Game","operatingSystem":"Any","genre":"Casual"}</script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    .seq-tile {
+      aspect-ratio: 1;
+      background: #E5E7EB;
+      border-radius: 12px;
+      transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+      cursor: pointer;
+      border: 2px solid #D1D5DB;
+    }
+    .seq-tile:hover:not(.disabled) { transform: scale(1.02); }
+    .seq-tile.lit {
+      background: #3B82F6;
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
+      border-color: #2563EB;
+    }
+    .seq-tile.disabled { cursor: not-allowed; opacity: 0.7; }
+  </style>
+</head>
+<body class="min-h-screen text-gray-800 antialiased">
+  <div id="nav-container"></div>
+
+  <main class="max-w-2xl mx-auto px-4 py-6">
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 md:p-8 mb-8">
+      <header class="text-center mb-6">
+        <h1 class="text-3xl md:text-4xl font-bold mb-2">Sequence Memory</h1>
+        <p class="text-gray-600">Watch the tiles light up. Tap them in the same order.</p>
+      </header>
+
+      <!-- Stats bar -->
+      <div class="flex flex-wrap justify-center gap-4 mb-6 font-mono text-sm">
+        <div class="bg-gray-100 px-4 py-2 rounded-lg"><span class="text-gray-500">Score</span> <span id="level">0</span></div>
+        <div class="bg-amber-50 px-4 py-2 rounded-lg"><span class="text-gray-500">Best</span> <span id="best">0</span></div>
+      </div>
+
+      <!-- 3×3 Grid -->
+      <div class="max-w-xs mx-auto mb-6">
+        <div id="grid" class="grid grid-cols-3 gap-3"></div>
+      </div>
+
+      <!-- Controls -->
+      <div class="flex justify-center gap-4">
+        <button id="btn-start" class="px-6 py-3 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition">Start Game</button>
+        <button id="btn-restart" class="px-6 py-3 bg-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-300 transition hidden">Play Again</button>
+      </div>
+
+      <p id="status" class="text-center mt-4 text-gray-500 font-mono text-sm">Click Start to play.</p>
+    </div>
+
+    <!-- SEO Article -->
+    <article class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 md:p-8 mb-8">
+      <h2 class="text-2xl font-bold mb-4">What Is the Sequence Memory Game?</h2>
+      <div class="prose prose-gray max-w-none font-sans space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+        <p>The Sequence Memory game is a spatial memory test that challenges you to remember and reproduce a sequence of positions on a 3×3 grid. Unlike Simon Says, which uses four distinct colored quadrants, this game presents nine identical-looking tiles. Each tile looks the same until it lights up—so you must rely purely on position and order, not color cues. When the game starts, tiles light up one at a time in a random sequence. Your job is to watch carefully, then tap them in exactly the same order. Get it right, and the next round adds one more step to the sequence. Make one wrong tap, and the game ends. Your score is the highest level you reached.</p>
+
+        <p>This design makes the game harder than Simon Says in an important way: there are no visual landmarks. In Simon Says, you can think "red, then green, then blue"—the colors help you encode the pattern. In Sequence Memory, every tile looks identical when idle. You must remember "top-left, then center, then bottom-right" or similar spatial relationships. That taps into a different kind of memory: spatial working memory, which helps you navigate, remember where you left your keys, and recall layouts of rooms or maps.</p>
+
+        <h3 class="text-lg font-bold text-slate-900 mt-6">How It Works</h3>
+        <p>Click Start to begin. The game generates a random sequence using <strong>crypto.getRandomValues()</strong>, so each pattern is unpredictable and cryptographically secure. On round one, a single tile lights up with a blue highlight. After a short pause, it turns off. Your turn: tap that same tile. If you're correct, you advance to level 2. The game now shows a two-step sequence—tile A lights up, then tile B. You must tap A, then B in order. Level 3 adds a third tile, and so on. Each successful round extends the sequence by one. One mistake—tapping the wrong tile or tapping out of order—ends the game immediately.</p>
+
+        <p>The tiles use a neutral gray when idle and a bright blue highlight when lit. This keeps the focus on position rather than color. The highlight appears for a fixed duration (around 400 milliseconds per tile), with a brief gap between each. You have as long as you need to respond—there's no time pressure on your taps—but you must get the order exactly right.</p>
+
+        <h3 class="text-lg font-bold text-slate-900 mt-6">Why Sequence Memory Matters</h3>
+        <p>Spatial sequence memory is used in everyday life more often than you might think. Remembering the order of turns on a drive, the sequence of buttons to press on a keypad, or the path through a building—all of these rely on holding a sequence of locations in mind. Athletes use it to remember plays; musicians use it for finger positions; anyone learning a new interface uses it to recall where to click next. Training this skill can help with navigation, procedural learning, and general cognitive flexibility.</p>
+
+        <p>Research in cognitive psychology suggests that spatial working memory and verbal working memory are partially separate systems. Some people excel at remembering sequences of numbers or words; others are better at spatial patterns. The Sequence Memory game isolates the spatial component, giving you a pure test of how many positions you can hold and reproduce in order.</p>
+
+        <h3 class="text-lg font-bold text-slate-900 mt-6">Tips for Better Performance</h3>
+        <ul class="list-disc pl-5 space-y-2">
+          <li><strong>Chunk by position.</strong> Instead of remembering "tile 1, tile 2, tile 3," try grouping: "top row left, center, bottom right." Giving positions verbal labels can help.</li>
+          <li><strong>Use a mental grid.</strong> Imagine the grid as a numpad (1–9) or use clock positions. Encoding positions into a system can improve recall.</li>
+          <li><strong>Minimize distractions.</strong> Working memory is easily disrupted. Focus fully while the sequence plays.</li>
+          <li><strong>Practice regularly.</strong> Your personal best is saved in the browser. Try to beat it over time.</li>
+        </ul>
+
+        <h3 class="text-lg font-bold text-slate-900 mt-6">Sequence Memory vs. Simon Says</h3>
+        <p>Simon Says uses four colored quadrants—red, green, blue, yellow—each with its own sound. The colors and tones provide multiple cues. Sequence Memory strips that away: nine identical tiles, no sound cues (aside from feedback), and no color differentiation. The challenge is purely spatial and sequential. If you've mastered Simon Says, give Sequence Memory a try. It's a different beast, and many players find it surprisingly harder.</p>
+
+        <p>Whether you're training your brain, competing for a high score, or just passing the time, Sequence Memory offers a clean, focused challenge. No account required—just click Start and play. How many steps can you remember?</p>
+      </div>
+    </article>
+
+    <!-- Related games -->
+    <section id="related-games" class="mb-8"></section>
+  </main>
+
+  <div id="footer-container"></div>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playLevelUp } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('sequence-memory');
+    initConsent();
+    trackGameView('sequence-memory', 'Casual');
+
+    const GRID_SIZE = 9;
+    const LIT_MS = 400;
+    const GAP_MS = 150;
+
+    let sequence = [];
+    let playerIndex = 0;
+    let isPlaying = false;
+    let isShowing = false;
+    let level = 0;
+
+    const levelEl = document.getElementById('level');
+    const bestEl = document.getElementById('best');
+    const statusEl = document.getElementById('status');
+    const btnStart = document.getElementById('btn-start');
+    const btnRestart = document.getElementById('btn-restart');
+    const gridEl = document.getElementById('grid');
+
+    const STORAGE_KEY = 'mgp_sequence_memory_best';
+
+    function getBest() {
+      try {
+        return parseInt(localStorage.getItem(STORAGE_KEY) || '0', 10);
+      } catch { return 0; }
+    }
+
+    function setBest(val) {
+      try { localStorage.setItem(STORAGE_KEY, String(val)); } catch {}
+    }
+
+    function randomTile() {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] % GRID_SIZE;
+    }
+
+    function buildGrid() {
+      gridEl.innerHTML = '';
+      for (let i = 0; i < GRID_SIZE; i++) {
+        const btn = document.createElement('button');
+        btn.className = 'seq-tile disabled';
+        btn.dataset.index = String(i);
+        btn.setAttribute('aria-label', `Tile ${i + 1}`);
+        gridEl.appendChild(btn);
+      }
+    }
+
+    function setTilesEnabled(enabled) {
+      gridEl.querySelectorAll('.seq-tile').forEach(el => {
+        el.classList.toggle('disabled', !enabled);
+      });
+    }
+
+    function lightTile(index, on) {
+      const tiles = gridEl.querySelectorAll('.seq-tile');
+      if (tiles[index]) tiles[index].classList.toggle('lit', on);
+    }
+
+    async function showTile(index) {
+      lightTile(index, true);
+      try { playClick(); } catch {}
+      await new Promise(r => setTimeout(r, LIT_MS));
+      lightTile(index, false);
+      await new Promise(r => setTimeout(r, GAP_MS));
+    }
+
+    async function showSequence() {
+      isShowing = true;
+      setTilesEnabled(false);
+      statusEl.textContent = 'Watch...';
+      for (const idx of sequence) {
+        await showTile(idx);
+      }
+      isShowing = false;
+      setTilesEnabled(true);
+      statusEl.textContent = 'Your turn!';
+      playerIndex = 0;
+    }
+
+    function handleTileClick(index) {
+      if (!isPlaying || isShowing) return;
+      const el = gridEl.querySelector(`[data-index="${index}"]`);
+      if (el?.classList.contains('disabled')) return;
+
+      try { playClick(); } catch {}
+      lightTile(index, true);
+      setTimeout(() => lightTile(index, false), 150);
+
+      const expected = sequence[playerIndex];
+      if (index !== expected) {
+        gameOver();
+        return;
+      }
+      playerIndex++;
+      if (playerIndex === sequence.length) {
+        roundComplete();
+      }
+    }
+
+    function roundComplete() {
+      level++;
+      levelEl.textContent = level;
+      const best = getBest();
+      if (level > best) {
+        setBest(level);
+        bestEl.textContent = level;
+        try { playLevelUp(); } catch {}
+      } else {
+        try { playSuccess(); } catch {}
+      }
+      statusEl.textContent = 'Correct! Next round...';
+      setTimeout(() => nextRound(), 800);
+    }
+
+    function nextRound() {
+      sequence.push(randomTile());
+      showSequence();
+    }
+
+    function gameOver() {
+      isPlaying = false;
+      setTilesEnabled(false);
+      const score = level; // level = rounds completed = level reached
+      try { playGameOver(); } catch {}
+      try { playError(); } catch {}
+      trackGameOver('sequence-memory', 'Casual', score);
+      statusEl.textContent = `Game over! Score: ${score}`;
+      btnStart.classList.add('hidden');
+      btnRestart.classList.remove('hidden');
+    }
+
+    function startGame() {
+      try { initAudio(); } catch {}
+      trackGameStart('sequence-memory', 'Casual');
+      sequence = [];
+      level = 0;
+      isPlaying = true;
+      levelEl.textContent = '0';
+      bestEl.textContent = getBest();
+      btnStart.classList.add('hidden');
+      btnRestart.classList.add('hidden');
+      statusEl.textContent = 'Get ready...';
+      setTilesEnabled(false);
+      setTimeout(() => nextRound(), 600);
+    }
+
+    function resetUI() {
+      btnStart.classList.remove('hidden');
+      btnRestart.classList.add('hidden');
+      statusEl.textContent = 'Click Start to play.';
+      setTilesEnabled(false);
+    }
+
+    buildGrid();
+
+    gridEl.addEventListener('click', (e) => {
+      const btn = e.target.closest('.seq-tile');
+      if (btn && btn.dataset.index != null) {
+        handleTileClick(parseInt(btn.dataset.index, 10));
+      }
+    });
+
+    btnStart.addEventListener('click', startGame);
+    btnRestart.addEventListener('click', () => {
+      resetUI();
+      startGame();
+    });
+
+    bestEl.textContent = getBest();
+  </script>
+</body>
+</html>

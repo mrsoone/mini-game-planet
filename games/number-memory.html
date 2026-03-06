@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Number Memory Test — How Many Digits Can You Remember? | MiniGamePlanet</title>
+  <meta name="description" content="Test your number memory free online. A number appears briefly—remember it and type it back. Starts at 1 digit, increases each round. Beat your personal best.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/number-memory">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500});gtag('config','G-XXXXXXXXXX');</script>
+  <!-- AdSense — uncomment after approval -->
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Number Memory Test | MiniGamePlanet">
+  <meta property="og:description" content="Test your number memory. Remember a number, type it back. Starts at 1 digit, increases each round.">
+  <meta property="og:url" content="https://minigameplanet.com/games/number-memory">
+  <meta property="og:site_name" content="MiniGamePlanet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Number Memory","url":"https://minigameplanet.com/games/number-memory","description":"Test your number memory. Remember a number shown briefly, type it back. Increases in difficulty each round.","genre":"Casual","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <style>
+    .nm-number{font-family:'DM Mono',monospace;font-size:clamp(2.5rem,8vw,5rem);font-weight:700;letter-spacing:0.08em;color:#0F172A;text-align:center;min-height:120px;display:flex;align-items:center;justify-content:center;user-select:none}
+    .nm-input{font-family:'DM Mono',monospace;font-size:clamp(1.5rem,5vw,2.5rem);text-align:center;padding:16px 24px;border:2px solid #E5E7EB;border-radius:12px;width:100%;max-width:400px;margin:0 auto}
+    .nm-input:focus{outline:none;border-color:#2563EB;box-shadow:0 0 0 3px rgba(37,99,235,0.2)}
+    .nm-input.wrong{border-color:#DC2626;background:#FEF2F2}
+    .nm-input.correct{border-color:#059669;background:#F0FDF4}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-2xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:24px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+        <h1 style="font-size:22px;font-weight:700;margin:0;">🔢 Number Memory</h1>
+        <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;padding:12px 16px;background:#F8FAFC;border-radius:8px;flex-wrap:wrap;">
+        <span style="font-family:'DM Mono',monospace;font-size:14px;font-weight:600;">Level: <span id="level">1</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:14px;color:#64748B;">🏆 Best: <span id="best">—</span></span>
+      </div>
+
+      <div id="phase-show" style="display:none;text-align:center;padding:24px 0;">
+        <div class="nm-number" id="number-display"></div>
+        <div style="font-size:12px;color:#64748B;margin-top:8px;">Memorize the number...</div>
+      </div>
+
+      <div id="phase-input" style="display:none;text-align:center;padding:24px 0;">
+        <div style="font-size:14px;font-weight:600;margin-bottom:12px;color:#64748B;">What was the number?</div>
+        <input type="text" id="answer-input" class="nm-input" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="Type here..." maxlength="20">
+        <div style="margin-top:12px;">
+          <button id="submit-btn" style="padding:10px 28px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">Submit</button>
+        </div>
+      </div>
+
+      <div id="phase-start" style="text-align:center;padding:32px 0;">
+        <p style="font-size:15px;color:#64748B;margin-bottom:20px;">A number will appear for a few seconds. Remember it, then type it back. Each level adds one more digit.</p>
+        <button id="start-btn" style="padding:12px 32px;background:#2563EB;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;">▶ Start</button>
+      </div>
+
+      <div id="phase-gameover" style="display:none;text-align:center;padding:24px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;">
+        <div id="go-title" style="font-size:22px;font-weight:700;margin-bottom:8px;color:#DC2626;">Game Over</div>
+        <div id="go-sub" style="font-size:14px;color:#64748B;margin-bottom:12px;"></div>
+        <div id="go-correct" style="font-family:'DM Mono',monospace;font-size:18px;font-weight:700;color:#059669;margin-bottom:16px;padding:12px;background:#F0FDF4;border-radius:8px;"></div>
+        <button id="play-again" style="padding:10px 28px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">▶ Play Again</button>
+      </div>
+    </div>
+  </main>
+
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">What Is the Number Memory Test?</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>The Number Memory Test is a simple but challenging game that measures how many digits you can hold in your short-term memory. A number appears on screen for a few seconds, then disappears. Your job is to type it back exactly. Start with one digit. Each time you succeed, the next round adds another digit. One mistake and the game ends. Your score is the highest level you reached—how many digits could you remember?</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">How It Works</h3>
+      <p>When you click Start, a random single-digit number (0–9) appears. You have several seconds to memorize it. The number then vanishes, and an input field appears. Type what you saw and press Submit or Enter. If you're correct, you advance to level 2, which shows a two-digit number. The pattern continues: level 3 shows three digits, level 4 shows four, and so on. Each level gets slightly harder because there's more to remember, and the display time decreases a bit as the numbers grow longer. This keeps the challenge fair—you get a little less time per digit as the sequences expand.</p>
+      <p>The game uses <strong>crypto.getRandomValues()</strong> to generate each number, so every digit is unpredictable and cryptographically random. No patterns, no tricks—just pure memory. When you make a mistake, the game shows you the correct number so you can see what you missed. Your personal best level is saved in your browser's localStorage, so you can track improvement over time and compete against yourself.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Why Number Memory Matters</h3>
+      <p>Short-term memory—often called working memory—is the mental scratchpad you use to hold information briefly. Phone numbers, addresses, verification codes, and one-time passwords all rely on it. Most people can hold about 7±2 items in working memory, though this varies. The classic "magic number seven" from psychology research suggests that digit span—how many random digits you can recall in order—is a good proxy for working memory capacity. Our test is a direct measure of that: how many random digits can you remember and reproduce?</p>
+      <p>Improving your number memory can help in everyday life. Memorizing a phone number long enough to dial it, remembering a PIN or passcode, or holding a verification code in your head while you type it into another app—all of these tasks use the same skill. Some people find that practicing digit-span exercises helps them get better over time. Others discover their natural limit. Either way, the test is quick, free, and runs entirely in your browser with no downloads or accounts required.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Tips for Better Performance</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Chunk the digits.</strong> Instead of remembering "7-2-9-4-1" as five separate items, try grouping: "72" and "94" and "1," or "729" and "41." Chunking reduces the cognitive load.</li>
+        <li><strong>Say it aloud (or subvocalize).</strong> Rehearsing the number in your head or whispering it can reinforce the memory. The phonological loop—the part of working memory that handles speech—helps maintain the sequence.</li>
+        <li><strong>Focus and minimize distractions.</strong> Working memory is easily disrupted. Close other tabs, turn off notifications, and give the number your full attention while it's on screen.</li>
+        <li><strong>Practice regularly.</strong> Like any skill, digit span can improve with practice. Try a few rounds each day and see if your personal best creeps up over time.</li>
+      </ul>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">How We Compare</h3>
+      <p>Our Number Memory Test is inspired by similar games found on brain-training and psychology sites. The core mechanic—show a number, hide it, recall it—is a standard digit-span task used in cognitive research. We've made it accessible, fast, and fun: no sign-up, no ads (until you opt in), and your best score is saved locally so you can track progress. The display time scales with digit count to keep the difficulty curve smooth, and we show the correct answer on failure so you learn from mistakes.</p>
+      <p>Whether you're curious about your working memory, want to warm up before a study session, or simply enjoy a quick mental challenge, the Number Memory Test is here. Give it a try and see how many digits you can remember. Can you beat level 10? Level 15? Your personal best is waiting.</p>
+    </div>
+  </article>
+  <div id="related-games"></div>
+  <div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playLevelUp } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+  document.addEventListener('click',()=>initAudio(),{once:true});
+  initToolPage('number-memory'); initConsent(); trackGameView('number-memory','Casual');
+
+  const STORAGE_KEY = 'mgp_number_memory_best';
+  const BASE_MS = 2500;
+  const MS_PER_DIGIT = -80;
+
+  function getDisplayMs(digits) {
+    const ms = BASE_MS + digits * MS_PER_DIGIT;
+    return Math.max(800, ms);
+  }
+
+  function rng(min, max) {
+    const a = new Uint32Array(1);
+    crypto.getRandomValues(a);
+    return min + (a[0] % (max - min + 1));
+  }
+
+  function genNumber(digits) {
+    let s = '';
+    for (let i = 0; i < digits; i++) s += rng(0, 9);
+    return s;
+  }
+
+  function getBest() {
+    try {
+      const s = localStorage.getItem(STORAGE_KEY);
+      return s ? parseInt(s, 10) : 0;
+    } catch (e) { return 0; }
+  }
+
+  function setBest(level) {
+    try { localStorage.setItem(STORAGE_KEY, String(level)); } catch (e) {}
+  }
+
+  let level = 1, currentNumber = '', showTimeout = null, gameStarted = false;
+
+  const phaseStart = document.getElementById('phase-start');
+  const phaseShow = document.getElementById('phase-show');
+  const phaseInput = document.getElementById('phase-input');
+  const phaseGameover = document.getElementById('phase-gameover');
+  const numberDisplay = document.getElementById('number-display');
+  const answerInput = document.getElementById('answer-input');
+  const levelEl = document.getElementById('level');
+  const bestEl = document.getElementById('best');
+
+  function showPhase(id) {
+    phaseStart.style.display = id === 'start' ? 'block' : 'none';
+    phaseShow.style.display = id === 'show' ? 'block' : 'none';
+    phaseInput.style.display = id === 'input' ? 'block' : 'none';
+    phaseGameover.style.display = id === 'gameover' ? 'block' : 'none';
+  }
+
+  function updateUI() {
+    levelEl.textContent = level;
+    const b = getBest();
+    bestEl.textContent = b > 0 ? b : '—';
+  }
+
+  function startRound() {
+    currentNumber = genNumber(level);
+    numberDisplay.textContent = currentNumber;
+    showPhase('show');
+    answerInput.value = '';
+    answerInput.classList.remove('wrong', 'correct');
+
+    const ms = getDisplayMs(level);
+    showTimeout = setTimeout(() => {
+      showTimeout = null;
+      showPhase('input');
+      answerInput.focus();
+    }, ms);
+  }
+
+  function submitAnswer() {
+    const ans = answerInput.value.trim();
+    if (!ans) return;
+    playClick();
+    if (ans === currentNumber) {
+      answerInput.classList.add('correct');
+      playSuccess();
+      if (level > 1) playLevelUp();
+      level++;
+      updateUI();
+      setTimeout(() => startRound(), 600);
+    } else {
+      answerInput.classList.add('wrong');
+      playError();
+      playGameOver();
+      endGame();
+    }
+  }
+
+  function endGame() {
+    if (showTimeout) clearTimeout(showTimeout);
+    showTimeout = null;
+    const b = getBest();
+    if (level > b) {
+      setBest(level);
+      document.getElementById('go-title').textContent = '🏆 New Best!';
+      document.getElementById('go-title').style.color = '#059669';
+    } else {
+      document.getElementById('go-title').textContent = 'Game Over';
+      document.getElementById('go-title').style.color = '#DC2626';
+    }
+    document.getElementById('go-sub').textContent = `Level ${level} reached`;
+    document.getElementById('go-correct').textContent = `Correct: ${currentNumber}`;
+    showPhase('gameover');
+    updateUI();
+    trackGameOver('number-memory', 'Casual', level);
+  }
+
+  function newGame() {
+    if (showTimeout) clearTimeout(showTimeout);
+    showTimeout = null;
+    level = 1;
+    updateUI();
+    showPhase('start');
+  }
+
+  document.getElementById('sound-btn').addEventListener('click', () => {
+    initAudio();
+    const m = muteAll();
+    document.getElementById('sound-btn').textContent = m ? '🔇' : '🔊';
+  });
+
+  document.getElementById('start-btn').addEventListener('click', () => {
+    playClick();
+    gameStarted = true;
+    trackGameStart('number-memory', 'Casual');
+    startRound();
+  });
+
+  document.getElementById('play-again').addEventListener('click', () => {
+    playClick();
+    newGame();
+    gameStarted = true;
+    trackGameStart('number-memory', 'Casual');
+    startRound();
+  });
+
+  document.getElementById('submit-btn').addEventListener('click', submitAnswer);
+
+  answerInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') submitAnswer();
+  });
+
+  answerInput.addEventListener('input', (e) => {
+    e.target.value = e.target.value.replace(/\D/g, '');
+  });
+
+  updateUI();
+  </script>
+</body>
+</html>

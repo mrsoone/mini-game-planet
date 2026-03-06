@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rock Paper Scissors - Play Online Free | Mini Game Planet</title>
+  <meta name="description" content="Play Rock Paper Scissors online for free. Classic and Lizard-Spock variants, best of 5 mode, animated reveals. No sign-up required.">
+  <link rel="canonical" href="https://minigameplanet.com/games/rock-paper-scissors.html">
+  <!-- Open Graph -->
+  <meta property="og:title" content="Rock Paper Scissors - Play Online Free">
+  <meta property="og:description" content="Play Rock Paper Scissors online. Classic and Lizard-Spock variants, best of 5 mode.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/rock-paper-scissors.html">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background-color: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    .choice-emoji { font-size: 4rem; transition: transform 0.2s; }
+    .choice-emoji:hover { transform: scale(1.1); }
+    .choice-emoji.shake { animation: shake 0.5s ease-in-out; }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-8px) rotate(-5deg); }
+      40% { transform: translateX(8px) rotate(5deg); }
+      60% { transform: translateX(-6px) rotate(-3deg); }
+      80% { transform: translateX(6px) rotate(3deg); }
+    }
+    .reveal-emoji { font-size: 5rem; animation: popIn 0.4s ease-out; }
+    @keyframes popIn {
+      0% { transform: scale(0); opacity: 0; }
+      70% { transform: scale(1.15); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .card { background: white; border-radius: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  </style>
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Rock Paper Scissors",
+    "description": "Play Rock Paper Scissors online for free. Classic and Lizard-Spock variants.",
+    "applicationCategory": "Game",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+  <!-- AdSense (commented)
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXX" crossorigin="anonymous"></script>
+  -->
+</head>
+<body class="min-h-screen text-gray-800">
+  <!-- Nav -->
+  <nav class="nav-container border-b border-gray-200 bg-white/80 backdrop-blur">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="font-semibold text-lg">Mini Game Planet</a>
+      <a href="/games/" class="text-sm text-gray-600 hover:text-gray-900">All Games</a>
+    </div>
+  </nav>
+
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    <!-- Game Card -->
+    <div class="card p-6 md:p-8 mb-8">
+      <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-bold">Rock Paper Scissors</h1>
+        <button id="sound-toggle" class="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-sm font-mono" aria-label="Toggle sound">🔊 Sound</button>
+      </div>
+
+      <!-- Variant Toggle -->
+      <div class="flex items-center gap-2 mb-6">
+        <span class="text-sm text-gray-600">Mode:</span>
+        <button id="mode-classic" class="mode-btn px-4 py-2 rounded-lg font-medium bg-indigo-600 text-white">Classic</button>
+        <button id="mode-lizard-spock" class="mode-btn px-4 py-2 rounded-lg font-medium bg-gray-200 text-gray-600 hover:bg-gray-300">Lizard-Spock</button>
+      </div>
+
+      <!-- Best of 5 Toggle -->
+      <div class="flex items-center gap-2 mb-6">
+        <span class="text-sm text-gray-600">Match:</span>
+        <button id="match-single" class="match-btn px-4 py-2 rounded-lg font-medium bg-gray-200 text-gray-600">Single</button>
+        <button id="match-best5" class="match-btn px-4 py-2 rounded-lg font-medium bg-indigo-600 text-white">Best of 5</button>
+      </div>
+
+      <!-- Score & Streak -->
+      <div class="flex flex-wrap gap-6 mb-6 font-mono text-sm">
+        <span>Wins: <strong id="score-wins">0</strong></span>
+        <span>Losses: <strong id="score-losses">0</strong></span>
+        <span>Draws: <strong id="score-draws">0</strong></span>
+        <span>Streak: <strong id="score-streak">0</strong></span>
+        <span id="best5-status" class="hidden">Round: <strong id="round-wins">0</strong>/<strong id="round-losses">0</strong></span>
+      </div>
+
+      <!-- Choices -->
+      <div id="choices-area" class="flex flex-wrap justify-center gap-4 mb-8">
+        <!-- Classic: Rock, Paper, Scissors -->
+        <button class="choice-btn choice-emoji p-4 rounded-xl border-2 border-gray-200 hover:border-indigo-400 hover:bg-indigo-50" data-choice="rock" title="Rock">✊</button>
+        <button class="choice-btn choice-emoji p-4 rounded-xl border-2 border-gray-200 hover:border-indigo-400 hover:bg-indigo-50" data-choice="paper" title="Paper">🖐</button>
+        <button class="choice-btn choice-emoji p-4 rounded-xl border-2 border-gray-200 hover:border-indigo-400 hover:bg-indigo-50" data-choice="scissors" title="Scissors">✌</button>
+        <!-- Lizard-Spock (hidden by default) -->
+        <button class="choice-btn choice-emoji p-4 rounded-xl border-2 border-gray-200 hover:border-indigo-400 hover:bg-indigo-50 hidden" data-choice="lizard" title="Lizard">🤏</button>
+        <button class="choice-btn choice-emoji p-4 rounded-xl border-2 border-gray-200 hover:border-indigo-400 hover:bg-indigo-50 hidden" data-choice="spock" title="Spock">🖖</button>
+      </div>
+
+      <!-- Reveal Area -->
+      <div id="reveal-area" class="hidden text-center py-8">
+        <div class="flex justify-center items-center gap-8 flex-wrap">
+          <div>
+            <p class="text-sm text-gray-500 mb-2">You</p>
+            <span id="player-reveal" class="reveal-emoji">✊</span>
+          </div>
+          <p id="result-text" class="text-xl font-bold self-center">vs</p>
+          <div>
+            <p class="text-sm text-gray-500 mb-2">AI</p>
+            <span id="ai-reveal" class="reveal-emoji">✊</span>
+          </div>
+        </div>
+        <p id="result-message" class="mt-4 text-lg"></p>
+        <button id="play-again" class="mt-4 px-6 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 font-medium">Play Again</button>
+      </div>
+
+      <!-- Game Over (Best of 5) -->
+      <div id="game-over-area" class="hidden text-center py-8">
+        <p id="game-over-message" class="text-2xl font-bold mb-4"></p>
+        <button id="new-round" class="px-6 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 font-medium">New Round</button>
+      </div>
+    </div>
+
+    <!-- SEO Article -->
+    <article class="card p-6 md:p-8 mb-8 prose prose-gray max-w-none">
+      <h2 class="text-xl font-bold mb-4">Rock Paper Scissors: The Timeless Hand Game You Can Play Online</h2>
+      <p>Rock Paper Scissors is one of the world's most beloved hand games. Whether you're settling a dispute, making a quick decision, or simply having fun, this classic game has been a staple of playgrounds, classrooms, and casual gatherings for generations. Now you can enjoy it anytime, anywhere, right in your browser—no opponent needed.</p>
+
+      <h3 class="text-lg font-semibold mt-6 mb-2">How to Play Rock Paper Scissors</h3>
+      <p>The rules are beautifully simple. Two players simultaneously form one of three shapes with their hand: Rock (a fist), Paper (an open palm), or Scissors (a peace sign). Rock beats Scissors, Scissors beat Paper, and Paper beats Rock. If both players choose the same shape, it's a draw. The game requires no equipment, no setup, and no prior experience—just quick thinking and a bit of luck.</p>
+
+      <h3 class="text-lg font-semibold mt-6 mb-2">The Lizard-Spock Expansion</h3>
+      <p>Popularized by <em>The Big Bang Theory</em>, the Lizard-Spock variant adds two more choices: Lizard and Spock. This creates a more complex web of outcomes. Scissors cut Paper and decapitate Lizard. Paper covers Rock and disproves Spock. Rock crushes Lizard and Scissors. Lizard poisons Spock and eats Paper. Spock smashes Scissors and vaporizes Rock. With five options instead of three, the game becomes more strategic and less predictable.</p>
+
+      <h3 class="text-lg font-semibold mt-6 mb-2">Best of 5 Mode</h3>
+      <p>For a more competitive experience, try our Best of 5 mode. The first player to win three rounds takes the match. This format reduces the impact of a single lucky guess and rewards consistency. Track your wins, losses, draws, and current streak as you play. Session statistics help you see how you're performing over time.</p>
+
+      <h3 class="text-lg font-semibold mt-6 mb-2">Why Play Online?</h3>
+      <p>Our online Rock Paper Scissors game features smooth animations, clear feedback, and an AI opponent that chooses randomly—so every game is fair. The animated reveal adds excitement as both choices are shown after a brief shake. Whether you're killing a few minutes during a break or introducing someone to the game for the first time, Mini Game Planet's version is free, fast, and fun.</p>
+
+      <h3 class="text-lg font-semibold mt-6 mb-2">A Game for Everyone</h3>
+      <p>Rock Paper Scissors transcends age and culture. Children learn it in seconds; adults use it for everything from choosing who goes first to making trivial decisions. It's a universal language of play. Switch between Classic and Lizard-Spock modes, toggle Best of 5 for a longer match, and enjoy the timeless appeal of this simple yet endlessly entertaining game.</p>
+    </article>
+
+    <!-- Related Games -->
+    <section class="related-games mb-8">
+      <h2 class="text-lg font-bold mb-4">Related Games</h2>
+      <div class="flex flex-wrap gap-4">
+        <a href="/games/coin-flip.html" class="px-4 py-2 rounded-lg bg-white border border-gray-200 hover:border-indigo-300 hover:bg-indigo-50">Coin Flip</a>
+        <a href="/games/dice-roller.html" class="px-4 py-2 rounded-lg bg-white border border-gray-200 hover:border-indigo-300 hover:bg-indigo-50">Dice Roller</a>
+        <a href="/games/random-picker.html" class="px-4 py-2 rounded-lg bg-white border border-gray-200 hover:border-indigo-300 hover:bg-indigo-50">Random Picker</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer-container border-t border-gray-200 bg-white/50 py-6">
+    <div class="max-w-4xl mx-auto px-4 text-center text-sm text-gray-600">
+      <p>© Mini Game Planet. Free casual games. No sign-up required.</p>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('rock-paper-scissors');
+    initConsent();
+    trackGameView('rock-paper-scissors', 'Casual');
+
+    // Lizard-Spock rules: choice -> beats
+    const BEATS = {
+      rock: ['scissors', 'lizard'],
+      paper: ['rock', 'spock'],
+      scissors: ['paper', 'lizard'],
+      lizard: ['spock', 'paper'],
+      spock: ['scissors', 'rock'],
+    };
+
+    const EMOJI = { rock: '✊', paper: '🖐', scissors: '✌', lizard: '🤏', spock: '🖖' };
+    const CLASSIC = ['rock', 'paper', 'scissors'];
+    const LIZARD_SPOCK = ['rock', 'paper', 'scissors', 'lizard', 'spock'];
+
+    let state = {
+      mode: 'classic',
+      bestOf5: false,
+      wins: 0,
+      losses: 0,
+      draws: 0,
+      streak: 0,
+      roundWins: 0,
+      roundLosses: 0,
+      muted: false,
+    };
+
+    function secureRandom(max) {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] % max;
+    }
+
+    function getChoices() {
+      return state.mode === 'lizard-spock' ? LIZARD_SPOCK : CLASSIC;
+    }
+
+    function aiChoice() {
+      const choices = getChoices();
+      return choices[secureRandom(choices.length)];
+    }
+
+    function getResult(player, ai) {
+      if (player === ai) return 'draw';
+      return BEATS[player].includes(ai) ? 'win' : 'loss';
+    }
+
+    function updateUI() {
+      document.getElementById('score-wins').textContent = state.wins;
+      document.getElementById('score-losses').textContent = state.losses;
+      document.getElementById('score-draws').textContent = state.draws;
+      document.getElementById('score-streak').textContent = state.streak;
+      document.getElementById('round-wins').textContent = state.roundWins;
+      document.getElementById('round-losses').textContent = state.roundLosses;
+
+      const best5El = document.getElementById('best5-status');
+      best5El.classList.toggle('hidden', !state.bestOf5);
+
+      // Show/hide Lizard-Spock choices
+      const choices = getChoices();
+      document.querySelectorAll('.choice-btn').forEach(btn => {
+        const c = btn.dataset.choice;
+        btn.classList.toggle('hidden', !choices.includes(c));
+      });
+
+      // Mode buttons
+      document.getElementById('mode-classic').className = `mode-btn px-4 py-2 rounded-lg font-medium ${state.mode === 'classic' ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'}`;
+      document.getElementById('mode-lizard-spock').className = `mode-btn px-4 py-2 rounded-lg font-medium ${state.mode === 'lizard-spock' ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'}`;
+
+      document.getElementById('match-single').className = `match-btn px-4 py-2 rounded-lg font-medium ${!state.bestOf5 ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-600'}`;
+      document.getElementById('match-best5').className = `match-btn px-4 py-2 rounded-lg font-medium ${state.bestOf5 ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-600'}`;
+    }
+
+    function showReveal(player, ai, result) {
+      const area = document.getElementById('reveal-area');
+      const choicesArea = document.getElementById('choices-area');
+      const gameOverArea = document.getElementById('game-over-area');
+      choicesArea.classList.add('hidden');
+      gameOverArea.classList.add('hidden');
+      area.classList.remove('hidden');
+
+      document.getElementById('player-reveal').textContent = EMOJI[player];
+      document.getElementById('ai-reveal').textContent = EMOJI[ai];
+      document.getElementById('player-reveal').classList.remove('reveal-emoji');
+      document.getElementById('ai-reveal').classList.remove('reveal-emoji');
+      void document.getElementById('player-reveal').offsetWidth;
+      void document.getElementById('ai-reveal').offsetWidth;
+      document.getElementById('player-reveal').classList.add('reveal-emoji');
+      document.getElementById('ai-reveal').classList.add('reveal-emoji');
+
+      const msg = document.getElementById('result-message');
+      if (result === 'win') {
+        msg.textContent = 'You win!';
+        msg.className = 'mt-4 text-lg text-green-600 font-semibold';
+      } else if (result === 'loss') {
+        msg.textContent = 'You lose!';
+        msg.className = 'mt-4 text-lg text-red-600 font-semibold';
+      } else {
+        msg.textContent = "It's a draw!";
+        msg.className = 'mt-4 text-lg text-gray-600 font-semibold';
+      }
+    }
+
+    function checkBestOf5() {
+      if (!state.bestOf5) return;
+      if (state.roundWins >= 3 || state.roundLosses >= 3) {
+        const won = state.roundWins >= 3;
+        document.getElementById('game-over-area').classList.remove('hidden');
+        document.getElementById('reveal-area').classList.add('hidden');
+        document.getElementById('game-over-message').textContent = won ? 'You won the match!' : 'AI won the match!';
+        document.getElementById('game-over-message').className = `text-2xl font-bold mb-4 ${won ? 'text-green-600' : 'text-red-600'}`;
+        if (won) playScoreUp();
+        else playGameOver();
+        trackGameOver('rock-paper-scissors', won ? 'win' : 'loss');
+      }
+    }
+
+    function playRound(playerChoice) {
+      playClick();
+      const ai = aiChoice();
+
+      // Shake animation
+      document.querySelectorAll('.choice-emoji').forEach(el => el.classList.add('shake'));
+      setTimeout(() => document.querySelectorAll('.choice-emoji').forEach(el => el.classList.remove('shake')), 500);
+
+      setTimeout(() => {
+        const result = getResult(playerChoice, ai);
+        state.wins += result === 'win' ? 1 : 0;
+        state.losses += result === 'loss' ? 1 : 0;
+        state.draws += result === 'draw' ? 1 : 0;
+        state.streak = result === 'win' ? state.streak + 1 : result === 'loss' ? 0 : state.streak;
+        if (state.bestOf5) {
+          if (result === 'win') state.roundWins++;
+          else if (result === 'loss') state.roundLosses++;
+        }
+
+        if (result === 'win') playSuccess();
+        else if (result === 'loss') playError();
+
+        updateUI();
+        showReveal(playerChoice, ai, result);
+        checkBestOf5();
+      }, 600);
+    }
+
+    function resetRound() {
+      document.getElementById('reveal-area').classList.add('hidden');
+      document.getElementById('choices-area').classList.remove('hidden');
+      document.getElementById('game-over-area').classList.add('hidden');
+    }
+
+    function newBestOf5Round() {
+      state.roundWins = 0;
+      state.roundLosses = 0;
+      updateUI();
+      resetRound();
+    }
+
+    // Event listeners
+    document.querySelectorAll('.choice-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (document.getElementById('reveal-area').classList.contains('hidden') &&
+            document.getElementById('game-over-area').classList.contains('hidden')) {
+          playRound(btn.dataset.choice);
+        }
+      });
+    });
+
+    document.getElementById('play-again').addEventListener('click', () => {
+      playClick();
+      resetRound();
+    });
+
+    document.getElementById('new-round').addEventListener('click', () => {
+      playClick();
+      newBestOf5Round();
+    });
+
+    document.getElementById('mode-classic').addEventListener('click', () => {
+      playClick();
+      state.mode = 'classic';
+      updateUI();
+    });
+
+    document.getElementById('mode-lizard-spock').addEventListener('click', () => {
+      playClick();
+      state.mode = 'lizard-spock';
+      updateUI();
+    });
+
+    document.getElementById('match-single').addEventListener('click', () => {
+      playClick();
+      state.bestOf5 = false;
+      updateUI();
+    });
+
+    document.getElementById('match-best5').addEventListener('click', () => {
+      playClick();
+      state.bestOf5 = true;
+      state.roundWins = 0;
+      state.roundLosses = 0;
+      updateUI();
+    });
+
+    document.getElementById('sound-toggle').addEventListener('click', () => {
+      state.muted = !state.muted;
+      muteAll(state.muted);
+      document.getElementById('sound-toggle').textContent = state.muted ? '🔇 Muted' : '🔊 Sound';
+    });
+
+    // Init
+    initAudio();
+    updateUI();
+    trackGameStart('rock-paper-scissors');
+  </script>
+</body>
+</html>

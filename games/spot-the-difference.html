@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Spot the Difference Online — Play Instantly | MiniGamePlanet</title>
+  <meta name="description" content="Play Spot the Difference free online. Find subtle differences between two geometric art panels. Procedurally generated puzzles, multiple levels, timer challenge. Test your observation skills.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/spot-the-difference">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500});gtag('config','G-XXXXXXXXXX');</script>
+  <meta property="og:type" content="website"><meta property="og:title" content="Free Spot the Difference | MiniGamePlanet"><meta property="og:description" content="Find subtle differences between two geometric art panels. Free online observation game."><meta property="og:url" content="https://minigameplanet.com/games/spot-the-difference"><meta property="og:site_name" content="MiniGamePlanet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Spot the Difference","url":"https://minigameplanet.com/games/spot-the-difference","description":"Play Spot the Difference free online. Find subtle differences between two geometric art panels.","genre":"Casual","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <!-- AdSense (commented)
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXX" crossorigin="anonymous"></script>
+  -->
+  <style>
+    .std-canvas{display:block;cursor:crosshair;border-radius:8px;background:#1a1a2e;}
+    .std-panel{position:relative;display:inline-block;}
+    .std-marker{position:absolute;pointer-events:none;border:3px solid #22c55e;border-radius:50%;animation:std-pulse 0.5s ease-out;}
+    @keyframes std-pulse{0%{transform:scale(0.5);opacity:0}100%{transform:scale(1);opacity:1}}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <h1 style="font-size:22px;font-weight:700;margin:0;">🔍 Spot the Difference</h1>
+        <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;padding:4px 8px;background:#F8FAFC;border-radius:6px;flex-wrap:wrap;">
+        <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;">Level <span id="level">1</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;">✅ <span id="found">0</span>/<span id="total-diff">3</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;">⏱ <span id="timer">0:00</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;">🔥 <span id="streak">0</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;">🏆 Best: <span id="best">---</span></span>
+      </div>
+      <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+        <div class="std-panel" id="panel-left"></div>
+        <div class="std-panel" id="panel-right"></div>
+      </div>
+      <div id="game-over" style="display:none;text-align:center;padding:16px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;">
+        <div id="go-title" style="font-size:22px;font-weight:700;margin-bottom:4px;"></div>
+        <div id="go-sub" style="font-size:13px;color:#64748B;margin-bottom:12px;"></div>
+        <div id="session-stats" style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;text-align:left;max-width:220px;margin:0 auto 12px;padding:10px;background:#fff;border-radius:8px;"></div>
+        <button id="play-again" style="padding:8px 24px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">▶ Next Level</button>
+      </div>
+    </div>
+  </main>
+
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play Spot the Difference</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>Spot the Difference is a classic observation game that challenges your attention to detail. Two nearly identical images are shown side by side, and your job is to find the subtle differences between them. In this browser version, the images are procedurally generated geometric art—colored circles, rectangles, and triangles—so every round is unique. The timer counts up as you play; find all differences to complete the level and advance to harder puzzles.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Game Rules</h3>
+      <p>Two canvas panels display geometric art. The left panel is the original; the right panel has three to five deliberate differences. Click directly on each difference to mark it. A green circle appears when you find one correctly. Wrong clicks produce no effect. Find all differences before the round ends to win. The timer runs from the moment you start until you complete the level, so faster completion means a better time.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Types of Differences</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Color change</strong> — A shape has a different color on the right panel.</li>
+        <li><strong>Shape removed</strong> — A shape appears on the left but is missing on the right. Click it on the left panel.</li>
+        <li><strong>Shape moved</strong> — A shape is in a different position on the right panel.</li>
+        <li><strong>Size change</strong> — A shape is larger or smaller on the right panel.</li>
+      </ul>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Levels and Difficulty</h3>
+      <p>Early levels use fewer shapes and three differences. As you progress, the number of shapes increases and differences become subtler. Higher levels may include more shapes, smaller elements, and color variations that are harder to spot. Your streak increases each time you complete a level without giving up, and your best time per level is tracked for bragging rights.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Strategy Tips</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Scan systematically.</strong> Move your eyes in a pattern (e.g., top-left to bottom-right) to avoid missing areas.</li>
+        <li><strong>Compare shapes one by one.</strong> Mentally match each shape on the left with its counterpart on the right.</li>
+        <li><strong>Watch for missing shapes.</strong> If a shape exists on the left but not the right, that's a difference—click it on the left.</li>
+        <li><strong>Check colors carefully.</strong> Slight hue shifts can be easy to overlook.</li>
+      </ul>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Why Spot the Difference?</h3>
+      <p>Spot the difference games have been popular for decades, from newspaper puzzles to video games. They train visual perception, sustained attention, and working memory. Practicing observation skills can help in everyday tasks like proofreading, finding lost items, and noticing changes in your environment. This free online version uses procedural generation so you never run out of new puzzles. Play anytime, no download required.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">A Brief History</h3>
+      <p>Spot the difference puzzles date back to the nineteenth century, when they appeared in magazines and children's books. The format became a staple of puzzle books and later migrated to digital platforms. Today, spot the difference games are used in cognitive training apps, educational software, and casual mobile games. The core mechanic—comparing two images to find discrepancies—remains unchanged and continues to engage players of all ages.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Cognitive Benefits</h3>
+      <p>Playing spot the difference regularly can improve visual discrimination, pattern recognition, and sustained focus. These skills transfer to real-world tasks such as quality control, medical imaging review, and security screening. The game also exercises working memory as you hold the left image in mind while scanning the right. Whether you play for fun or to sharpen your observation skills, spot the difference offers a rewarding mental workout.</p>
+      <p class="mt-6">Play Spot the Difference free in your browser—test your eyes, beat the clock, and climb the levels.</p>
+    </div>
+  </article>
+  <div id="related-games"></div>
+  <div id="footer-container"></div>
+  <div id="consent-banner"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+  document.addEventListener('click',()=>initAudio(),{once:true});
+  initToolPage('spot-the-difference'); initConsent(); trackGameView('spot-the-difference','Casual');
+
+  const COLORS=['#ef4444','#f97316','#eab308','#22c55e','#06b6d4','#3b82f6','#8b5cf6','#ec4899'];
+  const DIFF_COLORS=['#dc2626','#ea580c','#ca8a04','#16a34a','#0891b2','#2563eb','#7c3aed','#db2777'];
+
+  let level=1,found=new Set(),differences=[],shapesLeft=[],shapesRight=[],markers=[];
+  let timerInterval,seconds=0,started=false;
+  let streak=0,best={},session={rounds:0,wins:0,totalTime:0,startTime:Date.now()};
+  const CANVAS_W=320,CANVAS_H=280;
+
+  document.getElementById('sound-btn').addEventListener('click',()=>{initAudio();const m=muteAll();document.getElementById('sound-btn').textContent=m?'🔇':'🔊';});
+  document.getElementById('play-again').addEventListener('click',()=>{playClick();nextLevel();});
+
+  function rng(min,max){const a=new Uint32Array(1);crypto.getRandomValues(a);return min+a[0]%(max-min+1);}
+
+  function hitCircle(cx,cy,r,px,py){const dx=px-cx,dy=py-cy;return dx*dx+dy*dy<=r*r;}
+  function hitRect(x,y,w,h,px,py){return px>=x&&px<=x+w&&py>=y&&py<=y+h;}
+  function hitTriangle(x,y,w,h,px,py){
+    const cx=x+w/2,cy=y+h/2;
+    const p1={x:cx,y:y},p2={x:x,y:y+h},p3={x:x+w,y:y+h};
+    const sign=(p1,p2,p3)=>((p2.x-p1.x)*(p3.y-p1.y)-(p2.y-p1.y)*(p3.x-p1.x));
+    const d1=sign(p1,p2,{x:px,y:py}),d2=sign(p2,p3,{x:px,y:py}),d3=sign(p3,p1,{x:px,y:py});
+    return(d1>=0&&d2>=0&&d3>=0)||(d1<=0&&d2<=0&&d3<=0);
+  }
+
+  function hitShape(shape,px,py){
+    const s=shape;
+    if(s.type==='circle')return hitCircle(s.x+s.w/2,s.y+s.h/2,Math.min(s.w,s.h)/2,px,py);
+    if(s.type==='rect')return hitRect(s.x,s.y,s.w,s.h,px,py);
+    return hitTriangle(s.x,s.y,s.w,s.h,px,py);
+  }
+
+  function drawShape(ctx,shape){
+    const s=shape;
+    ctx.fillStyle=s.color;
+    if(s.type==='circle'){ctx.beginPath();ctx.arc(s.x+s.w/2,s.y+s.h/2,Math.min(s.w,s.h)/2,0,Math.PI*2);ctx.fill();}
+    else if(s.type==='rect'){ctx.fillRect(s.x,s.y,s.w,s.h);}
+    else{
+      ctx.beginPath();ctx.moveTo(s.x+s.w/2,s.y);ctx.lineTo(s.x,s.y+s.h);ctx.lineTo(s.x+s.w,s.y+s.h);ctx.closePath();ctx.fill();
+    }
+  }
+
+  function generateShapes(){
+    const numShapes=Math.min(8+level*2,24);
+    const shapes=[];
+    for(let i=0;i<numShapes;i++){
+      const type=['circle','rect','triangle'][rng(0,2)];
+      const w=rng(20,50),h=type==='circle'?w:rng(20,50);
+      const x=rng(4,CANVAS_W-w-4),y=rng(4,CANVAS_H-h-4);
+      shapes.push({type,x,y,w,h,color:COLORS[rng(0,COLORS.length-1)]});
+    }
+    return shapes;
+  }
+
+  function applyDifferences(left,right){
+    const numDiff=Math.min(3+Math.floor(level/3),5);
+    const indices=[];
+    for(let i=0;i<left.length;i++)indices.push(i);
+    for(let i=indices.length-1;i>0;i--){const j=rng(0,i);[indices[i],indices[j]]=[indices[j],indices[i]];}
+    const modTypes=['color','removed','moved','size'];
+    const diffs=[];
+    for(let i=0;i<numDiff&&i<indices.length;i++){
+      const idx=indices[i];
+      const sl=left[idx];
+      const sr={...sl,x:sl.x,y:sl.y,w:sl.w,h:sl.h,color:sl.color};
+      const mod=modTypes[rng(0,modTypes.length-1)];
+      if(mod==='color'){
+        const otherColors=DIFF_COLORS.filter(c=>c!==sl.color);
+        sr.color=otherColors[rng(0,otherColors.length-1)]||DIFF_COLORS[0];
+        right[idx]=sr;diffs.push({idx,mod,panel:'right',shape:sr});
+      }else if(mod==='removed'){right[idx]=null;diffs.push({idx,mod,panel:'left',shape:sl});}
+      else if(mod==='moved'){
+        sr.x=Math.max(4,Math.min(CANVAS_W-sr.w-4,sl.x+rng(-25,25)));
+        sr.y=Math.max(4,Math.min(CANVAS_H-sr.h-4,sl.y+rng(-25,25)));
+        right[idx]=sr;diffs.push({idx,mod,panel:'right',shape:sr});
+      }else{
+        sr.w=Math.max(12,Math.min(60,sl.w+rng(-12,12)));
+        sr.h=Math.max(12,Math.min(60,sl.h+rng(-12,12)));
+        right[idx]=sr;diffs.push({idx,mod,panel:'right',shape:sr});
+      }
+    }
+    return diffs;
+  }
+
+  function render(){
+    const leftCtx=document.getElementById('canvas-left').getContext('2d');
+    const rightCtx=document.getElementById('canvas-right').getContext('2d');
+    leftCtx.fillStyle='#1a1a2e';leftCtx.fillRect(0,0,CANVAS_W,CANVAS_H);
+    rightCtx.fillStyle='#1a1a2e';rightCtx.fillRect(0,0,CANVAS_W,CANVAS_H);
+    for(let i=0;i<shapesLeft.length;i++)if(shapesLeft[i])drawShape(leftCtx,shapesLeft[i]);
+    for(let i=0;i<shapesRight.length;i++)if(shapesRight[i])drawShape(rightCtx,shapesRight[i]);
+    leftCtx.strokeStyle='#334155';leftCtx.lineWidth=1;leftCtx.strokeRect(0,0,CANVAS_W,CANVAS_H);
+    rightCtx.strokeStyle='#334155';rightCtx.lineWidth=1;rightCtx.strokeRect(0,0,CANVAS_W,CANVAS_H);
+    markers.forEach(m=>{
+      const ctx=m.panel==='left'?leftCtx:rightCtx;
+      ctx.strokeStyle='#22c55e';ctx.lineWidth=4;ctx.beginPath();ctx.arc(m.cx,m.cy,18,0,Math.PI*2);ctx.stroke();
+    });
+  }
+
+  function handleClick(panel,ev){
+    if(found.size>=differences.length)return;
+    if(!started){started=true;trackGameStart('spot-the-difference','Casual');timerInterval=setInterval(()=>{seconds++;document.getElementById('timer').textContent=`${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`;},1000);}
+    const rect=ev.target.getBoundingClientRect();
+    const scaleX=CANVAS_W/rect.width,scaleY=CANVAS_H/rect.height;
+    const px=(ev.clientX-rect.left)*scaleX,py=(ev.clientY-rect.top)*scaleY;
+    for(let i=0;i<differences.length;i++){
+      if(found.has(i))continue;
+      const d=differences[i];
+      if(d.panel!==panel)continue;
+      if(!hitShape(d.shape,px,py))continue;
+      found.add(i);playSuccess();
+      const s=d.shape;
+      const cx=s.type==='circle'?s.x+s.w/2:s.x+s.w/2;
+      const cy=s.type==='circle'?s.y+s.h/2:s.y+s.h/2;
+      markers.push({panel,cx,cy});
+      document.getElementById('found').textContent=found.size;
+      render();
+      if(found.size>=differences.length)endLevel();
+      return;
+    }
+    playError();
+  }
+
+  function endLevel(){
+    clearInterval(timerInterval);
+    session.rounds++;session.wins++;session.totalTime+=seconds;streak++;
+    const key=`L${level}`;
+    if(!best[key]||seconds<best[key]){best[key]=seconds;document.getElementById('go-title').textContent='🏆 NEW BEST!';document.getElementById('go-title').style.color='#D97706';playPerfect();setTimeout(()=>playLevelUp(),300);}
+    else{document.getElementById('go-title').textContent='🔍 All Differences Found!';document.getElementById('go-title').style.color='#059669';playSuccess();}
+    document.getElementById('go-sub').textContent=`Level ${level} · ${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`;
+    document.getElementById('streak').textContent=streak;
+    trackGameOver('spot-the-difference','Casual',level,seconds);
+    const elapsed=Math.round((Date.now()-session.startTime)/1000),mins=Math.floor(elapsed/60),secs=elapsed%60;
+    document.getElementById('session-stats').innerHTML=`🎮 This Session<br>─────────────────────<br>Rounds played   ${session.rounds}<br>Best (L${level})    ${best[key]||'---'}s<br>Current streak  ${streak} ${streak>=3?'🔥':''}<br>Time played     ${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+    document.getElementById('game-over').style.display='block';
+  }
+
+  function nextLevel(){
+    level++;found=new Set();markers=[];
+    document.getElementById('level').textContent=level;
+    document.getElementById('game-over').style.display='none';
+    newRound();
+  }
+
+  function newRound(){
+    found=new Set();markers=[];seconds=0;started=false;
+    clearInterval(timerInterval);
+    document.getElementById('found').textContent='0';
+    document.getElementById('timer').textContent='0:00';
+    shapesLeft=generateShapes();
+    shapesRight=shapesLeft.map(s=>s?{...s}:null);
+    differences=applyDifferences(shapesLeft,shapesRight);
+    document.getElementById('total-diff').textContent=differences.length;
+    const key=`L${level}`;
+    document.getElementById('best').textContent=best[key]?best[key]+'s':'---';
+    document.getElementById('streak').textContent=streak;
+    render();
+  }
+
+  function initCanvases(){
+    const pl=document.getElementById('panel-left'),pr=document.getElementById('panel-right');
+    pl.innerHTML='';pr.innerHTML='';
+    const cl=document.createElement('canvas');cl.id='canvas-left';cl.className='std-canvas';cl.width=CANVAS_W;cl.height=CANVAS_H;cl.style.width='min(100%,320px)';cl.style.height='auto';
+    const cr=document.createElement('canvas');cr.id='canvas-right';cr.className='std-canvas';cr.width=CANVAS_W;cr.height=CANVAS_H;cr.style.width='min(100%,320px)';cr.style.height='auto';
+    cl.addEventListener('click',e=>handleClick('left',e));
+    cr.addEventListener('click',e=>handleClick('right',e));
+    pl.appendChild(cl);pr.appendChild(cr);
+  }
+
+  initCanvases();
+  newRound();
+  </script>
+</body>
+</html>
