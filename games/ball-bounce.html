@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ball Bounce - Action Game | Mini Game Planet</title>
+  <link rel="canonical" href="https://minigameplanet.com/games/ball-bounce.html">
+  <meta name="description" content="Ball Bounce is a fast-paced action game. Keep the ball bouncing by placing platforms under it. Platforms shrink over time and the ball speeds up. How many bounces can you score?">
+  <meta property="og:title" content="Ball Bounce - Action Game | Mini Game Planet">
+  <meta property="og:description" content="Keep the ball bouncing by placing platforms. Platforms shrink, ball speeds up. How many bounces can you score?">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/ball-bounce.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    #gameCanvas { display: block; margin: 0 auto; border-radius: 8px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.08); touch-action: none; }
+  </style>
+  <!--
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXX" crossorigin="anonymous"></script>
+  -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Ball Bounce",
+    "description": "A fast-paced action game where you place platforms to keep a bouncing ball alive. Platforms shrink over time and the ball gains speed.",
+    "applicationCategory": "Game",
+    "operatingSystem": "Any",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+</head>
+<body class="min-h-screen text-gray-800">
+  <nav id="nav-container" class="bg-white/80 backdrop-blur border-b border-gray-200 sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="font-semibold text-lg">Mini Game Planet</a>
+      <div class="flex items-center gap-3">
+        <button id="soundToggle" class="px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm" aria-label="Toggle sound">🔊 Sound</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-4xl mx-auto px-4 py-6">
+    <article class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+      <h1 class="text-2xl font-bold mb-2">Ball Bounce</h1>
+      <p class="text-gray-600 mb-4">A fast-paced action game. Keep the ball bouncing by placing platforms under it. Platforms shrink over time and the ball gains speed. How many bounces can you score?</p>
+
+      <div class="flex flex-wrap gap-4 mb-6">
+        <div class="font-mono text-sm bg-gray-100 px-3 py-2 rounded-lg">
+          Score: <span id="scoreDisplay">0</span>
+        </div>
+        <div class="font-mono text-sm bg-gray-100 px-3 py-2 rounded-lg">
+          Best: <span id="bestDisplay">0</span>
+        </div>
+        <div class="font-mono text-sm bg-gray-100 px-3 py-2 rounded-lg">
+          Session: <span id="sessionDisplay">0</span>
+        </div>
+      </div>
+
+      <div class="relative mb-6">
+        <canvas id="gameCanvas" width="400" height="500" class="cursor-crosshair touch-none"></canvas>
+        <div id="gameOverlay" class="absolute inset-0 flex flex-col items-center justify-center bg-black/40 rounded-lg hidden">
+          <p class="text-white text-xl font-bold mb-2">Game Over</p>
+          <p class="text-white/90 mb-4">Score: <span id="finalScore">0</span></p>
+          <button id="restartBtn" class="px-6 py-2 bg-white text-gray-800 rounded-lg font-semibold hover:bg-gray-100">Play Again</button>
+        </div>
+        <div id="startOverlay" class="absolute inset-0 flex flex-col items-center justify-center bg-black/30 rounded-lg">
+          <p class="text-white text-xl font-bold mb-4">Ball Bounce</p>
+          <p class="text-white/90 text-sm mb-4 text-center px-4">Click or tap to place a platform. Drag to move it. Keep the ball bouncing!</p>
+          <button id="startBtn" class="px-6 py-2 bg-white text-gray-800 rounded-lg font-semibold hover:bg-gray-100">Start</button>
+        </div>
+      </div>
+
+      <div class="prose prose-gray max-w-none">
+        <h2>How to Play Ball Bounce</h2>
+        <p>Ball Bounce is a simple yet addictive action game that tests your reflexes and timing. A ball bounces continuously across the screen. Your job is to keep it alive by placing platforms underneath it. Each time the ball bounces off a platform, you score a point. The ball gradually speeds up, making the game more challenging as you progress.</p>
+
+        <h3>Controls</h3>
+        <p>Use your mouse or touchscreen to place and move platforms. Click or tap anywhere on the game area to spawn a platform at that position. You can also click and drag to move an existing platform before releasing. This gives you flexibility to position platforms exactly where the ball needs them. On mobile devices, a single tap places your platform, and dragging your finger moves it in real time.</p>
+
+        <h3>Game Mechanics</h3>
+        <p>Platforms appear at different heights as the ball bounces. Each platform you place will shrink over time, so you must be strategic about when and where to place them. The ball gains speed as it bounces, so the game becomes progressively harder. If the ball falls off the screen without hitting a platform, it's game over. The game also spawns additional platforms at random positions to give you a helping hand, but your main tool is the platform you control.</p>
+
+        <h3>Scoring</h3>
+        <p>Your score is the number of successful bounces. Every time the ball bounces off a platform, you earn one point. Try to beat your personal best and see how high you can score. The game tracks your session best and displays it alongside your current score. Your all-time best is saved in your browser so you can always try to beat it.</p>
+
+        <h3>Tips for High Scores</h3>
+        <p>Place platforms slightly ahead of where the ball is heading—anticipate its trajectory. Don't wait until the last moment; platforms take a moment to appear. When the ball speeds up, place platforms closer to the ball's path. Use the drag feature to fine-tune platform position. Stay calm and focus on the ball's movement pattern. Watch the ball's horizontal movement: it bounces off the walls, so you can predict where it will land. Keep your platform wide enough to catch the ball even when it's moving fast.</p>
+
+        <h3>Why Play Ball Bounce?</h3>
+        <p>Ball Bounce is perfect for quick gaming sessions. It's easy to learn but hard to master. The minimalist design keeps you focused on the action. Whether you have a minute or ten, Ball Bounce delivers fast-paced fun. Play on any device—desktop, tablet, or phone—and enjoy the game anywhere. No downloads or sign-ups required. Just open the page and start bouncing. Challenge your friends to beat your high score and see who has the quickest reflexes.</p>
+      </div>
+    </article>
+
+    <section id="related-games" class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+      <h2 class="text-lg font-semibold mb-4">Related Games</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+        <a href="/games/ball-bounce.html" class="block p-3 rounded-lg border border-gray-200 hover:bg-gray-50">Ball Bounce</a>
+      </div>
+    </section>
+  </main>
+
+  <footer id="footer-container" class="border-t border-gray-200 py-6 mt-8">
+    <div class="max-w-4xl mx-auto px-4 text-center text-sm text-gray-500">
+      <p>© Mini Game Planet. Free to play.</p>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playBounce } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('ball-bounce');
+    initConsent();
+    trackGameView('ball-bounce', 'Action');
+
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const bestDisplay = document.getElementById('bestDisplay');
+    const sessionDisplay = document.getElementById('sessionDisplay');
+    const gameOverlay = document.getElementById('gameOverlay');
+    const startOverlay = document.getElementById('startOverlay');
+    const startBtn = document.getElementById('startBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const finalScoreEl = document.getElementById('finalScore');
+    const soundToggle = document.getElementById('soundToggle');
+
+    const STORAGE_KEY = 'ball-bounce-best';
+    const SESSION_KEY = 'ball-bounce-session';
+
+    function getRandom(min, max) {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return min + (arr[0] % (max - min + 1));
+    }
+
+    let ball = { x: 200, y: 250, vx: 4, vy: -8, r: 12 };
+    let platforms = [];
+    let playerPlatform = null;
+    let score = 0;
+    let gameRunning = false;
+    let best = parseInt(localStorage.getItem(STORAGE_KEY) || '0', 10);
+    let sessionBest = parseInt(sessionStorage.getItem(SESSION_KEY) || '0', 10);
+    let lastTime = 0;
+    let muted = false;
+
+    function updateScore() {
+      score++;
+      scoreDisplay.textContent = score;
+      if (score > best) {
+        best = score;
+        localStorage.setItem(STORAGE_KEY, best);
+        playScoreUp?.();
+      }
+      if (score > sessionBest) {
+        sessionBest = score;
+        sessionStorage.setItem(SESSION_KEY, sessionBest);
+      }
+      sessionDisplay.textContent = sessionBest;
+      bestDisplay.textContent = best;
+    }
+
+    function drawBall() {
+      ctx.beginPath();
+      ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2);
+      ctx.fillStyle = '#3B82F6';
+      ctx.fill();
+      ctx.strokeStyle = '#2563EB';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+
+    function drawPlatform(p) {
+      ctx.fillStyle = p.color || '#10B981';
+      ctx.fillRect(p.x, p.y, p.w, p.h);
+      ctx.strokeStyle = '#059669';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(p.x, p.y, p.w, p.h);
+    }
+
+    function shrinkPlatform(p, dt) {
+      const shrinkRate = 0.00015;
+      p.w = Math.max(40, p.w - p.w * shrinkRate * dt);
+      if (p.w <= 40) p.dead = true;
+    }
+
+    function checkBallPlatformCollision(p, prevY) {
+      if (ball.vy <= 0) return false;
+      const prevBottom = prevY + ball.r;
+      const ballBottom = ball.y + ball.r;
+      if (prevBottom >= p.y) return false;
+      if (ballBottom < p.y || ballBottom > p.y + p.h + 20) return false;
+      if (ball.x + ball.r < p.x || ball.x - ball.r > p.x + p.w) return false;
+      ball.vy = -Math.abs(ball.vy) * 1.02;
+      ball.y = p.y - ball.r - 1;
+      updateScore();
+      playBounce?.();
+      return true;
+    }
+
+    function spawnPlatform() {
+      const x = getRandom(50, canvas.width - 150);
+      const y = getRandom(100, canvas.height - 100);
+      platforms.push({
+        x, y,
+        w: 100,
+        h: 14,
+        color: '#10B981',
+      });
+    }
+
+    function gameOver() {
+      gameRunning = false;
+      gameOverlay.classList.remove('hidden');
+      finalScoreEl.textContent = score;
+      playGameOver?.();
+      trackGameOver?.('ball-bounce', score);
+    }
+
+    function reset() {
+      ball = { x: 200, y: 350, vx: 4, vy: -10, r: 12 };
+      platforms = [
+        { x: 150, y: 400, w: 100, h: 14, color: '#10B981' }
+      ];
+      playerPlatform = null;
+      score = 0;
+      scoreDisplay.textContent = '0';
+      sessionDisplay.textContent = sessionBest;
+      bestDisplay.textContent = best;
+      gameOverlay.classList.add('hidden');
+      gameRunning = true;
+      platformSpawnTimer = 0;
+      trackGameStart?.('ball-bounce');
+    }
+
+    function startGame() {
+      startOverlay.classList.add('hidden');
+      reset();
+    }
+
+    function handlePointerDown(e) {
+      if (!gameRunning) return;
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const x = (e.clientX ?? e.touches?.[0]?.clientX) - rect.left;
+      const y = (e.clientY ?? e.touches?.[0]?.clientY) - rect.top;
+      const px = x * scaleX;
+      const py = y * scaleY;
+
+      if (playerPlatform) {
+        playerPlatform.x = px - playerPlatform.w / 2;
+        playerPlatform.y = py - playerPlatform.h / 2;
+      } else {
+        playerPlatform = {
+          x: px - 50,
+          y: py - 7,
+          w: 100,
+          h: 14,
+          color: '#6366F1',
+        };
+        platforms.push(playerPlatform);
+      }
+      playClick?.();
+    }
+
+    function handlePointerMove(e) {
+      if (!gameRunning || !playerPlatform) return;
+      e.preventDefault();
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const x = (e.clientX ?? e.touches?.[0]?.clientX) - rect.left;
+      const y = (e.clientY ?? e.touches?.[0]?.clientY) - rect.top;
+      playerPlatform.x = Math.max(0, Math.min(canvas.width - playerPlatform.w, x * scaleX - playerPlatform.w / 2));
+      playerPlatform.y = Math.max(0, Math.min(canvas.height - playerPlatform.h, y * scaleY - playerPlatform.h / 2));
+    }
+
+    function handlePointerUp() {
+      // Platform stays where it is
+    }
+
+    canvas.addEventListener('click', handlePointerDown);
+    canvas.addEventListener('touchstart', handlePointerDown, { passive: true });
+    canvas.addEventListener('mousemove', handlePointerMove);
+    canvas.addEventListener('touchmove', handlePointerMove, { passive: false });
+    canvas.addEventListener('mouseup', handlePointerUp);
+    canvas.addEventListener('touchend', handlePointerUp);
+
+    startBtn.addEventListener('click', () => { startGame(); playClick?.(); });
+    restartBtn.addEventListener('click', () => { startGame(); playClick?.(); });
+
+    soundToggle.addEventListener('click', () => {
+      muted = !muted;
+      if (muted) muteAll?.();
+      soundToggle.textContent = muted ? '🔇 Muted' : '🔊 Sound';
+      playClick?.();
+    });
+
+    initAudio?.();
+
+    let platformSpawnTimer = 0;
+
+    function gameLoop(timestamp) {
+      const dt = timestamp - lastTime;
+      lastTime = timestamp;
+
+      if (gameRunning) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const delta = Math.min(dt / 16.67, 3);
+        const prevY = ball.y;
+        ball.x += ball.vx * delta;
+        ball.y += ball.vy * delta;
+        ball.vy += 0.5 * delta;
+
+        if (ball.x - ball.r < 0) { ball.x = ball.r; ball.vx = Math.abs(ball.vx); }
+        if (ball.x + ball.r > canvas.width) { ball.x = canvas.width - ball.r; ball.vx = -Math.abs(ball.vx); }
+
+        platformSpawnTimer += dt;
+        if (platformSpawnTimer > 1500) {
+          spawnPlatform();
+          platformSpawnTimer = 0;
+        }
+
+        let bounced = false;
+        for (const p of platforms) {
+          shrinkPlatform(p, dt);
+          if (!bounced && checkBallPlatformCollision(p, prevY)) bounced = true;
+        }
+        platforms = platforms.filter(p => !p.dead);
+
+        drawBall();
+        for (const p of platforms) drawPlatform(p);
+
+        if (ball.y - ball.r > canvas.height) {
+          gameOver();
+        }
+      }
+
+      requestAnimationFrame(gameLoop);
+    }
+    requestAnimationFrame(gameLoop);
+  </script>
+</body>
+</html>

@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tower Stacker - Stack Blocks Perfectly | Mini Game Planet</title>
+  <meta name="description" content="Drop blocks to build the tallest tower. Perfect placement earns bonuses. How high can you stack?">
+  <link rel="canonical" href="https://minigameplanet.com/games/tower-stack.html">
+  <!-- Open Graph -->
+  <meta property="og:title" content="Tower Stacker - Stack Blocks Perfectly">
+  <meta property="og:description" content="Drop blocks to build the tallest tower. Perfect placement earns bonuses.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/tower-stack.html">
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Tower Stacker",
+    "description": "Drop blocks to build the tallest tower. Perfect placement earns bonuses.",
+    "applicationCategory": "Game",
+    "operatingSystem": "Any"
+  }
+  </script>
+  <!-- AdSense (commented)
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXX" crossorigin="anonymous"></script>
+  -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+  </style>
+</head>
+<body class="min-h-screen text-gray-800">
+  <nav class="nav-container bg-white/80 backdrop-blur border-b border-gray-200 sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="font-semibold text-lg">Mini Game Planet</a>
+      <div class="flex items-center gap-4">
+        <button id="sound-toggle" class="text-sm px-3 py-1 rounded border border-gray-300 hover:bg-gray-100" aria-label="Toggle sound">🔊 Sound</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-4xl mx-auto px-4 py-6">
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden mb-6">
+      <div class="p-4 border-b border-gray-100 flex flex-wrap items-center justify-between gap-4">
+        <h1 class="text-xl font-bold">Tower Stacker</h1>
+        <div class="flex items-center gap-6 font-mono text-sm">
+          <span>Score: <strong id="score">0</strong></span>
+          <span>Best: <strong id="best">0</strong></span>
+          <span>Streak: <strong id="streak">0</strong></span>
+        </div>
+      </div>
+      <div class="relative bg-gray-900 aspect-[4/5] max-h-[70vh] flex items-center justify-center">
+        <canvas id="game" class="block w-full h-full"></canvas>
+        <div id="start-overlay" class="absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-4 text-white">
+          <h2 class="text-2xl font-bold">Tower Stacker</h2>
+          <p class="text-center text-sm max-w-xs">Click, tap, or press SPACE to drop the block. Stack perfectly for bonuses!</p>
+          <button id="start-btn" class="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 rounded-lg font-semibold">Play</button>
+        </div>
+        <div id="gameover-overlay" class="absolute inset-0 bg-black/70 hidden flex-col items-center justify-center gap-4 text-white">
+          <h2 class="text-2xl font-bold">Game Over</h2>
+          <p class="font-mono text-lg">Score: <span id="final-score">0</span></p>
+          <button id="restart-btn" class="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 rounded-lg font-semibold">Play Again</button>
+        </div>
+      </div>
+    </div>
+
+    <article class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 mb-6 prose prose-gray max-w-none">
+      <h2 class="text-xl font-bold mb-4">Tower Stacker: The Ultimate Block Stacking Challenge</h2>
+      <p>
+        Tower Stacker is a fast-paced action game that tests your timing and precision. A block swings back and forth above your growing tower. Your job is to drop it at exactly the right moment so it lands on the block below. Miss completely and it's game over. Land it partially and only the overlapping part stays—the rest falls away. Land it perfectly and you earn a bonus: the block grows back slightly and your streak increases.
+      </p>
+      <p>
+        The game rewards patience and rhythm. Each block you stack adds to your score. The tower grows upward, and the camera smoothly follows so you're always focused on the action. Blocks alternate colors layer by layer, making it easy to see your progress and adding a satisfying visual rhythm to the stacking.
+      </p>
+      <p>
+        Perfect drops are the key to high scores. When you align the swinging block exactly with the one below, you trigger a special effect and the block expands. This gives you a larger target for the next drop and builds your streak. The streak multiplier makes every perfect drop more rewarding. As the tower gets taller, the challenge increases—the swinging block moves faster and your margin for error shrinks.
+      </p>
+      <p>
+        Tower Stacker is easy to learn but hard to master. Whether you're playing on desktop with a mouse or on mobile with a tap, the controls are simple: one action to drop. The real skill is in reading the swing and timing your drop. Many players find a rhythm and stack dozens of blocks before a single mistimed drop ends their run. Track your personal best and see how high you can stack. Challenge friends to beat your score and share your achievements.
+      </p>
+      <p>
+        Strategy matters. Early on, take your time to line up perfect drops—they widen the block and give you more room for error later. As the tower narrows, each drop becomes more critical. Some players prefer to drop when the block is at the edges of its swing for consistency; others wait for the center. Find what works for you and stick with it.
+      </p>
+      <p>
+        Play Tower Stacker free on Mini Game Planet. No downloads, no sign-up—just click and play. Perfect for quick breaks or longer sessions when you're chasing a new high score.
+      </p>
+    </article>
+
+    <section class="related-games bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
+      <h2 class="text-lg font-bold mb-4">Related Games</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+        <a href="/games/" class="block p-3 rounded-lg border border-gray-200 hover:bg-gray-50">More Games</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer-container border-t border-gray-200 py-6 mt-8">
+    <div class="max-w-4xl mx-auto px-4 text-center text-sm text-gray-500">
+      <p>© Mini Game Planet. Play free online games.</p>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playPerfect, playBounce } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('tower-stack');
+    initConsent();
+    initAudio();
+    trackGameView('tower-stack', 'Action');
+
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+    const startOverlay = document.getElementById('start-overlay');
+    const gameoverOverlay = document.getElementById('gameover-overlay');
+    const startBtn = document.getElementById('start-btn');
+    const restartBtn = document.getElementById('restart-btn');
+    const scoreEl = document.getElementById('score');
+    const bestEl = document.getElementById('best');
+    const streakEl = document.getElementById('streak');
+    const finalScoreEl = document.getElementById('final-score');
+    const soundToggle = document.getElementById('sound-toggle');
+
+    const BLOCK_HEIGHT = 24;
+    const PERFECT_THRESHOLD = 4;
+    const PERFECT_GROWTH = 6;
+    const COLORS = ['#10B981', '#3B82F6', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899'];
+    const SWING_SPEED = 0.008;
+    const SWING_AMP = 0.35;
+
+    let blocks = [];
+    let swingingBlock = null;
+    let score = 0;
+    let streak = 0;
+    let best = 0;
+    let gameOver = false;
+    let gameStarted = false;
+    let cameraY = 0;
+    let perfectEffect = null;
+    let animationId = null;
+    let lastTime = 0;
+
+    function loadBest() {
+      try {
+        const s = localStorage.getItem('tower-stack-best');
+        if (s) best = parseInt(s, 10);
+      } catch (_) {}
+    }
+
+    function saveBest() {
+      try {
+        if (score > best) localStorage.setItem('tower-stack-best', String(score));
+      } catch (_) {}
+    }
+
+    function resize() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      canvas.style.width = rect.width + 'px';
+      canvas.style.height = rect.height + 'px';
+      ctx.scale(dpr, dpr);
+    }
+
+    function initGame() {
+      blocks = [];
+      const w = Math.min(120, canvas.parentElement.clientWidth * 0.4);
+      blocks.push({
+        x: (canvas.parentElement.clientWidth - w) / 2,
+        y: canvas.parentElement.clientHeight - BLOCK_HEIGHT - 40,
+        w,
+        h: BLOCK_HEIGHT,
+        color: COLORS[0]
+      });
+      const phaseBuf = new Uint8Array(4);
+      crypto.getRandomValues(phaseBuf);
+      const phase = (phaseBuf[0] / 255) * Math.PI * 2;
+      swingingBlock = {
+        x: blocks[0].x,
+        y: blocks[0].y - BLOCK_HEIGHT - 20,
+        w: w,
+        h: BLOCK_HEIGHT,
+        phase,
+        color: COLORS[1]
+      };
+      score = 0;
+      streak = 0;
+      gameOver = false;
+      cameraY = 0;
+      perfectEffect = null;
+      loadBest();
+      updateUI();
+    }
+
+    function updateUI() {
+      scoreEl.textContent = score;
+      bestEl.textContent = best;
+      streakEl.textContent = streak;
+      finalScoreEl.textContent = score;
+    }
+
+    function dropBlock() {
+      if (!gameStarted || gameOver || !swingingBlock) return;
+      playClick();
+
+      const top = blocks[blocks.length - 1];
+      const sw = swingingBlock;
+      const overlapLeft = Math.max(sw.x, top.x);
+      const overlapRight = Math.min(sw.x + sw.w, top.x + top.w);
+      const overlap = overlapRight - overlapLeft;
+
+      if (overlap <= 0) {
+        gameOver = true;
+        playGameOver();
+        trackGameOver('tower-stack', score);
+        gameoverOverlay.classList.remove('hidden');
+        gameoverOverlay.classList.add('flex');
+        return;
+      }
+
+      const isPerfect = Math.abs(overlap - top.w) < PERFECT_THRESHOLD && Math.abs(sw.x - top.x) < PERFECT_THRESHOLD;
+      let newW = overlap;
+      let newX = overlapLeft;
+
+      if (isPerfect) {
+        streak++;
+        newW = Math.min(top.w + PERFECT_GROWTH, top.w * 1.2);
+        newX = top.x + (top.w - newW) / 2;
+        playPerfect();
+        perfectEffect = { x: newX, y: top.y - BLOCK_HEIGHT - 20, w: newW, t: 0 };
+      } else {
+        streak = 0;
+        playBounce();
+      }
+
+      const colorIdx = blocks.length % COLORS.length;
+      blocks.push({
+        x: newX,
+        y: top.y - BLOCK_HEIGHT,
+        w: newW,
+        h: BLOCK_HEIGHT,
+        color: COLORS[colorIdx]
+      });
+
+      score++;
+      playScoreUp();
+      if (score > best) {
+        best = score;
+        saveBest();
+      }
+
+      const nextColorIdx = (blocks.length) % COLORS.length;
+      swingingBlock = {
+        x: newX + (newW - sw.w) / 2,
+        y: blocks[blocks.length - 1].y - BLOCK_HEIGHT - 20,
+        w: sw.w,
+        h: BLOCK_HEIGHT,
+        phase: sw.phase,
+        color: COLORS[nextColorIdx]
+      };
+
+      updateUI();
+    }
+
+    function gameLoop(t) {
+      if (!gameStarted) return;
+      const dt = Math.min((t - lastTime) / 16, 4);
+      lastTime = t;
+
+      const cw = canvas.parentElement.clientWidth;
+      const ch = canvas.parentElement.clientHeight;
+
+      if (swingingBlock && !gameOver) {
+        swingingBlock.phase += SWING_SPEED * 60 * (dt / 16);
+        const amp = (cw - swingingBlock.w) / 2 * SWING_AMP;
+        swingingBlock.x = cw / 2 - swingingBlock.w / 2 + Math.sin(swingingBlock.phase) * amp;
+      }
+
+      if (perfectEffect) {
+        perfectEffect.t += dt * 0.08;
+        if (perfectEffect.t >= 1) perfectEffect = null;
+      }
+
+      const lastBlock = blocks[blocks.length - 1];
+      if (lastBlock && lastBlock.y - cameraY < ch * 0.6) {
+        cameraY = lastBlock.y - ch * 0.5;
+      }
+
+      ctx.fillStyle = '#111827';
+      ctx.fillRect(0, 0, cw, ch);
+
+      ctx.save();
+      ctx.translate(0, -cameraY);
+
+      blocks.forEach((b, i) => {
+        ctx.fillStyle = b.color;
+        ctx.fillRect(b.x, b.y, b.w, b.h);
+        ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(b.x, b.y, b.w, b.h);
+      });
+
+      if (swingingBlock && !gameOver) {
+        ctx.fillStyle = swingingBlock.color;
+        ctx.fillRect(swingingBlock.x, swingingBlock.y, swingingBlock.w, swingingBlock.h);
+        ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+        ctx.strokeRect(swingingBlock.x, swingingBlock.y, swingingBlock.w, swingingBlock.h);
+      }
+
+      if (perfectEffect) {
+        const a = 1 - perfectEffect.t;
+        ctx.strokeStyle = `rgba(255,215,0,${a})`;
+        ctx.lineWidth = 4;
+        ctx.strokeRect(perfectEffect.x - 4, perfectEffect.y - 4, perfectEffect.w + 8, BLOCK_HEIGHT + 8);
+      }
+
+      ctx.restore();
+
+      animationId = requestAnimationFrame(gameLoop);
+    }
+
+    function startGame() {
+      initGame();
+      gameStarted = true;
+      gameOver = false;
+      startOverlay.classList.add('hidden');
+      gameoverOverlay.classList.add('hidden');
+      gameoverOverlay.classList.remove('flex');
+      trackGameStart('tower-stack');
+      lastTime = performance.now();
+      gameLoop(lastTime);
+    }
+
+    function handleInput(e) {
+      if (e.code === 'Space') e.preventDefault();
+      if (startOverlay && !startOverlay.classList.contains('hidden')) return;
+      if (gameoverOverlay && !gameoverOverlay.classList.contains('hidden')) return;
+      dropBlock();
+    }
+
+    startBtn.addEventListener('click', () => { playClick(); startGame(); });
+    restartBtn.addEventListener('click', () => { playClick(); startGame(); });
+    canvas.addEventListener('click', (e) => { if (gameStarted) dropBlock(); });
+    document.addEventListener('keydown', handleInput);
+
+    soundToggle.addEventListener('click', () => {
+      muteAll();
+      soundToggle.textContent = soundToggle.textContent.includes('On') ? '🔇 Sound Off' : '🔊 Sound On';
+    });
+
+    window.addEventListener('resize', resize);
+
+    resize();
+    initGame();
+  </script>
+</body>
+</html>

@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Knife Throw - Stick Knives in the Rotating Log | Mini Game Planet</title>
+  <meta name="description" content="Throw knives into a spinning log. Stick all your knives without hitting another—one wrong throw and it's game over. Boss levels every 5 rounds with wild rotation patterns.">
+  <link rel="canonical" href="https://minigameplanet.com/games/knife-throw.html">
+  <!-- Open Graph -->
+  <meta property="og:title" content="Knife Throw - Stick Knives in the Rotating Log">
+  <meta property="og:description" content="Throw knives into a spinning log. Avoid hitting other knives—boss levels every 5 rounds!">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/knife-throw.html">
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Knife Throw",
+    "description": "Throw knives into a spinning log. Stick all knives without hitting another. Boss levels every 5 rounds.",
+    "applicationCategory": "Game",
+    "operatingSystem": "Any",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+  <!-- AdSense (commented) -->
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXX" crossorigin="anonymous"></script> -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root { --bg: #F5F5F4; --card: #FFFFFF; }
+    body { font-family: 'Space Grotesk', sans-serif; background: var(--bg); }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    #game-canvas { display: block; touch-action: none; cursor: crosshair; }
+  </style>
+</head>
+<body class="min-h-screen text-gray-800 antialiased">
+  <div id="consent-banner" class="hidden fixed bottom-0 left-0 right-0 z-50 p-4 bg-gray-900 text-white text-sm">
+    <p class="mb-2">We use cookies for analytics (GA4). By continuing you consent.</p>
+    <button id="consent-accept" class="px-4 py-2 bg-green-600 rounded hover:bg-green-700">Accept</button>
+    <button id="consent-decline" class="ml-2 px-4 py-2 bg-gray-600 rounded hover:bg-gray-700">Decline</button>
+  </div>
+
+  <nav id="nav-container" class="bg-white shadow-sm border-b border-gray-200">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="font-semibold text-lg">Mini Game Planet</a>
+      <div class="flex items-center gap-4">
+        <button id="sound-toggle" class="text-sm px-3 py-1 rounded border border-gray-300 hover:bg-gray-50" aria-label="Toggle sound">🔊 Sound</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-4xl mx-auto px-4 py-6">
+    <article class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden mb-6">
+      <div class="p-6 md:p-8">
+        <h1 class="text-2xl md:text-3xl font-bold mb-2">Knife Throw</h1>
+        <p class="text-gray-600 mb-4">Throw knives into the spinning log. Don't hit another knife—or it's game over!</p>
+
+        <div class="flex flex-wrap gap-4 items-center mb-4">
+          <div class="flex items-center gap-2">
+            <span class="font-mono text-lg font-semibold">Level:</span>
+            <span id="level-display" class="font-mono text-xl">1</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-sm text-gray-600">Knives:</span>
+            <span id="knives-display" class="font-mono">0 / 3</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-sm text-gray-600">Score:</span>
+            <span id="score-display" class="font-mono">0</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-sm text-gray-600">Best:</span>
+            <span id="best-display" class="font-mono">0</span>
+          </div>
+        </div>
+
+        <div class="relative bg-gray-100 rounded-lg overflow-hidden mb-6" style="min-height: 400px;">
+          <canvas id="game-canvas" width="600" height="400" class="w-full max-w-full"></canvas>
+          <div id="start-overlay" class="absolute inset-0 flex flex-col items-center justify-center bg-black/40">
+            <h2 class="text-2xl font-bold text-white mb-2">Knife Throw</h2>
+            <p class="text-white/90 mb-4 text-center px-4">Tap, click, or press SPACE to throw. Stick knives in the log without hitting another!</p>
+            <button id="start-btn" class="px-8 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 shadow-lg">Play</button>
+          </div>
+          <div id="game-over-overlay" class="hidden absolute inset-0 flex flex-col items-center justify-center bg-black/60">
+            <h2 class="text-2xl font-bold text-white mb-2">Game Over</h2>
+            <p id="final-score" class="text-white/90 mb-4">Score: 0</p>
+            <button id="restart-btn" class="px-8 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 shadow-lg">Play Again</button>
+          </div>
+          <div id="level-complete-overlay" class="hidden absolute inset-0 flex flex-col items-center justify-center bg-black/50 gap-4">
+            <h2 class="text-2xl font-bold text-white mb-2">Level Complete!</h2>
+            <button id="next-level-btn" class="px-8 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 shadow-lg">Next Level</button>
+          </div>
+        </div>
+
+        <div id="session-stats" class="text-sm text-gray-500 font-mono mb-6 p-3 bg-gray-50 rounded">
+          Session: <span id="games-played">0</span> games | Best: <span id="session-best">0</span>
+        </div>
+
+        <div class="prose prose-gray max-w-none">
+          <h2>How to Play Knife Throw</h2>
+          <p>Knife Throw is a tense action game where you must stick knives into a rotating wooden log. The log spins in the center of the screen, and your knives fly from the bottom toward it. Each knife that lands successfully sticks into the wood and rotates with the log. But here's the catch: if your next throw hits a knife that's already stuck, the game ends immediately. You must place every knife in an empty spot on the log's circumference.</p>
+
+          <h3>Game Mechanics</h3>
+          <p>Each level gives you a set number of knives to throw. Level 1 starts with three knives; later levels add more. Your score equals the number of levels you complete. The log rotates at a steady pace, so timing matters—throw when there's a clear gap. Stuck knives rotate with the log, shrinking the available space. Plan your throws carefully and watch the rotation to find safe angles. The difficulty ramps up as you progress: more knives per level means more precision required. Early levels teach you the basics; later levels demand split-second timing.</p>
+
+          <h3>Boss Levels</h3>
+          <p>Every five levels is a boss round. The log's rotation pattern changes: it might speed up, reverse direction, or follow a sine wave that makes timing trickier. Boss levels test your adaptability. Survive the pattern change and you'll advance with a higher score. Many players find boss levels the most exciting part of the game. The first boss at level 5 doubles the rotation speed. Level 10 reverses direction. Level 15 introduces a sine-wave pattern that speeds up and slows down. Each boss forces you to relearn the rhythm.</p>
+
+          <h3>Tips for High Scores</h3>
+          <p>Watch the log's rotation before throwing. Identify gaps and wait for the right moment. Don't rush—each knife narrows your options. On boss levels, observe the new pattern for a full rotation before throwing. Space your knives evenly when possible to leave room for later throws. Your personal best is saved, so aim to beat it each session. Some players prefer to throw when the log's rotation brings a large gap to the bottom. Others wait for specific angles. Find a strategy that works for you and stick with it.</p>
+
+          <h3>Controls</h3>
+          <p>On desktop, click anywhere or press the spacebar to throw a knife. On mobile, tap the screen. The controls are simple: one action per throw. The real skill is in reading the log's rotation and choosing the right moment to release. No complex gestures or combos—just tap when you see an opening.</p>
+
+          <h3>Visual Design</h3>
+          <p>The game features a dark wood log circle in the center and silver knife shapes that stick out from its surface. The minimalist style keeps focus on the action. Wood grain textures give the log a realistic feel, while the metallic knives stand out clearly against the dark background. Play Knife Throw free on Mini Game Planet—no downloads, no sign-up. Perfect for quick sessions or chasing a new high score. Session stats and personal best tracking help you measure your progress.</p>
+        </div>
+      </div>
+    </article>
+
+    <section id="related-games" class="mb-8">
+      <h2 class="text-xl font-semibold mb-4">Related Games</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <a href="/games/tower-stack.html" class="block p-4 bg-white rounded-lg shadow border border-gray-200 hover:border-green-500 transition">Tower Stack</a>
+        <a href="/games/fruit-slicer.html" class="block p-4 bg-white rounded-lg shadow border border-gray-200 hover:border-green-500 transition">Fruit Slicer</a>
+        <a href="/games/aim-trainer.html" class="block p-4 bg-white rounded-lg shadow border border-gray-200 hover:border-green-500 transition">Aim Trainer</a>
+        <a href="/games/duck-hunt.html" class="block p-4 bg-white rounded-lg shadow border border-gray-200 hover:border-green-500 transition">Duck Hunt</a>
+      </div>
+    </section>
+  </main>
+
+  <footer id="footer-container" class="border-t border-gray-200 py-6 mt-8">
+    <div class="max-w-4xl mx-auto px-4 text-center text-sm text-gray-500">
+      <p>© Mini Game Planet. Free online games.</p>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('knife-throw');
+    initConsent();
+    trackGameView('knife-throw', 'Action');
+
+    const canvas = document.getElementById('game-canvas');
+    const ctx = canvas.getContext('2d');
+    const levelEl = document.getElementById('level-display');
+    const knivesEl = document.getElementById('knives-display');
+    const scoreEl = document.getElementById('score-display');
+    const bestEl = document.getElementById('best-display');
+    const startOverlay = document.getElementById('start-overlay');
+    const gameOverOverlay = document.getElementById('game-over-overlay');
+    const levelCompleteOverlay = document.getElementById('level-complete-overlay');
+    const finalScoreEl = document.getElementById('final-score');
+    const startBtn = document.getElementById('start-btn');
+    const restartBtn = document.getElementById('restart-btn');
+    const nextLevelBtn = document.getElementById('next-level-btn');
+    const gamesPlayedEl = document.getElementById('games-played');
+    const sessionBestEl = document.getElementById('session-best');
+    const soundToggle = document.getElementById('sound-toggle');
+
+    function secureRandom() {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] / (0xFFFFFFFF + 1);
+    }
+
+    const LOG_RADIUS = 90;
+    const KNIFE_WIDTH = 8;
+    const KNIFE_HEIGHT = 40;
+    const KNIFE_SPEED = 12;
+    const ANGLE_THRESHOLD = 0.18;
+    const BASE_ROT_SPEED = 0.008;
+
+    function getBest() { return parseInt(localStorage.getItem('knife-throw-best') || '0', 10); }
+    function setBest(v) { localStorage.setItem('knife-throw-best', String(v)); }
+
+    function normalizeAngle(a) {
+      while (a < 0) a += Math.PI * 2;
+      while (a >= Math.PI * 2) a -= Math.PI * 2;
+      return a;
+    }
+
+    function anglesOverlap(a1, a2) {
+      let d = Math.abs(normalizeAngle(a1 - a2));
+      if (d > Math.PI) d = Math.PI * 2 - d;
+      return d < ANGLE_THRESHOLD;
+    }
+
+    let gameState = 'idle';
+    let level = 1;
+    let score = 0;
+    let knivesToThrow = 3;
+    let knivesThrown = 0;
+    let stuckKnives = [];
+    let flyingKnife = null;
+    let logAngle = 0;
+    let rotSpeed = BASE_ROT_SPEED;
+    let rotPhase = 0;
+    let sessionGames = 0;
+    let sessionBest = 0;
+    let best = 0;
+    let animId = null;
+
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+
+    function getKnivesForLevel(lvl) {
+      return Math.min(3 + Math.floor((lvl - 1) / 2), 12);
+    }
+
+    function getRotationPattern(lvl) {
+      if (lvl % 5 !== 0) return { type: 'normal', speed: BASE_ROT_SPEED };
+      const bossNum = Math.floor(lvl / 5);
+      switch (bossNum % 4) {
+        case 0: return { type: 'fast', speed: BASE_ROT_SPEED * 2 };
+        case 1: return { type: 'reverse', speed: -BASE_ROT_SPEED * 1.5 };
+        case 2: return { type: 'sine', speed: BASE_ROT_SPEED };
+        default: return { type: 'fast', speed: BASE_ROT_SPEED * 2.5 };
+      }
+    }
+
+    function drawLog() {
+      const gradient = ctx.createRadialGradient(cx - 20, cy - 20, 0, cx, cy, LOG_RADIUS + 20);
+      gradient.addColorStop(0, '#5D4037');
+      gradient.addColorStop(0.4, '#4E342E');
+      gradient.addColorStop(0.8, '#3E2723');
+      gradient.addColorStop(1, '#2C1810');
+      ctx.beginPath();
+      ctx.arc(cx, cy, LOG_RADIUS + 20, 0, Math.PI * 2);
+      ctx.fillStyle = gradient;
+      ctx.fill();
+      ctx.strokeStyle = '#2C1810';
+      ctx.lineWidth = 4;
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(cx, cy, LOG_RADIUS, 0, Math.PI * 2);
+      ctx.fillStyle = '#4E342E';
+      ctx.fill();
+      ctx.strokeStyle = '#3E2723';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+      for (let i = 0; i < 12; i++) {
+        const a = (i / 12) * Math.PI * 2 + logAngle * 0.3;
+        const r = LOG_RADIUS - 5;
+        ctx.beginPath();
+        ctx.moveTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r);
+        ctx.lineTo(cx + Math.cos(a + 0.02) * (r + 8), cy + Math.sin(a + 0.02) * (r + 8));
+        ctx.strokeStyle = '#3E2723';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+    }
+
+    function drawKnife(x, y, angle, isStuck) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(angle);
+      const g = ctx.createLinearGradient(-KNIFE_WIDTH / 2, 0, KNIFE_WIDTH / 2, 0);
+      g.addColorStop(0, '#9E9E9E');
+      g.addColorStop(0.3, '#E0E0E0');
+      g.addColorStop(0.5, '#FFFFFF');
+      g.addColorStop(0.7, '#E0E0E0');
+      g.addColorStop(1, '#9E9E9E');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.moveTo(-KNIFE_WIDTH / 2, -KNIFE_HEIGHT / 2);
+      ctx.lineTo(KNIFE_WIDTH / 2, -KNIFE_HEIGHT / 2);
+      ctx.lineTo(KNIFE_WIDTH / 2 + 2, KNIFE_HEIGHT / 2 - 8);
+      ctx.lineTo(0, KNIFE_HEIGHT / 2);
+      ctx.lineTo(-KNIFE_WIDTH / 2 - 2, KNIFE_HEIGHT / 2 - 8);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = '#616161';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function stuckKnifeAngleToWorld(s) {
+      return s.angle + logAngle;
+    }
+
+    function throwKnife() {
+      if (gameState !== 'playing' || flyingKnife || knivesThrown >= knivesToThrow) return;
+      playClick();
+      flyingKnife = {
+        x: cx,
+        y: canvas.height - 20,
+        vy: -KNIFE_SPEED
+      };
+      knivesThrown++;
+    }
+
+    function checkCollision() {
+      if (!flyingKnife) return;
+      const dx = cx - flyingKnife.x;
+      const dy = cy - flyingKnife.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist <= LOG_RADIUS + KNIFE_HEIGHT / 2) {
+        const impactAngle = Math.atan2(flyingKnife.y - cy, flyingKnife.x - cx);
+        const stickAngle = normalizeAngle(impactAngle - logAngle);
+        for (const s of stuckKnives) {
+          if (anglesOverlap(s.angle, stickAngle)) {
+            gameState = 'over';
+            playGameOver();
+            trackGameOver('knife-throw', score);
+            flyingKnife = null;
+            showGameOver();
+            return;
+          }
+        }
+        stuckKnives.push({ angle: stickAngle });
+        flyingKnife = null;
+        playSuccess();
+        if (knivesThrown >= knivesToThrow) {
+          score++;
+          if (score > best) { best = score; setBest(best); }
+          if (score > sessionBest) sessionBest = score;
+          playLevelUp();
+          levelCompleteOverlay.classList.remove('hidden');
+        }
+      }
+    }
+
+    function updateUI() {
+      levelEl.textContent = level;
+      knivesEl.textContent = `${knivesThrown} / ${knivesToThrow}`;
+      scoreEl.textContent = score;
+      bestEl.textContent = best;
+      gamesPlayedEl.textContent = sessionGames;
+      sessionBestEl.textContent = sessionBest;
+    }
+
+    function gameLoop() {
+      if (gameState !== 'playing') return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const pattern = getRotationPattern(level);
+      if (pattern.type === 'sine') {
+        rotPhase += 0.02;
+        logAngle += Math.sin(rotPhase) * pattern.speed * 2;
+      } else {
+        logAngle += pattern.speed;
+      }
+
+      if (flyingKnife) {
+        flyingKnife.y += flyingKnife.vy;
+        checkCollision();
+      }
+
+      drawLog();
+
+      for (const s of stuckKnives) {
+        const worldAngle = stuckKnifeAngleToWorld(s);
+        const kx = cx + Math.cos(worldAngle) * (LOG_RADIUS + KNIFE_HEIGHT / 2);
+        const ky = cy + Math.sin(worldAngle) * (LOG_RADIUS + KNIFE_HEIGHT / 2);
+        drawKnife(kx, ky, worldAngle + Math.PI / 2, true);
+      }
+
+      if (flyingKnife) {
+        const angle = Math.atan2(cy - flyingKnife.y, cx - flyingKnife.x) - Math.PI / 2;
+        drawKnife(flyingKnife.x, flyingKnife.y, angle, false);
+      }
+
+      updateUI();
+      if (gameState === 'playing') animId = requestAnimationFrame(gameLoop);
+    }
+
+    function startGame() {
+      playClick();
+      trackGameStart('knife-throw');
+      gameState = 'playing';
+      level = 1;
+      score = 0;
+      knivesToThrow = getKnivesForLevel(level);
+      knivesThrown = 0;
+      stuckKnives = [];
+      flyingKnife = null;
+      const buf = new Uint8Array(4);
+      crypto.getRandomValues(buf);
+      logAngle = (buf[0] / 255) * Math.PI * 2;
+      rotPhase = 0;
+      sessionGames++;
+      best = getBest();
+      startOverlay.classList.add('hidden');
+      gameOverOverlay.classList.add('hidden');
+      levelCompleteOverlay.classList.add('hidden');
+      updateUI();
+      gameLoop();
+    }
+
+    function nextLevel() {
+      playClick();
+      levelCompleteOverlay.classList.add('hidden');
+      level++;
+      knivesToThrow = getKnivesForLevel(level);
+      knivesThrown = 0;
+      stuckKnives = [];
+      flyingKnife = null;
+      updateUI();
+      gameLoop();
+    }
+
+    function showGameOver() {
+      gameOverOverlay.classList.remove('hidden');
+      finalScoreEl.textContent = `Score: ${score} | Best: ${best}`;
+      updateUI();
+    }
+
+    startBtn.addEventListener('click', startGame);
+    restartBtn.addEventListener('click', () => {
+      playClick();
+      gameOverOverlay.classList.add('hidden');
+      startGame();
+    });
+    nextLevelBtn.addEventListener('click', nextLevel);
+
+    canvas.addEventListener('click', (e) => {
+      if (gameState === 'playing' && !levelCompleteOverlay.classList.contains('hidden')) return;
+      throwKnife();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        if (startOverlay && !startOverlay.classList.contains('hidden')) return;
+        if (gameOverOverlay && !gameOverOverlay.classList.contains('hidden')) return;
+        if (levelCompleteOverlay && !levelCompleteOverlay.classList.contains('hidden')) return;
+        throwKnife();
+      }
+    });
+
+    canvas.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      if (gameState === 'playing' && !levelCompleteOverlay.classList.contains('hidden')) return;
+      throwKnife();
+    }, { passive: false });
+
+    soundToggle.addEventListener('click', () => {
+      const muted = document.body.dataset.muted === '1';
+      if (muted) { initAudio(); soundToggle.textContent = '🔊 Sound'; document.body.dataset.muted = '0'; }
+      else { muteAll(); soundToggle.textContent = '🔇 Muted'; document.body.dataset.muted = '1'; }
+    });
+
+    updateUI();
+  </script>
+</body>
+</html>

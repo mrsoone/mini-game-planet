@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Card Dodger - Dodge Falling Cards | Mini Game Planet</title>
+  <meta name="description" content="Card Dodger is a fast-paced action game. Move left and right to dodge falling cards, collect power-ups like shield and magnet, and survive as long as you can!">
+  <link rel="canonical" href="https://minigameplanet.com/games/card-dodger.html">
+  <!-- Open Graph -->
+  <meta property="og:title" content="Card Dodger - Dodge Falling Cards | Mini Game Planet">
+  <meta property="og:description" content="Dodge falling cards, collect power-ups, and survive in this addictive action game.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/card-dodger.html">
+  <!--
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXX" crossorigin="anonymous"></script>
+  -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    #gameCanvas { display: block; margin: 0 auto; border-radius: 8px; background: #1a1a1a; }
+    .card { background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+    .nav-container, .related-games, .footer-container { font-family: 'Space Grotesk', sans-serif; }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoGame",
+    "name": "Card Dodger",
+    "description": "A fast-paced action game where you dodge falling cards, collect power-ups, and survive as long as possible.",
+    "genre": "Action",
+    "gamePlatform": "Web Browser",
+    "url": "https://minigameplanet.com/games/card-dodger.html"
+  }
+  </script>
+</head>
+<body class="min-h-screen text-gray-800">
+  <nav class="nav-container bg-white/80 backdrop-blur border-b border-gray-200 sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="font-semibold text-lg">Mini Game Planet</a>
+      <div class="flex items-center gap-3">
+        <button id="soundToggle" class="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-sm" aria-label="Toggle sound">🔊 Sound</button>
+        <a href="/" class="text-sm text-gray-600 hover:text-gray-900">More Games</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-4xl mx-auto px-4 py-6">
+    <div class="card p-6 mb-6">
+      <h1 class="text-2xl font-bold mb-2">Card Dodger</h1>
+      <p class="text-gray-600 mb-4">Dodge falling cards, grab power-ups, and survive!</p>
+
+      <div class="flex flex-wrap gap-4 mb-4 items-center">
+        <div class="font-mono text-sm">
+          <span class="text-gray-500">Score:</span> <span id="score">0</span>
+        </div>
+        <div class="font-mono text-sm">
+          <span class="text-gray-500">Best:</span> <span id="best">0</span>
+        </div>
+        <div class="font-mono text-sm">
+          <span class="text-gray-500">Streak:</span> <span id="streak">0</span>
+        </div>
+        <div class="font-mono text-sm">
+          <span class="text-gray-500">Games:</span> <span id="gamesPlayed">0</span>
+        </div>
+        <button id="playBtn" class="px-4 py-2 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700">Play</button>
+      </div>
+
+      <div class="relative bg-gray-900 rounded-lg overflow-hidden" style="max-width: 600px; margin: 0 auto;">
+        <canvas id="gameCanvas" width="560" height="400"></canvas>
+        <div id="startOverlay" class="absolute inset-0 flex flex-col items-center justify-center bg-black/60 text-white">
+          <p class="text-lg mb-2">Card Dodger</p>
+          <p class="text-sm opacity-90 mb-4">Arrow keys, A/D, or drag to move</p>
+          <p class="text-xs opacity-75">Click Play or press Space</p>
+        </div>
+        <div id="gameOverOverlay" class="absolute inset-0 hidden flex-col items-center justify-center bg-black/70 text-white">
+          <p class="text-xl font-bold mb-2">Game Over</p>
+          <p class="text-sm mb-4">Score: <span id="finalScore">0</span></p>
+          <button id="restartBtn" class="px-4 py-2 bg-emerald-600 rounded-lg hover:bg-emerald-700">Play Again</button>
+        </div>
+      </div>
+
+      <div class="mt-4 text-sm text-gray-600">
+        <p><strong>Power-ups:</strong> 🛡️ Shield (invincibility) | ⏱️ Slow-mo | 🧲 Magnet (attract coins) | 🪙 Coins (bonus)</p>
+      </div>
+    </div>
+
+    <article class="card p-6 mb-6 prose prose-gray max-w-none">
+      <h2 class="text-xl font-bold mb-4">Card Dodger: The Ultimate Reflex Challenge</h2>
+      <p>Card Dodger is a thrilling browser-based action game that tests your reflexes and hand-eye coordination. As cards and shapes rain down from the top of the screen, your job is simple: survive. Move your character left and right along the bottom of the play area, dodging every obstacle that comes your way. The longer you last, the higher your score—and the faster the objects fall.</p>
+      <p>What makes Card Dodger stand out is its blend of classic arcade mechanics with modern power-up systems. While dodging is your primary goal, you'll want to actively seek out power-ups that appear among the falling objects. The shield grants temporary invincibility, letting you pass through obstacles unscathed. Slow-mo reduces the speed of falling objects, giving you precious extra time to react. The magnet pulls nearby coins toward you, boosting your bonus score without risky maneuvers.</p>
+      <p>Coins scattered throughout the game add an extra layer of strategy. Do you risk moving toward a coin and potentially into the path of a card? Or play it safe and focus purely on survival? The choice is yours. Your final score combines time survived with coins collected, so balancing risk and reward is key to reaching the top of the leaderboard.</p>
+      <p>Card Dodger supports multiple control schemes to suit your preference. Use the arrow keys or A and D for keyboard control, or simply click and drag on the game area for mouse and touch support. This makes the game accessible on desktop and mobile devices alike. Whether you're on a lunch break or commuting, a quick game of Card Dodger is always within reach.</p>
+      <p>The game features session statistics including your personal best score, current streak of games played, and total games this session. Your best score is saved locally so you can always strive to beat your record. With procedurally generated obstacles and increasing difficulty, no two games are exactly alike. Card Dodger is free to play, requires no installation, and runs entirely in your browser. Give it a try and see how long you can last!</p>
+    </article>
+
+    <section class="related-games card p-6 mb-6">
+      <h2 class="text-lg font-bold mb-4">Related Games</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+        <a href="/games/snake.html" class="block p-3 rounded-lg bg-gray-50 hover:bg-gray-100">Snake</a>
+        <a href="/games/breakout.html" class="block p-3 rounded-lg bg-gray-50 hover:bg-gray-100">Breakout</a>
+        <a href="/games/tetris.html" class="block p-3 rounded-lg bg-gray-50 hover:bg-gray-100">Tetris</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer-container border-t border-gray-200 mt-8 py-6">
+    <div class="max-w-4xl mx-auto px-4 text-center text-sm text-gray-500">
+      <p>© Mini Game Planet. Card Dodger is free to play.</p>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playCollect } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('card-dodger');
+    initConsent();
+    trackGameView('card-dodger', 'Action');
+
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width;
+    const H = canvas.height;
+
+    let gameRunning = false;
+    let score = 0;
+    let playerX = W / 2 - 25;
+    const playerW = 50;
+    const playerH = 20;
+    const playerSpeed = 8;
+    let obstacles = [];
+    let powerUps = [];
+    let coins = [];
+    let baseSpeed = 2;
+    let spawnTimer = 0;
+    let lastTime = 0;
+    let mouseDown = false;
+    let mouseX = 0;
+    let shieldActive = false;
+    let shieldEnd = 0;
+    let slowMoActive = false;
+    let slowMoEnd = 0;
+    let magnetActive = false;
+    let magnetEnd = 0;
+    let gamesPlayed = 0;
+    let streak = 0;
+
+    function secureRandom() {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] / (0xFFFFFFFF + 1);
+    }
+
+    function getBest() {
+      return parseInt(localStorage.getItem('cardDodgerBest') || '0', 10);
+    }
+    function setBest(v) {
+      localStorage.setItem('cardDodgerBest', String(v));
+    }
+    function getStreak() {
+      return parseInt(localStorage.getItem('cardDodgerStreak') || '0', 10);
+    }
+    function setStreak(v) {
+      localStorage.setItem('cardDodgerStreak', String(v));
+    }
+
+    function updateStats() {
+      document.getElementById('score').textContent = score;
+      document.getElementById('best').textContent = getBest();
+      document.getElementById('streak').textContent = getStreak();
+      document.getElementById('gamesPlayed').textContent = gamesPlayed;
+    }
+
+    const TYPES = { card: 0, diamond: 1, circle: 2 };
+    const POWER_TYPES = { shield: 0, slowmo: 1, magnet: 2 };
+    const COLORS = ['#ef4444', '#3b82f6', '#22c55e', '#eab308', '#a855f7'];
+
+    function spawnObstacle() {
+      const w = 30 + secureRandom() * 40;
+      const x = secureRandom() * (W - w);
+      const type = Math.floor(secureRandom() * 3);
+      obstacles.push({ x, y: -50, w, h: w * 0.6, type, speed: baseSpeed });
+    }
+
+    function spawnPowerUp() {
+      if (secureRandom() > 0.15) return;
+      const w = 24;
+      const x = secureRandom() * (W - w);
+      const type = Math.floor(secureRandom() * 3);
+      powerUps.push({ x, y: -30, w, h: 24, type });
+    }
+
+    function spawnCoin() {
+      if (secureRandom() > 0.4) return;
+      const r = 10;
+      const x = secureRandom() * (W - r * 2) + r;
+      coins.push({ x, y: -20, r, speed: baseSpeed });
+    }
+
+    function drawPlayer() {
+      ctx.save();
+      ctx.fillStyle = shieldActive ? 'rgba(59, 130, 246, 0.5)' : '#22c55e';
+      ctx.fillRect(playerX, H - playerH - 10, playerW, playerH);
+      ctx.strokeStyle = '#166534';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(playerX, H - playerH - 10, playerW, playerH);
+      ctx.restore();
+    }
+
+    function drawObstacle(o) {
+      ctx.save();
+      ctx.fillStyle = COLORS[o.type % COLORS.length];
+      if (o.type === TYPES.card) {
+        ctx.fillRect(o.x, o.y, o.w, o.h);
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(o.x, o.y, o.w, o.h);
+      } else if (o.type === TYPES.diamond) {
+        ctx.beginPath();
+        ctx.moveTo(o.x + o.w / 2, o.y);
+        ctx.lineTo(o.x + o.w, o.y + o.h / 2);
+        ctx.lineTo(o.x + o.w / 2, o.y + o.h);
+        ctx.lineTo(o.x, o.y + o.h / 2);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      } else {
+        ctx.beginPath();
+        ctx.arc(o.x + o.w / 2, o.y + o.h / 2, o.w / 2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    function drawPowerUp(p) {
+      ctx.save();
+      const icons = ['🛡️', '⏱️', '🧲'];
+      ctx.font = '20px sans-serif';
+      ctx.fillText(icons[p.type], p.x, p.y + 22);
+      ctx.restore();
+    }
+
+    function drawCoin(c) {
+      ctx.save();
+      ctx.fillStyle = '#eab308';
+      ctx.beginPath();
+      ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#ca8a04';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function rectCollide(ax, ay, aw, ah, bx, by, bw, bh) {
+      return ax < bx + bw && ax + aw > bx && ay < by + bh && ay + ah > by;
+    }
+
+    function circleCollide(ax, ay, ar, bx, by, br) {
+      const d = Math.hypot(ax - bx, ay - by);
+      return d < ar + br;
+    }
+
+    function gameLoop(t) {
+      if (!gameRunning) return;
+      const dt = Math.min((t - lastTime) / 16, 3);
+      lastTime = t;
+
+      const speedMult = slowMoActive ? 0.4 : 1;
+      if (shieldEnd && t > shieldEnd) shieldActive = false;
+      if (slowMoEnd && t > slowMoEnd) slowMoActive = false;
+      if (magnetEnd && t > magnetEnd) magnetActive = false;
+
+      score += Math.floor(dt * 10);
+      baseSpeed = 2 + score / 500;
+
+      spawnTimer += dt;
+      if (spawnTimer > 40 / baseSpeed) {
+        spawnTimer = 0;
+        spawnObstacle();
+        spawnPowerUp();
+        spawnCoin();
+      }
+
+      for (const o of obstacles) {
+        o.y += o.speed * speedMult * dt;
+        if (!shieldActive && rectCollide(playerX, H - playerH - 10, playerW, playerH, o.x, o.y, o.w, o.h)) {
+          endGame();
+          return;
+        }
+      }
+      obstacles = obstacles.filter(o => o.y < H + 50);
+
+      for (const p of powerUps) {
+        p.y += 2 * speedMult * dt;
+        if (rectCollide(playerX, H - playerH - 10, playerW, playerH, p.x, p.y, p.w, p.h)) {
+          if (p.type === POWER_TYPES.shield) { shieldActive = true; shieldEnd = t + 4000; }
+          if (p.type === POWER_TYPES.slowmo) { slowMoActive = true; slowMoEnd = t + 3000; }
+          if (p.type === POWER_TYPES.magnet) { magnetActive = true; magnetEnd = t + 5000; }
+          playCollect();
+          powerUps = powerUps.filter(x => x !== p);
+        }
+      }
+      powerUps = powerUps.filter(p => p.y < H + 30);
+
+      for (const c of coins) {
+        if (magnetActive) {
+          const dx = (playerX + playerW / 2) - c.x;
+          const dy = (H - playerH - 10) - c.y;
+          const d = Math.hypot(dx, dy);
+          if (d < 120 && d > 0) {
+            c.x += (dx / d) * 4 * dt;
+            c.y += (dy / d) * 4 * dt;
+          }
+        } else {
+          c.y += c.speed * speedMult * dt;
+        }
+        if (circleCollide(playerX + playerW / 2, H - playerH / 2 - 10, playerW / 2, c.x, c.y, c.r)) {
+          score += 50;
+          playScoreUp();
+          coins = coins.filter(x => x !== c);
+        }
+      }
+      coins = coins.filter(c => c.y < H + 20);
+
+      ctx.fillStyle = '#1a1a1a';
+      ctx.fillRect(0, 0, W, H);
+
+      obstacles.forEach(drawObstacle);
+      powerUps.forEach(drawPowerUp);
+      coins.forEach(drawCoin);
+      drawPlayer();
+
+      updateStats();
+      requestAnimationFrame(gameLoop);
+    }
+
+    function endGame() {
+      gameRunning = false;
+      playGameOver();
+      trackGameOver('card-dodger', score);
+      const best = getBest();
+      if (score > best) {
+        setBest(score);
+        playSuccess();
+      }
+      streak = getStreak();
+      setStreak(0);
+      document.getElementById('finalScore').textContent = score;
+      document.getElementById('gameOverOverlay').classList.remove('hidden');
+      document.getElementById('gameOverOverlay').classList.add('flex');
+    }
+
+    function startGame() {
+      if (gameRunning) return;
+      trackGameStart('card-dodger');
+      playClick();
+      gamesPlayed++;
+      streak = getStreak();
+      setStreak(streak + 1);
+      score = 0;
+      obstacles = [];
+      powerUps = [];
+      coins = [];
+      baseSpeed = 2;
+      spawnTimer = 0;
+      shieldActive = false;
+      slowMoActive = false;
+      magnetActive = false;
+      playerX = W / 2 - 25;
+      document.getElementById('startOverlay').classList.add('hidden');
+      document.getElementById('gameOverOverlay').classList.add('hidden');
+      document.getElementById('gameOverOverlay').classList.remove('flex');
+      gameRunning = true;
+      lastTime = performance.now();
+      requestAnimationFrame(gameLoop);
+    }
+
+    document.getElementById('playBtn').addEventListener('click', startGame);
+    document.getElementById('restartBtn').addEventListener('click', startGame);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        if (!gameRunning && !document.getElementById('startOverlay').classList.contains('hidden')) startGame();
+        else if (!gameRunning) startGame();
+      }
+    });
+
+    let keys = {};
+    document.addEventListener('keydown', (e) => {
+      keys[e.key] = true;
+      if (['ArrowLeft', 'ArrowRight', 'a', 'A', 'd', 'D'].includes(e.key)) e.preventDefault();
+    });
+    document.addEventListener('keyup', (e) => { keys[e.key] = false; });
+
+    canvas.addEventListener('mousedown', (e) => {
+      mouseDown = true;
+      mouseX = e.offsetX;
+    });
+    canvas.addEventListener('mousemove', (e) => {
+      if (mouseDown && gameRunning) {
+        const dx = e.offsetX - mouseX;
+        playerX = Math.max(0, Math.min(W - playerW, playerX + dx));
+        mouseX = e.offsetX;
+      }
+    });
+    canvas.addEventListener('mouseup', () => { mouseDown = false; });
+    canvas.addEventListener('mouseleave', () => { mouseDown = false; });
+
+    canvas.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      mouseDown = true;
+      mouseX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
+    });
+    canvas.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      if (mouseDown && gameRunning) {
+        const nx = e.touches[0].clientX - canvas.getBoundingClientRect().left;
+        const dx = nx - mouseX;
+        playerX = Math.max(0, Math.min(W - playerW, playerX + dx));
+        mouseX = nx;
+      }
+    });
+    canvas.addEventListener('touchend', () => { mouseDown = false; });
+
+    function handleInput() {
+      if (!gameRunning) return;
+      if (keys['ArrowLeft'] || keys['a'] || keys['A']) playerX = Math.max(0, playerX - playerSpeed);
+      if (keys['ArrowRight'] || keys['d'] || keys['D']) playerX = Math.min(W - playerW, playerX + playerSpeed);
+    }
+    setInterval(handleInput, 16);
+
+    document.getElementById('soundToggle').addEventListener('click', () => {
+      muteAll();
+      document.getElementById('soundToggle').textContent = document.getElementById('soundToggle').textContent.includes('🔊') ? '🔇 Muted' : '🔊 Sound';
+    });
+
+    updateStats();
+    initAudio();
+  </script>
+</body>
+</html>

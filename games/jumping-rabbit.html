@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jumping Rabbit - Doodle Jump Style Platformer | Mini Game Planet</title>
+  <meta name="description" content="Play Jumping Rabbit, a fun vertical platformer. Bounce upward, land on platforms, avoid falling. Normal, moving, breaking, and spring platforms await!">
+  <link rel="canonical" href="https://minigameplanet.com/games/jumping-rabbit.html">
+  <meta property="og:title" content="Jumping Rabbit - Doodle Jump Style Platformer">
+  <meta property="og:description" content="Bounce your rabbit upward through endless platforms. Avoid falling and reach new heights!">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/jumping-rabbit.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    }
+  </script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    #gameCanvas { display: block; margin: 0 auto; border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
+    .touch-zone { touch-action: none; user-select: none; -webkit-user-select: none; }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoGame",
+    "name": "Jumping Rabbit",
+    "description": "A vertical platformer game where a rabbit bounces upward through endless platforms. Land on normal, moving, breaking, and spring platforms. Avoid falling to reach new heights!",
+    "genre": "Action",
+    "gamePlatform": "Web Browser",
+    "url": "https://minigameplanet.com/games/jumping-rabbit.html"
+  }
+  </script>
+</head>
+<body class="min-h-screen text-gray-800 antialiased">
+  <!-- AdSense placeholder (uncomment when ready) -->
+  <!--
+  <ins class="adsbygoogle"
+       style="display:block"
+       data-ad-client="ca-pub-XXXXXXXXXX"
+       data-ad-slot="XXXXXXXXXX"
+       data-ad-format="auto"></ins>
+  -->
+
+  <nav id="nav-container" class="bg-white/80 backdrop-blur border-b border-gray-200 sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="font-semibold text-lg text-gray-800 hover:text-indigo-600 transition">Mini Game Planet</a>
+      <div class="flex items-center gap-3">
+        <button id="soundToggle" class="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-sm font-medium transition" aria-label="Toggle sound">🔊 Sound</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-4xl mx-auto px-4 py-6">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+      <header class="text-center mb-6">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Jumping Rabbit</h1>
+        <p class="text-gray-600">Bounce upward through endless platforms. Don't fall!</p>
+      </header>
+
+      <div class="flex flex-wrap items-center justify-center gap-4 mb-4">
+        <div class="font-mono text-sm bg-gray-100 px-3 py-1.5 rounded-lg">Score: <span id="score">0</span></div>
+        <div class="font-mono text-sm bg-amber-50 px-3 py-1.5 rounded-lg">Best: <span id="best">0</span></div>
+        <div class="font-mono text-sm bg-blue-50 px-3 py-1.5 rounded-lg">Session: <span id="sessionGames">0</span> games</div>
+      </div>
+
+      <div class="relative mx-auto max-w-md">
+        <div id="touchLeft" class="touch-zone absolute left-0 top-0 w-1/2 h-full z-10 cursor-pointer"></div>
+        <div id="touchRight" class="touch-zone absolute right-0 top-0 w-1/2 h-full z-10 cursor-pointer"></div>
+        <canvas id="gameCanvas" width="360" height="600"></canvas>
+      </div>
+
+      <div id="startScreen" class="text-center mt-4">
+        <p class="text-gray-600 mb-2">Arrow keys or A/D to move • Touch left/right on mobile</p>
+        <button id="startBtn" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition shadow-md">Start Game</button>
+      </div>
+
+      <div id="gameOverScreen" class="text-center mt-4 hidden">
+        <p class="text-xl font-semibold text-gray-800 mb-1">Game Over!</p>
+        <p class="text-gray-600 mb-4">Score: <span id="finalScore">0</span></p>
+        <button id="restartBtn" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition shadow-md">Play Again</button>
+      </div>
+    </div>
+
+    <article class="mt-8 prose prose-gray max-w-none bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4">Jumping Rabbit: Endless Vertical Platformer Fun</h2>
+      <p class="text-gray-600 leading-relaxed">
+        Jumping Rabbit is a delightful vertical platformer inspired by the classic Doodle Jump formula. Take control of a bouncy rabbit and ascend through an endless sky of platforms. Your goal is simple: keep bouncing upward and never fall below the screen. The higher you go, the higher your score. It's easy to learn but challenging to master.
+      </p>
+      <p class="text-gray-600 leading-relaxed">
+        The game features four distinct platform types. <strong>Green platforms</strong> are your standard, reliable landing spots—safe and steady. <strong>Blue platforms</strong> move horizontally, adding a layer of timing and precision to your jumps. <strong>Brown platforms</strong> are breaking platforms; they crumble the moment you land on them, so plan your next jump quickly. <strong>Red platforms</strong> are springs that launch you extra high, giving you a powerful boost when you need to clear a gap or reach a higher platform.
+      </p>
+      <p class="text-gray-600 leading-relaxed">
+        Controls are designed for everyone. Use the arrow keys or A and D on your keyboard to move the rabbit left and right. The screen wraps at the edges, so you can seamlessly travel from one side to the other. On mobile devices, tap the left half of the screen to move left and the right half to move right. If your device supports it, tilt your phone or tablet to steer the rabbit using the accelerometer—a natural and intuitive way to play on the go.
+      </p>
+      <p class="text-gray-600 leading-relaxed">
+        Jumping Rabbit runs entirely in your browser with no downloads required. It uses a smooth canvas-based game loop for responsive gameplay. Track your personal best score and session statistics to see how you improve over time. Whether you have a minute or an hour, Jumping Rabbit offers quick, addictive rounds of platforming action.
+      </p>
+      <p class="text-gray-600 leading-relaxed">
+        Strategy matters as you climb. Prioritize spring platforms when you need to recover from a risky position or reach distant platforms. Avoid lingering on breaking platforms—land and jump immediately. Time your moves on blue platforms by watching their direction. The rabbit auto-bounces on every landing, so focus on steering and platform selection. Your personal best is saved locally, and session stats track how many games you've played.
+      </p>
+      <p class="text-gray-600 leading-relaxed">
+        Jumping Rabbit is part of Mini Game Planet's collection of free browser games. No registration or download is needed—just open the page and play. The game uses secure random number generation for fair platform placement and runs smoothly on desktop and mobile. Share your high scores with friends and challenge them to beat your best. Start bouncing and see how high you can go!
+      </p>
+    </article>
+
+    <section id="related-games" class="mt-8">
+      <h2 class="text-xl font-bold text-gray-900 mb-4">Related Games</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <a href="/games/" class="block p-4 bg-white rounded-xl border border-gray-100 hover:border-indigo-200 hover:shadow-md transition text-center">More Games</a>
+      </div>
+    </section>
+  </main>
+
+  <footer id="footer-container" class="border-t border-gray-200 mt-12 py-8">
+    <div class="max-w-4xl mx-auto px-4 text-center text-gray-500 text-sm">
+      <p>© Mini Game Planet. Play Jumping Rabbit and more free browser games.</p>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playBounce, playCollect } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('jumping-rabbit');
+    initConsent();
+    trackGameView('jumping-rabbit', 'Action');
+
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const scoreEl = document.getElementById('score');
+    const bestEl = document.getElementById('best');
+    const sessionGamesEl = document.getElementById('sessionGames');
+    const startScreen = document.getElementById('startScreen');
+    const gameOverScreen = document.getElementById('gameOverScreen');
+    const startBtn = document.getElementById('startBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const finalScoreEl = document.getElementById('finalScore');
+    const soundToggle = document.getElementById('soundToggle');
+
+    const PLATFORM_TYPES = { NORMAL: 0, MOVING: 1, BREAKING: 2, SPRING: 3 };
+    const COLORS = { NORMAL: '#22c55e', MOVING: '#3b82f6', BREAKING: '#a16207', SPRING: '#ef4444' };
+    const W = canvas.width;
+    const H = canvas.height;
+    const PLATFORM_W = 70;
+    const PLATFORM_H = 14;
+    const RABBIT_W = 32;
+    const RABBIT_H = 36;
+    const GRAVITY = 0.45;
+    const BOUNCE_VEL = -14;
+    const SPRING_BOUNCE = -20;
+    const MOVE_SPEED = 6;
+    const CAMERA_DEADZONE = 0.4;
+
+    let gameRunning = false;
+    let rabbit = { x: W/2 - RABBIT_W/2, y: H - 100, vx: 0, vy: 0, grounded: false };
+    let platforms = [];
+    let cameraY = 0;
+    let highestY = 0;
+    let score = 0;
+    let best = parseInt(localStorage.getItem('jumpingRabbitBest') || '0', 10);
+    let sessionGames = parseInt(sessionStorage.getItem('jumpingRabbitSession') || '0', 10);
+    let inputLeft = false;
+    let inputRight = false;
+    let tiltX = 0;
+    let lastPlatformY = 0;
+    let animId = 0;
+
+    function secureRandom() {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] / (0xFFFFFFFF + 1);
+    }
+
+    function createPlatform(x, y, type) {
+      return { x, y, w: PLATFORM_W, h: PLATFORM_H, type, moveDir: type === PLATFORM_TYPES.MOVING ? (secureRandom() > 0.5 ? 1 : -1) : 0, broken: false };
+    }
+
+    function generatePlatforms() {
+      while (lastPlatformY > cameraY - H - 100) {
+        const y = lastPlatformY - 50 - secureRandom() * 80;
+        const x = secureRandom() * (W - PLATFORM_W - 40) + 20;
+        let type = PLATFORM_TYPES.NORMAL;
+        const r = secureRandom();
+        if (r < 0.15) type = PLATFORM_TYPES.MOVING;
+        else if (r < 0.3) type = PLATFORM_TYPES.BREAKING;
+        else if (r < 0.4) type = PLATFORM_TYPES.SPRING;
+        platforms.push(createPlatform(x, y, type));
+        lastPlatformY = y;
+      }
+    }
+
+    function initGame() {
+      rabbit = { x: W/2 - RABBIT_W/2, y: H - 100, vx: 0, vy: 0, grounded: false };
+      platforms = [];
+      cameraY = 0;
+      highestY = 0;
+      score = 0;
+      lastPlatformY = 0;
+      for (let i = 0; i < 12; i++) {
+        const y = H - 80 - i * 55 - secureRandom() * 30;
+        const x = secureRandom() * (W - PLATFORM_W - 40) + 20;
+        const r = secureRandom();
+        let type = PLATFORM_TYPES.NORMAL;
+        if (r < 0.15) type = PLATFORM_TYPES.MOVING;
+        else if (r < 0.3) type = PLATFORM_TYPES.BREAKING;
+        else if (r < 0.4) type = PLATFORM_TYPES.SPRING;
+        platforms.push(createPlatform(x, y, type));
+        lastPlatformY = Math.min(lastPlatformY, y);
+      }
+      lastPlatformY = Math.min(...platforms.map(p => p.y));
+      scoreEl.textContent = '0';
+      bestEl.textContent = best;
+      sessionGamesEl.textContent = sessionGames;
+    }
+
+    function drawRabbit() {
+      const screenY = rabbit.y - cameraY;
+      ctx.save();
+      ctx.translate(rabbit.x + RABBIT_W/2, screenY + RABBIT_H/2);
+      ctx.rotate(rabbit.vx * 0.03);
+      ctx.translate(-(rabbit.x + RABBIT_W/2), -(screenY + RABBIT_H/2));
+      ctx.fillStyle = '#f97316';
+      ctx.beginPath();
+      ctx.ellipse(rabbit.x + RABBIT_W/2, screenY + RABBIT_H/2, RABBIT_W/2 - 2, RABBIT_H/2 - 2, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#ea580c';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.fillStyle = '#1f2937';
+      ctx.beginPath();
+      ctx.arc(rabbit.x + RABBIT_W/2 - 4, screenY + RABBIT_H/2 - 4, 3, 0, Math.PI * 2);
+      ctx.arc(rabbit.x + RABBIT_W/2 + 6, screenY + RABBIT_H/2 - 4, 3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawPlatform(p) {
+      if (p.broken) return;
+      const screenY = p.y - cameraY;
+      if (screenY < -50 || screenY > H + 50) return;
+      ctx.fillStyle = COLORS[Object.keys(COLORS)[p.type]];
+      ctx.fillRect(p.x, screenY, p.w, p.h);
+      ctx.strokeStyle = 'rgba(0,0,0,0.2)';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(p.x, screenY, p.w, p.h);
+      if (p.type === PLATFORM_TYPES.SPRING) {
+        ctx.fillStyle = '#fef2f2';
+        ctx.fillRect(p.x + 10, screenY + 2, 12, 8);
+        ctx.fillRect(p.x + p.w - 22, screenY + 2, 12, 8);
+      }
+    }
+
+    function gameLoop() {
+      if (!gameRunning) return;
+
+      let move = 0;
+      if (inputLeft || tiltX < -0.15) move = -1;
+      if (inputRight || tiltX > 0.15) move = 1;
+      rabbit.vx = move * MOVE_SPEED;
+
+      rabbit.x += rabbit.vx;
+      if (rabbit.x < -RABBIT_W) rabbit.x = W;
+      if (rabbit.x > W) rabbit.x = -RABBIT_W;
+
+      rabbit.vy += GRAVITY;
+      rabbit.y += rabbit.vy;
+      rabbit.grounded = false;
+
+      for (const p of platforms) {
+        if (p.broken) continue;
+        const screenY = p.y - cameraY;
+        if (rabbit.vy > 0 && rabbit.y + RABBIT_H >= p.y && rabbit.y + RABBIT_H <= p.y + p.h + 8 &&
+            rabbit.x + RABBIT_W - 4 > p.x && rabbit.x + 4 < p.x + p.w) {
+          if (p.type === PLATFORM_TYPES.SPRING) {
+            rabbit.vy = SPRING_BOUNCE;
+            playBounce();
+          } else {
+            rabbit.vy = BOUNCE_VEL;
+            playBounce();
+          }
+          rabbit.y = p.y - RABBIT_H;
+          rabbit.grounded = true;
+          if (p.type === PLATFORM_TYPES.BREAKING) {
+            p.broken = true;
+          }
+        }
+        if (p.type === PLATFORM_TYPES.MOVING && !p.broken) {
+          p.x += p.moveDir * 2;
+          if (p.x <= 0 || p.x >= W - p.w) p.moveDir *= -1;
+        }
+      }
+
+      if (rabbit.y < highestY) {
+        const delta = Math.floor((highestY - rabbit.y) / 10);
+        score += delta;
+        highestY = rabbit.y;
+        if (score % 100 < 20 && delta > 0) playScoreUp();
+      }
+
+      if (rabbit.y - cameraY > H + 50) {
+        gameRunning = false;
+        playGameOver();
+        trackGameOver('jumping-rabbit', score);
+        sessionGames++;
+        sessionStorage.setItem('jumpingRabbitSession', String(sessionGames));
+        if (score > best) {
+          best = score;
+          localStorage.setItem('jumpingRabbitBest', String(best));
+          playSuccess();
+        }
+        finalScoreEl.textContent = score;
+        gameOverScreen.classList.remove('hidden');
+        return;
+      }
+
+      if (rabbit.y < cameraY + H * CAMERA_DEADZONE) {
+        cameraY = rabbit.y - H * CAMERA_DEADZONE;
+      }
+
+      generatePlatforms();
+      platforms = platforms.filter(p => p.y - cameraY < H + 100);
+
+      ctx.fillStyle = '#e0f2fe';
+      ctx.fillRect(0, 0, W, H);
+      for (let i = 0; i < 20; i++) {
+        ctx.fillStyle = `rgba(255,255,255,${0.3 - i * 0.01})`;
+        ctx.fillRect(0, i * 35, W, 35);
+      }
+
+      platforms.forEach(drawPlatform);
+      drawRabbit();
+
+      scoreEl.textContent = score;
+      bestEl.textContent = best;
+      sessionGamesEl.textContent = sessionGames;
+
+      animId = requestAnimationFrame(gameLoop);
+    }
+
+    function startGame() {
+      initGame();
+      startScreen.classList.add('hidden');
+      gameOverScreen.classList.add('hidden');
+      gameRunning = true;
+      trackGameStart('jumping-rabbit');
+      playClick();
+      gameLoop();
+    }
+
+    startBtn.addEventListener('click', startGame);
+    restartBtn.addEventListener('click', startGame);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') inputLeft = true;
+      if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') inputRight = true;
+    });
+    document.addEventListener('keyup', (e) => {
+      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') inputLeft = false;
+      if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') inputRight = false;
+    });
+
+    document.getElementById('touchLeft').addEventListener('touchstart', (e) => { e.preventDefault(); inputLeft = true; });
+    document.getElementById('touchLeft').addEventListener('touchend', () => inputLeft = false);
+    document.getElementById('touchRight').addEventListener('touchstart', (e) => { e.preventDefault(); inputRight = true; });
+    document.getElementById('touchRight').addEventListener('touchend', () => inputRight = false);
+
+    document.getElementById('touchLeft').addEventListener('mousedown', () => inputLeft = true);
+    document.getElementById('touchLeft').addEventListener('mouseup', () => inputLeft = false);
+    document.getElementById('touchLeft').addEventListener('mouseleave', () => inputLeft = false);
+    document.getElementById('touchRight').addEventListener('mousedown', () => inputRight = true);
+    document.getElementById('touchRight').addEventListener('mouseup', () => inputRight = false);
+    document.getElementById('touchRight').addEventListener('mouseleave', () => inputRight = false);
+
+    if (typeof DeviceOrientationEvent !== 'undefined') {
+      window.addEventListener('deviceorientation', (e) => {
+        if (e.gamma != null) tiltX = Math.max(-1, Math.min(1, e.gamma / 45));
+      });
+    }
+
+    let muted = false;
+    soundToggle.addEventListener('click', () => {
+      muted = !muted;
+      if (muted) muteAll();
+      soundToggle.textContent = muted ? '🔇 Muted' : '🔊 Sound';
+      playClick();
+    });
+
+    initAudio();
+  </script>
+</body>
+</html>

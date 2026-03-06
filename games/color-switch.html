@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Color Switch - Free Online Action Game | Mini Game Planet</title>
+  <meta name="description" content="Play Color Switch free online! Match your ball's color to pass through rotating barriers. Tap or press Space to jump. Beat your high score in this addictive action game.">
+  <link rel="canonical" href="https://minigameplanet.com/games/color-switch.html">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="Color Switch - Free Online Action Game">
+  <meta property="og:description" content="Match your ball's color to pass through rotating barriers. Tap or press Space to jump. Beat your high score!">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/color-switch.html">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    #gameCanvas { display: block; margin: 0 auto; border-radius: 12px; background: #1a1a1a; }
+  </style>
+  
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoGame",
+    "name": "Color Switch",
+    "description": "Match your ball's color to pass through rotating barriers. Tap or press Space to jump. Beat your high score in this addictive action game.",
+    "gamePlatform": "Web Browser",
+    "genre": "Action",
+    "playMode": "SinglePlayer",
+    "url": "https://minigameplanet.com/games/color-switch.html"
+  }
+  </script>
+</head>
+<body class="min-h-screen text-gray-800">
+  <!-- GA4 Consent defaults, AdSense commented -->
+  <!-- 
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXX" crossorigin="anonymous"></script>
+  -->
+
+  <div class="max-w-4xl mx-auto px-4 py-6">
+    <!-- Nav -->
+    <nav id="nav-container" class="mb-6 flex items-center justify-between">
+      <a href="/" class="text-lg font-semibold text-gray-800 hover:text-indigo-600 transition">← Mini Game Planet</a>
+      <div class="flex items-center gap-4">
+        <button id="soundToggle" class="px-3 py-1.5 rounded-lg bg-gray-200 hover:bg-gray-300 text-sm font-medium transition" aria-label="Toggle sound">🔊 Sound On</button>
+      </div>
+    </nav>
+
+    <!-- White Card -->
+    <main class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+      <header class="text-center mb-6">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Color Switch</h1>
+        <p class="text-gray-600">Match your color to pass through the barriers. Tap or press <kbd class="font-mono px-2 py-0.5 bg-gray-100 rounded">Space</kbd> to jump!</p>
+      </header>
+
+      <!-- Game Area -->
+      <div class="flex flex-col items-center gap-4 mb-8">
+        <div class="relative">
+          <canvas id="gameCanvas" width="320" height="480" tabindex="0"></canvas>
+          <div id="startOverlay" class="absolute inset-0 flex flex-col items-center justify-center bg-black/60 rounded-12 cursor-pointer" style="border-radius: 12px;">
+            <p class="text-white text-xl font-semibold mb-2">Tap or Space to Start</p>
+            <p class="text-white/80 text-sm">Match the ball color to pass through barriers</p>
+          </div>
+          <div id="gameOverOverlay" class="absolute inset-0 hidden flex-col items-center justify-center bg-black/70 rounded-12" style="border-radius: 12px;">
+            <p class="text-white text-2xl font-bold mb-2">Game Over</p>
+            <p class="text-white/90 text-lg mb-4">Score: <span id="finalScore" class="font-mono">0</span></p>
+            <p class="text-white/70 text-sm mb-4">Best: <span id="bestScore" class="font-mono">0</span></p>
+            <button id="restartBtn" class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition">Play Again</button>
+          </div>
+        </div>
+
+        <!-- Session Stats -->
+        <div class="flex gap-6 font-mono text-sm">
+          <span>Score: <strong id="scoreDisplay">0</strong></span>
+          <span>Best: <strong id="bestDisplay">0</strong></span>
+          <span>Session: <strong id="sessionGames">0</strong> games</span>
+        </div>
+      </div>
+
+      <!-- SEO Article -->
+      <article class="prose prose-gray max-w-none mt-8 pt-8 border-t border-gray-200">
+        <h2 class="text-2xl font-bold text-gray-900 mb-4">How to Play Color Switch</h2>
+        <p class="text-gray-600 leading-relaxed mb-4">
+          Color Switch is a fast-paced action game where you control a bouncing ball through a series of rotating color barriers. Your ball can be one of four colors: red, yellow, green, or purple. The key to success is timing—you must pass through the barrier segment that matches your current ball color. Hit the wrong color and it's game over!
+        </p>
+        <p class="text-gray-600 leading-relaxed mb-4">
+          Tap anywhere on the screen or press the Space bar to make your ball jump upward. Gravity will pull it back down, so you'll need to time your jumps carefully to pass through the correct segment of each barrier. The barriers rotate continuously, adding an extra layer of challenge. Watch the rotation and plan your jump so that when you reach the barrier, the matching color segment is in your path.
+        </p>
+        <p class="text-gray-600 leading-relaxed mb-4">
+          Between barriers, you'll find color-swap pickups. Collect these to change your ball's color to a new one. Use them strategically—sometimes it's easier to switch colors than to wait for the right moment to pass through. The game gets progressively harder as barriers appear more frequently and rotate faster. Your score increases each time you successfully pass through a barrier.
+        </p>
+        <p class="text-gray-600 leading-relaxed mb-4">
+          Color Switch tests your reflexes, timing, and pattern recognition. Each run is different thanks to procedural generation using secure randomness, so no two games feel the same. Challenge yourself to beat your personal best and see how high you can score. The game is free to play in your browser with no downloads required—just load the page and start playing!
+        </p>
+        <p class="text-gray-600 leading-relaxed mb-4">
+          The game features smooth rotating animations for each barrier, making the experience both visually satisfying and challenging. As you climb higher, the pace increases and your reaction time is put to the test. Many players find that the key to high scores is learning when to collect color-swap pickups versus when to time a jump through the current color. Patience and quick reflexes go hand in hand.
+        </p>
+        <p class="text-gray-600 leading-relaxed mb-4">
+          Color Switch has become a beloved arcade-style game for players of all ages. Its simple one-tap control scheme makes it easy to pick up, while the increasing difficulty keeps you coming back for more. The vibrant color palette and fluid motion create an engaging experience that works great on both desktop and mobile devices. Whether you're on a lunch break or commuting, a quick game of Color Switch is always within reach.
+        </p>
+        <p class="text-gray-600 leading-relaxed">
+          Whether you're looking for a quick break or an addictive challenge, Color Switch delivers. Perfect for players who enjoy rhythm games, reaction-based gameplay, and colorful arcade experiences. Share your high score with friends and see who can reach the furthest. Good luck, and may your colors always match!
+        </p>
+      </article>
+
+      <!-- Related Games -->
+      <section id="related-games" class="mt-10 pt-8 border-t border-gray-200">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Related Games</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <a href="/games/" class="block p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition text-center">
+            <span class="font-medium text-gray-800">More Action Games</span>
+          </a>
+          <a href="/" class="block p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition text-center">
+            <span class="font-medium text-gray-800">All Games</span>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer id="footer-container" class="mt-8 py-6 text-center text-sm text-gray-500">
+      <p>© Mini Game Planet. Free online games. Play Color Switch and more.</p>
+    </footer>
+  </div>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playCollect } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('color-switch');
+    initConsent();
+    trackGameView('color-switch', 'Action');
+
+    // Secure random via crypto
+    function secureRandom() {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] / (0xFFFFFFFF + 1);
+    }
+
+    const COLORS = ['#E53935', '#FDD835', '#43A047', '#8E24AA']; // red, yellow, green, purple
+
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const startOverlay = document.getElementById('startOverlay');
+    const gameOverOverlay = document.getElementById('gameOverOverlay');
+    const finalScoreEl = document.getElementById('finalScore');
+    const bestScoreEl = document.getElementById('bestScore');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const bestDisplay = document.getElementById('bestDisplay');
+    const sessionGamesEl = document.getElementById('sessionGames');
+    const restartBtn = document.getElementById('restartBtn');
+    const soundToggle = document.getElementById('soundToggle');
+
+    let gameState = 'start'; // start, playing, over
+    let ballX, ballY, ballColor, ballVy, ballRadius;
+    let barriers = [];
+    let pickups = [];
+    let score = 0;
+    let bestScore = parseInt(localStorage.getItem('colorSwitchBest') || '0', 10);
+    let sessionGames = parseInt(sessionStorage.getItem('colorSwitchSession') || '0', 10);
+    let lastTime = 0;
+    let barrierTimer = 0;
+    let gravity = 0.35;
+    let jumpForce = -9;
+    let barrierGap = 140;
+    let lastBarrierY = 0;
+    let soundOn = true;
+
+    function initAudioModule() {
+      try { initAudio(); } catch (_) {}
+    }
+
+    soundToggle.addEventListener('click', () => {
+      soundOn = !soundOn;
+      soundToggle.textContent = soundOn ? '🔊 Sound On' : '🔇 Sound Off';
+      try { if (!soundOn) muteAll(); } catch (_) {}
+      try { playClick(); } catch (_) {}
+    });
+
+    function getRandomColor() {
+      return Math.floor(secureRandom() * 4);
+    }
+
+    function createBarrier(y) {
+      const rotationSpeed = (secureRandom() - 0.5) * 0.08;
+      const type = secureRandom() < 0.7 ? 'ring' : 'bar';
+      return {
+        y,
+        rotation: secureRandom() * Math.PI * 2,
+        rotationSpeed,
+        type,
+        passed: false,
+      };
+    }
+
+    function createPickup(y) {
+      return {
+        y,
+        color: getRandomColor(),
+        radius: 12,
+        collected: false,
+      };
+    }
+
+    function drawBarrier(b) {
+      const cx = canvas.width / 2;
+      const innerR = 50;
+      const outerR = 90;
+      const segAngle = (Math.PI * 2) / 4;
+
+      ctx.save();
+      ctx.translate(cx, b.y);
+      ctx.rotate(b.rotation);
+
+      for (let i = 0; i < 4; i++) {
+        ctx.beginPath();
+        ctx.moveTo(innerR * Math.cos(i * segAngle), innerR * Math.sin(i * segAngle));
+        ctx.arc(0, 0, innerR, i * segAngle, (i + 1) * segAngle);
+        ctx.lineTo(outerR * Math.cos((i + 1) * segAngle), outerR * Math.sin((i + 1) * segAngle));
+        ctx.arc(0, 0, outerR, (i + 1) * segAngle, i * segAngle, true);
+        ctx.closePath();
+        ctx.strokeStyle = COLORS[i];
+        ctx.lineWidth = 8;
+        ctx.stroke();
+        ctx.fillStyle = COLORS[i] + '40';
+        ctx.fill();
+      }
+
+      ctx.restore();
+    }
+
+    function drawPickup(p) {
+      if (p.collected) return;
+      ctx.save();
+      ctx.fillStyle = COLORS[p.color];
+      ctx.beginPath();
+      ctx.arc(canvas.width / 2, p.y, p.radius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function checkBarrierCollision(b) {
+      const cx = canvas.width / 2;
+      const dx = ballX - cx;
+      const dy = ballY - b.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 45 || dist > 95) return false;
+
+      const angle = Math.atan2(dy, dx);
+      let relAngle = angle - b.rotation;
+      while (relAngle < 0) relAngle += Math.PI * 2;
+      while (relAngle >= Math.PI * 2) relAngle -= Math.PI * 2;
+      const seg = Math.floor((relAngle / (Math.PI * 2)) * 4) % 4;
+      return seg !== ballColor;
+    }
+
+    function checkPickupCollision(p) {
+      if (p.collected) return false;
+      const dx = ballX - canvas.width / 2;
+      const dy = ballY - p.y;
+      return Math.sqrt(dx * dx + dy * dy) < ballRadius + p.radius;
+    }
+
+    function jump() {
+      if (gameState !== 'playing') return;
+      ballVy = jumpForce;
+      try { playClick(); } catch (_) {}
+    }
+
+    function startGame() {
+      initAudioModule();
+      gameState = 'playing';
+      score = 0;
+      ballX = canvas.width / 2;
+      ballY = canvas.height / 2;
+      ballColor = getRandomColor();
+      ballVy = 0;
+      ballRadius = 14;
+      barriers = [];
+      pickups = [];
+      lastBarrierY = canvas.height / 2 - 80;
+      barrierTimer = 0;
+      startOverlay.classList.add('hidden');
+      startOverlay.style.display = 'none';
+      try { trackGameStart('color-switch'); } catch (_) {}
+    }
+
+    function endGame() {
+      gameState = 'over';
+      sessionGames++;
+      sessionStorage.setItem('colorSwitchSession', String(sessionGames));
+      if (score > bestScore) {
+        bestScore = score;
+        localStorage.setItem('colorSwitchBest', String(bestScore));
+        try { playSuccess(); } catch (_) {}
+      } else {
+        try { playGameOver(); } catch (_) {}
+      }
+      try { trackGameOver('color-switch', score); } catch (_) {}
+      gameOverOverlay.classList.remove('hidden');
+      gameOverOverlay.style.display = 'flex';
+      finalScoreEl.textContent = score;
+      bestScoreEl.textContent = bestScore;
+      sessionGamesEl.textContent = sessionGames;
+      restartBtn.focus();
+    }
+
+    restartBtn.addEventListener('click', () => {
+      gameOverOverlay.classList.add('hidden');
+      gameOverOverlay.style.display = 'none';
+      startOverlay.style.display = 'flex';
+      startOverlay.classList.remove('hidden');
+      bestDisplay.textContent = bestScore;
+      sessionGamesEl.textContent = sessionGames;
+    });
+
+    startOverlay.addEventListener('click', () => {
+      startOverlay.style.display = 'none';
+      startGame();
+    });
+
+    canvas.addEventListener('click', (e) => {
+      if (gameState === 'start') {
+        startOverlay.style.display = 'none';
+        startGame();
+      } else if (gameState === 'playing') jump();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        if (gameState === 'start') {
+          startOverlay.style.display = 'none';
+          startGame();
+        } else if (gameState === 'playing') jump();
+      }
+    });
+
+    canvas.setAttribute('tabindex', '0');
+    canvas.focus();
+
+    function update(t) {
+      const dt = Math.min((t - lastTime) / 16, 4);
+      lastTime = t;
+
+      if (gameState !== 'playing') {
+        requestAnimationFrame(update);
+        return;
+      }
+
+      ballVy += gravity * dt;
+      ballY += ballVy * dt;
+
+      for (const b of barriers) {
+        b.rotation += b.rotationSpeed * dt * 60;
+        b.y += 2.5 * dt;
+      }
+      for (const p of pickups) {
+        if (!p.collected) p.y += 2.5 * dt;
+      }
+
+      barrierTimer += dt * 60;
+      if (barrierTimer > 40) {
+        barrierTimer = 0;
+        const nextY = lastBarrierY - barrierGap - secureRandom() * 30;
+        barriers.push(createBarrier(nextY));
+        lastBarrierY = nextY;
+        if (secureRandom() < 0.4) {
+          pickups.push(createPickup(nextY + 70));
+        }
+      }
+
+      for (const p of pickups) {
+        if (checkPickupCollision(p)) {
+          p.collected = true;
+          ballColor = p.color;
+          try { playCollect(); } catch (_) {}
+        }
+      }
+
+      for (const b of barriers) {
+        if (!b.passed && ballY < b.y + 50 && ballY > b.y - 50) {
+          if (checkBarrierCollision(b)) {
+            try { playError(); } catch (_) {}
+            endGame();
+            requestAnimationFrame(update);
+            return;
+          }
+          if (ballY < b.y - 60) {
+            b.passed = true;
+            score++;
+            try { playScoreUp(); } catch (_) {}
+          }
+        }
+      }
+
+      if (ballY > canvas.height + 50) {
+        try { playError(); } catch (_) {}
+        endGame();
+      }
+
+      scoreDisplay.textContent = score;
+      bestDisplay.textContent = bestScore;
+      sessionGamesEl.textContent = sessionGames;
+
+      requestAnimationFrame(update);
+    }
+
+    function draw() {
+      ctx.fillStyle = '#1a1a1a';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      if (gameState === 'playing' || gameState === 'over') {
+        for (const b of barriers) drawBarrier(b);
+        for (const p of pickups) drawPickup(p);
+
+        ctx.save();
+        ctx.translate(ballX, ballY);
+        ctx.fillStyle = COLORS[ballColor];
+        ctx.beginPath();
+        ctx.arc(0, 0, ballRadius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      requestAnimationFrame(draw);
+    }
+
+    requestAnimationFrame((t) => { lastTime = t; update(t); });
+    requestAnimationFrame(draw);
+
+    bestDisplay.textContent = bestScore;
+    sessionGamesEl.textContent = sessionGames;
+  </script>
+</body>
+</html>

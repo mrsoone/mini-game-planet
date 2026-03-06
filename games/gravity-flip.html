@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gravity Flip - Run & Flip Action Game | Mini Game Planet</title>
+  <meta name="description" content="Gravity Flip is a fast-paced runner where you flip gravity to dodge obstacles on floor and ceiling. Tap to flip, survive gaps, and beat your high score!">
+  <link rel="canonical" href="https://minigameplanet.com/games/gravity-flip.html">
+  <!-- Open Graph -->
+  <meta property="og:title" content="Gravity Flip - Run & Flip Action Game">
+  <meta property="og:description" content="Flip gravity to dodge obstacles. Run on floor or ceiling. How far can you go?">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/gravity-flip.html">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    }
+  </script>
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    #gameCanvas { display: block; border-radius: 0.5rem; background: #1a1a2e; }
+    .card { background: #fff; border-radius: 0.75rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  </style>
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Gravity Flip",
+    "description": "A side-scrolling runner where you flip gravity to avoid obstacles on floor and ceiling. Tap or press space to flip.",
+    "applicationCategory": "Game",
+    "genre": "Action",
+    "operatingSystem": "Any",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+  <!-- AdSense (commented)
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXX" crossorigin="anonymous"></script>
+  -->
+</head>
+<body class="min-h-screen text-gray-800">
+  <nav class="nav-container bg-white/80 backdrop-blur border-b border-gray-200 sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="font-semibold text-lg">Mini Game Planet</a>
+      <div class="flex items-center gap-4">
+        <button id="soundToggle" class="text-sm px-3 py-1 rounded border border-gray-300 hover:bg-gray-100" aria-label="Toggle sound">🔊 Sound</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-4xl mx-auto px-4 py-6">
+    <div class="card p-6 mb-6">
+      <h1 class="text-2xl font-bold mb-2">Gravity Flip</h1>
+      <p class="text-gray-600 mb-4">Tap, click, or press <kbd class="font-mono px-1.5 py-0.5 bg-gray-100 rounded">Space</kbd> to flip gravity. Avoid obstacles and gaps!</p>
+
+      <div class="relative mb-4">
+        <canvas id="gameCanvas" width="800" height="400" class="w-full max-w-full"></canvas>
+        <div id="startOverlay" class="absolute inset-0 flex flex-col items-center justify-center bg-black/40 rounded-lg">
+          <p class="text-white text-xl font-semibold mb-2">Gravity Flip</p>
+          <p class="text-white/90 text-sm mb-4">Tap / Click / Space to flip gravity</p>
+          <button id="startBtn" class="px-6 py-2 bg-white text-gray-900 rounded-lg font-semibold hover:bg-gray-100">Play</button>
+        </div>
+        <div id="gameOverOverlay" class="absolute inset-0 hidden flex-col items-center justify-center bg-black/50 rounded-lg">
+          <p class="text-white text-xl font-bold mb-1">Game Over</p>
+          <p class="text-white/90 font-mono mb-4">Score: <span id="finalScore">0</span></p>
+          <p class="text-white/80 text-sm mb-4">Best: <span id="bestScore">0</span></p>
+          <button id="restartBtn" class="px-6 py-2 bg-white text-gray-900 rounded-lg font-semibold hover:bg-gray-100">Play Again</button>
+        </div>
+      </div>
+
+      <div class="flex justify-between items-center text-sm font-mono">
+        <span>Score: <span id="scoreDisplay">0</span></span>
+        <span>Best: <span id="bestDisplay">0</span></span>
+        <span>Session: <span id="sessionGames">0</span> games</span>
+      </div>
+    </div>
+
+    <article class="card p-6 mb-6 prose prose-gray max-w-none">
+      <h2 class="text-xl font-bold mb-4">Gravity Flip: The Ultimate Flip Runner</h2>
+      <p>Gravity Flip is a fast-paced side-scrolling action game that puts a fresh spin on the endless runner genre. Instead of jumping over obstacles, you flip gravity itself—running along the ceiling when the floor is blocked, and back to the floor when the ceiling gets dangerous. One tap, click, or spacebar press is all it takes to switch worlds.</p>
+      <p>The game starts at a comfortable pace, but as your distance increases, so does the speed. Obstacles appear on both the floor and ceiling: spikes, blocks, and hazards that require split-second timing to avoid. Gaps in the platforms add another layer of danger—fall through a hole in the floor and you're done. The key is to anticipate what's ahead and flip at exactly the right moment.</p>
+      <p>Parallax scrolling backgrounds give the game depth and polish. Multiple layers move at different speeds as you run, creating a sense of motion and immersion. The visual feedback is clear: you always know whether you're on the floor or ceiling, and obstacles are easy to read even at high speeds.</p>
+      <p>Scoring is simple: your score equals the distance you've traveled. The farther you go, the higher your score—and the faster the game gets. Personal bests are saved in your browser, so you can always try to beat your record. Session stats track how many games you've played in one sitting, perfect for quick play sessions or marathon runs.</p>
+      <p>Whether you're on desktop or mobile, Gravity Flip is built to feel responsive. Touch controls work great on phones and tablets, while keyboard and mouse work seamlessly on computers. The game loop is optimized for smooth 60fps gameplay, and the canvas-based rendering keeps things lightweight and fast.</p>
+      <p>Ready to flip? Hit play, tap to flip gravity, and see how far you can run. Every run is different thanks to procedural obstacle placement, so no two games feel the same. Master the rhythm, learn the patterns, and push your score higher. Gravity Flip—where up and down are just suggestions.</p>
+    </article>
+
+    <div class="related-games card p-6 mb-6">
+      <h3 class="font-semibold mb-3">Related Games</h3>
+      <div class="flex flex-wrap gap-2">
+        <a href="/games/" class="px-3 py-1.5 bg-gray-100 rounded hover:bg-gray-200 text-sm">All Games</a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer-container border-t border-gray-200 py-6 mt-8">
+    <div class="max-w-4xl mx-auto px-4 text-center text-sm text-gray-500">
+      <p>© Mini Game Planet. Play free browser games.</p>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playBounce } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('gravity-flip');
+    initConsent();
+    trackGameView('gravity-flip', 'Action');
+
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const startOverlay = document.getElementById('startOverlay');
+    const gameOverOverlay = document.getElementById('gameOverOverlay');
+    const startBtn = document.getElementById('startBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const bestDisplay = document.getElementById('bestDisplay');
+    const finalScore = document.getElementById('finalScore');
+    const bestScore = document.getElementById('bestScore');
+    const sessionGames = document.getElementById('sessionGames');
+    const soundToggle = document.getElementById('soundToggle');
+
+    const STORAGE_KEY = 'gravity-flip-best';
+    const SESSION_KEY = 'gravity-flip-session';
+
+    function secureRandom() {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] / (0xFFFFFFFF + 1);
+    }
+
+    function getBest() {
+      try {
+        return parseInt(localStorage.getItem(STORAGE_KEY) || '0', 10);
+      } catch { return 0; }
+    }
+
+    function setBest(v) {
+      try { localStorage.setItem(STORAGE_KEY, String(v)); } catch {}
+    }
+
+    function getSessionGames() {
+      try {
+        return parseInt(sessionStorage.getItem(SESSION_KEY) || '0', 10);
+      } catch { return 0; }
+    }
+
+    function setSessionGames(v) {
+      try { sessionStorage.setItem(SESSION_KEY, String(v)); } catch {}
+    }
+
+    let best = getBest();
+    bestDisplay.textContent = best;
+    sessionGames.textContent = getSessionGames();
+
+    let muted = false;
+    soundToggle.addEventListener('click', () => {
+      muted = !muted;
+      muteAll(muted);
+      soundToggle.textContent = muted ? '🔇 Sound' : '🔊 Sound';
+      soundToggle.classList.toggle('opacity-60', muted);
+    });
+
+    const W = canvas.width;
+    const H = canvas.height;
+    const FLOOR_Y = H - 60;
+    const CEIL_Y = 60;
+    const PLAYER_W = 28;
+    const PLAYER_H = 36;
+    const GAP_MIN = 80;
+    const GAP_MAX = 180;
+    const OBSTACLE_MIN_GAP = 120;
+    const OBSTACLE_MAX_GAP = 280;
+    const BASE_SPEED = 4;
+    const MAX_SPEED = 12;
+    const SPEED_INCREASE = 0.0008;
+
+    let gameState = 'idle';
+    let playerX = 80;
+    let playerY = FLOOR_Y - PLAYER_H;
+    let gravityFlipped = false;
+    let scrollX = 0;
+    let score = 0;
+    let speed = BASE_SPEED;
+    let obstacles = [];
+    let gaps = [];
+    let parallaxLayers = [];
+    let animFrame = 0;
+
+    function initParallax() {
+      parallaxLayers = [
+        { y: 0, height: H, speed: 0.3, color: '#16213e' },
+        { y: H - 120, height: 120, speed: 0.6, color: '#1a1a2e' },
+        { y: H - 80, height: 80, speed: 0.9, color: '#0f3460' },
+      ];
+    }
+
+    function spawnObstacle() {
+      const lastOb = obstacles[obstacles.length - 1];
+      const minX = lastOb ? lastOb.x + OBSTACLE_MIN_GAP : 400;
+      const gap = OBSTACLE_MIN_GAP + secureRandom() * (OBSTACLE_MAX_GAP - OBSTACLE_MIN_GAP);
+      const onFloor = secureRandom() > 0.5;
+      obstacles.push({
+        x: minX + gap,
+        w: 24 + secureRandom() * 40,
+        h: 30,
+        onFloor,
+        y: onFloor ? FLOOR_Y - 30 : CEIL_Y,
+      });
+    }
+
+    function spawnGap() {
+      const lastGap = gaps[gaps.length - 1];
+      const minX = lastGap ? lastGap.x + lastGap.w + GAP_MIN : 500;
+      const w = GAP_MIN + secureRandom() * (GAP_MAX - GAP_MIN);
+      const onFloor = secureRandom() > 0.5;
+      gaps.push({
+        x: minX,
+        w,
+        onFloor,
+      });
+    }
+
+    function collides(a, b) {
+      return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+    }
+
+    function inGap(px, py, ph) {
+      for (const g of gaps) {
+        if (g.onFloor === gravityFlipped) continue;
+        const gy = g.onFloor ? FLOOR_Y : CEIL_Y - 1;
+        const gx1 = g.x - scrollX;
+        const gx2 = g.x + g.w - scrollX;
+        if (px + PLAYER_W > gx1 && px < gx2) {
+          if (g.onFloor && py + ph > gy - 5) return true;
+          if (!g.onFloor && py < gy + 5) return true;
+        }
+      }
+      return false;
+    }
+
+    function update() {
+      if (gameState !== 'playing') return;
+
+      speed = Math.min(MAX_SPEED, BASE_SPEED + score * SPEED_INCREASE);
+      scrollX += speed;
+      score = Math.floor(scrollX / 10);
+      scoreDisplay.textContent = score;
+
+      playerX = 80;
+      playerY = gravityFlipped ? CEIL_Y : FLOOR_Y - PLAYER_H;
+
+      while (obstacles.length < 8) spawnObstacle();
+      while (gaps.length < 4) spawnGap();
+
+      const playerRect = { x: playerX, y: playerY, w: PLAYER_W, h: PLAYER_H };
+      for (const ob of obstacles) {
+        const ox = ob.x - scrollX;
+        if (ox + ob.w < -50) continue;
+        const obRect = { x: ox, y: ob.y, w: ob.w, h: ob.h };
+        if (collides(playerRect, obRect)) {
+          gameState = 'over';
+          setSessionGames(getSessionGames() + 1);
+          sessionGames.textContent = getSessionGames();
+          if (score > best) {
+            best = score;
+            setBest(best);
+            bestDisplay.textContent = best;
+          }
+          finalScore.textContent = score;
+          bestScore.textContent = best;
+          gameOverOverlay.classList.remove('hidden');
+          gameOverOverlay.classList.add('flex');
+          try { playGameOver(); } catch {}
+          try { trackGameOver('gravity-flip', score); } catch {}
+          return;
+        }
+      }
+
+      if (inGap(playerX, playerY, PLAYER_H)) {
+        gameState = 'over';
+        setSessionGames(getSessionGames() + 1);
+        sessionGames.textContent = getSessionGames();
+        if (score > best) {
+          best = score;
+          setBest(best);
+          bestDisplay.textContent = best;
+        }
+        finalScore.textContent = score;
+        bestScore.textContent = best;
+        gameOverOverlay.classList.remove('hidden');
+        gameOverOverlay.classList.add('flex');
+        try { playGameOver(); } catch {}
+        try { trackGameOver('gravity-flip', score); } catch {}
+        return;
+      }
+
+      if (score > 0 && score % 100 === 0 && Math.floor(scrollX / 10) === score) {
+        try { playScoreUp(); } catch {}
+      }
+    }
+
+    function draw() {
+      ctx.fillStyle = '#0f0f1a';
+      ctx.fillRect(0, 0, W, H);
+
+      for (const layer of parallaxLayers) {
+        ctx.fillStyle = layer.color;
+        const offset = (scrollX * layer.speed) % 80;
+        for (let i = -1; i < 3; i++) {
+          ctx.fillRect(i * 80 - offset, layer.y, 80, layer.height);
+        }
+      }
+
+      ctx.fillStyle = '#1a1a2e';
+      ctx.fillRect(0, FLOOR_Y, W + 100, H - FLOOR_Y);
+      ctx.fillRect(0, 0, W + 100, CEIL_Y);
+
+      ctx.strokeStyle = '#2d2d44';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(0, FLOOR_Y);
+      ctx.lineTo(W + 100, FLOOR_Y);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(0, CEIL_Y);
+      ctx.lineTo(W + 100, CEIL_Y);
+      ctx.stroke();
+
+      for (const g of gaps) {
+        const gx = g.x - scrollX;
+        if (gx + g.w < -20 || gx > W + 20) continue;
+        ctx.fillStyle = '#0f0f1a';
+        if (g.onFloor) ctx.fillRect(gx, FLOOR_Y, g.w, H - FLOOR_Y);
+        else ctx.fillRect(gx, 0, g.w, CEIL_Y);
+      }
+
+      for (const ob of obstacles) {
+        const ox = ob.x - scrollX;
+        if (ox + ob.w < -20 || ox > W + 20) continue;
+        ctx.fillStyle = '#e63946';
+        ctx.fillRect(ox, ob.y, ob.w, ob.h);
+        ctx.strokeStyle = '#ff6b6b';
+        ctx.strokeRect(ox, ob.y, ob.w, ob.h);
+      }
+
+      ctx.fillStyle = gravityFlipped ? '#4cc9f0' : '#06d6a0';
+      ctx.fillRect(playerX, playerY, PLAYER_W, PLAYER_H);
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(playerX, playerY, PLAYER_W, PLAYER_H);
+
+      ctx.fillStyle = 'rgba(255,255,255,0.9)';
+      ctx.font = '14px "DM Mono"';
+      ctx.fillText('Score: ' + score, 10, 25);
+    }
+
+    function loop() {
+      update();
+      draw();
+      if (gameState === 'playing') requestAnimationFrame(loop);
+    }
+
+    function flip() {
+      if (gameState !== 'playing') return;
+      gravityFlipped = !gravityFlipped;
+      try { playBounce(); } catch {}
+    }
+
+    function startGame() {
+      gameState = 'playing';
+      playerX = 80;
+      playerY = FLOOR_Y - PLAYER_H;
+      gravityFlipped = false;
+      scrollX = 0;
+      score = 0;
+      speed = BASE_SPEED;
+      obstacles = [];
+      gaps = [];
+      initParallax();
+      startOverlay.classList.add('hidden');
+      gameOverOverlay.classList.add('hidden');
+      gameOverOverlay.classList.remove('flex');
+      scoreDisplay.textContent = '0';
+      try { playClick(); } catch {}
+      try { trackGameStart('gravity-flip'); } catch {}
+      requestAnimationFrame(loop);
+    }
+
+    startBtn.addEventListener('click', startGame);
+    restartBtn.addEventListener('click', startGame);
+
+    canvas.addEventListener('click', (e) => {
+      if (gameState === 'idle') return;
+      if (gameState === 'over') return;
+      flip();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        if (gameState === 'idle') { startGame(); return; }
+        if (gameState === 'over') { startGame(); return; }
+        flip();
+      }
+    });
+
+    canvas.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      if (gameState === 'idle') { startGame(); return; }
+      if (gameState === 'over') return;
+      flip();
+    }, { passive: false });
+  </script>
+</body>
+</html>

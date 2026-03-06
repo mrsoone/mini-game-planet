@@ -769,7 +769,7 @@ export const games = [
     icon: '🃏',
     accent: '#EA580C',
     keywords: ['card dodger', 'dodge game', 'avoidance', 'action game'],
-    built: false
+    built: true
   },
   {
     name: 'Jumping Rabbit',
@@ -779,7 +779,7 @@ export const games = [
     icon: '🐰',
     accent: '#EA580C',
     keywords: ['jumping rabbit', 'platform game', 'vertical jumper', 'doodle jump'],
-    built: false
+    built: true
   },
   {
     name: 'Tower Stacker',
@@ -789,7 +789,7 @@ export const games = [
     icon: '🏗',
     accent: '#EA580C',
     keywords: ['tower stacker', 'stacking game', 'timing game', 'building game'],
-    built: false
+    built: true
   },
   {
     name: 'Rhythm Tap',
@@ -799,7 +799,7 @@ export const games = [
     icon: '🎵',
     accent: '#EA580C',
     keywords: ['rhythm game', 'music game', 'tap game', 'beat game'],
-    built: false
+    built: true
   },
   {
     name: 'Color Switch',
@@ -809,7 +809,7 @@ export const games = [
     icon: '🔵',
     accent: '#EA580C',
     keywords: ['color switch', 'color game', 'timing game', 'one tap action'],
-    built: false
+    built: true
   },
   {
     name: 'Knife Throw',
@@ -819,7 +819,7 @@ export const games = [
     icon: '🔪',
     accent: '#EA580C',
     keywords: ['knife throw', 'knife hit', 'timing game', 'precision game'],
-    built: false
+    built: true
   },
   {
     name: 'Ball Bounce',
@@ -829,7 +829,7 @@ export const games = [
     icon: '🏀',
     accent: '#EA580C',
     keywords: ['ball bounce', 'bouncing game', 'platform game', 'reaction game'],
-    built: false
+    built: true
   },
   {
     name: 'Gravity Flip',
@@ -839,7 +839,7 @@ export const games = [
     icon: '🔄',
     accent: '#EA580C',
     keywords: ['gravity flip', 'gravity game', 'auto runner', 'flip game'],
-    built: false
+    built: true
   },
 
   // ─── BUILDER (4) ──────────────────────────────────────────────

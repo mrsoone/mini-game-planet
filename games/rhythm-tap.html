@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rhythm Tap - 3-Lane Rhythm Game | Mini Game Planet</title>
+  <meta name="description" content="Play Rhythm Tap, a fast-paced 3-lane rhythm game. Hit falling notes with perfect timing. Build combos, score big, and master the beat in 60-second rounds.">
+  <link rel="canonical" href="https://minigameplanet.com/games/rhythm-tap.html">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="Rhythm Tap - 3-Lane Rhythm Game">
+  <meta property="og:description" content="Hit falling notes with perfect timing. Build combos and master the beat in 60-second rounds.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://minigameplanet.com/games/rhythm-tap.html">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
+    .font-mono { font-family: 'DM Mono', monospace; }
+    .lane { transition: background 0.1s; }
+    .lane:active, .lane.tapped { background: rgba(34, 197, 94, 0.3) !important; box-shadow: inset 0 0 20px rgba(34, 197, 94, 0.5); }
+    .note { will-change: transform; }
+    .hit-zone { box-shadow: 0 0 20px rgba(59, 130, 246, 0.4); }
+    .hit-zone.active { box-shadow: 0 0 30px rgba(34, 197, 94, 0.8); animation: hitGlow 0.2s ease-out; }
+    @keyframes hitGlow { 0% { box-shadow: 0 0 40px rgba(34, 197, 94, 1); } 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.4); } }
+    .judgment-perfect { color: #fbbf24; text-shadow: 0 0 10px #fbbf24; }
+    .judgment-good { color: #22c55e; }
+    .judgment-miss { color: #ef4444; }
+  </style>
+  
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Rhythm Tap",
+    "description": "A 3-lane rhythm game where you hit falling notes with perfect timing. Build combos and score big in 60-second rounds.",
+    "applicationCategory": "Game",
+    "operatingSystem": "Any",
+    "url": "https://minigameplanet.com/games/rhythm-tap.html",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+</head>
+<body class="min-h-screen text-gray-800">
+  <!-- Nav -->
+  <nav id="nav-container" class="bg-white/80 backdrop-blur border-b border-gray-200 sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="font-semibold text-lg">Mini Game Planet</a>
+      <div class="flex items-center gap-4">
+        <button id="sound-toggle" class="text-sm px-3 py-1 rounded bg-gray-100 hover:bg-gray-200" aria-label="Toggle sound">🔊 Sound</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-4xl mx-auto px-4 py-6">
+    <!-- Game Card -->
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-6">
+      <h1 class="text-2xl font-bold mb-2">Rhythm Tap</h1>
+      <p class="text-gray-600 mb-4">Hit the notes when they reach the zone. D / F / J (or 1 / 2 / 3). Build combos!</p>
+
+      <!-- Stats Bar -->
+      <div class="flex justify-between items-center mb-4 font-mono text-sm">
+        <span>Score: <strong id="score">0</strong></span>
+        <span>Combo: <strong id="combo">0</strong>x</span>
+        <span>Time: <strong id="timer">60</strong>s</span>
+        <span>Best: <strong id="best">0</strong></span>
+      </div>
+
+      <!-- Game Area -->
+      <div id="game-container" class="relative rounded-xl overflow-hidden bg-gray-900/90 aspect-[4/3] max-h-[400px]">
+        <div id="game-lanes" class="absolute inset-0 flex">
+          <div class="lane flex-1 border-r border-gray-600/50 relative" data-lane="0"></div>
+          <div class="lane flex-1 border-r border-gray-600/50 relative" data-lane="1"></div>
+          <div class="lane flex-1 relative" data-lane="2"></div>
+        </div>
+        <div id="hit-zone" class="hit-zone absolute bottom-0 left-0 right-0 h-16 bg-blue-500/20 border-t-2 border-blue-400/60 flex">
+          <div class="flex-1 border-r border-gray-500/30 flex items-center justify-center text-gray-400 text-xs">D</div>
+          <div class="flex-1 border-r border-gray-500/30 flex items-center justify-center text-gray-400 text-xs">F</div>
+          <div class="flex-1 flex items-center justify-center text-gray-400 text-xs">J</div>
+        </div>
+        <div id="judgment" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-2xl font-bold pointer-events-none opacity-0 transition-opacity"></div>
+        <div id="game-overlay" class="absolute inset-0 bg-black/60 flex flex-col items-center justify-center hidden">
+          <h2 class="text-2xl font-bold text-white mb-2">Game Over</h2>
+          <p class="text-xl text-gray-300 mb-4">Score: <span id="final-score">0</span></p>
+          <button id="play-again" class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg">Play Again</button>
+        </div>
+        <div id="start-overlay" class="absolute inset-0 bg-black/50 flex flex-col items-center justify-center">
+          <h2 class="text-2xl font-bold text-white mb-2">Rhythm Tap</h2>
+          <p class="text-gray-300 mb-4 text-center px-4">Press D, F, J (or tap lanes) when notes hit the zone.</p>
+          <button id="start-btn" class="px-8 py-4 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl text-lg">Start Game</button>
+        </div>
+      </div>
+
+      <!-- Session Stats -->
+      <div class="mt-4 flex gap-4 text-sm text-gray-500">
+        <span>Session plays: <strong id="session-plays">0</strong></span>
+        <span>Personal best: <strong id="pb-display">0</strong></span>
+      </div>
+    </div>
+
+    <!-- AdSense placeholder (commented) -->
+    <!--
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-XXXXXXXX"
+         data-ad-slot="XXXXXXXX"
+         data-ad-format="auto"></ins>
+    -->
+
+    <!-- SEO Article -->
+    <article class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-6">
+      <h2 class="text-xl font-bold mb-4">Master the Beat: A Guide to Rhythm Tap</h2>
+      <div class="prose prose-gray max-w-none text-gray-600 space-y-4">
+        <p>Rhythm Tap is a fast-paced 3-lane rhythm game that tests your timing and reflexes. Notes fall from the top of the screen toward a hit zone at the bottom. Your job is to press the correct key—D, F, or J—when each note crosses the hit line. Hit with precision to earn Perfect or Good judgments, and build combos to multiply your score.</p>
+        <p>The game features procedurally generated note patterns that change in difficulty throughout each 60-second round. As the BPM varies, you'll need to stay focused and adapt to the rhythm. Each consecutive hit increases your combo multiplier, making every note count. A single miss resets your combo, so consistency is key to achieving a high score.</p>
+        <p>Timing windows are strict but fair. A Perfect hit lands within 50 milliseconds of the ideal moment, while a Good hit allows up to 100 milliseconds. Anything outside that window counts as a Miss. Your final score is calculated by multiplying the base points of each hit by your current combo, rewarding both accuracy and sustained performance.</p>
+        <p>On mobile devices, you can tap directly on the three lanes instead of using the keyboard. The hit zone glows when you tap, giving instant visual feedback. Whether you're on desktop or touchscreen, Rhythm Tap offers a smooth, responsive experience designed to keep you in the flow.</p>
+        <p>Track your progress with session stats and personal best scores. Each game is a fresh challenge with new note patterns, so no two rounds are alike. Can you top your high score? Fire up Rhythm Tap and find out.</p>
+      </div>
+    </article>
+
+    <!-- Related Games -->
+    <section id="related-games" class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-6">
+      <h2 class="text-lg font-bold mb-4">Related Games</h2>
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <a href="/games/" class="p-3 rounded-lg bg-gray-50 hover:bg-gray-100">More Games</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer id="footer-container" class="border-t border-gray-200 py-6 mt-8">
+    <div class="max-w-4xl mx-auto px-4 text-center text-sm text-gray-500">
+      <p>© Mini Game Planet. Play free online games.</p>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playPerfect, playBounce } from '/js/audio.js';
+    import { initToolPage } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+
+    initToolPage('rhythm-tap');
+    initConsent();
+    trackGameView('rhythm-tap', 'Action');
+
+    const safePlay = (fn) => { try { fn?.(); } catch (_) {} };
+
+    // Game state
+    const PERFECT_MS = 50;
+    const GOOD_MS = 100;
+    const HIT_ZONE_HEIGHT = 64;
+    const LANES = 3;
+    const ROUND_DURATION = 60;
+    const BASE_POINTS = { perfect: 100, good: 50, miss: 0 };
+
+    let score = 0, combo = 0, gameActive = false, gameStartTime = 0, notes = [];
+    let animationId = null, noteId = 0;
+    let lastBPM = 120, nextNoteTime = 0;
+    let soundEnabled = true;
+
+    const $ = (id) => document.getElementById(id);
+    const lanes = document.querySelectorAll('.lane');
+    const hitZone = document.getElementById('hit-zone');
+    const judgmentEl = document.getElementById('judgment');
+    const gameOverlay = document.getElementById('game-overlay');
+    const startOverlay = document.getElementById('start-overlay');
+
+    // Secure random
+    function secureRandom() {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] / (0xFFFFFFFF + 1);
+    }
+
+    // Personal best & session
+    function loadPB() {
+      try {
+        return parseInt(localStorage.getItem('rhythm-tap-pb') || '0', 10);
+      } catch { return 0; }
+    }
+    function savePB(val) {
+      try { localStorage.setItem('rhythm-tap-pb', String(val)); } catch (_) {}
+    }
+    function loadSessionPlays() {
+      try {
+        return parseInt(sessionStorage.getItem('rhythm-tap-plays') || '0', 10);
+      } catch { return 0; }
+    }
+    function saveSessionPlays(val) {
+      try { sessionStorage.setItem('rhythm-tap-plays', String(val)); } catch (_) {}
+    }
+
+    function updateUI() {
+      $('score').textContent = score;
+      $('combo').textContent = combo;
+      $('best').textContent = loadPB();
+      $('pb-display').textContent = loadPB();
+      $('session-plays').textContent = loadSessionPlays();
+    }
+
+    function showJudgment(text, cls) {
+      judgmentEl.textContent = text;
+      judgmentEl.className = `absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-2xl font-bold pointer-events-none judgment-${cls}`;
+      judgmentEl.style.opacity = '1';
+      setTimeout(() => { judgmentEl.style.opacity = '0'; }, 400);
+    }
+
+    function spawnNote(lane) {
+      const note = {
+        id: ++noteId,
+        lane,
+        y: 0,
+        hit: false,
+        el: null,
+        targetTime: performance.now() + (60000 / lastBPM) * 0.5,
+      };
+      const laneEl = lanes[lane];
+      const div = document.createElement('div');
+      div.className = 'note absolute top-0 w-12 h-12 rounded-full left-1/2 -translate-x-1/2 bg-amber-400 border-2 border-amber-500 shadow-lg';
+      div.style.transform = 'translate(-50%, 0)';
+      div.dataset.noteId = note.id;
+      laneEl.appendChild(div);
+      note.el = div;
+      notes.push(note);
+    }
+
+    function generateNotes() {
+      const now = performance.now();
+      if (now < nextNoteTime) return;
+      const bpmVariation = 0.7 + secureRandom() * 0.6;
+      lastBPM = Math.max(80, Math.min(180, lastBPM * (0.95 + secureRandom() * 0.1) * bpmVariation));
+      const interval = 60000 / lastBPM;
+      nextNoteTime = now + interval * (0.5 + secureRandom() * 0.5);
+      const lane = Math.floor(secureRandom() * LANES);
+      spawnNote(lane);
+    }
+
+    function hitNote(lane) {
+      const zoneTop = hitZone.getBoundingClientRect().top;
+      let best = null;
+      let bestDist = Infinity;
+      for (const n of notes) {
+        if (n.lane !== lane || n.hit) continue;
+        const rect = n.el.getBoundingClientRect();
+        const centerY = rect.top + rect.height / 2;
+        const dist = Math.abs(centerY - zoneTop - HIT_ZONE_HEIGHT / 2);
+        if (dist < bestDist) {
+          bestDist = dist;
+          best = n;
+        }
+      }
+      if (!best) {
+        showJudgment('MISS', 'miss');
+        combo = 0;
+        safePlay(playError);
+        return;
+      }
+      const container = document.getElementById('game-container');
+      const h = container?.offsetHeight || 300;
+      const fallSpeedPxPerMs = (h - HIT_ZONE_HEIGHT) / 1800;
+      const rect = best.el.getBoundingClientRect();
+      const centerY = rect.top + rect.height / 2;
+      const zoneCenter = zoneTop + HIT_ZONE_HEIGHT / 2;
+      const pixelDist = Math.abs(centerY - zoneCenter);
+      const distMs = pixelDist / fallSpeedPxPerMs;
+      let judgment, points;
+      if (distMs <= PERFECT_MS) {
+        judgment = 'PERFECT';
+        points = BASE_POINTS.perfect;
+        safePlay(playPerfect);
+      } else if (distMs <= GOOD_MS) {
+        judgment = 'GOOD';
+        points = BASE_POINTS.good;
+        safePlay(playSuccess);
+      } else {
+        judgment = 'MISS';
+        points = 0;
+        combo = 0;
+        safePlay(playError);
+      }
+      if (points > 0) {
+        combo++;
+        const add = Math.floor(points * combo);
+        score += add;
+        safePlay(playScoreUp);
+      }
+      best.hit = true;
+      best.el.remove();
+      showJudgment(judgment, judgment.toLowerCase());
+      hitZone.classList.add('active');
+      setTimeout(() => hitZone.classList.remove('active'), 150);
+      updateUI();
+    }
+
+    function handleInput(lane) {
+      if (!gameActive) return;
+      hitNote(lane);
+    }
+
+    const keyMap = { d: 0, f: 1, j: 2, '1': 0, '2': 1, '3': 2 };
+    document.addEventListener('keydown', (e) => {
+      const lane = keyMap[e.key?.toLowerCase()];
+      if (lane !== undefined) {
+        e.preventDefault();
+        handleInput(lane);
+      }
+    });
+
+    lanes.forEach((laneEl, i) => {
+      laneEl.addEventListener('click', () => handleInput(i));
+      laneEl.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        laneEl.classList.add('tapped');
+        handleInput(i);
+      });
+      laneEl.addEventListener('touchend', () => laneEl.classList.remove('tapped'));
+    });
+
+    function gameLoop(timestamp) {
+      if (!gameActive) return;
+      const elapsed = (timestamp - gameStartTime) / 1000;
+      $('timer').textContent = Math.max(0, Math.ceil(ROUND_DURATION - elapsed));
+
+      if (elapsed >= ROUND_DURATION) {
+        endGame();
+        return;
+      }
+
+      generateNotes();
+
+      const container = document.getElementById('game-container');
+      const h = container?.offsetHeight || 300;
+      const FALL_DURATION = 1.8;
+      const fallSpeedPxPerSec = (h - HIT_ZONE_HEIGHT) / FALL_DURATION;
+
+      for (const n of notes) {
+        if (n.hit) continue;
+        n.y += fallSpeedPxPerSec * 0.016;
+        if (n.el) n.el.style.transform = `translate(-50%, ${n.y}px)`;
+        if (n.y > h - HIT_ZONE_HEIGHT + 30) {
+          n.hit = true;
+          n.el?.remove();
+          combo = 0;
+          showJudgment('MISS', 'miss');
+          safePlay(playError);
+        }
+      }
+      notes = notes.filter((n) => !n.hit);
+
+      animationId = requestAnimationFrame(gameLoop);
+    }
+
+    function startGame() {
+      try { trackGameStart('rhythm-tap'); } catch (_) {}
+      saveSessionPlays(loadSessionPlays() + 1);
+      startOverlay.classList.add('hidden');
+      gameOverlay.classList.add('hidden');
+      score = 0;
+      combo = 0;
+      notes = [];
+      lastBPM = 100 + secureRandom() * 60;
+      nextNoteTime = 0;
+      gameActive = true;
+      gameStartTime = performance.now();
+      updateUI();
+      animationId = requestAnimationFrame(gameLoop);
+    }
+
+    function endGame() {
+      gameActive = false;
+      if (animationId) cancelAnimationFrame(animationId);
+      $('final-score').textContent = score;
+      gameOverlay.classList.remove('hidden');
+      const pb = loadPB();
+      if (score > pb) {
+        savePB(score);
+        updateUI();
+      }
+      try { trackGameOver('rhythm-tap', score); } catch (_) {}
+      safePlay(playGameOver);
+    }
+
+    document.getElementById('start-btn').addEventListener('click', startGame);
+    document.getElementById('play-again').addEventListener('click', () => {
+      gameOverlay.classList.add('hidden');
+      startGame();
+    });
+
+    document.getElementById('sound-toggle').addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      document.getElementById('sound-toggle').textContent = soundEnabled ? '🔊 Sound' : '🔇 Mute';
+      try { if (!soundEnabled) muteAll(); } catch (_) {}
+    });
+
+    updateUI();
+  </script>
+</body>
+</html>
