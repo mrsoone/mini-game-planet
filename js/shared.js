@@ -5,6 +5,200 @@ import { games, categories } from '/data/games.js';
 import { muteAll, isMuted, initAudio } from '/js/audio.js';
 import { openConsentBanner } from '/js/consent.js';
 
+const FAVICON_PATHS = {
+  ico: '/images/favicon.ico',
+  png32: '/images/favicon-32x32.png',
+  apple: '/images/apple-touch-icon.png'
+};
+
+function upsertLink({ rel, href, type, sizes }) {
+  let link = document.querySelector(`link[rel="${rel}"]`);
+  if (!link) {
+    link = document.createElement('link');
+    link.rel = rel;
+    document.head.appendChild(link);
+  }
+  link.href = href;
+  if (type) link.type = type;
+  if (sizes) link.sizes = sizes;
+}
+
+function applyPlanetFavicon() {
+  upsertLink({ rel: 'icon', href: FAVICON_PATHS.ico, type: 'image/x-icon' });
+  upsertLink({ rel: 'shortcut icon', href: FAVICON_PATHS.ico, type: 'image/x-icon' });
+  upsertLink({ rel: 'apple-touch-icon', href: FAVICON_PATHS.apple, type: 'image/png', sizes: '180x180' });
+  upsertLink({ rel: 'icon', href: FAVICON_PATHS.png32, type: 'image/png', sizes: '32x32' });
+}
+
+function updateViewportHeightVar() {
+  const h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+  document.documentElement.style.setProperty('--app-vh', `${h}px`);
+}
+
+function dispatchVirtualKey(code, key) {
+  const event = new KeyboardEvent('keydown', { code, key, bubbles: true, cancelable: true });
+  document.dispatchEvent(event);
+}
+
+function addMobileKeyboardFallback() {
+  if (document.getElementById('mobile-controls')) return;
+  const canvas = document.querySelector('canvas');
+  if (!canvas) return;
+
+  const pageScriptText = Array.from(document.scripts)
+    .map(script => script.textContent || '')
+    .join('\n')
+    .toLowerCase();
+  const keyboardDriven = /(keydown|arrowup|arrowdown|arrowleft|arrowright|keyw|keya|keys|keyd)/.test(pageScriptText);
+  const alreadyTouchEnabled = /(touchstart|touchmove|touchend|pointerdown|pointermove|pointerup)/.test(pageScriptText);
+  if (!keyboardDriven || alreadyTouchEnabled) return;
+
+  const controls = document.createElement('div');
+  controls.id = 'mobile-controls';
+  controls.className = 'mobile-controls';
+  controls.innerHTML = `
+    <button class="mobile-control-btn" data-code="ArrowUp" data-key="ArrowUp">▲</button>
+    <button class="mobile-control-btn" data-code="ArrowLeft" data-key="ArrowLeft">◀</button>
+    <button class="mobile-control-btn" data-code="Space" data-key=" ">Tap</button>
+    <button class="mobile-control-btn" data-code="ArrowRight" data-key="ArrowRight">▶</button>
+    <button class="mobile-control-btn" data-code="ArrowDown" data-key="ArrowDown">▼</button>
+  `;
+
+  const parent = canvas.parentElement || canvas;
+  parent.insertAdjacentElement('afterend', controls);
+
+  controls.querySelectorAll('.mobile-control-btn').forEach(btn => {
+    let repeatTimer = null;
+    const code = btn.dataset.code;
+    const key = btn.dataset.key;
+    const press = () => {
+      dispatchVirtualKey(code, key);
+      if (code !== 'Space') {
+        repeatTimer = setInterval(() => dispatchVirtualKey(code, key), 90);
+      }
+    };
+    const release = () => {
+      if (!repeatTimer) return;
+      clearInterval(repeatTimer);
+      repeatTimer = null;
+    };
+    btn.addEventListener('pointerdown', e => {
+      e.preventDefault();
+      press();
+    });
+    btn.addEventListener('pointerup', release);
+    btn.addEventListener('pointercancel', release);
+    btn.addEventListener('pointerleave', release);
+  });
+
+  let startPoint = null;
+  canvas.addEventListener('touchstart', e => {
+    if (!e.touches?.[0]) return;
+    startPoint = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  }, { passive: true });
+
+  canvas.addEventListener('touchend', e => {
+    if (!startPoint || !e.changedTouches?.[0]) return;
+    const dx = e.changedTouches[0].clientX - startPoint.x;
+    const dy = e.changedTouches[0].clientY - startPoint.y;
+    const threshold = 24;
+    if (Math.abs(dx) < threshold && Math.abs(dy) < threshold) {
+      dispatchVirtualKey('Space', ' ');
+      startPoint = null;
+      return;
+    }
+    if (Math.abs(dx) > Math.abs(dy)) {
+      dispatchVirtualKey(dx > 0 ? 'ArrowRight' : 'ArrowLeft', dx > 0 ? 'ArrowRight' : 'ArrowLeft');
+    } else {
+      dispatchVirtualKey(dy > 0 ? 'ArrowDown' : 'ArrowUp', dy > 0 ? 'ArrowDown' : 'ArrowUp');
+    }
+    startPoint = null;
+  }, { passive: true });
+}
+
+function initGlobalMobileUX() {
+  if (!document.head || document.getElementById('mgp-mobile-ux')) return;
+  const style = document.createElement('style');
+  style.id = 'mgp-mobile-ux';
+  style.textContent = `
+    :root { --app-vh: 100vh; }
+    html, body { max-width: 100%; overflow-x: hidden; }
+    body { min-height: var(--app-vh); }
+    canvas, svg, img, video { max-width: 100%; height: auto; }
+    canvas { touch-action: none; }
+    input, textarea, select, button { font-size: 16px; }
+    @media (pointer: coarse) {
+      button, [role="button"], .cat-pill, .speed-btn, a {
+        min-height: 42px;
+      }
+      #nav-container nav {
+        padding: 8px 12px !important;
+        min-height: 56px !important;
+        height: auto !important;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      #nav-container nav > div {
+        gap: 10px !important;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+      #nav-container nav a, #nav-container nav button {
+        font-size: 13px !important;
+      }
+      .mobile-controls {
+        margin-top: 10px;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+      }
+      .mobile-control-btn {
+        border: 2px solid #CBD5E1;
+        background: #FFFFFF;
+        border-radius: 12px;
+        min-height: 48px;
+        font-size: 18px;
+        font-weight: 700;
+        color: #0F172A;
+        font-family: inherit;
+      }
+      .mobile-control-btn:active {
+        background: #E2E8F0;
+      }
+    }
+  `;
+  document.head.appendChild(style);
+
+  updateViewportHeightVar();
+  window.addEventListener('resize', updateViewportHeightVar, { passive: true });
+  window.visualViewport?.addEventListener('resize', updateViewportHeightVar, { passive: true });
+
+  if (window.matchMedia('(pointer: coarse)').matches) {
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', event => {
+      const now = Date.now();
+      if (now - lastTouchEnd <= 280) event.preventDefault();
+      lastTouchEnd = now;
+    }, { passive: false });
+
+    document.addEventListener('touchmove', event => {
+      const el = event.target instanceof Element ? event.target : null;
+      if (el?.closest('canvas, .mobile-controls')) event.preventDefault();
+    }, { passive: false });
+    addMobileKeyboardFallback();
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    applyPlanetFavicon();
+    initGlobalMobileUX();
+  }, { once: true });
+} else {
+  applyPlanetFavicon();
+  initGlobalMobileUX();
+}
+
 function getCategoryAccent(catName) {
   const cat = categories.find(c => c.name === catName);
   return cat ? cat.accent : '#64748B';
