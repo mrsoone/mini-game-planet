@@ -212,63 +212,63 @@ function getCategoryIcon(catName) {
 const GAME_PAGE_THEMES = {
   Arcade: {
     accentRgb: '8,145,178',
-    base: 'radial-gradient(ellipse at 20% 0%, rgba(8,145,178,0.35) 0%, transparent 50%), radial-gradient(ellipse at 80% 100%, rgba(59,130,246,0.20) 0%, transparent 50%), linear-gradient(170deg, #0c1929 0%, #0f172a 100%)',
-    pattern: 'none'
+    bg: 'linear-gradient(135deg, #0c4a6e 0%, #164e63 30%, #0e7490 60%, #155e75 100%)',
+    vibe: ['🕹️','⚡','👾','🚀','💫','🎮','🌟','🔥']
   },
   Puzzle: {
     accentRgb: '37,99,235',
-    base: 'radial-gradient(ellipse at 20% 0%, rgba(37,99,235,0.30) 0%, transparent 50%), radial-gradient(ellipse at 80% 100%, rgba(99,102,241,0.18) 0%, transparent 50%), linear-gradient(170deg, #0d1a3a 0%, #0f172a 100%)',
-    pattern: 'none'
+    bg: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 30%, #3b82f6 60%, #1d4ed8 100%)',
+    vibe: ['🧩','🧠','💡','🔍','✨','🎯','🔢','⭐']
   },
   Card: {
     accentRgb: '220,38,38',
-    base: 'radial-gradient(ellipse at 20% 0%, rgba(220,38,38,0.25) 0%, transparent 50%), radial-gradient(ellipse at 80% 100%, rgba(244,63,94,0.15) 0%, transparent 50%), linear-gradient(170deg, #1a0f0f 0%, #0f172a 100%)',
-    pattern: 'none'
+    bg: 'linear-gradient(135deg, #7f1d1d 0%, #991b1b 30%, #b91c1c 60%, #450a0a 100%)',
+    vibe: ['🃏','♠️','♥️','♦️','♣️','👑','🂡','✨']
   },
   Word: {
     accentRgb: '217,119,6',
-    base: 'radial-gradient(ellipse at 20% 0%, rgba(217,119,6,0.25) 0%, transparent 50%), radial-gradient(ellipse at 80% 100%, rgba(234,88,12,0.15) 0%, transparent 50%), linear-gradient(170deg, #1a150a 0%, #0f172a 100%)',
-    pattern: 'none'
+    bg: 'linear-gradient(135deg, #78350f 0%, #92400e 30%, #b45309 60%, #451a03 100%)',
+    vibe: ['📝','🔤','✏️','📖','💬','🅰️','📚','✨']
   },
   Strategy: {
     accentRgb: '13,148,136',
-    base: 'radial-gradient(ellipse at 20% 0%, rgba(13,148,136,0.28) 0%, transparent 50%), radial-gradient(ellipse at 80% 100%, rgba(20,184,166,0.15) 0%, transparent 50%), linear-gradient(170deg, #0a1a19 0%, #0f172a 100%)',
-    pattern: 'none'
+    bg: 'linear-gradient(135deg, #134e4a 0%, #115e59 30%, #0f766e 60%, #042f2e 100%)',
+    vibe: ['♟️','🏆','⚔️','🧠','🎖️','👑','🛡️','⭐']
   },
   Casino: {
     accentRgb: '5,150,105',
-    base: 'radial-gradient(ellipse at 20% 0%, rgba(16,185,129,0.25) 0%, transparent 50%), radial-gradient(ellipse at 80% 100%, rgba(74,222,128,0.12) 0%, transparent 50%), linear-gradient(170deg, #0a1f18 0%, #0f172a 100%)',
-    pattern: 'none'
+    bg: 'linear-gradient(135deg, #14532d 0%, #166534 30%, #15803d 60%, #052e16 100%)',
+    vibe: ['🎰','🪙','💰','🎲','♦️','💎','🤑','✨']
   },
   Casual: {
     accentRgb: '225,29,72',
-    base: 'radial-gradient(ellipse at 20% 0%, rgba(225,29,72,0.25) 0%, transparent 50%), radial-gradient(ellipse at 80% 100%, rgba(236,72,153,0.15) 0%, transparent 50%), linear-gradient(170deg, #1a0a15 0%, #0f172a 100%)',
-    pattern: 'none'
+    bg: 'linear-gradient(135deg, #881337 0%, #9f1239 30%, #be123c 60%, #4c0519 100%)',
+    vibe: ['🎯','🌈','✨','⭐','🎉','🎪','💫','🎈']
   },
   Action: {
     accentRgb: '234,88,12',
-    base: 'radial-gradient(ellipse at 20% 0%, rgba(234,88,12,0.28) 0%, transparent 50%), radial-gradient(ellipse at 80% 100%, rgba(249,115,22,0.15) 0%, transparent 50%), linear-gradient(170deg, #1a100a 0%, #0f172a 100%)',
-    pattern: 'none'
+    bg: 'linear-gradient(135deg, #7c2d12 0%, #9a3412 30%, #c2410c 60%, #431407 100%)',
+    vibe: ['🔥','💥','⚡','🚀','💪','🎯','⭐','🏃']
   },
   Board: {
     accentRgb: '79,70,229',
-    base: 'radial-gradient(ellipse at 20% 0%, rgba(79,70,229,0.28) 0%, transparent 50%), radial-gradient(ellipse at 80% 100%, rgba(129,140,248,0.15) 0%, transparent 50%), linear-gradient(170deg, #110f2a 0%, #0f172a 100%)',
-    pattern: 'none'
+    bg: 'linear-gradient(135deg, #3730a3 0%, #4338ca 30%, #4f46e5 60%, #1e1b4b 100%)',
+    vibe: ['🎲','🏁','🎪','⭐','🧩','🏆','✨','🎯']
   },
   Builder: {
     accentRgb: '8,145,178',
-    base: 'radial-gradient(ellipse at 20% 0%, rgba(8,145,178,0.28) 0%, transparent 50%), radial-gradient(ellipse at 80% 100%, rgba(6,182,212,0.15) 0%, transparent 50%), linear-gradient(170deg, #0a1820 0%, #0f172a 100%)',
-    pattern: 'none'
+    bg: 'linear-gradient(135deg, #155e75 0%, #0e7490 30%, #0891b2 60%, #083344 100%)',
+    vibe: ['🏗️','🔧','🎨','✨','🔨','💡','🖌️','⭐']
   },
   Math: {
     accentRgb: '2,132,199',
-    base: 'radial-gradient(ellipse at 20% 0%, rgba(2,132,199,0.28) 0%, transparent 50%), radial-gradient(ellipse at 80% 100%, rgba(56,189,248,0.14) 0%, transparent 50%), linear-gradient(170deg, #0a1525 0%, #0f172a 100%)',
-    pattern: 'none'
+    bg: 'linear-gradient(135deg, #075985 0%, #0369a1 30%, #0284c7 60%, #0c4a6e 100%)',
+    vibe: ['📐','🧮','➕','✨','🔢','💡','🧠','⭐']
   },
   Trivia: {
     accentRgb: '109,40,217',
-    base: 'radial-gradient(ellipse at 20% 0%, rgba(109,40,217,0.28) 0%, transparent 50%), radial-gradient(ellipse at 80% 100%, rgba(139,92,246,0.15) 0%, transparent 50%), linear-gradient(170deg, #150d2a 0%, #0f172a 100%)',
-    pattern: 'none'
+    bg: 'linear-gradient(135deg, #4c1d95 0%, #5b21b6 30%, #6d28d9 60%, #2e1065 100%)',
+    vibe: ['🌍','🧭','🏛️','✨','📚','🎓','💡','⭐']
   }
 };
 
@@ -277,9 +277,10 @@ function applyGamePageDecor(game) {
   const theme = GAME_PAGE_THEMES[game.category];
   if (!theme) return;
 
+  const gameEmoji = game.icon || '🎮';
+  const vibeEmojis = theme.vibe;
+
   document.body.classList.add('mgp-themed-page');
-  document.documentElement.style.setProperty('--mgp-game-base', theme.base);
-  document.documentElement.style.setProperty('--mgp-game-pattern', theme.pattern);
   document.documentElement.style.setProperty('--mgp-accent-rgb', theme.accentRgb);
 
   let bg = document.getElementById('mgp-game-bg');
@@ -288,6 +289,37 @@ function applyGamePageDecor(game) {
     bg.id = 'mgp-game-bg';
     document.body.insertAdjacentElement('afterbegin', bg);
   }
+  bg.style.cssText = `position:fixed;inset:0;z-index:0;pointer-events:none;background:${theme.bg};`;
+
+  let scatter = document.getElementById('mgp-emoji-scatter');
+  if (!scatter) {
+    scatter = document.createElement('div');
+    scatter.id = 'mgp-emoji-scatter';
+    scatter.setAttribute('aria-hidden', 'true');
+    document.body.insertAdjacentElement('afterbegin', scatter);
+  }
+  let scatterHTML = '';
+  const positions = [
+    { top: '3%', left: '3%', size: '4rem', rotate: -15, delay: 0 },
+    { top: '8%', right: '5%', size: '3.2rem', rotate: 12, delay: 1.2 },
+    { top: '22%', left: '2%', size: '2.8rem', rotate: -25, delay: 2.5 },
+    { top: '35%', right: '3%', size: '3.5rem', rotate: 18, delay: 0.8 },
+    { top: '50%', left: '4%', size: '2.5rem', rotate: -10, delay: 3.2 },
+    { top: '60%', right: '4%', size: '3rem', rotate: 22, delay: 1.8 },
+    { top: '75%', left: '3%', size: '3.3rem', rotate: -20, delay: 0.4 },
+    { top: '85%', right: '5%', size: '2.6rem', rotate: 15, delay: 2.8 },
+    { top: '15%', left: '8%', size: '5.5rem', rotate: -8, delay: 1.5 },
+    { top: '45%', right: '7%', size: '5rem', rotate: 10, delay: 0.6 },
+    { top: '70%', left: '6%', size: '4.5rem', rotate: -12, delay: 2.2 },
+    { top: '92%', right: '8%', size: '3rem', rotate: 20, delay: 3.6 },
+  ];
+  const allEmojis = [gameEmoji, gameEmoji, gameEmoji, ...vibeEmojis];
+  positions.forEach((pos, i) => {
+    const emoji = allEmojis[i % allEmojis.length];
+    const posStyle = `top:${pos.top};${pos.left ? 'left:'+pos.left : 'right:'+pos.right};font-size:${pos.size};transform:rotate(${pos.rotate}deg);animation-delay:${pos.delay}s;`;
+    scatterHTML += `<div class="mgp-scatter-emoji" style="${posStyle}">${emoji}</div>`;
+  });
+  scatter.innerHTML = scatterHTML;
 
   let style = document.getElementById('mgp-game-decor-style');
   if (!style) {
@@ -297,45 +329,36 @@ function applyGamePageDecor(game) {
   }
 
   style.textContent = `
-    body.mgp-themed-page {
-      background: #0f172a !important;
-      color: #0F172A !important;
+    body.mgp-themed-page { background: #0f172a !important; }
+    #mgp-emoji-scatter {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
     }
-    #mgp-game-bg {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      background: var(--mgp-game-base);
-    }
-    #mgp-game-bg::after {
-      content: '';
+    .mgp-scatter-emoji {
       position: absolute;
-      inset: 0;
-      background: var(--mgp-game-pattern);
-      opacity: 0.45;
+      opacity: 0.12;
+      filter: blur(1px) saturate(1.4);
+      animation: mgpBob 6s ease-in-out infinite;
+      line-height: 1;
     }
-    body.mgp-themed-page > * {
-      position: relative;
-      z-index: 1;
+    @keyframes mgpBob {
+      0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); }
+      50% { transform: translateY(-8px) rotate(var(--r, 0deg)); }
     }
-    body.mgp-themed-page #mgp-game-bg {
-      z-index: 0;
+    body.mgp-themed-page > *:not(#mgp-game-bg):not(#mgp-emoji-scatter) {
+      position: relative; z-index: 1;
     }
     body.mgp-themed-page #nav-container nav {
       background: rgba(255,255,255,0.97) !important;
+      border-bottom-color: rgba(var(--mgp-accent-rgb),0.5) !important;
     }
     body.mgp-themed-page #footer-container footer {
-      background: rgba(15,23,42,0.95) !important;
-      border-color: rgba(var(--mgp-accent-rgb),0.4) !important;
+      background: rgba(0,0,0,0.4) !important;
+      border-color: rgba(var(--mgp-accent-rgb),0.3) !important;
     }
     body.mgp-themed-page #footer-container footer span,
     body.mgp-themed-page #footer-container footer a,
     body.mgp-themed-page #footer-container footer button {
-      color: #94A3B8 !important;
-    }
-    body.mgp-themed-page main {
-      padding-bottom: 32px !important;
+      color: rgba(255,255,255,0.7) !important;
     }
     body.mgp-themed-page main > div,
     body.mgp-themed-page main > article,
@@ -343,58 +366,48 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page main > .card {
       background: #ffffff !important;
       color: #0F172A !important;
-      border: 2px solid rgba(var(--mgp-accent-rgb), 0.25) !important;
-      border-radius: 16px !important;
-      box-shadow: 0 12px 40px -16px rgba(0,0,0,0.45), 0 0 80px -30px rgba(var(--mgp-accent-rgb),0.35) !important;
+      border: 2px solid rgba(var(--mgp-accent-rgb), 0.30) !important;
+      border-radius: 18px !important;
+      box-shadow:
+        0 16px 48px -12px rgba(0,0,0,0.5),
+        0 0 0 1px rgba(255,255,255,0.1),
+        0 0 60px -20px rgba(var(--mgp-accent-rgb), 0.4) !important;
       padding: 20px !important;
       margin-bottom: 16px !important;
     }
     body.mgp-themed-page main > div *,
     body.mgp-themed-page main > article *,
-    body.mgp-themed-page main > section * {
-      color: inherit;
-    }
+    body.mgp-themed-page main > section * { color: inherit; }
     body.mgp-themed-page main > div h1,
     body.mgp-themed-page main > div h2,
     body.mgp-themed-page main > div h3,
     body.mgp-themed-page main > article h1,
     body.mgp-themed-page main > article h2,
-    body.mgp-themed-page main > article h3 {
-      color: #0F172A !important;
-    }
+    body.mgp-themed-page main > article h3 { color: #0F172A !important; }
     body.mgp-themed-page main > div p,
     body.mgp-themed-page main > article p,
-    body.mgp-themed-page main > section p {
-      color: #334155 !important;
-    }
+    body.mgp-themed-page main > section p { color: #334155 !important; }
     body.mgp-themed-page main > div a,
-    body.mgp-themed-page main > article a {
-      color: rgb(var(--mgp-accent-rgb)) !important;
-    }
+    body.mgp-themed-page main > article a { color: rgb(var(--mgp-accent-rgb)) !important; }
     body.mgp-themed-page main > div code,
-    body.mgp-themed-page main > article code {
-      background: #F1F5F9 !important;
-      color: #334155 !important;
-    }
+    body.mgp-themed-page main > article code { background:#F1F5F9!important; color:#334155!important; }
     body.mgp-themed-page canvas {
-      border: 2px solid rgba(var(--mgp-accent-rgb), 0.4) !important;
-      box-shadow: 0 8px 30px -12px rgba(var(--mgp-accent-rgb), 0.5) !important;
-      border-radius: 12px !important;
+      border: 3px solid rgba(var(--mgp-accent-rgb), 0.5) !important;
+      box-shadow: 0 0 40px -8px rgba(var(--mgp-accent-rgb), 0.6), 0 12px 30px -10px rgba(0,0,0,0.4) !important;
+      border-radius: 14px !important;
     }
     body.mgp-themed-page #related-games {
-      background: transparent !important;
-      border: none !important;
-      box-shadow: none !important;
-      padding: 0 !important;
+      background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important;
     }
     body.mgp-themed-page #related-games > section {
-      background: rgba(255,255,255,0.95) !important;
-      border: 2px solid rgba(var(--mgp-accent-rgb), 0.22) !important;
-      border-radius: 16px !important;
+      background: rgba(255,255,255,0.96) !important;
+      border: 2px solid rgba(var(--mgp-accent-rgb),0.25) !important;
+      border-radius: 18px !important;
       box-shadow: 0 12px 40px -16px rgba(0,0,0,0.4) !important;
     }
-    body.mgp-themed-page #related-games h3 {
-      color: #0F172A !important;
+    body.mgp-themed-page #related-games h3 { color: #0F172A !important; }
+    @media (max-width: 768px) {
+      .mgp-scatter-emoji { opacity: 0.08; }
     }
   `;
 }
