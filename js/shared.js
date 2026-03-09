@@ -418,9 +418,22 @@ function applyGamePageDecor(game) {
       position: relative; z-index: 1;
     }
 
+    /* ── Overflow protection ── */
+    body.mgp-themed-page,
+    body.mgp-themed-page main,
+    body.mgp-themed-page main > div,
+    body.mgp-themed-page main > article,
+    body.mgp-themed-page > article {
+      overflow-x: hidden !important;
+      max-width: 100vw !important;
+    }
+    body.mgp-themed-page *, body.mgp-themed-page *::before, body.mgp-themed-page *::after {
+      box-sizing: border-box !important;
+    }
+
     /* ── Make game areas BIGGER ── */
     body.mgp-themed-page main {
-      max-width: 1280px !important;
+      max-width: min(100vw, 1280px) !important;
       width: 100% !important;
       padding-left: 16px !important;
       padding-right: 16px !important;
@@ -430,179 +443,176 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page main > article:first-child {
       max-width: 100% !important;
       width: 100% !important;
+      overflow-x: auto !important;
     }
 
-    /* ── CARD GAMES: Bigger cards everywhere ── */
+    /* ── CARD GAMES: Bigger cards with flex-wrap safety ── */
+    body.mgp-themed-page [style*="flex-wrap"],
+    body.mgp-themed-page [style*="display:flex"],
+    body.mgp-themed-page [style*="display: flex"] {
+      flex-wrap: wrap !important;
+    }
     body.mgp-themed-page .card-el,
     body.mgp-themed-page .slot {
-      width: 82px !important; height: 116px !important;
+      width: clamp(56px, 10vw, 82px) !important; height: clamp(80px, 14vw, 116px) !important;
     }
-    body.mgp-themed-page .card-rank { font-size: 16px !important; }
-    body.mgp-themed-page .card-suit { font-size: 22px !important; }
+    body.mgp-themed-page .card-rank { font-size: clamp(12px, 2vw, 16px) !important; }
+    body.mgp-themed-page .card-suit { font-size: clamp(16px, 2.8vw, 22px) !important; }
     body.mgp-themed-page .card[style*="width:64px"],
     body.mgp-themed-page .card[style*="width: 64px"],
     body.mgp-themed-page div[style*="width:64px;height:92px"],
     body.mgp-themed-page div[style*="width: 64px"] {
-      width: 88px !important; height: 126px !important;
+      width: clamp(60px, 11vw, 88px) !important; height: clamp(86px, 16vw, 126px) !important;
     }
     body.mgp-themed-page .ce-card {
-      width: 74px !important; height: 106px !important;
+      width: clamp(48px, 9vw, 74px) !important; height: clamp(68px, 13vw, 106px) !important;
     }
     body.mgp-themed-page .pile-card,
     body.mgp-themed-page #draw-pile {
-      width: 84px !important; height: 120px !important;
+      width: clamp(56px, 10.5vw, 84px) !important; height: clamp(80px, 15vw, 120px) !important;
     }
     body.mgp-themed-page .wc {
-      width: 96px !important; height: 138px !important;
+      width: clamp(68px, 12vw, 96px) !important; height: clamp(98px, 17vw, 138px) !important;
     }
-    body.mgp-themed-page .wc .rk { font-size: 18px !important; }
-    body.mgp-themed-page .wc .st { font-size: 30px !important; }
+    body.mgp-themed-page .wc .rk { font-size: clamp(14px, 2.2vw, 18px) !important; }
+    body.mgp-themed-page .wc .st { font-size: clamp(22px, 3.5vw, 30px) !important; }
     body.mgp-themed-page .gf-card {
-      width: 68px !important; height: 96px !important; font-size: 15px !important;
+      width: clamp(44px, 8vw, 68px) !important; height: clamp(62px, 11vw, 96px) !important;
+      font-size: clamp(11px, 1.8vw, 15px) !important;
     }
     body.mgp-themed-page .gf-back {
-      width: 52px !important; height: 72px !important;
+      width: clamp(36px, 6vw, 52px) !important; height: clamp(50px, 8.5vw, 72px) !important;
     }
     body.mgp-themed-page .suit-btn {
-      width: 52px !important; height: 52px !important; font-size: 26px !important;
+      width: clamp(38px, 6.5vw, 52px) !important; height: clamp(38px, 6.5vw, 52px) !important;
+      font-size: clamp(18px, 3vw, 26px) !important;
     }
 
-    /* ── BOARD GAMES: Bigger boards ── */
+    /* ── BOARD GAMES: Responsive boards ── */
     body.mgp-themed-page #chess-board {
-      max-width: min(92vw, 540px) !important;
+      max-width: min(88vw, 540px) !important; width: min(88vw, 540px) !important;
     }
     body.mgp-themed-page .chess-piece {
-      font-size: clamp(2.4rem, 6vw, 4rem) !important;
+      font-size: clamp(1.8rem, 5vw, 4rem) !important;
     }
     body.mgp-themed-page #board[class*="w-72"],
     body.mgp-themed-page #board[class*="w-80"] {
-      width: min(92vw, 420px) !important; height: min(92vw, 420px) !important;
+      width: min(88vw, 420px) !important; height: min(88vw, 420px) !important;
     }
-    body.mgp-themed-page [class*="text-4xl"][class*="md:text-5xl"] {
-      font-size: 3.2rem !important;
+    body.mgp-themed-page [class*="text-4xl"][class*="md\\:text-5xl"] {
+      font-size: clamp(2rem, 5vw, 3.2rem) !important;
     }
     body.mgp-themed-page [class*="w-\\[min(90vw"] {
-      max-width: min(92vw, 540px) !important; width: min(92vw, 540px) !important;
-    }
-    body.mgp-themed-page [class*="w-12"][class*="h-12"] {
-      width: 3.8rem !important; height: 3.8rem !important;
-    }
-    body.mgp-themed-page [class*="md:w-14"][class*="md:h-14"] {
-      width: 4.2rem !important; height: 4.2rem !important;
-    }
-    body.mgp-themed-page [class*="w-10"][class*="h-10"] {
-      width: 3.2rem !important; height: 3.2rem !important;
+      max-width: min(88vw, 540px) !important; width: min(88vw, 540px) !important;
     }
 
-    /* ── PUZZLE GAMES: Bigger grids ── */
+    /* ── PUZZLE GAMES: Responsive grids ── */
     body.mgp-themed-page #sudoku-grid {
-      max-width: min(92vw, 500px) !important;
+      max-width: min(88vw, 500px) !important; width: min(88vw, 500px) !important;
     }
     body.mgp-themed-page .su-cell {
-      font-size: 24px !important;
+      font-size: clamp(16px, 3vw, 24px) !important;
     }
-    body.mgp-themed-page .su-note { font-size: 10px !important; }
+    body.mgp-themed-page .su-note { font-size: clamp(7px, 1.2vw, 10px) !important; }
     body.mgp-themed-page .num-btn {
-      width: 48px !important; height: 52px !important; font-size: 22px !important;
+      width: clamp(34px, 6vw, 48px) !important; height: clamp(38px, 6.5vw, 52px) !important;
+      font-size: clamp(16px, 2.5vw, 22px) !important;
     }
-    body.mgp-themed-page .cell[style*="width:28px"] {
-      width: 36px !important; height: 36px !important; font-size: 16px !important;
+    body.mgp-themed-page #grid-container {
+      max-width: 88vw !important; overflow-x: auto !important;
     }
     body.mgp-themed-page #board[style*="max-width:340px"],
     body.mgp-themed-page #board[style*="max-width: 340px"] {
-      max-width: min(92vw, 440px) !important;
+      max-width: min(88vw, 440px) !important;
     }
 
-    /* ── HANGMAN: Bigger everything ── */
+    /* ── HANGMAN: Responsive ── */
     body.mgp-themed-page .hm-letter {
-      font-size: 36px !important; width: 36px !important;
+      font-size: clamp(22px, 4vw, 36px) !important; width: clamp(22px, 4vw, 36px) !important;
     }
     body.mgp-themed-page .kb-letter {
-      width: 44px !important; height: 44px !important; font-size: 18px !important;
-    }
-    body.mgp-themed-page [style*="max-width:400px"] {
-      max-width: 520px !important;
+      width: clamp(32px, 5.5vw, 44px) !important; height: clamp(32px, 5.5vw, 44px) !important;
+      font-size: clamp(13px, 2vw, 18px) !important;
     }
     body.mgp-themed-page #hangman-canvas {
-      width: 240px !important; height: 240px !important;
+      width: clamp(160px, 30vw, 240px) !important; height: clamp(160px, 30vw, 240px) !important;
     }
 
-    /* ── MEMORY MATCH: Bigger cards ── */
+    /* ── MEMORY MATCH ── */
     body.mgp-themed-page .mm-card {
-      min-width: 64px !important; min-height: 76px !important;
+      min-width: 0 !important;
     }
 
-    /* ── BLOCK PUZZLE (Tetris): Bigger canvas ── */
+    /* ── BLOCK PUZZLE (Tetris): Responsive ── */
     body.mgp-themed-page #gameCanvas[width="300"],
     body.mgp-themed-page canvas[width="300"][height="480"] {
-      width: 360px !important; height: 576px !important;
+      width: min(65vw, 360px) !important; height: min(104vw, 576px) !important;
     }
     body.mgp-themed-page #holdCanvas, body.mgp-themed-page #nextCanvas {
-      width: 100px !important; height: 100px !important;
+      width: min(18vw, 100px) !important; height: min(18vw, 100px) !important;
     }
     body.mgp-themed-page .touch-btn {
-      width: 60px !important; height: 60px !important; font-size: 26px !important;
+      width: clamp(44px, 8vw, 60px) !important; height: clamp(44px, 8vw, 60px) !important;
+      font-size: clamp(18px, 3vw, 26px) !important;
     }
 
-    /* ── SNAKE: Bigger canvas ── */
+    /* ── SNAKE & square canvases ── */
     body.mgp-themed-page canvas[width="400"][height="400"] {
-      width: min(92vw, 520px) !important; height: min(92vw, 520px) !important;
+      width: min(88vw, 520px) !important; height: min(88vw, 520px) !important;
     }
 
-    /* ── ALL GAMES: Bigger buttons ── */
+    /* ── ALL GAMES: Bigger buttons (scoped to game areas) ── */
     body.mgp-themed-page .action-btn,
     body.mgp-themed-page .bet-btn {
       padding: 12px 28px !important; font-size: 16px !important; font-weight: 600 !important;
     }
-    body.mgp-themed-page [style*="font-size:11px"],
-    body.mgp-themed-page [style*="font-size: 11px"] {
+    body.mgp-themed-page main button[style*="font-size:11px"],
+    body.mgp-themed-page main button[style*="font-size: 11px"],
+    body.mgp-themed-page main [style*="font-size:11px"],
+    body.mgp-themed-page main [style*="font-size: 11px"] {
       font-size: 14px !important;
     }
-    body.mgp-themed-page [style*="font-size:12px"],
-    body.mgp-themed-page [style*="font-size: 12px"] {
+    body.mgp-themed-page main button[style*="font-size:12px"],
+    body.mgp-themed-page main button[style*="font-size: 12px"],
+    body.mgp-themed-page main [style*="font-size:12px"],
+    body.mgp-themed-page main [style*="font-size: 12px"] {
       font-size: 15px !important;
     }
-    body.mgp-themed-page [style*="font-size:13px"],
-    body.mgp-themed-page [style*="font-size: 13px"] {
+    body.mgp-themed-page main button[style*="font-size:13px"],
+    body.mgp-themed-page main button[style*="font-size: 13px"],
+    body.mgp-themed-page main [style*="font-size:13px"],
+    body.mgp-themed-page main [style*="font-size: 13px"] {
       font-size: 16px !important;
     }
-    body.mgp-themed-page [style*="padding:5px 12px"],
-    body.mgp-themed-page [style*="padding: 5px 12px"] {
+    body.mgp-themed-page main button[style*="padding:5px"],
+    body.mgp-themed-page main button[style*="padding: 5px"],
+    body.mgp-themed-page main button[style*="padding:4px"],
+    body.mgp-themed-page main button[style*="padding: 4px"] {
       padding: 10px 20px !important;
     }
-    body.mgp-themed-page [style*="padding:4px 10px"],
-    body.mgp-themed-page [style*="padding: 4px 10px"] {
-      padding: 10px 20px !important;
+    body.mgp-themed-page main button[style*="padding:8px"],
+    body.mgp-themed-page main button[style*="padding: 8px"] {
+      padding: 12px 26px !important;
     }
-    body.mgp-themed-page [style*="padding:8px 20px"],
-    body.mgp-themed-page [style*="padding: 8px 20px"] {
-      padding: 12px 28px !important;
-    }
-    body.mgp-themed-page [style*="padding:10px 28px"],
-    body.mgp-themed-page [style*="padding: 10px 28px"] {
+    body.mgp-themed-page main button[style*="padding:10px"],
+    body.mgp-themed-page main button[style*="padding: 10px"] {
       padding: 14px 36px !important;
     }
-    body.mgp-themed-page [style*="padding:10px 32px"],
-    body.mgp-themed-page [style*="padding: 10px 32px"] {
-      padding: 14px 40px !important;
-    }
-    body.mgp-themed-page [style*="padding:12px 32px"],
-    body.mgp-themed-page [style*="padding: 12px 32px"] {
-      padding: 16px 44px !important;
+    body.mgp-themed-page main button[style*="padding:12px"],
+    body.mgp-themed-page main button[style*="padding: 12px"] {
+      padding: 16px 40px !important;
     }
 
     /* ── ALL GAMES: Bigger headings ── */
-    body.mgp-themed-page [style*="font-size:22px"],
-    body.mgp-themed-page [style*="font-size: 22px"] {
+    body.mgp-themed-page main h1[style*="font-size:22px"],
+    body.mgp-themed-page main [style*="font-size:22px"]:first-child,
+    body.mgp-themed-page main h1[style*="font-size: 22px"] {
       font-size: 28px !important;
-    }
-    body.mgp-themed-page [style*="font-size:24px"],
-    body.mgp-themed-page [style*="font-size: 24px"] {
-      font-size: 30px !important;
     }
 
     /* ── Canvas glow styling ── */
     body.mgp-themed-page canvas {
+      max-width: 88vw !important;
       border: 3px solid rgba(${C}, 0.6) !important;
       box-shadow:
         0 0 50px -5px rgba(${C}, 0.5),
@@ -611,7 +621,7 @@ function applyGamePageDecor(game) {
       border-radius: 16px !important;
     }
     body.mgp-themed-page #game-canvas {
-      max-width: 950px !important;
+      max-width: min(88vw, 950px) !important;
     }
 
     /* ── ANIMATIONS: Cards, buttons, cells ── */
@@ -666,9 +676,10 @@ function applyGamePageDecor(game) {
     /* ── Widen articles outside main ── */
     body.mgp-themed-page > article,
     body.mgp-themed-page main ~ article {
-      max-width: 1100px !important;
+      max-width: min(92vw, 1100px) !important;
       margin-left: auto !important;
       margin-right: auto !important;
+      overflow-x: hidden !important;
     }
 
     /* ── Nav & Footer ── */
@@ -698,6 +709,7 @@ function applyGamePageDecor(game) {
         0 0 80px -20px rgba(${C}, 0.35) !important;
       padding: 24px !important;
       margin-bottom: 20px !important;
+      overflow-x: auto !important;
     }
     ${CONTENT_STAR} { color: inherit; }
     body.mgp-themed-page main h1, body.mgp-themed-page main h2, body.mgp-themed-page main h3,
@@ -713,7 +725,8 @@ function applyGamePageDecor(game) {
     /* ── Related games ── */
     body.mgp-themed-page #related-games {
       background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important;
-      max-width: 1280px !important;
+      max-width: min(100vw, 1280px) !important;
+      overflow-x: hidden !important;
     }
     body.mgp-themed-page #related-games > section {
       background: rgba(255,255,255,0.97) !important;
@@ -743,38 +756,66 @@ function applyGamePageDecor(game) {
       transform: scale(0.95) !important;
     }
 
-    /* ── Tailwind button size overrides ── */
-    body.mgp-themed-page .text-sm {
+    /* ── Scoped Tailwind button overrides (buttons only) ── */
+    body.mgp-themed-page main button.text-sm,
+    body.mgp-themed-page main select.text-sm {
       font-size: 15px !important;
     }
-    body.mgp-themed-page .px-3 { padding-left: 16px !important; padding-right: 16px !important; }
-    body.mgp-themed-page .py-1 { padding-top: 8px !important; padding-bottom: 8px !important; }
-    body.mgp-themed-page .py-1\\.5 { padding-top: 10px !important; padding-bottom: 10px !important; }
-    body.mgp-themed-page .px-4 { padding-left: 20px !important; padding-right: 20px !important; }
-    body.mgp-themed-page .py-2 { padding-top: 12px !important; padding-bottom: 12px !important; }
-    body.mgp-themed-page .px-6 { padding-left: 28px !important; padding-right: 28px !important; }
-    body.mgp-themed-page .py-3 { padding-top: 16px !important; padding-bottom: 16px !important; }
+    body.mgp-themed-page main button.px-3,
+    body.mgp-themed-page main select.px-3 {
+      padding-left: 16px !important; padding-right: 16px !important;
+    }
+    body.mgp-themed-page main button.py-1,
+    body.mgp-themed-page main select.py-1 {
+      padding-top: 8px !important; padding-bottom: 8px !important;
+    }
+    body.mgp-themed-page main button.px-6 {
+      padding-left: 28px !important; padding-right: 28px !important;
+    }
+    body.mgp-themed-page main button.py-2,
+    body.mgp-themed-page main select.py-2 {
+      padding-top: 12px !important; padding-bottom: 12px !important;
+    }
+    body.mgp-themed-page main button.py-3 {
+      padding-top: 16px !important; padding-bottom: 16px !important;
+    }
 
-    /* ── Mobile ── */
+    /* ── Mobile: tablet ── */
     @media (max-width: 768px) {
       .mgp-scatter-emoji { opacity: 0.15; }
       .mgp-banner-e { font-size: 1.6rem; }
       body.mgp-themed-page main {
-        padding-left: 6px !important;
-        padding-right: 6px !important;
+        padding-left: 8px !important;
+        padding-right: 8px !important;
       }
       ${CONTENT} {
-        padding: 12px !important;
+        padding: 14px !important;
         border-radius: 14px !important;
       }
-      body.mgp-themed-page .card-el, body.mgp-themed-page .slot {
-        width: 64px !important; height: 90px !important;
+    }
+    /* ── Mobile: phone ── */
+    @media (max-width: 480px) {
+      .mgp-scatter-emoji { opacity: 0.10; font-size: 80% !important; }
+      .mgp-banner-e { font-size: 1.3rem; gap: 6px; }
+      #mgp-emoji-banner { gap: 6px !important; }
+      body.mgp-themed-page main {
+        padding-left: 4px !important;
+        padding-right: 4px !important;
       }
-      body.mgp-themed-page .ce-card { width: 58px !important; height: 82px !important; }
-      body.mgp-themed-page .pile-card, body.mgp-themed-page #draw-pile { width: 66px !important; height: 94px !important; }
-      body.mgp-themed-page .wc { width: 76px !important; height: 108px !important; }
-      body.mgp-themed-page .gf-card { width: 56px !important; height: 78px !important; }
-      body.mgp-themed-page .kb-letter { width: 38px !important; height: 38px !important; font-size: 15px !important; }
+      ${CONTENT} {
+        padding: 10px !important;
+        border-radius: 12px !important;
+      }
+      body.mgp-themed-page .action-btn,
+      body.mgp-themed-page .bet-btn {
+        padding: 10px 20px !important; font-size: 14px !important;
+      }
+      body.mgp-themed-page main button[style*="padding:14px"],
+      body.mgp-themed-page main button[style*="padding: 14px"],
+      body.mgp-themed-page main button[style*="padding:16px"],
+      body.mgp-themed-page main button[style*="padding: 16px"] {
+        padding: 10px 24px !important;
+      }
     }
   `;
 }
