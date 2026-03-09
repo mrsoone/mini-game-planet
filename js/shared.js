@@ -462,13 +462,37 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page .card {
       width: clamp(68px, 13vw, 105px) !important;
       height: clamp(98px, 19vw, 150px) !important;
-      font-size: clamp(18px, 3vw, 26px) !important;
+      font-size: clamp(22px, 4vw, 34px) !important;
       border-radius: 12px !important;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
       margin: 0 clamp(-6px, -0.8vw, -4px) !important;
     }
+    body.mgp-themed-page .card > span {
+      font-size: clamp(20px, 3.5vw, 32px) !important;
+    }
+    body.mgp-themed-page .card > span[style*="font-size:12px"],
+    body.mgp-themed-page .card > span[style*="font-size: 12px"] {
+      font-size: clamp(16px, 2.8vw, 24px) !important;
+    }
+    body.mgp-themed-page .card > span[style*="font-size:22px"],
+    body.mgp-themed-page .card > span[style*="font-size: 22px"],
+    body.mgp-themed-page .card > span[style*="font-size:18px"],
+    body.mgp-themed-page .card > span[style*="font-size: 18px"] {
+      font-size: clamp(26px, 5vw, 42px) !important;
+    }
     body.mgp-themed-page .card.facedown::after {
-      font-size: clamp(28px, 5vw, 42px) !important;
+      font-size: clamp(36px, 7vw, 56px) !important;
+    }
+    /* All card inline span text across all games */
+    body.mgp-themed-page .ce-card > span,
+    body.mgp-themed-page .pile-card > span {
+      font-size: clamp(16px, 2.8vw, 26px) !important;
+    }
+    body.mgp-themed-page .ce-card > span[style*="font-size:18px"],
+    body.mgp-themed-page .ce-card > span[style*="font-size: 18px"],
+    body.mgp-themed-page .pile-card > span[style*="font-size:22px"],
+    body.mgp-themed-page .pile-card > span[style*="font-size: 22px"] {
+      font-size: clamp(22px, 4vw, 36px) !important;
     }
 
     /* Solitaire .card-el / .slot (62x88 -> 100x142) */
@@ -572,19 +596,21 @@ function applyGamePageDecor(game) {
       background: #FEF3C7 !important;
       border: 2px solid #FCD34D !important;
       border-radius: 12px !important;
-      padding: 12px 16px !important;
+      padding: 14px 18px !important;
     }
+    body.mgp-themed-page [style*="background:#FEF3C7"] *,
+    body.mgp-themed-page [style*="background: #FEF3C7"] *,
+    body.mgp-themed-page .bg-amber-50 *,
     body.mgp-themed-page [style*="background:#FEF3C7"] p,
     body.mgp-themed-page [style*="background: #FEF3C7"] p,
-    body.mgp-themed-page .bg-amber-50 p,
-    body.mgp-themed-page [style*="background:#FEF3C7"] span,
-    body.mgp-themed-page .bg-amber-50 span {
-      color: #78350F !important;
-      font-size: clamp(12px, 1.8vw, 15px) !important;
-      font-weight: 600 !important;
+    body.mgp-themed-page .bg-amber-50 p {
+      color: #451A03 !important;
+      font-size: clamp(13px, 2vw, 15px) !important;
+      font-weight: 700 !important;
       text-transform: none !important;
       letter-spacing: normal !important;
       text-shadow: none !important;
+      -webkit-text-fill-color: #451A03 !important;
     }
 
     /* ── ALL GAME BUTTONS: Bigger ── */
