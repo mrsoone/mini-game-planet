@@ -446,42 +446,47 @@ function applyGamePageDecor(game) {
       overflow-x: auto !important;
     }
 
-    /* ── CARD GAMES: Bigger cards with flex-wrap safety ── */
-    body.mgp-themed-page [style*="flex-wrap"],
-    body.mgp-themed-page [style*="display:flex"],
-    body.mgp-themed-page [style*="display: flex"] {
+    /* ── CARD GAMES: Centering + wrapping for card hands ── */
+    body.mgp-themed-page #dealer-hand,
+    body.mgp-themed-page #player-hand,
+    body.mgp-themed-page #cpu-hand,
+    body.mgp-themed-page #player-cards,
+    body.mgp-themed-page #cpu-cards,
+    body.mgp-themed-page .hand,
+    body.mgp-themed-page [id*="-hand"] {
+      justify-content: center !important;
       flex-wrap: wrap !important;
     }
     body.mgp-themed-page .card-el,
     body.mgp-themed-page .slot {
-      width: clamp(56px, 10vw, 82px) !important; height: clamp(80px, 14vw, 116px) !important;
+      width: clamp(60px, 12vw, 100px) !important; height: clamp(86px, 17vw, 142px) !important;
     }
-    body.mgp-themed-page .card-rank { font-size: clamp(12px, 2vw, 16px) !important; }
-    body.mgp-themed-page .card-suit { font-size: clamp(16px, 2.8vw, 22px) !important; }
+    body.mgp-themed-page .card-rank { font-size: clamp(13px, 2.2vw, 19px) !important; }
+    body.mgp-themed-page .card-suit { font-size: clamp(18px, 3vw, 26px) !important; }
     body.mgp-themed-page .card[style*="width:64px"],
     body.mgp-themed-page .card[style*="width: 64px"],
     body.mgp-themed-page div[style*="width:64px;height:92px"],
     body.mgp-themed-page div[style*="width: 64px"] {
-      width: clamp(60px, 11vw, 88px) !important; height: clamp(86px, 16vw, 126px) !important;
+      width: clamp(64px, 13vw, 105px) !important; height: clamp(92px, 19vw, 150px) !important;
     }
     body.mgp-themed-page .ce-card {
-      width: clamp(48px, 9vw, 74px) !important; height: clamp(68px, 13vw, 106px) !important;
+      width: clamp(52px, 10vw, 86px) !important; height: clamp(74px, 14vw, 122px) !important;
     }
     body.mgp-themed-page .pile-card,
     body.mgp-themed-page #draw-pile {
-      width: clamp(56px, 10.5vw, 84px) !important; height: clamp(80px, 15vw, 120px) !important;
+      width: clamp(60px, 12vw, 100px) !important; height: clamp(86px, 17vw, 142px) !important;
     }
     body.mgp-themed-page .wc {
-      width: clamp(68px, 12vw, 96px) !important; height: clamp(98px, 17vw, 138px) !important;
+      width: clamp(72px, 14vw, 120px) !important; height: clamp(104px, 20vw, 170px) !important;
     }
-    body.mgp-themed-page .wc .rk { font-size: clamp(14px, 2.2vw, 18px) !important; }
-    body.mgp-themed-page .wc .st { font-size: clamp(22px, 3.5vw, 30px) !important; }
+    body.mgp-themed-page .wc .rk { font-size: clamp(16px, 2.5vw, 22px) !important; }
+    body.mgp-themed-page .wc .st { font-size: clamp(26px, 4vw, 36px) !important; }
     body.mgp-themed-page .gf-card {
-      width: clamp(44px, 8vw, 68px) !important; height: clamp(62px, 11vw, 96px) !important;
-      font-size: clamp(11px, 1.8vw, 15px) !important;
+      width: clamp(48px, 9vw, 78px) !important; height: clamp(68px, 13vw, 110px) !important;
+      font-size: clamp(12px, 2vw, 17px) !important;
     }
     body.mgp-themed-page .gf-back {
-      width: clamp(36px, 6vw, 52px) !important; height: clamp(50px, 8.5vw, 72px) !important;
+      width: clamp(40px, 7vw, 60px) !important; height: clamp(56px, 10vw, 84px) !important;
     }
     body.mgp-themed-page .suit-btn {
       width: clamp(38px, 6.5vw, 52px) !important; height: clamp(38px, 6.5vw, 52px) !important;
@@ -624,6 +629,36 @@ function applyGamePageDecor(game) {
       max-width: min(88vw, 950px) !important;
     }
 
+    /* ── Game area centering + styling ── */
+    body.mgp-themed-page [style*="background:#0F4C3A"],
+    body.mgp-themed-page [style*="background:#0F6B3A"],
+    body.mgp-themed-page [style*="background:#0f4c3a"],
+    body.mgp-themed-page [style*="background:#0f6b3a"],
+    body.mgp-themed-page #game-area,
+    body.mgp-themed-page #battle-area {
+      border-radius: 16px !important;
+      padding: clamp(16px, 3vw, 28px) !important;
+      text-align: center !important;
+    }
+    body.mgp-themed-page [style*="background:#0F4C3A"] > div,
+    body.mgp-themed-page [style*="background:#0F6B3A"] > div,
+    body.mgp-themed-page [style*="background:#0f4c3a"] > div,
+    body.mgp-themed-page [style*="background:#0f6b3a"] > div,
+    body.mgp-themed-page #game-area > div,
+    body.mgp-themed-page #battle-area > div {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+    }
+    body.mgp-themed-page [style*="display:flex"][style*="min-height"],
+    body.mgp-themed-page [id$="-hand"],
+    body.mgp-themed-page [id$="-cards"] {
+      justify-content: center !important;
+    }
+    body.mgp-themed-page main > div > div:first-child {
+      text-align: center !important;
+    }
+
     /* ── ANIMATIONS: Cards, buttons, cells ── */
     body.mgp-themed-page .card-el,
     body.mgp-themed-page .ce-card,
@@ -711,16 +746,43 @@ function applyGamePageDecor(game) {
       margin-bottom: 20px !important;
       overflow-x: auto !important;
     }
-    ${CONTENT_STAR} { color: inherit; }
-    body.mgp-themed-page main h1, body.mgp-themed-page main h2, body.mgp-themed-page main h3,
+    /* Text inside white content cards only (not inside dark game areas) */
     body.mgp-themed-page > article h1, body.mgp-themed-page > article h2, body.mgp-themed-page > article h3,
     body.mgp-themed-page main ~ article h1, body.mgp-themed-page main ~ article h2, body.mgp-themed-page main ~ article h3 { color: #0F172A !important; }
-    body.mgp-themed-page main p, body.mgp-themed-page > article p, body.mgp-themed-page main ~ article p,
-    body.mgp-themed-page main ~ section p, body.mgp-themed-page main ~ div p { color: #334155 !important; }
-    body.mgp-themed-page main a, body.mgp-themed-page > article a, body.mgp-themed-page main ~ article a { color: rgb(${C}) !important; }
-    body.mgp-themed-page main code, body.mgp-themed-page > article code, body.mgp-themed-page main ~ article code { background:#F1F5F9!important; color:#334155!important; }
-    body.mgp-themed-page main li, body.mgp-themed-page > article li, body.mgp-themed-page main ~ article li,
+    body.mgp-themed-page > article p, body.mgp-themed-page main ~ article p,
+    body.mgp-themed-page main ~ section p, body.mgp-themed-page main ~ div:not(#related-games):not(#footer-container):not(#nav-container):not(#mgp-game-bg):not(#mgp-emoji-scatter) p { color: #334155 !important; }
+    body.mgp-themed-page > article a, body.mgp-themed-page main ~ article a { color: rgb(${C}) !important; }
+    body.mgp-themed-page > article code, body.mgp-themed-page main ~ article code { background:#F1F5F9!important; color:#334155!important; }
+    body.mgp-themed-page > article li, body.mgp-themed-page main ~ article li,
     body.mgp-themed-page main ~ section li, body.mgp-themed-page main ~ div li { color: #334155 !important; }
+
+    /* Make labels inside dark game areas bright white and bold */
+    body.mgp-themed-page [style*="background:#0F"] > div > p,
+    body.mgp-themed-page [style*="background:#0f"] > div > p,
+    body.mgp-themed-page [style*="background:#0F"] > p,
+    body.mgp-themed-page [style*="background:#0f"] > p,
+    body.mgp-themed-page [style*="background:#1E"] > p,
+    body.mgp-themed-page [style*="background:#1e"] > p,
+    body.mgp-themed-page #game-wrap > div > p,
+    body.mgp-themed-page #game-area > div > p,
+    body.mgp-themed-page #battle-area > div > p,
+    body.mgp-themed-page #game-wrap > p,
+    body.mgp-themed-page #game-area > p,
+    body.mgp-themed-page #battle-area > p {
+      color: rgba(255,255,255,0.95) !important;
+      font-size: clamp(13px, 2.2vw, 17px) !important;
+      font-weight: 700 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 1px !important;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
+    }
+    body.mgp-themed-page [style*="background:#0F"] span[style*="color"],
+    body.mgp-themed-page [style*="background:#0f"] span[style*="color"],
+    body.mgp-themed-page #game-wrap span[style*="color"],
+    body.mgp-themed-page #game-area span[style*="color"],
+    body.mgp-themed-page #battle-area span[style*="color"] {
+      text-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
+    }
 
     /* ── Related games ── */
     body.mgp-themed-page #related-games {
