@@ -846,29 +846,54 @@ function applyGamePageDecor(game) {
       margin-bottom: 20px !important;
       overflow-x: auto !important;
     }
-    /* Text inside white content cards only (not inside dark game areas) */
-    body.mgp-themed-page > article h1, body.mgp-themed-page > article h2, body.mgp-themed-page > article h3,
-    body.mgp-themed-page main ~ article h1, body.mgp-themed-page main ~ article h2, body.mgp-themed-page main ~ article h3 { color: #0F172A !important; }
-    body.mgp-themed-page > article p, body.mgp-themed-page main ~ article p,
-    body.mgp-themed-page main ~ section p, body.mgp-themed-page main ~ div:not(#related-games):not(#footer-container):not(#nav-container):not(#mgp-game-bg):not(#mgp-emoji-scatter) p { color: #334155 !important; }
-    body.mgp-themed-page > article a, body.mgp-themed-page main ~ article a { color: rgb(${C}) !important; }
-    body.mgp-themed-page > article code, body.mgp-themed-page main ~ article code { background:#F1F5F9!important; color:#334155!important; }
-    body.mgp-themed-page > article li, body.mgp-themed-page main ~ article li,
-    body.mgp-themed-page main ~ section li, body.mgp-themed-page main ~ div li { color: #334155 !important; }
+    /* ── LAYER 1: Force dark readable text on ALL content inside white cards ── */
+    body.mgp-themed-page main > div p,
+    body.mgp-themed-page main > div label,
+    body.mgp-themed-page main > div h1,
+    body.mgp-themed-page main > div h2,
+    body.mgp-themed-page main > div h3,
+    body.mgp-themed-page main > div h4,
+    body.mgp-themed-page main > div td,
+    body.mgp-themed-page main > div th,
+    body.mgp-themed-page main > article p,
+    body.mgp-themed-page main > article h1,
+    body.mgp-themed-page main > article h2,
+    body.mgp-themed-page main > article h3,
+    body.mgp-themed-page > article p,
+    body.mgp-themed-page > article h1,
+    body.mgp-themed-page > article h2,
+    body.mgp-themed-page > article h3,
+    body.mgp-themed-page main ~ article p,
+    body.mgp-themed-page main ~ article h1,
+    body.mgp-themed-page main ~ article h2,
+    body.mgp-themed-page main ~ article h3,
+    body.mgp-themed-page main ~ section p,
+    body.mgp-themed-page main ~ section h2,
+    body.mgp-themed-page main ~ section h3,
+    body.mgp-themed-page main ~ div:not(#related-games):not(#footer-container):not(#nav-container):not(#mgp-game-bg):not(#mgp-emoji-scatter) p,
+    body.mgp-themed-page main ~ div:not(#related-games):not(#footer-container):not(#nav-container):not(#mgp-game-bg):not(#mgp-emoji-scatter) h2,
+    body.mgp-themed-page main ~ div:not(#related-games):not(#footer-container):not(#nav-container):not(#mgp-game-bg):not(#mgp-emoji-scatter) h3 {
+      color: #0F172A !important;
+    }
+    body.mgp-themed-page main > div a,
+    body.mgp-themed-page > article a,
+    body.mgp-themed-page main ~ article a { color: rgb(${C}) !important; }
+    body.mgp-themed-page > article code,
+    body.mgp-themed-page main ~ article code { background:#F1F5F9!important; color:#334155!important; }
+    body.mgp-themed-page > article li,
+    body.mgp-themed-page main ~ article li,
+    body.mgp-themed-page main > div li,
+    body.mgp-themed-page main ~ section li,
+    body.mgp-themed-page main ~ div li { color: #334155 !important; }
 
-    /* Make labels inside dark game areas bright white and bold */
-    body.mgp-themed-page [style*="background:#0F"] > div > p,
-    body.mgp-themed-page [style*="background:#0f"] > div > p,
-    body.mgp-themed-page [style*="background:#0F"] > p,
-    body.mgp-themed-page [style*="background:#0f"] > p,
-    body.mgp-themed-page [style*="background:#1E"] > p,
-    body.mgp-themed-page [style*="background:#1e"] > p,
-    body.mgp-themed-page #game-wrap > div > p,
-    body.mgp-themed-page #game-area > div > p,
-    body.mgp-themed-page #battle-area > div > p,
-    body.mgp-themed-page #game-wrap > p,
-    body.mgp-themed-page #game-area > p,
-    body.mgp-themed-page #battle-area > p {
+    /* ── LAYER 2: White text ONLY inside dark-background game areas ── */
+    body.mgp-themed-page [style*="background:#0F"] p,
+    body.mgp-themed-page [style*="background:#0f"] p,
+    body.mgp-themed-page [style*="background:#1E"] p,
+    body.mgp-themed-page [style*="background:#1e"] p,
+    body.mgp-themed-page #game-area p,
+    body.mgp-themed-page #battle-area p,
+    body.mgp-themed-page #game-wrap p {
       color: rgba(255,255,255,0.95) !important;
       font-size: clamp(13px, 2.2vw, 17px) !important;
       font-weight: 700 !important;
@@ -876,13 +901,26 @@ function applyGamePageDecor(game) {
       letter-spacing: 1px !important;
       text-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
     }
-    body.mgp-themed-page [style*="background:#0F"] span[style*="color"],
-    body.mgp-themed-page [style*="background:#0f"] span[style*="color"],
-    body.mgp-themed-page #game-wrap span[style*="color"],
-    body.mgp-themed-page #game-area span[style*="color"],
-    body.mgp-themed-page #battle-area span[style*="color"] {
+    body.mgp-themed-page [style*="background:#0F"] span,
+    body.mgp-themed-page [style*="background:#0f"] span,
+    body.mgp-themed-page #game-area span,
+    body.mgp-themed-page #battle-area span,
+    body.mgp-themed-page #game-wrap span {
+      color: rgba(255,255,255,0.85) !important;
       text-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
     }
+    /* Preserve colored spans (like gold totals) inside dark areas */
+    body.mgp-themed-page [style*="background:#0F"] span[style*="color:#FDE68A"],
+    body.mgp-themed-page [style*="background:#0f"] span[style*="color:#FDE68A"] {
+      color: #FDE68A !important;
+    }
+
+    /* ── LAYER 2.5: Preserve playing card colors ── */
+    body.mgp-themed-page .card.red { color: #DC2626 !important; }
+    body.mgp-themed-page .card.black { color: #1E293B !important; }
+    body.mgp-themed-page .card.facedown { color: transparent !important; }
+
+    /* ── LAYER 3: Disclaimer boxes get dark amber text (wins over layer 1 & 2) ── */
 
     /* ── Related games ── */
     body.mgp-themed-page #related-games {
