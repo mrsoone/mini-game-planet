@@ -300,26 +300,48 @@ function applyGamePageDecor(game) {
   }
   let scatterHTML = '';
   const positions = [
-    { top: '3%', left: '3%', size: '4rem', rotate: -15, delay: 0 },
-    { top: '8%', right: '5%', size: '3.2rem', rotate: 12, delay: 1.2 },
-    { top: '22%', left: '2%', size: '2.8rem', rotate: -25, delay: 2.5 },
-    { top: '35%', right: '3%', size: '3.5rem', rotate: 18, delay: 0.8 },
-    { top: '50%', left: '4%', size: '2.5rem', rotate: -10, delay: 3.2 },
-    { top: '60%', right: '4%', size: '3rem', rotate: 22, delay: 1.8 },
-    { top: '75%', left: '3%', size: '3.3rem', rotate: -20, delay: 0.4 },
-    { top: '85%', right: '5%', size: '2.6rem', rotate: 15, delay: 2.8 },
-    { top: '15%', left: '8%', size: '5.5rem', rotate: -8, delay: 1.5 },
-    { top: '45%', right: '7%', size: '5rem', rotate: 10, delay: 0.6 },
-    { top: '70%', left: '6%', size: '4.5rem', rotate: -12, delay: 2.2 },
-    { top: '92%', right: '8%', size: '3rem', rotate: 20, delay: 3.6 },
+    { top:'2%',left:'2%',size:'5rem',rotate:-15,delay:0,dur:5 },
+    { top:'5%',right:'3%',size:'4.5rem',rotate:12,delay:1,dur:7 },
+    { top:'14%',left:'1%',size:'3.8rem',rotate:-22,delay:2.5,dur:6 },
+    { top:'12%',right:'1%',size:'4.2rem',rotate:20,delay:0.5,dur:8 },
+    { top:'26%',left:'3%',size:'3.5rem',rotate:-10,delay:3,dur:5.5 },
+    { top:'30%',right:'2%',size:'5rem',rotate:18,delay:1.8,dur:7.5 },
+    { top:'40%',left:'1%',size:'4rem',rotate:-28,delay:0.3,dur:6.5 },
+    { top:'44%',right:'3%',size:'3.6rem',rotate:14,delay:2.2,dur:5 },
+    { top:'55%',left:'2%',size:'4.8rem',rotate:-8,delay:1.5,dur:8 },
+    { top:'58%',right:'1%',size:'4.2rem',rotate:25,delay:3.5,dur:6 },
+    { top:'68%',left:'3%',size:'3.5rem',rotate:-18,delay:0.8,dur:7 },
+    { top:'72%',right:'2%',size:'4rem',rotate:12,delay:2.8,dur:5.5 },
+    { top:'82%',left:'1%',size:'4.5rem',rotate:-14,delay:1.2,dur:6.5 },
+    { top:'86%',right:'3%',size:'3.8rem',rotate:22,delay:3.2,dur:7.5 },
+    { top:'94%',left:'4%',size:'3.2rem',rotate:-20,delay:0.6,dur:5 },
+    { top:'96%',right:'4%',size:'3.5rem',rotate:16,delay:2,dur:8 },
+    { top:'8%',left:'6%',size:'6.5rem',rotate:-5,delay:1.5,dur:9 },
+    { top:'35%',right:'5%',size:'6rem',rotate:8,delay:0.4,dur:8.5 },
+    { top:'62%',left:'5%',size:'7rem',rotate:-12,delay:2.6,dur:10 },
+    { top:'90%',right:'6%',size:'5.5rem',rotate:10,delay:1,dur:7 },
   ];
-  const allEmojis = [gameEmoji, gameEmoji, gameEmoji, ...vibeEmojis];
+  const allEmojis = [gameEmoji, gameEmoji, gameEmoji, gameEmoji, ...vibeEmojis];
   positions.forEach((pos, i) => {
     const emoji = allEmojis[i % allEmojis.length];
-    const posStyle = `top:${pos.top};${pos.left ? 'left:'+pos.left : 'right:'+pos.right};font-size:${pos.size};transform:rotate(${pos.rotate}deg);animation-delay:${pos.delay}s;`;
-    scatterHTML += `<div class="mgp-scatter-emoji" style="${posStyle}">${emoji}</div>`;
+    const posX = pos.left ? 'left:'+pos.left : 'right:'+pos.right;
+    const posStyle = `top:${pos.top};${posX};font-size:${pos.size};--mgp-r:${pos.rotate}deg;animation-delay:${pos.delay}s;animation-duration:${pos.dur}s;`;
+    scatterHTML += `<span class="mgp-scatter-emoji" style="${posStyle}">${emoji}</span>`;
   });
   scatter.innerHTML = scatterHTML;
+
+  let banner = document.getElementById('mgp-emoji-banner');
+  if (!banner) {
+    banner = document.createElement('div');
+    banner.id = 'mgp-emoji-banner';
+    banner.setAttribute('aria-hidden', 'true');
+    const mainEl = document.querySelector('main');
+    if (mainEl) mainEl.insertAdjacentElement('afterbegin', banner);
+  }
+  if (banner) {
+    const bannerEmojis = [gameEmoji, ...vibeEmojis.slice(0,5), gameEmoji];
+    banner.innerHTML = bannerEmojis.map(e => `<span class="mgp-banner-e">${e}</span>`).join('');
+  }
 
   let style = document.getElementById('mgp-game-decor-style');
   if (!style) {
@@ -328,38 +350,8 @@ function applyGamePageDecor(game) {
     document.head.appendChild(style);
   }
 
-  style.textContent = `
-    body.mgp-themed-page { background: #0f172a !important; }
-    #mgp-emoji-scatter {
-      position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
-    }
-    .mgp-scatter-emoji {
-      position: absolute;
-      opacity: 0.12;
-      filter: blur(1px) saturate(1.4);
-      animation: mgpBob 6s ease-in-out infinite;
-      line-height: 1;
-    }
-    @keyframes mgpBob {
-      0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); }
-      50% { transform: translateY(-8px) rotate(var(--r, 0deg)); }
-    }
-    body.mgp-themed-page > *:not(#mgp-game-bg):not(#mgp-emoji-scatter) {
-      position: relative; z-index: 1;
-    }
-    body.mgp-themed-page #nav-container nav {
-      background: rgba(255,255,255,0.97) !important;
-      border-bottom-color: rgba(var(--mgp-accent-rgb),0.5) !important;
-    }
-    body.mgp-themed-page #footer-container footer {
-      background: rgba(0,0,0,0.4) !important;
-      border-color: rgba(var(--mgp-accent-rgb),0.3) !important;
-    }
-    body.mgp-themed-page #footer-container footer span,
-    body.mgp-themed-page #footer-container footer a,
-    body.mgp-themed-page #footer-container footer button {
-      color: rgba(255,255,255,0.7) !important;
-    }
+  const C = `var(--mgp-accent-rgb)`;
+  const CONTENT = `
     body.mgp-themed-page main > div,
     body.mgp-themed-page main > article,
     body.mgp-themed-page main > section,
@@ -371,56 +363,187 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page > div.max-w-4xl,
     body.mgp-themed-page main ~ article,
     body.mgp-themed-page main ~ section:not(#related-games),
-    body.mgp-themed-page main ~ div:not(#related-games):not(#footer-container):not(#nav-container):not(#mgp-game-bg):not(#mgp-emoji-scatter) {
+    body.mgp-themed-page main ~ div:not(#related-games):not(#footer-container):not(#nav-container):not(#mgp-game-bg):not(#mgp-emoji-scatter)`;
+  const CONTENT_STAR = CONTENT.split(',').map(s => s.trim() + ' *').join(',\n    ');
+
+  style.textContent = `
+    body.mgp-themed-page { background: #0f172a !important; }
+
+    /* ── Emoji scatter ── */
+    #mgp-emoji-scatter {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+    }
+    .mgp-scatter-emoji {
+      position: absolute;
+      opacity: 0.22;
+      filter: saturate(1.6) brightness(1.2);
+      animation: mgpFloat 6s ease-in-out infinite;
+      line-height: 1;
+      transform: rotate(var(--mgp-r, 0deg));
+    }
+    @keyframes mgpFloat {
+      0%, 100% { transform: translateY(0) rotate(var(--mgp-r, 0deg)) scale(1); }
+      50% { transform: translateY(-14px) rotate(var(--mgp-r, 0deg)) scale(1.08); }
+    }
+
+    /* ── Emoji banner above game ── */
+    #mgp-emoji-banner {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      padding: 10px 0 6px;
+      position: relative;
+      z-index: 2;
+    }
+    .mgp-banner-e {
+      font-size: 2rem;
+      animation: mgpPop 2s ease-in-out infinite;
+      display: inline-block;
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));
+    }
+    .mgp-banner-e:nth-child(1) { animation-delay: 0s; }
+    .mgp-banner-e:nth-child(2) { animation-delay: 0.15s; }
+    .mgp-banner-e:nth-child(3) { animation-delay: 0.3s; }
+    .mgp-banner-e:nth-child(4) { animation-delay: 0.45s; }
+    .mgp-banner-e:nth-child(5) { animation-delay: 0.6s; }
+    .mgp-banner-e:nth-child(6) { animation-delay: 0.75s; }
+    .mgp-banner-e:nth-child(7) { animation-delay: 0.9s; }
+    @keyframes mgpPop {
+      0%, 100% { transform: scale(1) translateY(0); }
+      50% { transform: scale(1.2) translateY(-6px); }
+    }
+
+    /* ── Z-index layering ── */
+    body.mgp-themed-page > *:not(#mgp-game-bg):not(#mgp-emoji-scatter) {
+      position: relative; z-index: 1;
+    }
+
+    /* ── Make game areas BIGGER ── */
+    body.mgp-themed-page main {
+      max-width: 1280px !important;
+      width: 100% !important;
+      padding-left: 16px !important;
+      padding-right: 16px !important;
+    }
+    body.mgp-themed-page main > div:first-child,
+    body.mgp-themed-page main > .card:first-child,
+    body.mgp-themed-page main > article:first-child {
+      max-width: 100% !important;
+      width: 100% !important;
+    }
+    body.mgp-themed-page canvas {
+      max-width: 95vw !important;
+      width: 100% !important;
+      height: auto !important;
+      min-height: 300px;
+      border: 3px solid rgba(${C}, 0.6) !important;
+      box-shadow:
+        0 0 50px -5px rgba(${C}, 0.5),
+        0 0 100px -20px rgba(${C}, 0.3),
+        0 16px 40px -12px rgba(0,0,0,0.5) !important;
+      border-radius: 16px !important;
+    }
+    body.mgp-themed-page [style*="max-width: 700"],
+    body.mgp-themed-page [style*="max-width:700"],
+    body.mgp-themed-page #game-canvas {
+      max-width: 900px !important;
+    }
+    body.mgp-themed-page #sudoku-grid {
+      max-width: 480px !important;
+    }
+    body.mgp-themed-page [class*="max-w-\\[min(90vw"] {
+      max-width: min(90vw, 540px) !important;
+    }
+
+    /* ── Widen articles outside main ── */
+    body.mgp-themed-page > article,
+    body.mgp-themed-page main ~ article {
+      max-width: 960px !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+
+    /* ── Nav & Footer ── */
+    body.mgp-themed-page #nav-container nav {
+      background: rgba(255,255,255,0.97) !important;
+      border-bottom: 3px solid rgba(${C},0.5) !important;
+    }
+    body.mgp-themed-page #footer-container footer {
+      background: rgba(0,0,0,0.5) !important;
+      border-color: rgba(${C},0.3) !important;
+    }
+    body.mgp-themed-page #footer-container footer span,
+    body.mgp-themed-page #footer-container footer a,
+    body.mgp-themed-page #footer-container footer button {
+      color: rgba(255,255,255,0.7) !important;
+    }
+
+    /* ── Content cards ── */
+    ${CONTENT} {
       background: #ffffff !important;
       color: #0F172A !important;
-      border: 2px solid rgba(var(--mgp-accent-rgb), 0.30) !important;
-      border-radius: 18px !important;
+      border: 2px solid rgba(${C}, 0.35) !important;
+      border-radius: 20px !important;
       box-shadow:
-        0 16px 48px -12px rgba(0,0,0,0.5),
-        0 0 0 1px rgba(255,255,255,0.1),
-        0 0 60px -20px rgba(var(--mgp-accent-rgb), 0.4) !important;
-      padding: 20px !important;
-      margin-bottom: 16px !important;
+        0 20px 60px -15px rgba(0,0,0,0.5),
+        0 0 0 1px rgba(255,255,255,0.15),
+        0 0 80px -20px rgba(${C}, 0.35) !important;
+      padding: 24px !important;
+      margin-bottom: 20px !important;
     }
-    body.mgp-themed-page main > div *,
-    body.mgp-themed-page main > article *,
-    body.mgp-themed-page main > section *,
-    body.mgp-themed-page > article *,
-    body.mgp-themed-page main ~ article *,
-    body.mgp-themed-page main ~ section *,
-    body.mgp-themed-page main ~ div:not(#related-games):not(#footer-container):not(#nav-container):not(#mgp-game-bg):not(#mgp-emoji-scatter) * { color: inherit; }
-    body.mgp-themed-page main > div h1, body.mgp-themed-page main > div h2, body.mgp-themed-page main > div h3,
-    body.mgp-themed-page main > article h1, body.mgp-themed-page main > article h2, body.mgp-themed-page main > article h3,
+    ${CONTENT_STAR} { color: inherit; }
+    body.mgp-themed-page main h1, body.mgp-themed-page main h2, body.mgp-themed-page main h3,
     body.mgp-themed-page > article h1, body.mgp-themed-page > article h2, body.mgp-themed-page > article h3,
     body.mgp-themed-page main ~ article h1, body.mgp-themed-page main ~ article h2, body.mgp-themed-page main ~ article h3 { color: #0F172A !important; }
-    body.mgp-themed-page main > div p, body.mgp-themed-page main > article p, body.mgp-themed-page main > section p,
-    body.mgp-themed-page > article p, body.mgp-themed-page main ~ article p,
+    body.mgp-themed-page main p, body.mgp-themed-page > article p, body.mgp-themed-page main ~ article p,
     body.mgp-themed-page main ~ section p, body.mgp-themed-page main ~ div p { color: #334155 !important; }
-    body.mgp-themed-page main > div a, body.mgp-themed-page main > article a,
-    body.mgp-themed-page > article a, body.mgp-themed-page main ~ article a { color: rgb(var(--mgp-accent-rgb)) !important; }
-    body.mgp-themed-page main > div code, body.mgp-themed-page main > article code,
-    body.mgp-themed-page > article code, body.mgp-themed-page main ~ article code { background:#F1F5F9!important; color:#334155!important; }
-    body.mgp-themed-page main > div li, body.mgp-themed-page main > article li,
-    body.mgp-themed-page > article li, body.mgp-themed-page main ~ article li,
+    body.mgp-themed-page main a, body.mgp-themed-page > article a, body.mgp-themed-page main ~ article a { color: rgb(${C}) !important; }
+    body.mgp-themed-page main code, body.mgp-themed-page > article code, body.mgp-themed-page main ~ article code { background:#F1F5F9!important; color:#334155!important; }
+    body.mgp-themed-page main li, body.mgp-themed-page > article li, body.mgp-themed-page main ~ article li,
     body.mgp-themed-page main ~ section li, body.mgp-themed-page main ~ div li { color: #334155 !important; }
-    body.mgp-themed-page canvas {
-      border: 3px solid rgba(var(--mgp-accent-rgb), 0.5) !important;
-      box-shadow: 0 0 40px -8px rgba(var(--mgp-accent-rgb), 0.6), 0 12px 30px -10px rgba(0,0,0,0.4) !important;
-      border-radius: 14px !important;
-    }
+
+    /* ── Related games ── */
     body.mgp-themed-page #related-games {
       background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important;
+      max-width: 1280px !important;
     }
     body.mgp-themed-page #related-games > section {
-      background: rgba(255,255,255,0.96) !important;
-      border: 2px solid rgba(var(--mgp-accent-rgb),0.25) !important;
-      border-radius: 18px !important;
-      box-shadow: 0 12px 40px -16px rgba(0,0,0,0.4) !important;
+      background: rgba(255,255,255,0.97) !important;
+      border: 2px solid rgba(${C},0.25) !important;
+      border-radius: 20px !important;
+      box-shadow: 0 16px 50px -16px rgba(0,0,0,0.45) !important;
     }
     body.mgp-themed-page #related-games h3 { color: #0F172A !important; }
+
+    /* ── Buttons get flair ── */
+    body.mgp-themed-page main button,
+    body.mgp-themed-page main [role="button"] {
+      border-radius: 12px !important;
+      font-weight: 600 !important;
+      transition: transform 0.15s, box-shadow 0.15s !important;
+    }
+    body.mgp-themed-page main button:hover,
+    body.mgp-themed-page main [role="button"]:hover {
+      transform: translateY(-2px) scale(1.03) !important;
+      box-shadow: 0 6px 20px -4px rgba(${C},0.5) !important;
+    }
+    body.mgp-themed-page main button:active,
+    body.mgp-themed-page main [role="button"]:active {
+      transform: scale(0.97) !important;
+    }
+
+    /* ── Mobile ── */
     @media (max-width: 768px) {
-      .mgp-scatter-emoji { opacity: 0.08; }
+      .mgp-scatter-emoji { opacity: 0.15; }
+      .mgp-banner-e { font-size: 1.6rem; }
+      body.mgp-themed-page main {
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+      }
+      ${CONTENT} {
+        padding: 14px !important;
+        border-radius: 14px !important;
+      }
     }
   `;
 }
