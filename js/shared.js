@@ -457,40 +457,145 @@ function applyGamePageDecor(game) {
       justify-content: center !important;
       flex-wrap: wrap !important;
     }
+
+    /* Blackjack .card class (64x92 -> 105x150) */
+    body.mgp-themed-page .card {
+      width: clamp(68px, 13vw, 105px) !important;
+      height: clamp(98px, 19vw, 150px) !important;
+      font-size: clamp(18px, 3vw, 26px) !important;
+      border-radius: 12px !important;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+      margin: 0 clamp(-6px, -0.8vw, -4px) !important;
+    }
+    body.mgp-themed-page .card.facedown::after {
+      font-size: clamp(28px, 5vw, 42px) !important;
+    }
+
+    /* Solitaire .card-el / .slot (62x88 -> 100x142) */
     body.mgp-themed-page .card-el,
     body.mgp-themed-page .slot {
-      width: clamp(60px, 12vw, 100px) !important; height: clamp(86px, 17vw, 142px) !important;
+      width: clamp(60px, 12vw, 100px) !important;
+      height: clamp(86px, 17vw, 142px) !important;
+      border-radius: 10px !important;
     }
-    body.mgp-themed-page .card-rank { font-size: clamp(13px, 2.2vw, 19px) !important; }
-    body.mgp-themed-page .card-suit { font-size: clamp(18px, 3vw, 26px) !important; }
-    body.mgp-themed-page .card[style*="width:64px"],
-    body.mgp-themed-page .card[style*="width: 64px"],
-    body.mgp-themed-page div[style*="width:64px;height:92px"],
-    body.mgp-themed-page div[style*="width: 64px"] {
-      width: clamp(64px, 13vw, 105px) !important; height: clamp(92px, 19vw, 150px) !important;
+    body.mgp-themed-page .card-rank { font-size: clamp(14px, 2.4vw, 20px) !important; }
+    body.mgp-themed-page .card-suit { font-size: clamp(18px, 3.2vw, 28px) !important; }
+
+    /* Spider Solitaire .card-s (58x82 -> 96x136) */
+    body.mgp-themed-page .card-s {
+      width: clamp(56px, 11vw, 96px) !important;
+      height: clamp(80px, 16vw, 136px) !important;
+      border-radius: 10px !important;
     }
+    body.mgp-themed-page .card-s .r { font-size: clamp(12px, 2vw, 18px) !important; }
+    body.mgp-themed-page .card-s .st { font-size: clamp(16px, 2.8vw, 24px) !important; }
+
+    /* FreeCell .card-f / .slot-f (60x84 -> 98x138) */
+    body.mgp-themed-page .card-f,
+    body.mgp-themed-page .slot-f {
+      width: clamp(58px, 11.5vw, 98px) !important;
+      height: clamp(82px, 16.5vw, 138px) !important;
+      border-radius: 10px !important;
+    }
+    body.mgp-themed-page .card-f .rk { font-size: clamp(12px, 2vw, 18px) !important; }
+    body.mgp-themed-page .card-f .su { font-size: clamp(16px, 2.8vw, 24px) !important; }
+
+    /* Crazy Eights .ce-card (56x80 -> 90x128) */
     body.mgp-themed-page .ce-card {
-      width: clamp(52px, 10vw, 86px) !important; height: clamp(74px, 14vw, 122px) !important;
+      width: clamp(54px, 11vw, 90px) !important;
+      height: clamp(76px, 15.5vw, 128px) !important;
+      border-radius: 10px !important;
     }
     body.mgp-themed-page .pile-card,
     body.mgp-themed-page #draw-pile {
-      width: clamp(60px, 12vw, 100px) !important; height: clamp(86px, 17vw, 142px) !important;
-    }
-    body.mgp-themed-page .wc {
-      width: clamp(72px, 14vw, 120px) !important; height: clamp(104px, 20vw, 170px) !important;
-    }
-    body.mgp-themed-page .wc .rk { font-size: clamp(16px, 2.5vw, 22px) !important; }
-    body.mgp-themed-page .wc .st { font-size: clamp(26px, 4vw, 36px) !important; }
-    body.mgp-themed-page .gf-card {
-      width: clamp(48px, 9vw, 78px) !important; height: clamp(68px, 13vw, 110px) !important;
-      font-size: clamp(12px, 2vw, 17px) !important;
-    }
-    body.mgp-themed-page .gf-back {
-      width: clamp(40px, 7vw, 60px) !important; height: clamp(56px, 10vw, 84px) !important;
+      width: clamp(62px, 12.5vw, 105px) !important;
+      height: clamp(88px, 17.5vw, 148px) !important;
+      border-radius: 10px !important;
     }
     body.mgp-themed-page .suit-btn {
-      width: clamp(38px, 6.5vw, 52px) !important; height: clamp(38px, 6.5vw, 52px) !important;
-      font-size: clamp(18px, 3vw, 26px) !important;
+      width: clamp(40px, 7vw, 56px) !important;
+      height: clamp(40px, 7vw, 56px) !important;
+      font-size: clamp(20px, 3.5vw, 30px) !important;
+    }
+
+    /* War .wc (72x104 -> 125x180) */
+    body.mgp-themed-page .wc {
+      width: clamp(76px, 15vw, 125px) !important;
+      height: clamp(110px, 22vw, 180px) !important;
+      border-radius: 12px !important;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15) !important;
+    }
+    body.mgp-themed-page .wc .rk { font-size: clamp(16px, 3vw, 24px) !important; }
+    body.mgp-themed-page .wc .st { font-size: clamp(28px, 5vw, 42px) !important; }
+
+    /* Go Fish .gf-card (52x74 -> 82x116) */
+    body.mgp-themed-page .gf-card {
+      width: clamp(50px, 10vw, 82px) !important;
+      height: clamp(70px, 14vw, 116px) !important;
+      font-size: clamp(13px, 2.2vw, 18px) !important;
+      border-radius: 10px !important;
+    }
+    body.mgp-themed-page .gf-back {
+      width: clamp(42px, 7.5vw, 64px) !important;
+      height: clamp(58px, 10.5vw, 88px) !important;
+      border-radius: 8px !important;
+    }
+
+    /* Video Poker .vp-card (72x104 -> 110x158) */
+    body.mgp-themed-page .vp-card {
+      width: clamp(68px, 13vw, 110px) !important;
+      height: clamp(98px, 19vw, 158px) !important;
+      border-radius: 12px !important;
+    }
+    body.mgp-themed-page .vp-card .rank { font-size: clamp(14px, 2.5vw, 22px) !important; }
+    body.mgp-themed-page .vp-card .suit { font-size: clamp(22px, 4vw, 34px) !important; }
+
+    /* High-Low .hl-card (80x116 -> 120x174) */
+    body.mgp-themed-page .hl-card {
+      width: clamp(76px, 14vw, 120px) !important;
+      height: clamp(110px, 21vw, 174px) !important;
+      border-radius: 12px !important;
+    }
+    body.mgp-themed-page .hl-card .rk { font-size: clamp(18px, 3vw, 28px) !important; }
+    body.mgp-themed-page .hl-card .st { font-size: clamp(28px, 5vw, 42px) !important; }
+
+    /* Dominoes .domino-tile */
+    body.mgp-themed-page .domino-tile {
+      width: clamp(44px, 7vw, 60px) !important;
+      height: clamp(88px, 14vw, 120px) !important;
+    }
+
+    /* ── DISCLAIMER / ENTERTAINMENT BOXES ── */
+    body.mgp-themed-page [style*="background:#FEF3C7"],
+    body.mgp-themed-page [style*="background: #FEF3C7"],
+    body.mgp-themed-page .bg-amber-50 {
+      background: #FEF3C7 !important;
+      border: 2px solid #FCD34D !important;
+      border-radius: 12px !important;
+      padding: 12px 16px !important;
+    }
+    body.mgp-themed-page [style*="background:#FEF3C7"] p,
+    body.mgp-themed-page [style*="background: #FEF3C7"] p,
+    body.mgp-themed-page .bg-amber-50 p,
+    body.mgp-themed-page [style*="background:#FEF3C7"] span,
+    body.mgp-themed-page .bg-amber-50 span {
+      color: #78350F !important;
+      font-size: clamp(12px, 1.8vw, 15px) !important;
+      font-weight: 600 !important;
+      text-transform: none !important;
+      letter-spacing: normal !important;
+      text-shadow: none !important;
+    }
+
+    /* ── ALL GAME BUTTONS: Bigger ── */
+    body.mgp-themed-page .action-btn,
+    body.mgp-themed-page .bet-btn,
+    body.mgp-themed-page .btn-f,
+    body.mgp-themed-page .guess-btn {
+      padding: clamp(10px, 1.5vw, 16px) clamp(22px, 3.5vw, 40px) !important;
+      font-size: clamp(14px, 2vw, 18px) !important;
+      font-weight: 700 !important;
+      border-radius: 12px !important;
     }
 
     /* ── BOARD GAMES: Responsive boards ── */
@@ -566,53 +671,11 @@ function applyGamePageDecor(game) {
       width: min(88vw, 520px) !important; height: min(88vw, 520px) !important;
     }
 
-    /* ── ALL GAMES: Bigger buttons (scoped to game areas) ── */
-    body.mgp-themed-page .action-btn,
-    body.mgp-themed-page .bet-btn {
-      padding: 12px 28px !important; font-size: 16px !important; font-weight: 600 !important;
-    }
-    body.mgp-themed-page main button[style*="font-size:11px"],
-    body.mgp-themed-page main button[style*="font-size: 11px"],
-    body.mgp-themed-page main [style*="font-size:11px"],
-    body.mgp-themed-page main [style*="font-size: 11px"] {
-      font-size: 14px !important;
-    }
-    body.mgp-themed-page main button[style*="font-size:12px"],
-    body.mgp-themed-page main button[style*="font-size: 12px"],
-    body.mgp-themed-page main [style*="font-size:12px"],
-    body.mgp-themed-page main [style*="font-size: 12px"] {
-      font-size: 15px !important;
-    }
-    body.mgp-themed-page main button[style*="font-size:13px"],
-    body.mgp-themed-page main button[style*="font-size: 13px"],
-    body.mgp-themed-page main [style*="font-size:13px"],
-    body.mgp-themed-page main [style*="font-size: 13px"] {
-      font-size: 16px !important;
-    }
-    body.mgp-themed-page main button[style*="padding:5px"],
-    body.mgp-themed-page main button[style*="padding: 5px"],
-    body.mgp-themed-page main button[style*="padding:4px"],
-    body.mgp-themed-page main button[style*="padding: 4px"] {
-      padding: 10px 20px !important;
-    }
-    body.mgp-themed-page main button[style*="padding:8px"],
-    body.mgp-themed-page main button[style*="padding: 8px"] {
-      padding: 12px 26px !important;
-    }
-    body.mgp-themed-page main button[style*="padding:10px"],
-    body.mgp-themed-page main button[style*="padding: 10px"] {
-      padding: 14px 36px !important;
-    }
-    body.mgp-themed-page main button[style*="padding:12px"],
-    body.mgp-themed-page main button[style*="padding: 12px"] {
-      padding: 16px 40px !important;
-    }
-
-    /* ── ALL GAMES: Bigger headings ── */
-    body.mgp-themed-page main h1[style*="font-size:22px"],
-    body.mgp-themed-page main [style*="font-size:22px"]:first-child,
-    body.mgp-themed-page main h1[style*="font-size: 22px"] {
-      font-size: 28px !important;
+    /* ── ALL GAMES: Bigger inline-styled buttons ── */
+    body.mgp-themed-page main button {
+      min-height: 44px !important;
+      font-weight: 700 !important;
+      border-radius: 12px !important;
     }
 
     /* ── Canvas glow styling ── */
@@ -660,22 +723,33 @@ function applyGamePageDecor(game) {
     }
 
     /* ── ANIMATIONS: Cards, buttons, cells ── */
+    body.mgp-themed-page .card,
     body.mgp-themed-page .card-el,
+    body.mgp-themed-page .card-s,
+    body.mgp-themed-page .card-f,
     body.mgp-themed-page .ce-card,
     body.mgp-themed-page .pile-card,
     body.mgp-themed-page .wc,
     body.mgp-themed-page .gf-card,
+    body.mgp-themed-page .vp-card,
+    body.mgp-themed-page .hl-card,
     body.mgp-themed-page .mm-card,
-    body.mgp-themed-page .slot {
+    body.mgp-themed-page .slot,
+    body.mgp-themed-page .slot-f {
       transition: transform 0.2s ease, box-shadow 0.2s ease !important;
       cursor: pointer;
     }
+    body.mgp-themed-page .card:hover,
     body.mgp-themed-page .card-el:hover,
+    body.mgp-themed-page .card-s:hover,
+    body.mgp-themed-page .card-f:hover,
     body.mgp-themed-page .ce-card:hover,
     body.mgp-themed-page .gf-card:hover,
+    body.mgp-themed-page .vp-card:hover,
+    body.mgp-themed-page .hl-card:hover,
     body.mgp-themed-page .mm-card:hover {
-      transform: translateY(-6px) scale(1.06) !important;
-      box-shadow: 0 12px 28px -4px rgba(0,0,0,0.3) !important;
+      transform: translateY(-8px) scale(1.08) !important;
+      box-shadow: 0 16px 32px -4px rgba(0,0,0,0.35) !important;
       z-index: 10 !important;
     }
     body.mgp-themed-page .su-cell,
