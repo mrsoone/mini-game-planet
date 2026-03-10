@@ -50,7 +50,23 @@
       <div id="near-miss" style="display:none;text-align:center;padding:3px;font-size:12px;font-weight:600;color:#D97706;margin-bottom:4px;"></div>
 
       <!-- Betting phase -->
-      <div id="bet-phase" style="text-align:center;padding:24px;">
+      <div id="bet-phase" style="text-align:center;">
+        <div id="bet-preview-felt" style="background:#0F4C3A;border-radius:12px;padding:20px;margin-bottom:16px;">
+          <div style="margin-bottom:16px;">
+            <p style="color:rgba(255,255,255,0.5);font-size:11px;font-weight:600;margin-bottom:6px;">DEALER</p>
+            <div style="display:flex;justify-content:center;gap:8px;min-height:80px;align-items:center;">
+              <div class="card facedown" style="opacity:0.7;transform:rotate(-3deg);"></div>
+              <div class="card facedown" style="opacity:0.7;transform:rotate(2deg);"></div>
+            </div>
+          </div>
+          <div>
+            <p style="color:rgba(255,255,255,0.5);font-size:11px;font-weight:600;margin-bottom:6px;">YOUR HAND</p>
+            <div style="display:flex;justify-content:center;gap:8px;min-height:80px;align-items:center;">
+              <div class="card facedown" style="opacity:0.7;transform:rotate(-2deg);"></div>
+              <div class="card facedown" style="opacity:0.7;transform:rotate(3deg);"></div>
+            </div>
+          </div>
+        </div>
         <p style="font-size:16px;font-weight:600;margin-bottom:12px;">Place Your Bet</p>
         <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;">
           <button class="bet-btn action-btn" data-amt="10" style="background:#059669;color:#fff;border-color:#047857;">10</button>

@@ -413,18 +413,25 @@ function applyGamePageDecor(game) {
     #mgp-header-emojis {
       display: flex;
       align-items: center;
-      gap: clamp(4px, 1vw, 8px);
-      flex: 1 1 auto;
+      gap: clamp(5px, 1.2vw, 10px);
       justify-content: center;
-      min-width: 0;
       overflow: visible;
       padding: 4px 0;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+    /* Header row needs relative positioning for absolute emoji centering */
+    body.mgp-themed-page main > div > div:first-child,
+    body.mgp-themed-page main > article > div:first-child {
+      position: relative !important;
     }
     .mgp-banner-e {
-      font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+      font-size: clamp(1.2rem, 2.8vw, 1.8rem);
       animation: mgpPop 2s ease-in-out infinite;
       display: inline-block;
-      filter: drop-shadow(0 1px 3px rgba(0,0,0,0.25));
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));
       line-height: 1;
     }
     .mgp-banner-e:nth-child(1) { animation-delay: 0s; }
@@ -756,8 +763,31 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page [id$="-cards"] {
       justify-content: center !important;
     }
+    /* Center all game content sections */
     body.mgp-themed-page main > div > div:first-child {
+      position: relative !important;
+    }
+    body.mgp-themed-page #bet-phase,
+    body.mgp-themed-page #bet-preview-felt,
+    body.mgp-themed-page [id*="phase"],
+    body.mgp-themed-page [id*="result"],
+    body.mgp-themed-page main > div > div[style*="text-align:center"],
+    body.mgp-themed-page main > article > div[style*="text-align:center"] {
       text-align: center !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+    /* Center flex containers with buttons/chips */
+    body.mgp-themed-page main > div div[style*="display:flex"][style*="justify-content:center"],
+    body.mgp-themed-page main > article div[style*="display:flex"][style*="justify-content:center"] {
+      justify-content: center !important;
+      align-items: center !important;
+    }
+    /* Center all canvases */
+    body.mgp-themed-page main canvas {
+      display: block !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
     }
 
     /* ── ANIMATIONS: Cards, buttons, cells ── */
@@ -1040,8 +1070,8 @@ function applyGamePageDecor(game) {
     /* ── Mobile: tablet ── */
     @media (max-width: 768px) {
       .mgp-scatter-emoji { opacity: 0.15; }
-      .mgp-banner-e { font-size: 1.1rem; }
-      #mgp-header-emojis { gap: 4px !important; }
+      .mgp-banner-e { font-size: 1rem; }
+      #mgp-header-emojis { gap: 3px !important; }
       body.mgp-themed-page main {
         padding-left: 8px !important;
         padding-right: 8px !important;
@@ -1054,8 +1084,8 @@ function applyGamePageDecor(game) {
     /* ── Mobile: phone ── */
     @media (max-width: 480px) {
       .mgp-scatter-emoji { opacity: 0.10; font-size: 80% !important; }
-      .mgp-banner-e { font-size: 0.95rem; }
-      #mgp-header-emojis { gap: 3px !important; }
+      .mgp-banner-e { font-size: 0.85rem; }
+      #mgp-header-emojis { gap: 2px !important; }
       body.mgp-themed-page main {
         padding-left: 4px !important;
         padding-right: 4px !important;
