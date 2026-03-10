@@ -350,14 +350,12 @@ function applyGamePageDecor(game) {
 
   const h1 = document.querySelector('main h1, body > div h1, article h1');
   if (h1) {
-    const headerParent = h1.closest('div[style*="display:flex"], header, div.flex');
     placeEmojis('mgp-header-emojis', (el) => {
-      if (headerParent) {
-        headerParent.style.position = 'relative';
-        headerParent.appendChild(el);
+      const mainEl = document.querySelector('main');
+      if (mainEl) {
+        mainEl.insertAdjacentElement('afterbegin', el);
       } else {
-        h1.parentElement.style.position = 'relative';
-        h1.insertAdjacentElement('afterend', el);
+        h1.parentElement.insertAdjacentElement('beforebegin', el);
       }
     });
 
@@ -432,10 +430,9 @@ function applyGamePageDecor(game) {
       pointer-events: none;
     }
     #mgp-header-emojis {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
+      position: static;
+      width: 100%;
+      justify-content: center;
     }
     #mgp-footer-emojis {
       margin: 12px auto 4px;
@@ -527,8 +524,12 @@ function applyGamePageDecor(game) {
       flex-wrap: wrap !important;
     }
 
-    /* Blackjack .card class - BIG and prominent */
-    body.mgp-themed-page .card {
+    /* Blackjack PLAYING cards only (not layout .card wrappers) */
+    body.mgp-themed-page .card.red,
+    body.mgp-themed-page .card.black,
+    body.mgp-themed-page .card.facedown,
+    body.mgp-themed-page .card.deal,
+    body.mgp-themed-page [id*="-hand"] > .card {
       width: clamp(76px, 15vw, 120px) !important;
       height: clamp(110px, 22vw, 172px) !important;
       font-size: clamp(24px, 4.5vw, 38px) !important;
@@ -536,17 +537,25 @@ function applyGamePageDecor(game) {
       box-shadow: 0 6px 20px rgba(0,0,0,0.25), 0 0 15px rgba(${C}, 0.15) !important;
       margin: 0 clamp(-6px, -0.8vw, -3px) !important;
     }
-    body.mgp-themed-page .card > span {
+    body.mgp-themed-page .card.red > span,
+    body.mgp-themed-page .card.black > span,
+    body.mgp-themed-page [id*="-hand"] > .card > span {
       font-size: clamp(20px, 3.5vw, 32px) !important;
     }
-    body.mgp-themed-page .card > span[style*="font-size:12px"],
-    body.mgp-themed-page .card > span[style*="font-size: 12px"] {
+    body.mgp-themed-page .card.red > span[style*="font-size:12px"],
+    body.mgp-themed-page .card.black > span[style*="font-size:12px"],
+    body.mgp-themed-page .card.red > span[style*="font-size: 12px"],
+    body.mgp-themed-page .card.black > span[style*="font-size: 12px"] {
       font-size: clamp(16px, 2.8vw, 24px) !important;
     }
-    body.mgp-themed-page .card > span[style*="font-size:22px"],
-    body.mgp-themed-page .card > span[style*="font-size: 22px"],
-    body.mgp-themed-page .card > span[style*="font-size:18px"],
-    body.mgp-themed-page .card > span[style*="font-size: 18px"] {
+    body.mgp-themed-page .card.red > span[style*="font-size:22px"],
+    body.mgp-themed-page .card.black > span[style*="font-size:22px"],
+    body.mgp-themed-page .card.red > span[style*="font-size:18px"],
+    body.mgp-themed-page .card.black > span[style*="font-size:18px"],
+    body.mgp-themed-page .card.red > span[style*="font-size: 22px"],
+    body.mgp-themed-page .card.black > span[style*="font-size: 22px"],
+    body.mgp-themed-page .card.red > span[style*="font-size: 18px"],
+    body.mgp-themed-page .card.black > span[style*="font-size: 18px"] {
       font-size: clamp(26px, 5vw, 42px) !important;
     }
     body.mgp-themed-page .card.facedown::after {
@@ -681,9 +690,7 @@ function applyGamePageDecor(game) {
       text-transform: uppercase !important;
       letter-spacing: 0.5px !important;
     }
-    body.mgp-themed-page main button:not(#sound-toggle-nav):not(#footer-cookie-settings) {
-      min-height: 48px !important;
-    }
+    
 
     /* ── BOARD GAMES: Bigger boards ── */
     body.mgp-themed-page #chess-board {
@@ -758,11 +765,10 @@ function applyGamePageDecor(game) {
       width: min(88vw, 520px) !important; height: min(88vw, 520px) !important;
     }
 
-    /* ── ALL GAMES: Bigger inline-styled buttons ── */
-    body.mgp-themed-page main button {
+    /* ── ALL GAMES: Bigger action buttons (not sound toggles or small toggles) ── */
+    body.mgp-themed-page main button:not(#sound-toggle):not(#soundToggle):not(#sound-btn):not(.mode-btn) {
       min-height: 44px !important;
       font-weight: 700 !important;
-      border-radius: 12px !important;
     }
 
     /* ── Canvas: HERO size with neon glow ── */
@@ -787,38 +793,7 @@ function applyGamePageDecor(game) {
       min-height: min(60vh, 500px) !important;
     }
 
-    /* ── SLOT MACHINE: Make it a showpiece ── */
-    body.mgp-themed-page #slot-machine {
-      width: 100% !important;
-      max-width: 600px !important;
-      padding: clamp(16px, 3vw, 32px) !important;
-      border-width: 4px !important;
-      border-radius: 20px !important;
-      box-shadow:
-        0 0 30px rgba(245,158,11,0.5),
-        0 0 80px rgba(245,158,11,0.2),
-        inset 0 0 30px rgba(0,0,0,0.3),
-        0 20px 50px rgba(0,0,0,0.4) !important;
-    }
-    body.mgp-themed-page .reel {
-      width: clamp(60px, 14vw, 90px) !important;
-      height: clamp(80px, 18vw, 120px) !important;
-      font-size: clamp(2rem, 5vw, 3.5rem) !important;
-      border-radius: 12px !important;
-      box-shadow: inset 0 2px 8px rgba(0,0,0,0.3) !important;
-    }
-    body.mgp-themed-page #spin-btn,
-    body.mgp-themed-page button[id*="spin"] {
-      font-size: clamp(18px, 3vw, 28px) !important;
-      padding: clamp(12px, 2vw, 20px) clamp(32px, 6vw, 64px) !important;
-      background: linear-gradient(135deg, #DC2626, #B91C1C) !important;
-      color: #fff !important;
-      border: 3px solid #FDE68A !important;
-      box-shadow: 0 0 20px rgba(220,38,38,0.5), 0 4px 16px rgba(0,0,0,0.3) !important;
-      text-transform: uppercase !important;
-      letter-spacing: 2px !important;
-      border-radius: 14px !important;
-    }
+    /* ── SLOT MACHINE: handled by inline styles in slot-machine.html ── */
 
     /* ── ROULETTE WHEEL: bigger ── */
     body.mgp-themed-page #roulette-wheel,
@@ -885,8 +860,10 @@ function applyGamePageDecor(game) {
       margin-right: auto !important;
     }
 
-    /* ── ANIMATIONS: Cards, buttons, cells ── */
-    body.mgp-themed-page .card,
+    /* ── ANIMATIONS: Playing cards, buttons, cells ── */
+    body.mgp-themed-page .card.red,
+    body.mgp-themed-page .card.black,
+    body.mgp-themed-page .card.facedown,
     body.mgp-themed-page .card-el,
     body.mgp-themed-page .card-s,
     body.mgp-themed-page .card-f,
@@ -902,7 +879,9 @@ function applyGamePageDecor(game) {
       transition: transform 0.2s ease, box-shadow 0.2s ease !important;
       cursor: pointer;
     }
-    body.mgp-themed-page .card:hover,
+    body.mgp-themed-page .card.red:hover,
+    body.mgp-themed-page .card.black:hover,
+    body.mgp-themed-page .card.facedown:hover,
     body.mgp-themed-page .card-el:hover,
     body.mgp-themed-page .card-s:hover,
     body.mgp-themed-page .card-f:hover,
@@ -1084,6 +1063,15 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page [style*="background:#0F"] span[style*="color:"],
     body.mgp-themed-page [style*="background:#0f"] span[style*="color:"] {
       text-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
+    }
+
+    /* Overlay elements (game-over screens etc.) keep white text */
+    body.mgp-themed-page [class*="bg-black"] p,
+    body.mgp-themed-page [class*="bg-black"] span,
+    body.mgp-themed-page [class*="bg-black"] button,
+    body.mgp-themed-page .absolute.inset-0 p,
+    body.mgp-themed-page .absolute.inset-0 span {
+      color: inherit !important;
     }
 
     /* ── LAYER 2.5: Preserve playing card colors ── */
@@ -1279,6 +1267,7 @@ function renderNav(gameName) {
 
 function renderFooter() {
   let el = document.getElementById('footer-container');
+  if (!el) el = document.querySelector('.footer-container');
   if (!el) return;
 
   const footerHTML = `
