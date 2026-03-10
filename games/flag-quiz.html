@@ -458,7 +458,7 @@
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { initAudio, playClick, playSuccess, playError } from '/js/audio.js';
-  import { trackGameView } from '/js/analytics.js';
+  import { trackGameView, trackGameOver } from '/js/analytics.js';
   import { getPlayer, renderIdentityBar, renderLeaderboard, submitStats } from '/js/player.js';
 
     (function() {
@@ -758,6 +758,7 @@
         document.getElementById('game-active').classList.add('hidden');
         document.getElementById('game-results').classList.remove('hidden');
         document.getElementById('final-score').textContent = state.score;
+        trackGameOver('flag-quiz', 'Education', state.score, 0);
         const pb = loadPB();
         if (state.score > pb) {
           savePB(state.score);

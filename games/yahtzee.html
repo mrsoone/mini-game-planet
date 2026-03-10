@@ -187,7 +187,7 @@
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { initAudio, playClick, playSuccess, playError } from '/js/audio.js';
-  import { trackGameView } from '/js/analytics.js';
+  import { trackGameView, trackGameOver } from '/js/analytics.js';
   import { getPlayer, renderIdentityBar, renderLeaderboard, submitStats } from '/js/player.js';
 
   initToolPage('yahtzee');
@@ -419,7 +419,7 @@
       document.getElementById('gameStatus').textContent = `Game over! Final score: ${finalScore}. ${state.personalBest === finalScore ? 'New personal best!' : ''}`;
       document.getElementById('sessionGames').textContent = state.sessionGames;
       document.getElementById('personalBest').textContent = state.personalBest;
-      if (typeof trackGameOver === 'function') trackGameOver('yahtzee', true);
+      trackGameOver('yahtzee', 'Casino', finalScore, 0);
     }
 
     function updateStatus() {

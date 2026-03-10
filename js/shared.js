@@ -1398,6 +1398,9 @@ function shuffleArray(arr) {
 // ─── MASTER INIT ────────────────────────────────────────────────
 
 export function initToolPage(slug) {
+  window._mgpGameSlug = slug;
+  window._mgpGameStart = Date.now();
+
   const game = games.find(g => g.slug === slug);
   const gameName = game ? game.name : '';
   const category = game ? game.category : '';

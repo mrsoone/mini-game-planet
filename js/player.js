@@ -70,7 +70,7 @@ export function renderIdentityBar(container, player) {
   const rightEmojis = emojis.slice(-3).map(e => `<span class="mgp-banner-e">${e}</span>`).join('');
   const leftHTML = leftEmojis ? `<span class="mgp-name-emojis">${leftEmojis}</span>` : '';
   const rightHTML = rightEmojis ? `<span class="mgp-name-emojis">${rightEmojis}</span>` : '';
-  bar.innerHTML = `${leftHTML} Playing as <strong style="color:#0F172A;margin:0 2px;">${player.name}</strong> <button id="mgp-name-edit" style="background:none;border:none;cursor:pointer;font-size:14px;padding:2px;" title="Change name">✏️</button> ${rightHTML}`;
+  bar.innerHTML = `${leftHTML}<span style="display:inline-block;width:12px;"></span>Playing as <strong style="color:#0F172A;margin:0 4px;">${player.name}</strong> <button id="mgp-name-edit" style="background:none;border:none;cursor:pointer;font-size:14px;padding:2px;" title="Change name">✏️</button><span style="display:inline-block;width:12px;"></span>${rightHTML}`;
 
   const editBtn = document.getElementById('mgp-name-edit');
   if (editBtn) {

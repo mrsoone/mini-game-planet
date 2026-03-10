@@ -147,7 +147,7 @@
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { initAudio, playClick, playSuccess, playError } from '/js/audio.js';
-  import { trackGameView } from '/js/analytics.js';
+  import { trackGameView, trackGameOver } from '/js/analytics.js';
   import { getPlayer, renderIdentityBar, renderLeaderboard, submitStats } from '/js/player.js';
 
   initToolPage('ludo');
@@ -445,6 +445,7 @@
       if (token.every(t => t.homeStretchIndex === 5)) {
         document.getElementById('gameStatus').textContent = 'You win!';
         document.getElementById('rollBtn').disabled = true;
+        trackGameOver('ludo', 'Strategy', 1, 0);
       }
     }
 
