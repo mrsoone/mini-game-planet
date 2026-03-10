@@ -2,6 +2,7 @@ import { handleGetPlayer, handleSetName } from './api/player.js';
 import { handleSubmitStats } from './api/stats.js';
 import { handleGetLeaderboard, handleGetGlobalLeaderboard } from './api/leaderboard.js';
 import { handleCreateRoom, handleJoinRoom, handleMatchmake, handleWebSocket } from './api/room.js';
+import { handlePokerBalance, handlePokerTopup, handlePokerBuyin, handlePokerCashout, handlePokerStats, handlePokerStatsUpdate, handlePokerLeaderboard } from './api/poker.js';
 import { corsHeaders } from './utils/auth.js';
 
 export { GameRoom } from './do/GameRoom.js';
@@ -48,6 +49,29 @@ export default {
       if (path.startsWith('/api/matchmake/') && method === 'POST') {
         const gameSlug = path.replace('/api/matchmake/', '');
         return handleMatchmake(request, env, gameSlug);
+      }
+
+      // Poker chip economy endpoints
+      if (path === '/api/poker/balance' && method === 'GET') {
+        return handlePokerBalance(request, env);
+      }
+      if (path === '/api/poker/topup' && method === 'POST') {
+        return handlePokerTopup(request, env);
+      }
+      if (path === '/api/poker/buyin' && method === 'POST') {
+        return handlePokerBuyin(request, env);
+      }
+      if (path === '/api/poker/cashout' && method === 'POST') {
+        return handlePokerCashout(request, env);
+      }
+      if (path === '/api/poker/stats' && method === 'GET') {
+        return handlePokerStats(request, env);
+      }
+      if (path === '/api/poker/stats' && method === 'POST') {
+        return handlePokerStatsUpdate(request, env);
+      }
+      if (path === '/api/poker/leaderboard' && method === 'GET') {
+        return handlePokerLeaderboard(request, env);
       }
 
       return new Response('Not Found', { status: 404, headers: corsHeaders(origin) });

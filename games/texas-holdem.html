@@ -436,8 +436,87 @@
   document.addEventListener('click',()=>initAudio(),{once:true});
   initToolPage('texas-holdem');initConsent();trackGameView('texas-holdem','Casino');
   let playerProfile=null;
-  getPlayer().then(p=>{playerProfile=p;if(p){const m=document.querySelector('main');renderIdentityBar(m,p);}});
+  getPlayer().then(p=>{playerProfile=p;if(p){const m=document.querySelector('main');renderIdentityBar(m,p);}loadPokerLobby();});
   document.getElementById('sound-btn').addEventListener('click',()=>{initAudio();const m=muteAll();document.getElementById('sound-btn').textContent=m?'🔇 Sound':'🔊 Sound';});
+
+  /* ═══════════════════════════════════════════════
+     POKER API CLIENT
+  ═══════════════════════════════════════════════ */
+  const PAPI='/api/poker';
+  let chipBalance=10000;
+
+  async function fetchBalance(){
+    try{
+      const r=await fetch(`${PAPI}/balance`);if(!r.ok)return null;
+      const d=await r.json();chipBalance=d.balance;
+      document.getElementById('bankroll-display').textContent=chipBalance.toLocaleString();
+      if(d.topUpEligible){document.getElementById('topup-btn').style.display='';}
+      else{document.getElementById('topup-btn').style.display='none';}
+      return d;
+    }catch{return null;}
+  }
+
+  async function fetchPokerStats(){
+    try{
+      const r=await fetch(`${PAPI}/stats`);if(!r.ok)return;
+      const d=await r.json();
+      const s=d.stats||{};
+      document.getElementById('stat-hands').textContent=s.handsPlayed||0;
+      const wr=s.handsPlayed>0?Math.round((s.handsWon/s.handsPlayed)*100):0;
+      document.getElementById('stat-won').textContent=`${s.handsWon||0} (${wr}%)`;
+      document.getElementById('stat-biggest').textContent=(s.biggestPot||0).toLocaleString();
+      const net=(s.totalWinnings||0)-(s.totalLosses||0);
+      document.getElementById('stat-profit').textContent=(net>=0?'+':'')+net.toLocaleString();
+      document.getElementById('stat-profit').style.color=net>=0?'#22C55E':'#DC2626';
+      document.getElementById('stat-allins').textContent=`${s.allInsWon||0}/${(s.allInsWon||0)+(s.allInsLost||0)}`;
+    }catch{}
+  }
+
+  async function fetchPokerLeaderboard(){
+    try{
+      const r=await fetch(`${PAPI}/leaderboard`);if(!r.ok)return;
+      const d=await r.json();
+      const el=document.getElementById('leaderboard-list');
+      if(!d.entries||!d.entries.length)return;
+      const medals=['var(--gold)','#CBD5E1','#92400E'];
+      el.innerHTML=d.entries.slice(0,5).map((e,i)=>`<div><span style="color:${medals[i]||'#64748B'};">#${e.rank}</span> ${e.name} <span style="color:${medals[i]||'#64748B'};float:right;">${e.balance.toLocaleString()}</span></div>`).join('');
+    }catch{}
+  }
+
+  async function doTopUp(){
+    try{
+      const r=await fetch(`${PAPI}/topup`,{method:'POST',headers:{'Content-Type':'application/json'}});
+      const d=await r.json();
+      if(d.newBalance){chipBalance=d.newBalance;document.getElementById('bankroll-display').textContent=chipBalance.toLocaleString();document.getElementById('topup-btn').style.display='none';playPerfect();return true;}
+      else{playError();return false;}
+    }catch{return false;}
+  }
+
+  async function doBuyIn(amount){
+    try{
+      const r=await fetch(`${PAPI}/buyin`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({amount})});
+      const d=await r.json();
+      if(d.remainingBalance!==undefined){chipBalance=d.remainingBalance;document.getElementById('bankroll-display').textContent=chipBalance.toLocaleString();return true;}
+      return false;
+    }catch{return false;}
+  }
+
+  async function doCashOut(amount){
+    try{
+      const r=await fetch(`${PAPI}/cashout`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({amount})});
+      const d=await r.json();
+      if(d.newBalance!==undefined){chipBalance=d.newBalance;document.getElementById('bankroll-display').textContent=chipBalance.toLocaleString();return true;}
+      return false;
+    }catch{return false;}
+  }
+
+  async function updatePokerStats(data){
+    try{await fetch(`${PAPI}/stats`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});}catch{}
+  }
+
+  async function loadPokerLobby(){
+    await Promise.all([fetchBalance(),fetchPokerStats(),fetchPokerLeaderboard()]);
+  }
 
   /* ═══════════════════════════════════════════════
      CONSTANTS
@@ -730,7 +809,14 @@
 
     G.pots=[{amount:0,eligible:[]}];
     const humanWon=results.some(r=>r.winners.includes(G.players[0].name));
-    if(humanWon)playSuccess();else playError();
+    if(humanWon){
+      playSuccess();if(!G._humanHandsWon)G._humanHandsWon=0;G._humanHandsWon++;
+      const winAmount=results.filter(r=>r.winners.includes(G.players[0].name)).reduce((s,r)=>s+Math.floor(r.amount/r.winners.length),0);
+      if(!G._totalWinnings)G._totalWinnings=0;G._totalWinnings+=winAmount;
+      if(!G._biggestWin)G._biggestWin=0;if(winAmount>G._biggestWin)G._biggestWin=winAmount;
+    } else {playError();if(!G._totalLosses)G._totalLosses=0;G._totalLosses+=G.players[0].totalBet;}
+    const handPot=results.reduce((s,r)=>s+r.amount,0);
+    if(!G._biggestPot)G._biggestPot=0;if(handPot>G._biggestPot)G._biggestPot=handPot;
 
     renderTable();
     const msg=results.map(r=>`${r.winners.join(' & ')} win ${r.amount.toLocaleString()} (${r.hand})`).join(' | ');
@@ -1029,9 +1115,20 @@
   const topupModal=document.getElementById('topup-modal');
 
   function showLobby(){lobbyView.style.display='';tableView.style.display='none';stopTurnTimer();G.phase='idle';}
-  function showTable(){lobbyView.style.display='none';tableView.style.display='';}
+  function showTable(){lobbyView.style.display='none';tableView.style.display='';document.getElementById('table-bankroll').textContent=chipBalance.toLocaleString();}
 
-  document.getElementById('btn-leave').addEventListener('click',()=>{playClick();showLobby();});
+  document.getElementById('btn-leave').addEventListener('click',async()=>{
+    playClick();
+    if(G.players.length>0&&G.players[0].stack>0&&G.phase!=='idle'){
+      await doCashOut(G.players[0].stack);
+      const s=G.players[0];
+      const handsW=G._humanHandsWon||0;const handsP=G.handNum||0;
+      const bigP=G._biggestPot||0;const bigW=G._biggestWin||0;
+      const totalW=G._totalWinnings||0;const totalL=G._totalLosses||0;
+      await updatePokerStats({handsPlayed:handsP,handsWon:handsW,biggestPot:bigP,biggestWin:bigW,winnings:totalW,losses:totalL,chipBalance});
+    }
+    stopTurnTimer();G.phase='idle';showLobby();loadPokerLobby();
+  });
 
   const buyinSlider=document.getElementById('buyin-slider');
   const buyinAmountEl=document.getElementById('buyin-amount');
@@ -1059,7 +1156,7 @@
 
   document.getElementById('topup-btn').addEventListener('click',()=>{topupModal.style.display='';playClick();});
   document.getElementById('topup-cancel').addEventListener('click',()=>{topupModal.style.display='none';playClick();});
-  document.getElementById('topup-confirm').addEventListener('click',()=>{topupModal.style.display='none';playPerfect();document.getElementById('bankroll-display').textContent='5,000';document.getElementById('topup-btn').style.display='none';});
+  document.getElementById('topup-confirm').addEventListener('click',async()=>{topupModal.style.display='none';await doTopUp();});
 
   /* ── Raise panel ── */
   const raisePanel=document.getElementById('raise-panel');
