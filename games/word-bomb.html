@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Word Bomb Online — Fast Word Game | MiniGamePlanet</title>
+  <meta name="description" content="Play Word Bomb online free. Type words containing the shown fragment before the bomb explodes. Fast, frantic vocabulary game — no download, no sign-up.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/word-bomb">
+  <link rel="icon" href="/images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <meta property="og:type" content="website"><meta property="og:title" content="Free Word Bomb Online | MiniGamePlanet"><meta property="og:description" content="Type words fast before the bomb explodes."><meta property="og:url" content="https://minigameplanet.com/games/word-bomb"><meta property="og:image" content="https://minigameplanet.com/images/logo.png">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Word Bomb","url":"https://minigameplanet.com/games/word-bomb","description":"Play Word Bomb online free — fast word fragment typing game.","genre":"Word","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://minigameplanet.com"},{"@type":"ListItem","position":2,"name":"Word Games","item":"https://minigameplanet.com/#category"},{"@type":"ListItem","position":3,"name":"Word Bomb","item":"https://minigameplanet.com/games/word-bomb"}]}</script>
+  <style>
+    .hero-grad{background:linear-gradient(135deg,#7C3AED 0%,#9333EA 20%,#C026D3 40%,#E11D48 60%,#EA580C 80%,#F59E0B 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:heroShift 8s ease-in-out infinite}@keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+    @keyframes bombTick{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+    @keyframes explode{0%{transform:scale(1);opacity:1}100%{transform:scale(2);opacity:0}}
+    .bomb-tick{animation:bombTick 0.5s ease infinite}
+    .bomb-explode{animation:explode 0.5s ease-out forwards}
+    @keyframes shakeX{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+    .shake{animation:shakeX 0.3s ease}
+    .wb-btn{padding:10px 24px;border-radius:10px;font-size:15px;font-weight:700;border:2px solid;cursor:pointer;font-family:inherit;transition:all 0.1s}.wb-btn:hover{transform:translateY(-1px)}
+    .life{display:inline-block;font-size:20px;margin:0 2px;transition:opacity 0.3s}.life.lost{opacity:0.2}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <div><h1 style="font-size:22px;font-weight:700;margin:0;">💣 Word Bomb</h1><p style="font-size:12px;color:#94A3B8;margin:2px 0 0;">Type fast or BOOM!</p></div>
+        <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊 Sound</button>
+      </div>
+      <div id="mp-mode-container"></div>
+      <div id="game-area" style="display:none;">
+        <div style="text-align:center;margin-bottom:12px;">
+          <div id="lives" style="margin-bottom:8px;"></div>
+          <div style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;">Score: <span id="score" style="font-weight:700;color:#059669;">0</span> | Round: <span id="round-num">1</span></div>
+        </div>
+        <div style="background:#1a1a2e;border-radius:16px;padding:30px;text-align:center;">
+          <div id="bomb-emoji" style="font-size:60px;margin-bottom:8px;">💣</div>
+          <div id="timer-bar" style="width:100%;height:8px;background:#334155;border-radius:4px;margin-bottom:16px;overflow:hidden;">
+            <div id="timer-fill" style="width:100%;height:100%;background:linear-gradient(90deg,#DC2626,#F59E0B,#22C55E);border-radius:4px;transition:width 0.1s;"></div>
+          </div>
+          <div id="fragment" style="font-size:36px;font-weight:700;color:#FDE68A;font-family:'DM Mono',monospace;margin-bottom:16px;letter-spacing:4px;"></div>
+          <div id="msg" style="font-size:14px;color:#94A3B8;min-height:24px;margin-bottom:12px;"></div>
+          <input id="word-input" type="text" placeholder="Type a word..." style="width:100%;max-width:320px;padding:12px 16px;border-radius:10px;border:2px solid #475569;background:#0F172A;color:#fff;font-size:18px;font-family:'DM Mono',monospace;text-align:center;outline:none;" autocomplete="off" autocapitalize="off" spellcheck="false">
+        </div>
+        <div style="text-align:center;margin-top:8px;"><p id="used-words" style="font-size:11px;color:#94A3B8;max-height:40px;overflow:hidden;"></p></div>
+        <div id="game-over-panel" style="display:none;text-align:center;padding:20px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;margin-top:12px;">
+          <h3 id="winner-text" style="font-size:22px;font-weight:700;margin:0 0 8px;"></h3>
+          <p id="final-detail" style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;margin:0 0 16px;"></p>
+          <button id="play-again-btn" class="wb-btn" style="background:#2563EB;color:#fff;border-color:#1D4ED8;">Play Again</button>
+        </div>
+      </div>
+    </div>
+  </main>
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play Word Bomb</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>Word Bomb is a fast-paced vocabulary game. A 2-3 letter fragment is shown (like "PH" or "ING"). You must quickly type a valid English word that contains that fragment. If the bomb timer runs out before you answer, you lose a life. You have 3 lives — last as many rounds as you can.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Rules</h3>
+      <ul class="list-disc pl-5 space-y-1">
+        <li>Type any valid word containing the shown fragment</li>
+        <li>Words must be at least 3 letters long</li>
+        <li>Each word can only be used once per game</li>
+        <li>Timer gets shorter as you advance — stay sharp!</li>
+      </ul>
+    </div>
+  </article>
+  <div id="related-games"></div><div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playDeal, playPerfect } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+  import { renderModeSelector } from '/js/multiplayer.js';
+
+  document.addEventListener('click',()=>initAudio(),{once:true});
+  initToolPage('word-bomb');initConsent();trackGameView('word-bomb','Word');
+  let playerProfile=null;
+  getPlayer().then(p=>{playerProfile=p;if(p){const m=document.querySelector('main');renderIdentityBar(m,p);renderLeaderboard(m,'word-bomb');}});
+  document.getElementById('sound-btn').addEventListener('click',()=>{initAudio();const m=muteAll();document.getElementById('sound-btn').textContent=m?'🔇 Sound':'🔊 Sound';});
+
+  const FRAGMENTS=["ab","ac","ad","ag","al","am","an","ap","ar","at","ba","be","bl","bo","br","bu","ca","ch","cl","co","cr","cu","da","de","di","do","dr","du","ea","ed","el","em","en","er","es","ev","ex","fa","fi","fl","fo","fr","fu","ga","ge","gi","gl","go","gr","gu","ha","he","hi","ho","hu","ig","im","in","io","ir","is","it","ja","jo","ju","ke","ki","kn","la","le","li","lo","lu","ma","me","mi","mo","mu","na","ne","ni","no","nu","ob","oc","of","ol","on","op","or","ou","ov","pa","pe","ph","pi","pl","po","pr","pu","qu","ra","re","ri","ro","ru","sa","sc","se","sh","si","sk","sl","sm","sn","so","sp","sq","st","su","sw","ta","te","th","ti","to","tr","tu","tw","un","up","ur","us","va","ve","vi","vo","wa","we","wh","wi","wo","wr","yo","ing","tion","ment","ness","ble","ful","ous","ive","ant","ent","ate","ure","ish","ght","str","thr","ght","ck","nd","ng","nk","nt","pt","rd","rk","rm","rn","rt","sk","st","mp","ld","lk","lt","ft","ct","ph","wn","wl"];
+
+  const DICTIONARY=["abandon","ability","able","about","above","absence","absolute","absorb","abstract","abuse","academy","accept","access","accident","account","accurate","achieve","acid","acknowledge","acquire","across","action","active","actual","adapt","addition","address","adequate","adjust","administration","admit","adopt","adult","advance","advantage","adventure","advice","affair","affect","afford","afraid","after","afternoon","again","against","agent","agree","ahead","aircraft","alarm","album","alcohol","alien","alive","allow","almost","alone","along","already","also","alter","alternative","although","always","amateur","amazing","ambition","among","amount","amuse","analysis","ancient","angel","anger","angle","angry","animal","announce","annual","another","answer","anxiety","apart","apparent","appeal","appear","apple","application","apply","appoint","approach","appropriate","approve","arch","area","argue","arise","army","around","arrange","arrest","arrive","arrow","article","artist","aside","asleep","aspect","assault","assert","assess","assign","assist","associate","assume","atmosphere","attach","attack","attempt","attend","attention","attitude","attract","audience","author","authority","automatic","available","average","avoid","awake","award","aware","awful","baby","back","background","backward","balance","ball","banana","band","bank","bare","bargain","barrel","barrier","base","basic","basket","battle","beach","beam","bear","beat","beautiful","because","become","bedroom","before","begin","behavior","behind","belief","believe","belong","below","bench","bend","beneath","benefit","beside","best","better","between","beyond","bicycle","birth","bite","bitter","black","blade","blame","blank","blanket","blast","blaze","bleed","blend","bless","blind","block","blood","blow","blue","board","boat","body","boil","bold","bomb","bond","bone","book","border","bore","borrow","boss","both","bother","bottle","bottom","bounce","bound","bowl","brain","branch","brave","bread","break","breakfast","breath","breathe","breed","brick","bridge","brief","bright","brilliant","bring","broad","broke","brother","brown","brush","bubble","bucket","budget","build","bullet","bunch","burden","burn","burst","bury","bush","business","busy","butter","button","cabin","cable","cake","calculate","call","calm","camera","camp","campaign","cancel","candidate","capable","capacity","capital","captain","capture","carbon","card","care","career","careful","carpet","carry","case","cash","cast","castle","casual","catch","category","cause","ceiling","celebrate","cell","center","central","ceremony","certain","chain","chair","chairman","challenge","chamber","champion","chance","change","channel","chapter","character","charge","charity","chart","chase","cheap","check","cheek","cheese","chemical","chest","chicken","chief","child","chin","chip","chocolate","choice","choose","church","cigarette","circle","citizen","civil","claim","class","classic","clean","clear","client","climate","climb","clock","close","cloth","clothes","cloud","coach","coal","code","coffee","cold","collapse","collect","college","color","column","combination","combine","come","comfort","command","comment","commercial","commit","committee","common","communicate","community","companion","company","compare","compete","complain","complete","complex","component","compose","comprehensive","computer","concentrate","concept","concern","conclude","condition","conduct","conference","confidence","confirm","conflict","confront","confuse","connect","conscious","consider","consist","constant","construct","consult","consume","contact","contain","content","contest","context","continue","contract","contrast","contribute","control","conversation","convert","convince","cook","cool","cope","copy","core","corner","corporate","correct","cottage","cotton","could","council","count","counter","country","county","couple","courage","course","court","cousin","cover","crack","craft","crash","crazy","cream","create","creature","credit","crew","crime","criminal","crisis","critic","crop","cross","crowd","crucial","cruel","crush","crystal","culture","current","curtain","curve","custom","customer","cycle","damage","dance","danger","dare","dark","data","date","daughter","dawn","dead","deal","dear","death","debate","debt","decade","decent","decide","decision","declare","decline","deep","defeat","defend","define","degree","delay","deliver","demand","democracy","demonstrate","deny","depart","depend","deposit","depress","derive","describe","desert","deserve","design","desire","desk","desperate","despite","destroy","detail","detect","determine","develop","device","devote","diamond","diet","differ","difficult","dignity","dimension","dinner","direct","direction","dirt","disappear","discipline","discover","discuss","disease","dismiss","display","distance","distinct","distribute","district","divide","doctor","document","dollar","domestic","dominate","door","double","doubt","down","draft","drag","dragon","drama","draw","dream","dress","drift","drink","drive","drop","drug","drum","drunk","during","dust","duty","each","eager","earn","earth","ease","east","easy","economic","edge","edition","editor","educate","effect","effort","eight","either","elderly","elect","electric","element","eliminate","embrace","emerge","emotion","emphasis","employ","empty","enable","encounter","encourage","enemy","energy","enforce","engage","engine","enhance","enjoy","enormous","enough","ensure","enter","enterprise","entire","entry","environment","equal","equipment","escape","especially","essential","establish","estate","estimate","evaluate","even","evening","event","eventually","ever","every","evidence","evil","evolve","exact","examine","example","excellent","except","exchange","excite","exclude","excuse","execute","exercise","exhibit","exist","expand","expect","expense","experience","experiment","expert","explain","exploit","explore","export","expose","express","extend","extent","extra","extreme","fabric","face","facility","fact","factor","factory","fail","fair","faith","fall","false","familiar","family","famous","fancy","fantasy","farm","fashion","fast","father","fault","favor","favorite","fear","feature","federal","feel","fellow","female","fence","festival","fetch","fever","fiction","field","fierce","fight","figure","file","fill","film","final","finance","find","fine","finger","finish","fire","firm","first","fish","flag","flame","flash","flat","flesh","flight","float","flood","floor","flow","flower","focus","fold","folk","follow","food","fool","foot","football","force","foreign","forest","forget","form","formal","former","formula","forth","fortune","forward","found","foundation","frame","free","freedom","freeze","frequent","fresh","friend","front","fruit","fuel","full","function","fund","funny","furniture","further","future","gain","gallery","game","gang","garden","gate","gather","gaze","general","generate","generation","gentle","genuine","gesture","ghost","giant","gift","girl","give","glad","glance","glass","global","glory","goal","golden","gone","good","govern","grab","grade","grand","grant","grass","grave","gray","great","green","grip","ground","group","grow","growth","guarantee","guard","guess","guide","guilty","guitar","habit","hair","half","hall","hand","handle","hang","happen","happy","hard","hardly","harm","hate","have","head","health","hear","heart","heat","heaven","heavy","hell","help","here","hero","hide","high","highlight","hill","hire","history","hold","hole","holiday","holy","home","honest","honor","hope","horror","horse","hospital","host","hotel","hour","household","huge","human","humor","hundred","hunt","hurt","husband","idea","identify","ignore","illustrate","image","imagine","impact","imply","import","impose","impress","improve","incident","include","income","increase","indeed","independent","index","indicate","individual","industrial","industry","inevitable","inflation","influence","inform","initial","injury","inner","innocent","input","inquiry","insect","insert","inside","insist","install","instance","instead","institution","instruction","instrument","insurance","intellectual","intend","intense","intention","interest","internal","interpret","intervention","interview","into","introduce","invade","invest","investigate","investment","invisible","invite","involve","iron","island","isolate","issue","item","jacket","joke","journal","journey","judge","juice","jump","junior","jury","just","justice","justify","keen","keep","kick","kill","kind","king","kitchen","knee","knife","knock","know","knowledge","label","labor","lack","lady","lake","land","landscape","language","large","last","late","later","latter","laugh","launch","lawn","layer","lead","leader","leaf","lean","learn","least","leather","leave","lecture","left","legal","legend","lend","length","less","lesson","letter","level","liberal","liberty","library","license","life","lift","light","like","likely","limit","line","link","list","listen","literary","literature","little","live","load","loan","local","locate","lock","long","look","lord","lose","loss","lost","lots","love","lovely","lower","luck","lunch","machine","magazine","magic","main","maintain","major","majority","make","male","manage","manner","many","march","margin","mark","market","marriage","marry","mask","mass","massive","master","match","material","matter","maximum","mayor","meal","mean","measure","mechanism","media","medical","medicine","medium","meet","member","membership","memory","mental","mention","menu","merchant","merely","mess","message","metal","method","middle","might","military","million","mind","mine","minister","minor","minority","minute","mirror","miss","mission","mistake","mix","model","modern","modest","moment","money","monitor","month","mood","moral","more","morning","most","mother","motion","motor","mount","mountain","mouse","mouth","move","movement","movie","much","murder","muscle","museum","music","mutual","mystery","myth","nail","name","narrative","narrow","nation","national","natural","nature","near","nearly","neat","necessary","neck","negative","negotiate","neighbor","neither","nerve","nest","network","neutral","never","news","next","nice","night","nobody","noise","none","normal","north","nose","note","nothing","notice","notion","novel","nuclear","number","nurse","object","objective","obligation","observation","observe","obtain","obvious","occasion","occupation","occupy","occur","ocean","offer","office","officer","official","often","okay","once","ongoing","online","only","onto","open","opening","operate","operation","opinion","opponent","opportunity","oppose","option","orange","order","ordinary","organ","organize","origin","other","otherwise","ought","outcome","output","outside","overcome","overlook","owe","owner","pace","pack","package","page","pain","paint","pair","palace","pale","palm","panel","panic","paper","parent","park","parking","part","partly","partner","party","pass","passage","passenger","passion","past","path","patient","pattern","pause","peace","peak","peer","penalty","pension","people","perfect","perform","perhaps","period","permanent","permit","person","personal","perspective","phase","philosophy","phone","photo","phrase","physical","pick","picture","piece","pile","pilot","pine","pink","pipe","pitch","place","plain","plan","plane","planet","plant","plate","platform","play","player","please","pleasure","plenty","plot","plus","pocket","poem","poet","point","poison","pole","police","policy","political","politics","poll","pool","poor","popular","population","porch","port","portion","portrait","pose","position","positive","possess","possibility","possible","post","potato","potential","pound","pour","poverty","powder","power","powerful","practical","practice","pray","precise","predict","prefer","prepare","presence","present","preserve","president","press","pressure","pretend","pretty","prevent","previous","price","pride","priest","primary","prime","prince","princess","principal","principle","print","prior","priority","prison","prisoner","privacy","private","prize","probably","problem","procedure","proceed","process","produce","product","production","profession","professor","profit","program","progress","project","promise","promote","proper","property","proportion","proposal","propose","prospect","protect","protein","protest","prove","provide","province","psychological","public","pull","punch","pupil","purchase","pure","purple","purpose","pursue","push","qualify","quarter","queen","question","quick","quiet","quit","quite","quote","race","radical","rain","raise","range","rank","rapid","rare","rate","rather","ratio","reach","react","read","ready","real","reality","realize","really","reason","reasonable","recall","receive","recent","recognize","recommend","record","recover","recruit","reduce","refer","reflect","reform","refuse","regard","regime","region","register","regret","regular","regulation","reinforce","reject","relate","relation","relationship","relative","release","relevant","relief","religion","rely","remain","remaining","remark","remember","remind","remote","remove","repeat","replace","reply","report","represent","request","require","research","resident","resist","resolution","resolve","resort","resource","respond","response","responsibility","rest","restore","restrict","result","retain","retire","return","reveal","revenue","review","revolution","rhythm","rich","ride","rifle","right","ring","rise","risk","river","road","robot","rock","role","roll","romantic","roof","room","root","rope","rough","round","route","routine","royal","ruin","rule","rush","sacred","sacrifice","safety","sail","sake","salary","sale","salt","same","sample","sand","satisfy","save","scale","scandal","scene","schedule","scheme","scholar","school","science","scientist","scope","score","screen","search","season","seat","second","secret","secretary","section","sector","secure","seek","seem","segment","seize","select","self","sell","senator","senior","sense","sensitive","sentence","separate","sequence","series","serious","serve","service","session","settle","seven","several","severe","shade","shadow","shake","shall","shape","share","sharp","shed","sheer","sheet","shelf","shell","shelter","shift","shine","ship","shirt","shock","shoe","shoot","shop","shore","short","shot","shoulder","shout","show","shut","sick","side","sight","sign","signal","silence","silly","silver","similar","simple","since","sing","single","sink","sister","site","situation","size","skill","skin","slave","sleep","slice","slide","slight","slip","slow","small","smart","smell","smile","smoke","smooth","snap","snow","social","society","soft","soil","solar","soldier","solid","solution","solve","some","somebody","somehow","someone","something","sometimes","somewhat","somewhere","song","soon","sorry","sort","soul","sound","source","south","southern","space","spare","speak","special","specific","speech","speed","spell","spend","sphere","spider","spirit","split","spokesman","sport","spot","spread","spring","square","squeeze","stable","staff","stage","stair","stake","stand","standard","star","stare","start","state","statement","station","status","stay","steady","steal","steam","steel","steep","steer","stem","step","stick","stiff","still","stock","stomach","stone","stop","store","storm","story","straight","strange","stranger","strategic","strategy","stream","street","strength","stress","stretch","strict","strike","string","strip","stroke","strong","structure","struggle","student","studio","study","stuff","stupid","subject","submit","succeed","success","such","sudden","suffer","sugar","suggest","suit","summer","summit","super","supply","support","suppose","sure","surface","surgery","surprise","surround","survey","survive","suspect","suspend","sustain","swallow","swear","sweep","sweet","swim","swing","switch","symbol","sympathy","system","table","tackle","tail","take","tale","talent","talk","tall","tank","tape","target","task","taste","tax","teach","teacher","team","technical","technique","technology","telephone","television","tell","temperature","temporary","tend","tension","term","terrible","territory","terror","test","testify","text","than","thank","that","the","theater","their","them","theme","themselves","then","theory","therapy","there","therefore","thick","thin","thing","think","third","those","though","thought","threat","three","throat","through","throw","thus","ticket","tide","tight","time","tiny","tired","title","today","together","tomorrow","tone","tongue","tonight","tool","tooth","topic","total","totally","touch","tough","tour","tourist","toward","tower","town","trace","track","trade","tradition","traffic","trail","train","transfer","transform","transition","translate","transport","trap","travel","treat","treatment","treaty","tree","tremendous","trend","trial","trick","trigger","trip","troop","trouble","truck","truly","trust","truth","turn","twice","twin","type","typical","ugly","ultimate","unable","uncle","under","undergo","understand","undertake","unemployment","unfold","unfortunately","uniform","union","unique","unit","universe","university","unknown","unless","unlike","unlikely","until","unusual","upon","upper","upset","urban","urge","usual","valley","valuable","value","van","variation","variety","various","vast","vehicle","venture","version","very","veteran","victim","victory","video","view","village","violate","violence","virtual","virtue","visible","vision","visit","visual","vital","voice","volume","voluntary","vote","wage","wait","wake","walk","wall","wander","want","warm","warn","wash","waste","watch","water","wave","weapon","wear","weather","wedding","week","weekend","weigh","weight","welcome","welfare","west","western","what","whatever","wheel","when","whenever","where","whereas","whether","which","while","whisper","white","whole","whom","whose","wide","widely","wife","wild","will","willing","wind","window","wine","wing","winner","winter","wire","wise","wish","withdraw","without","witness","woman","wonder","wood","word","work","worker","world","worried","worry","worth","would","wound","wrap","write","writer","wrong","yard","yeah","year","yell","yesterday","yield","young","yours","yourself","youth","zone"];
+
+  const USED=new Set();
+  let lives=3,score=0,roundNum=0,fragment='',timer=0,timerMax=8,timerInterval=null,phase='idle';
+  let gameStartTime=null,isOnline=false;
+
+  function pickFragment(){
+    return FRAGMENTS[Math.floor(Math.random()*FRAGMENTS.length)].toUpperCase();
+  }
+
+  function isValid(word){
+    const w=word.toLowerCase();
+    if(w.length<3)return false;
+    if(!w.includes(fragment.toLowerCase()))return false;
+    if(USED.has(w))return false;
+    if(!DICTIONARY.includes(w))return false;
+    return true;
+  }
+
+  function renderLives(){
+    document.getElementById('lives').innerHTML=Array.from({length:3},(_, i)=>`<span class="life${i>=lives?' lost':''}">${i<lives?'❤️':'🖤'}</span>`).join('');
+  }
+
+  function startRound(){
+    roundNum++;fragment=pickFragment();
+    document.getElementById('fragment').textContent=fragment;
+    document.getElementById('round-num').textContent=roundNum;
+    document.getElementById('msg').textContent='';
+    document.getElementById('word-input').value='';
+    document.getElementById('word-input').focus();
+
+    timerMax=Math.max(4,8-Math.floor(roundNum/5)*0.5);
+    timer=timerMax;
+    const bombEl=document.getElementById('bomb-emoji');bombEl.className='bomb-tick';bombEl.textContent='💣';
+
+    clearInterval(timerInterval);
+    timerInterval=setInterval(()=>{
+      timer-=0.1;
+      document.getElementById('timer-fill').style.width=Math.max(0,(timer/timerMax)*100)+'%';
+      if(timer<=0){
+        clearInterval(timerInterval);
+        loseLife();
+      }
+    },100);
+  }
+
+  function loseLife(){
+    lives--;renderLives();
+    const bombEl=document.getElementById('bomb-emoji');bombEl.className='bomb-explode';bombEl.textContent='💥';
+    document.getElementById('msg').textContent=`💥 BOOM! The bomb exploded!`;
+    playError();
+    if(lives<=0){setTimeout(endGame,800);return;}
+    setTimeout(startRound,1200);
+  }
+
+  const input=document.getElementById('word-input');
+  input.addEventListener('keydown',e=>{
+    if(e.key==='Enter')submitWord();
+  });
+
+  function submitWord(){
+    if(phase!=='play')return;
+    const word=input.value.trim();input.value='';
+    if(!word)return;
+
+    if(isValid(word)){
+      USED.add(word.toLowerCase());
+      const pts=Math.max(10,Math.round(timer/timerMax*50))+word.length*5;
+      score+=pts;
+      document.getElementById('score').textContent=score;
+      document.getElementById('msg').textContent=`✅ "${word}" +${pts}pts`;
+      document.getElementById('used-words').textContent=[...USED].join(', ');
+      playSuccess();clearInterval(timerInterval);
+      setTimeout(startRound,600);
+    } else {
+      let reason='Not a valid word.';
+      if(word.length<3)reason='Too short (min 3 letters).';
+      else if(!word.toLowerCase().includes(fragment.toLowerCase()))reason=`Must contain "${fragment}".`;
+      else if(USED.has(word.toLowerCase()))reason='Already used!';
+      document.getElementById('msg').textContent=`❌ ${reason}`;
+      input.classList.add('shake');setTimeout(()=>input.classList.remove('shake'),300);
+      playClick();
+    }
+  }
+
+  function endGame(){
+    phase='over';clearInterval(timerInterval);
+    document.getElementById('game-over-panel').style.display='block';
+    document.getElementById('winner-text').textContent=score>=300?'🔥 Word Master!':score>=150?'💣 Not Bad!':'📝 Keep Trying!';
+    document.getElementById('final-detail').textContent=`Score: ${score} | Rounds survived: ${roundNum-1} | Words: ${USED.size}`;
+    if(score>=300)playPerfect();else playGameOver();
+    const dur=Math.round((Date.now()-gameStartTime)/1000);
+    trackGameOver('word-bomb','Word',lives>0?1:0,score);
+    submitStats('word-bomb',{score,duration:dur,win:lives>0,loss:lives<=0,online:isOnline});
+    document.getElementById('play-again-btn').focus();
+    document.getElementById('play-again-btn').onclick=()=>{document.getElementById('game-over-panel').style.display='none';startNewGame();};
+  }
+
+  function startNewGame(){
+    lives=3;score=0;roundNum=0;USED.clear();phase='play';
+    document.getElementById('score').textContent=0;
+    document.getElementById('used-words').textContent='';
+    renderLives();gameStartTime=Date.now();
+    trackGameStart('word-bomb','Word');startRound();
+  }
+
+  renderModeSelector(document.getElementById('mp-mode-container'),'word-bomb',playerProfile?.name||'Player',{
+    onAI:()=>{isOnline=false;document.getElementById('game-area').style.display='block';startNewGame();},
+    onPrivate:()=>{isOnline=true;document.getElementById('game-area').style.display='block';startNewGame();},
+    onFind:()=>{isOnline=true;document.getElementById('game-area').style.display='block';startNewGame();},
+  },{maxPlayers:6});
+  </script>
+</body>
+</html>

@@ -1177,7 +1177,7 @@ export const games = [
     icon: '✋',
     accent: '#DC2626',
     keywords: ['egyptian rat screw online', 'ERS card game', 'slap card game', 'fast card game'],
-    built: false,
+    built: true,
     multiplayer: true,
     maxPlayers: 4
   },
@@ -1189,7 +1189,7 @@ export const games = [
     icon: '🎨',
     accent: '#E11D48',
     keywords: ['pictionary online', 'drawing game', 'quick draw game', 'draw and guess'],
-    built: false,
+    built: true,
     multiplayer: true,
     maxPlayers: 8
   },
@@ -1201,7 +1201,7 @@ export const games = [
     icon: '💣',
     accent: '#D97706',
     keywords: ['word bomb online', 'word game multiplayer', 'vocabulary game', 'typing game'],
-    built: false,
+    built: true,
     multiplayer: true,
     maxPlayers: 6
   },
@@ -1213,7 +1213,7 @@ export const games = [
     icon: '⚡',
     accent: '#6D28D9',
     keywords: ['trivia battle online', 'multiplayer trivia', 'quiz game online', 'trivia race'],
-    built: false,
+    built: true,
     multiplayer: true,
     maxPlayers: 8
   },

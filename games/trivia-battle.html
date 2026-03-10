@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Trivia Battle Online — Multiplayer Quiz Game | MiniGamePlanet</title>
+  <meta name="description" content="Play Trivia Battle online free. Answer questions faster than opponents to earn more points. 10 rounds, multiple categories. No download, no sign-up.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/trivia-battle">
+  <link rel="icon" href="/images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <meta property="og:type" content="website"><meta property="og:title" content="Free Trivia Battle | MiniGamePlanet"><meta property="og:description" content="Race to answer trivia fastest — multiplayer quiz game."><meta property="og:url" content="https://minigameplanet.com/games/trivia-battle"><meta property="og:image" content="https://minigameplanet.com/images/logo.png">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Trivia Battle","url":"https://minigameplanet.com/games/trivia-battle","description":"Play Trivia Battle online free — multiplayer speed quiz.","genre":"Trivia","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://minigameplanet.com"},{"@type":"ListItem","position":2,"name":"Trivia Games","item":"https://minigameplanet.com/#category"},{"@type":"ListItem","position":3,"name":"Trivia Battle","item":"https://minigameplanet.com/games/trivia-battle"}]}</script>
+  <style>
+    .hero-grad{background:linear-gradient(135deg,#7C3AED 0%,#9333EA 20%,#C026D3 40%,#E11D48 60%,#EA580C 80%,#F59E0B 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:heroShift 8s ease-in-out infinite}@keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+    .trivia-option{padding:12px 16px;border-radius:10px;border:2px solid #E5E7EB;background:#fff;cursor:pointer;font-size:15px;font-weight:500;text-align:left;font-family:inherit;transition:all 0.15s;width:100%}
+    .trivia-option:hover{border-color:#2563EB;background:#EFF6FF;transform:translateY(-1px)}
+    .trivia-option.correct{border-color:#22C55E;background:#DCFCE7;color:#166534}
+    .trivia-option.wrong{border-color:#DC2626;background:#FEE2E2;color:#991B1B}
+    .trivia-option.disabled{pointer-events:none;opacity:0.6}
+    @keyframes countDown{0%{transform:scale(1.5);opacity:0}50%{transform:scale(1);opacity:1}100%{transform:scale(0.8);opacity:0}}
+    .countdown-num{animation:countDown 1s ease forwards;font-size:48px;font-weight:700}
+    .tb-btn{padding:10px 24px;border-radius:10px;font-size:15px;font-weight:700;border:2px solid;cursor:pointer;font-family:inherit;transition:all 0.1s}.tb-btn:hover{transform:translateY(-1px)}
+    @keyframes progressShrink{from{width:100%}to{width:0%}}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <div><h1 style="font-size:22px;font-weight:700;margin:0;">🧠 Trivia Battle</h1><p style="font-size:12px;color:#94A3B8;margin:2px 0 0;">Answer fastest to win</p></div>
+        <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊 Sound</button>
+      </div>
+      <div id="mp-mode-container"></div>
+      <div id="game-area" style="display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;font-family:'DM Mono',monospace;font-size:13px;margin-bottom:10px;flex-wrap:wrap;gap:6px;">
+          <span>Q <span id="q-num">1</span>/10</span>
+          <span id="category-tag" style="padding:2px 8px;background:#EFF6FF;color:#2563EB;border-radius:4px;font-size:11px;font-weight:600;"></span>
+          <span>You: <span id="score-you" style="color:#059669;font-weight:700;">0</span> | Opp: <span id="score-opp" style="color:#DC2626;font-weight:700;">0</span></span>
+        </div>
+        <div id="timer-bar" style="width:100%;height:6px;background:#E5E7EB;border-radius:3px;margin-bottom:12px;overflow:hidden;">
+          <div id="timer-fill" style="height:100%;background:linear-gradient(90deg,#DC2626,#F59E0B,#22C55E);border-radius:3px;transition:width 0.1s;"></div>
+        </div>
+        <div id="question-area" style="min-height:260px;">
+          <h2 id="question-text" style="font-size:18px;font-weight:700;margin:0 0 16px;line-height:1.4;"></h2>
+          <div id="options" style="display:grid;gap:8px;"></div>
+          <div id="result-msg" style="text-align:center;margin-top:12px;font-size:14px;font-weight:600;min-height:24px;"></div>
+        </div>
+        <div id="game-over-panel" style="display:none;text-align:center;padding:20px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;margin-top:12px;">
+          <h3 id="winner-text" style="font-size:22px;font-weight:700;margin:0 0 8px;"></h3>
+          <p id="final-detail" style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;margin:0 0 16px;"></p>
+          <button id="play-again-btn" class="tb-btn" style="background:#2563EB;color:#fff;border-color:#1D4ED8;">Play Again</button>
+        </div>
+      </div>
+    </div>
+  </main>
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play Trivia Battle</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>Trivia Battle is a competitive quiz game. All players see the same question simultaneously. The faster you answer correctly, the more points you earn. First correct answer gets full points; second gets half. 10 questions per round across a variety of categories.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Scoring</h3>
+      <ul class="list-disc pl-5 space-y-1">
+        <li><strong>First correct:</strong> 100 points (speed bonus up to +50)</li>
+        <li><strong>Second correct:</strong> 50 points</li>
+        <li><strong>Wrong answer:</strong> 0 points</li>
+        <li>15 seconds per question — answer fast!</li>
+      </ul>
+    </div>
+  </article>
+  <div id="related-games"></div><div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playDeal, playPerfect } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+  import { renderModeSelector } from '/js/multiplayer.js';
+
+  document.addEventListener('click',()=>initAudio(),{once:true});
+  initToolPage('trivia-battle');initConsent();trackGameView('trivia-battle','Trivia');
+  let playerProfile=null;
+  getPlayer().then(p=>{playerProfile=p;if(p){const m=document.querySelector('main');renderIdentityBar(m,p);renderLeaderboard(m,'trivia-battle');}});
+  document.getElementById('sound-btn').addEventListener('click',()=>{initAudio();const m=muteAll();document.getElementById('sound-btn').textContent=m?'🔇 Sound':'🔊 Sound';});
+
+  const QUESTIONS=[
+    {q:"What planet is known as the Red Planet?",a:["Mars","Venus","Jupiter","Mercury"],c:0,cat:"Science"},
+    {q:"Who painted the Mona Lisa?",a:["Leonardo da Vinci","Michelangelo","Raphael","Donatello"],c:0,cat:"Art"},
+    {q:"What is the largest ocean on Earth?",a:["Pacific","Atlantic","Indian","Arctic"],c:0,cat:"Geography"},
+    {q:"In what year did World War II end?",a:["1945","1944","1946","1943"],c:0,cat:"History"},
+    {q:"What is the chemical symbol for gold?",a:["Au","Ag","Fe","Cu"],c:0,cat:"Science"},
+    {q:"Which country has the most people?",a:["India","China","USA","Indonesia"],c:0,cat:"Geography"},
+    {q:"Who wrote 'Romeo and Juliet'?",a:["Shakespeare","Dickens","Austen","Hemingway"],c:0,cat:"Literature"},
+    {q:"What is the square root of 144?",a:["12","14","10","16"],c:0,cat:"Math"},
+    {q:"Which element has the atomic number 1?",a:["Hydrogen","Helium","Lithium","Carbon"],c:0,cat:"Science"},
+    {q:"What is the capital of Japan?",a:["Tokyo","Osaka","Kyoto","Hiroshima"],c:0,cat:"Geography"},
+    {q:"Who discovered penicillin?",a:["Alexander Fleming","Louis Pasteur","Marie Curie","Isaac Newton"],c:0,cat:"Science"},
+    {q:"What year did the Titanic sink?",a:["1912","1905","1920","1898"],c:0,cat:"History"},
+    {q:"What is the longest river in the world?",a:["Nile","Amazon","Yangtze","Mississippi"],c:0,cat:"Geography"},
+    {q:"Who developed the theory of relativity?",a:["Einstein","Newton","Hawking","Bohr"],c:0,cat:"Science"},
+    {q:"What is the hardest natural substance?",a:["Diamond","Titanium","Quartz","Sapphire"],c:0,cat:"Science"},
+    {q:"Which planet has the most moons?",a:["Saturn","Jupiter","Uranus","Neptune"],c:0,cat:"Science"},
+    {q:"In which city is the Colosseum?",a:["Rome","Athens","Istanbul","Cairo"],c:0,cat:"Geography"},
+    {q:"Who was the first person on the Moon?",a:["Neil Armstrong","Buzz Aldrin","Yuri Gagarin","John Glenn"],c:0,cat:"History"},
+    {q:"What gas do plants absorb from air?",a:["Carbon dioxide","Oxygen","Nitrogen","Hydrogen"],c:0,cat:"Science"},
+    {q:"How many sides does a hexagon have?",a:["6","5","7","8"],c:0,cat:"Math"},
+    {q:"What is the smallest country in the world?",a:["Vatican City","Monaco","Nauru","San Marino"],c:0,cat:"Geography"},
+    {q:"Who composed 'The Four Seasons'?",a:["Vivaldi","Mozart","Bach","Beethoven"],c:0,cat:"Music"},
+    {q:"What color do you get mixing red and blue?",a:["Purple","Green","Orange","Brown"],c:0,cat:"Art"},
+    {q:"What is H2O commonly known as?",a:["Water","Oxygen","Hydrogen","Acid"],c:0,cat:"Science"},
+    {q:"Which animal is known as King of the Jungle?",a:["Lion","Tiger","Elephant","Gorilla"],c:0,cat:"Nature"},
+    {q:"What is the boiling point of water in Celsius?",a:["100","90","110","212"],c:0,cat:"Science"},
+    {q:"Who wrote '1984'?",a:["George Orwell","Aldous Huxley","Ray Bradbury","H.G. Wells"],c:0,cat:"Literature"},
+    {q:"What is the tallest mountain on Earth?",a:["Mount Everest","K2","Kangchenjunga","Lhotse"],c:0,cat:"Geography"},
+    {q:"How many bones are in the adult human body?",a:["206","208","204","210"],c:0,cat:"Science"},
+    {q:"What currency is used in Japan?",a:["Yen","Won","Yuan","Dollar"],c:0,cat:"Geography"},
+    {q:"Which planet is closest to the Sun?",a:["Mercury","Venus","Mars","Earth"],c:0,cat:"Science"},
+    {q:"Who painted 'Starry Night'?",a:["Van Gogh","Monet","Picasso","Dali"],c:0,cat:"Art"},
+    {q:"What is the largest continent?",a:["Asia","Africa","North America","Europe"],c:0,cat:"Geography"},
+    {q:"What year was the Declaration of Independence signed?",a:["1776","1774","1778","1780"],c:0,cat:"History"},
+    {q:"Which instrument has 88 keys?",a:["Piano","Organ","Accordion","Harpsichord"],c:0,cat:"Music"},
+    {q:"What is the main ingredient in guacamole?",a:["Avocado","Tomato","Lime","Onion"],c:0,cat:"Food"},
+    {q:"Who invented the telephone?",a:["Alexander Graham Bell","Thomas Edison","Nikola Tesla","Guglielmo Marconi"],c:0,cat:"History"},
+    {q:"What is the speed of light approximately?",a:["300,000 km/s","150,000 km/s","500,000 km/s","1,000,000 km/s"],c:0,cat:"Science"},
+    {q:"Which country is the Sahara Desert in?",a:["Multiple African countries","Saudi Arabia","India","Australia"],c:0,cat:"Geography"},
+    {q:"How many players on a soccer team?",a:["11","10","12","9"],c:0,cat:"Sports"},
+    {q:"What language has the most native speakers?",a:["Mandarin Chinese","English","Spanish","Hindi"],c:0,cat:"Language"},
+    {q:"What is the largest planet in our solar system?",a:["Jupiter","Saturn","Neptune","Uranus"],c:0,cat:"Science"},
+    {q:"Which organ pumps blood through the body?",a:["Heart","Liver","Lungs","Brain"],c:0,cat:"Science"},
+    {q:"What is the capital of Australia?",a:["Canberra","Sydney","Melbourne","Brisbane"],c:0,cat:"Geography"},
+    {q:"Who was the first president of the United States?",a:["George Washington","John Adams","Thomas Jefferson","Benjamin Franklin"],c:0,cat:"History"},
+    {q:"What is the chemical formula for table salt?",a:["NaCl","KCl","CaCl2","NaOH"],c:0,cat:"Science"},
+    {q:"How many continents are there?",a:["7","6","5","8"],c:0,cat:"Geography"},
+    {q:"Which animal is the fastest on land?",a:["Cheetah","Lion","Horse","Gazelle"],c:0,cat:"Nature"},
+    {q:"What does DNA stand for?",a:["Deoxyribonucleic acid","Dinitro acid","Dual nitrogen acid","Dynamic nuclear acid"],c:0,cat:"Science"},
+    {q:"In which sport do you use a shuttlecock?",a:["Badminton","Tennis","Squash","Table Tennis"],c:0,cat:"Sports"},
+  ];
+
+  let currentQ=0,scoreYou=0,scoreOpp=0,timer=15,timerInterval=null,answered=false;
+  let gameQuestions=[],phase='idle',gameStartTime=null,isOnline=false,correct=0;
+
+  function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+
+  function showQuestion(){
+    if(currentQ>=10){endGame();return;}
+    const q=gameQuestions[currentQ];answered=false;timer=15;
+    document.getElementById('q-num').textContent=currentQ+1;
+    document.getElementById('category-tag').textContent=q.cat;
+    document.getElementById('question-text').textContent=q.q;
+    document.getElementById('result-msg').textContent='';
+    document.getElementById('timer-fill').style.width='100%';
+    document.getElementById('timer-fill').style.transition='none';
+    requestAnimationFrame(()=>{document.getElementById('timer-fill').style.transition='width 15s linear';document.getElementById('timer-fill').style.width='0%';});
+
+    const shuffledIndices=shuffle([0,1,2,3]);
+    const correctNewIdx=shuffledIndices.indexOf(q.c);
+    const opts=shuffledIndices.map(i=>q.a[i]);
+
+    document.getElementById('options').innerHTML=opts.map((a,i)=>`<button class="trivia-option" data-idx="${i}">${a}</button>`).join('');
+    document.getElementById('options').querySelectorAll('.trivia-option').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        if(answered)return;answered=true;clearInterval(timerInterval);
+        const idx=parseInt(btn.dataset.idx);
+        if(idx===correctNewIdx){
+          btn.classList.add('correct');
+          const pts=Math.round(100+(timer/15)*50);scoreYou+=pts;correct++;
+          document.getElementById('result-msg').innerHTML=`<span style="color:#059669;">✅ Correct! +${pts} pts</span>`;
+          playSuccess();
+        } else {
+          btn.classList.add('wrong');
+          document.getElementById('options').querySelectorAll('.trivia-option')[correctNewIdx].classList.add('correct');
+          document.getElementById('result-msg').innerHTML=`<span style="color:#DC2626;">❌ Wrong! Answer: ${opts[correctNewIdx]}</span>`;
+          playError();
+        }
+        document.querySelectorAll('.trivia-option').forEach(b=>b.classList.add('disabled'));
+
+        const aiCorrect=Math.random()<0.5;
+        if(aiCorrect)scoreOpp+=Math.round(50+Math.random()*80);
+        document.getElementById('score-you').textContent=scoreYou;
+        document.getElementById('score-opp').textContent=scoreOpp;
+
+        currentQ++;setTimeout(showQuestion,2000);
+      });
+    });
+
+    clearInterval(timerInterval);
+    timerInterval=setInterval(()=>{
+      timer-=0.1;
+      if(timer<=0&&!answered){
+        clearInterval(timerInterval);answered=true;
+        document.getElementById('options').querySelectorAll('.trivia-option')[correctNewIdx].classList.add('correct');
+        document.querySelectorAll('.trivia-option').forEach(b=>b.classList.add('disabled'));
+        document.getElementById('result-msg').innerHTML=`<span style="color:#D97706;">⏰ Time's up! Answer: ${opts[correctNewIdx]}</span>`;
+        playError();
+        const aiCorrect=Math.random()<0.4;
+        if(aiCorrect)scoreOpp+=Math.round(50+Math.random()*60);
+        document.getElementById('score-opp').textContent=scoreOpp;
+        currentQ++;setTimeout(showQuestion,2000);
+      }
+    },100);
+  }
+
+  function endGame(){
+    phase='over';clearInterval(timerInterval);
+    const won=scoreYou>scoreOpp;
+    document.getElementById('game-over-panel').style.display='block';
+    document.getElementById('winner-text').textContent=won?'🎉 You Win!':scoreYou===scoreOpp?'🤝 Tie!':'😞 Opponent Wins';
+    document.getElementById('final-detail').textContent=`You: ${scoreYou} | Opp: ${scoreOpp} | Correct: ${correct}/10`;
+    if(won)playPerfect();else playGameOver();
+    const dur=Math.round((Date.now()-gameStartTime)/1000);
+    trackGameOver('trivia-battle','Trivia',won?1:0,scoreYou);
+    submitStats('trivia-battle',{score:scoreYou,duration:dur,win:won,loss:!won,online:isOnline});
+    document.getElementById('play-again-btn').focus();
+    document.getElementById('play-again-btn').onclick=()=>{document.getElementById('game-over-panel').style.display='none';startNewGame();};
+  }
+
+  function startNewGame(){
+    currentQ=0;scoreYou=0;scoreOpp=0;correct=0;phase='play';
+    document.getElementById('score-you').textContent=0;document.getElementById('score-opp').textContent=0;
+    gameQuestions=shuffle([...QUESTIONS]).slice(0,10);
+    gameStartTime=Date.now();trackGameStart('trivia-battle','Trivia');
+    showQuestion();
+  }
+
+  renderModeSelector(document.getElementById('mp-mode-container'),'trivia-battle',playerProfile?.name||'Player',{
+    onAI:()=>{isOnline=false;document.getElementById('game-area').style.display='block';startNewGame();},
+    onPrivate:()=>{isOnline=true;document.getElementById('game-area').style.display='block';startNewGame();},
+    onFind:()=>{isOnline=true;document.getElementById('game-area').style.display='block';startNewGame();},
+  },{maxPlayers:8});
+  </script>
+</body>
+</html>

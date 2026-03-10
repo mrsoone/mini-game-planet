@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Egyptian Rat Screw Online — Play Card Game | MiniGamePlanet</title>
+  <meta name="description" content="Play Egyptian Rat Screw online free. Slap doubles, sandwiches, and face cards in this fast-paced real-time card game. 2-4 players, no download needed.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/egyptian-rat-screw">
+  <link rel="icon" href="/images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <meta property="og:type" content="website"><meta property="og:title" content="Free Egyptian Rat Screw Online | MiniGamePlanet"><meta property="og:description" content="Slap doubles, sandwiches and face cards."><meta property="og:url" content="https://minigameplanet.com/games/egyptian-rat-screw"><meta property="og:image" content="https://minigameplanet.com/images/logo.png">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Egyptian Rat Screw","url":"https://minigameplanet.com/games/egyptian-rat-screw","description":"Play Egyptian Rat Screw online free — real-time slap card game.","genre":"Card","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://minigameplanet.com"},{"@type":"ListItem","position":2,"name":"Card Games","item":"https://minigameplanet.com/#category"},{"@type":"ListItem","position":3,"name":"Egyptian Rat Screw","item":"https://minigameplanet.com/games/egyptian-rat-screw"}]}</script>
+  <style>
+    .hero-grad{background:linear-gradient(135deg,#7C3AED 0%,#9333EA 20%,#C026D3 40%,#E11D48 60%,#EA580C 80%,#F59E0B 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:heroShift 8s ease-in-out infinite}@keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+    #ers-table{background:#1a1a2e;border-radius:16px;padding:20px;min-height:380px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+    .ers-card{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:80px;height:112px;border-radius:8px;font-family:'DM Mono',monospace;font-weight:700;font-size:20px;box-shadow:0 4px 12px rgba(0,0,0,0.3);position:relative;user-select:none;transition:transform 0.12s}
+    .ers-card.face-up{background:#fff;border:2px solid #E5E7EB}.ers-card.face-down{background:#DC2626;background-image:repeating-linear-gradient(45deg,transparent,transparent 3px,rgba(255,255,255,0.07) 3px,rgba(255,255,255,0.07) 6px);border:2px solid rgba(255,255,255,0.2)}
+    .ers-card.red{color:#DC2626}.ers-card.black{color:#0F172A}
+    @keyframes slapFlash{0%{box-shadow:0 0 0 0 rgba(250,204,21,0.8)}100%{box-shadow:0 0 40px 20px transparent}}
+    .slap-flash{animation:slapFlash 0.4s ease-out}
+    @keyframes cardFlip{0%{transform:rotateY(180deg) scale(0.8)}100%{transform:rotateY(0) scale(1)}}
+    .card-flip{animation:cardFlip 0.3s ease-out}
+    .ers-btn{padding:10px 24px;border-radius:10px;font-size:15px;font-weight:700;border:2px solid;cursor:pointer;font-family:inherit;transition:all 0.1s}.ers-btn:hover{transform:translateY(-1px)}.ers-btn:active{transform:scale(0.95)}.ers-btn:disabled{opacity:0.4;cursor:not-allowed}
+    @media(max-width:480px){.ers-card{width:64px;height:90px;font-size:16px}}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <div><h1 style="font-size:22px;font-weight:700;margin:0;">✋ Egyptian Rat Screw</h1><p style="font-size:12px;color:#94A3B8;margin:2px 0 0;">Speed slap — doubles, sandwiches, face cards</p></div>
+        <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊 Sound</button>
+      </div>
+      <div id="mp-mode-container"></div>
+      <div id="game-area" style="display:none;">
+        <div style="display:flex;justify-content:space-around;font-family:'DM Mono',monospace;font-size:12px;color:#64748B;margin-bottom:8px;">
+          <span style="color:#60A5FA;font-weight:700;">You: <span id="count-you">26</span></span>
+          <span>Opponent: <span id="count-opp">26</span></span>
+        </div>
+        <div id="ers-table">
+          <div id="pile-area" style="position:relative;width:80px;height:112px;">
+            <div id="pile-card"></div>
+          </div>
+          <div id="pile-count" style="font-family:'DM Mono',monospace;font-size:13px;color:#94A3B8;">Pile: 0</div>
+          <div id="msg" style="font-size:16px;font-weight:700;color:#FDE68A;min-height:24px;text-align:center;"></div>
+        </div>
+        <div style="display:flex;gap:12px;justify-content:center;margin-top:12px;">
+          <button id="btn-play" class="ers-btn" style="background:#2563EB;color:#fff;border-color:#1D4ED8;padding:14px 32px;font-size:17px;">▶ Play Card</button>
+          <button id="btn-slap" class="ers-btn" style="background:#DC2626;color:#fff;border-color:#B91C1C;padding:14px 32px;font-size:17px;">✋ SLAP!</button>
+        </div>
+        <div id="game-over-panel" style="display:none;text-align:center;padding:20px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;margin-top:12px;">
+          <h3 id="winner-text" style="font-size:22px;font-weight:700;margin:0 0 8px;"></h3>
+          <p id="final-detail" style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;margin:0 0 16px;"></p>
+          <button id="play-again-btn" class="ers-btn" style="background:#2563EB;color:#fff;border-color:#1D4ED8;">Play Again</button>
+        </div>
+      </div>
+    </div>
+  </main>
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play Egyptian Rat Screw</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>Egyptian Rat Screw (ERS) is a fast-paced, reflex-driven card game where players slap the pile to win cards. Deal the full deck evenly. Players take turns flipping cards face-up onto a central pile. When certain patterns appear, the first to slap the pile wins all the cards. Collect all 52 cards to win.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Slap Rules</h3>
+      <ul class="list-disc pl-5 space-y-1">
+        <li><strong>Doubles:</strong> Two cards of the same rank in a row (e.g., 7-7)</li>
+        <li><strong>Sandwich:</strong> Two cards of the same rank with one card between them (e.g., 5-K-5)</li>
+        <li><strong>Top-Bottom:</strong> The top card matches the bottom card of the pile</li>
+      </ul>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Face Card Challenge</h3>
+      <p>When a face card or Ace is played, the next player must play another face card within a set number of chances: <strong>Ace = 4, King = 3, Queen = 2, Jack = 1</strong>. If they fail, the player who played the face card takes the pile. If they succeed with another face card, the challenge passes on.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Tips</h3>
+      <ul class="list-disc pl-5 space-y-1">
+        <li>Watch for doubles and sandwiches — train your reflexes.</li>
+        <li>Don't slap incorrectly — you'll give a penalty card to the pile.</li>
+        <li>Face card challenges create big swings. Play strategically.</li>
+      </ul>
+    </div>
+  </article>
+  <div id="related-games"></div><div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playDeal, playDrop, playPerfect, playCollect } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+  import { renderModeSelector } from '/js/multiplayer.js';
+
+  document.addEventListener('click',()=>initAudio(),{once:true});
+  initToolPage('egyptian-rat-screw');initConsent();trackGameView('egyptian-rat-screw','Card');
+  let playerProfile=null;
+  getPlayer().then(p=>{playerProfile=p;if(p){const m=document.querySelector('main');renderIdentityBar(m,p);renderLeaderboard(m,'egyptian-rat-screw');}});
+  document.getElementById('sound-btn').addEventListener('click',()=>{initAudio();const m=muteAll();document.getElementById('sound-btn').textContent=m?'🔇 Sound':'🔊 Sound';});
+
+  const SUITS=['clubs','diamonds','hearts','spades'];
+  const RANKS=['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+  const SYM={spades:'♠',hearts:'♥',diamonds:'♦',clubs:'♣'};
+  const RED={hearts:true,diamonds:true};
+  const FACE_CHANCES={J:1,Q:2,K:3,A:4};
+
+  let myDeck=[],oppDeck=[],pile=[];
+  let myTurn=true,phase='idle',faceChallenge=0,faceChallenger=null;
+  let gameStartTime=null,isOnline=false,slapCount=0;
+
+  function rv(c){return RANKS.indexOf(c.rank);}
+  function isFace(c){return ['J','Q','K','A'].includes(c.rank);}
+
+  function makeDeck(){const d=[];for(const s of SUITS)for(const r of RANKS)d.push({suit:s,rank:r});for(let i=d.length-1;i>0;i--){const a=new Uint32Array(1);crypto.getRandomValues(a);const j=a[0]%(i+1);[d[i],d[j]]=[d[j],d[i]];}return d;}
+
+  function renderCard(c){
+    if(!c)return '';
+    const color=RED[c.suit]?'red':'black';
+    return `<div class="ers-card face-up ${color} card-flip"><span style="position:absolute;top:5px;left:7px;font-size:13px;line-height:1;">${c.rank}<br>${SYM[c.suit]}</span><span style="font-size:28px;">${SYM[c.suit]}</span></div>`;
+  }
+
+  function msg(t){document.getElementById('msg').textContent=t;}
+
+  function updateUI(){
+    document.getElementById('count-you').textContent=myDeck.length;
+    document.getElementById('count-opp').textContent=oppDeck.length;
+    document.getElementById('pile-count').textContent=`Pile: ${pile.length}`;
+    document.getElementById('pile-card').innerHTML=pile.length>0?renderCard(pile[pile.length-1]):'<div class="ers-card face-down"></div>';
+  }
+
+  function checkSlappable(){
+    if(pile.length<2)return false;
+    const top=pile[pile.length-1],sec=pile[pile.length-2];
+    if(top.rank===sec.rank)return 'doubles';
+    if(pile.length>=3&&top.rank===pile[pile.length-3].rank)return 'sandwich';
+    if(pile.length>=2&&top.rank===pile[0].rank)return 'top-bottom';
+    return false;
+  }
+
+  function collectPile(winner){
+    const cards=[...pile];pile=[];
+    if(winner==='you'){myDeck.push(...cards);playCollect();}
+    else{oppDeck.push(...cards);playError();}
+    faceChallenge=0;faceChallenger=null;updateUI();
+  }
+
+  function checkWin(){
+    if(myDeck.length===0&&!myTurn){endGame(false);return true;}
+    if(oppDeck.length===0&&myTurn){endGame(true);return true;}
+    if(myDeck.length===52){endGame(true);return true;}
+    if(oppDeck.length===52){endGame(false);return true;}
+    return false;
+  }
+
+  function playCardFromDeck(who){
+    if(phase!=='play')return;
+    const deck=who==='you'?myDeck:oppDeck;
+    if(deck.length===0){collectPile(who==='you'?'opp':'you');return;}
+    const card=deck.shift();pile.push(card);playDrop();updateUI();
+
+    if(faceChallenge>0&&faceChallenger!==(who==='you'?'you':'opp')){
+      if(isFace(card)){faceChallenge=FACE_CHANCES[card.rank];faceChallenger=who==='you'?'you':'opp';}
+      else{faceChallenge--;if(faceChallenge<=0){collectPile(faceChallenger);if(checkWin())return;myTurn=faceChallenger==='you';msg(myTurn?'Your turn':'Opponent turn');return;}}
+    } else if(isFace(card)){
+      faceChallenge=FACE_CHANCES[card.rank];faceChallenger=who==='you'?'you':'opp';
+    }
+
+    if(who==='you')myTurn=false;else myTurn=true;
+    msg(myTurn?'Your turn — Play or Slap':'Opponent playing...');
+    if(checkWin())return;
+    if(!myTurn)setTimeout(aiTurn,400+Math.random()*400);
+  }
+
+  function aiTurn(){
+    if(phase!=='play'||myTurn)return;
+    const slap=checkSlappable();
+    if(slap&&Math.random()<0.6){setTimeout(()=>{if(!myTurn&&phase==='play'){msg(`Opponent slapped — ${slap}!`);collectPile('opp');if(!checkWin()){myTurn=false;setTimeout(aiTurn,400);}};},200+Math.random()*300);return;}
+    playCardFromDeck('opp');
+  }
+
+  document.getElementById('btn-play').addEventListener('click',()=>{
+    if(phase!=='play'||!myTurn)return;
+    playCardFromDeck('you');
+  });
+
+  document.getElementById('btn-slap').addEventListener('click',()=>{
+    if(phase!=='play')return;
+    const slap=checkSlappable();
+    if(slap){
+      slapCount++;msg(`✋ ${slap.toUpperCase()}! You take the pile!`);
+      document.getElementById('pile-card').querySelector('.ers-card')?.classList.add('slap-flash');
+      playSuccess();collectPile('you');checkWin();
+      if(phase==='play'){myTurn=true;msg('Your turn');}
+    } else {
+      msg('❌ Bad slap! Penalty card added.');playError();
+      if(myDeck.length>0){const penalty=myDeck.shift();pile.unshift(penalty);}
+      updateUI();
+    }
+  });
+
+  document.addEventListener('keydown',e=>{
+    if(phase!=='play')return;
+    if(e.code==='Space'){e.preventDefault();document.getElementById('btn-slap').click();}
+    if(e.code==='Enter'){e.preventDefault();document.getElementById('btn-play').click();}
+  });
+
+  function endGame(won){
+    phase='over';
+    document.getElementById('game-over-panel').style.display='block';
+    document.getElementById('winner-text').textContent=won?'🎉 You Win!':'😞 Opponent Wins!';
+    document.getElementById('final-detail').textContent=`Slaps: ${slapCount} | Cards collected: ${won?52:0}`;
+    if(won)playPerfect();else playGameOver();
+    const dur=Math.round((Date.now()-gameStartTime)/1000);
+    trackGameOver('egyptian-rat-screw','Card',won?1:0,myDeck.length);
+    submitStats('egyptian-rat-screw',{score:myDeck.length,duration:dur,win:won,loss:!won,online:isOnline});
+    document.getElementById('play-again-btn').focus();
+    document.getElementById('play-again-btn').onclick=()=>{document.getElementById('game-over-panel').style.display='none';startGame();};
+  }
+
+  function startGame(){
+    const deck=makeDeck();myDeck=deck.slice(0,26);oppDeck=deck.slice(26);pile=[];
+    faceChallenge=0;faceChallenger=null;myTurn=true;phase='play';slapCount=0;
+    gameStartTime=Date.now();trackGameStart('egyptian-rat-screw','Card');
+    msg('Your turn — Play a card or Slap!');playDeal();updateUI();
+  }
+
+  renderModeSelector(document.getElementById('mp-mode-container'),'egyptian-rat-screw',playerProfile?.name||'Player',{
+    onAI:()=>{isOnline=false;document.getElementById('game-area').style.display='block';startGame();},
+    onPrivate:()=>{isOnline=true;document.getElementById('game-area').style.display='block';startGame();},
+    onFind:()=>{isOnline=true;document.getElementById('game-area').style.display='block';startGame();},
+  },{maxPlayers:4});
+  </script>
+</body>
+</html>

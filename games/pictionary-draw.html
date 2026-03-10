@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Quick Draw Online — Drawing &amp; Guessing Game | MiniGamePlanet</title>
+  <meta name="description" content="Play Quick Draw online free. Draw words while friends guess. Simple brush, colors, 60-second rounds. Pictionary-style party game — no download, no sign-up.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/pictionary-draw">
+  <link rel="icon" href="/images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <meta property="og:type" content="website"><meta property="og:title" content="Free Quick Draw Online | MiniGamePlanet"><meta property="og:description" content="Draw words, friends guess — Pictionary-style party game."><meta property="og:url" content="https://minigameplanet.com/games/pictionary-draw"><meta property="og:image" content="https://minigameplanet.com/images/logo.png">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Quick Draw","url":"https://minigameplanet.com/games/pictionary-draw","description":"Play Quick Draw online free — Pictionary-style drawing and guessing game.","genre":"Party","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://minigameplanet.com"},{"@type":"ListItem","position":2,"name":"Party Games","item":"https://minigameplanet.com/#category"},{"@type":"ListItem","position":3,"name":"Quick Draw","item":"https://minigameplanet.com/games/pictionary-draw"}]}</script>
+  <style>
+    .hero-grad{background:linear-gradient(135deg,#7C3AED 0%,#9333EA 20%,#C026D3 40%,#E11D48 60%,#EA580C 80%,#F59E0B 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:heroShift 8s ease-in-out infinite}@keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+    #draw-canvas{background:#fff;border-radius:12px;border:2px solid #E5E7EB;touch-action:none;cursor:crosshair;display:block;margin:0 auto}
+    .color-btn{width:28px;height:28px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:transform 0.1s}.color-btn:hover{transform:scale(1.15)}.color-btn.active{border-color:#0F172A;transform:scale(1.2)}
+    .draw-btn{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:700;border:2px solid;cursor:pointer;font-family:inherit;transition:all 0.1s}.draw-btn:hover{transform:translateY(-1px)}
+    @keyframes timerPulse{0%,100%{color:#DC2626}50%{color:#FDE68A}}
+    .timer-warn{animation:timerPulse 0.5s ease infinite}
+    @media(max-width:480px){#draw-canvas{max-width:100%;height:auto}}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <div><h1 style="font-size:22px;font-weight:700;margin:0;">🎨 Quick Draw</h1><p style="font-size:12px;color:#94A3B8;margin:2px 0 0;">Draw it, guess it — Pictionary-style</p></div>
+        <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊 Sound</button>
+      </div>
+      <div id="mp-mode-container"></div>
+      <div id="game-area" style="display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;font-family:'DM Mono',monospace;font-size:13px;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+          <span>Round <span id="round-num">1</span>/5</span>
+          <span id="timer" style="font-size:20px;font-weight:700;color:#2563EB;">60</span>
+          <span>Score: <span id="score" style="font-weight:700;color:#059669;">0</span></span>
+        </div>
+        <div id="word-display" style="text-align:center;margin-bottom:8px;font-size:18px;font-weight:700;min-height:28px;"></div>
+        <div id="hint-display" style="text-align:center;margin-bottom:8px;font-size:14px;color:#94A3B8;min-height:20px;"></div>
+        <canvas id="draw-canvas" width="500" height="380"></canvas>
+        <div id="draw-tools" style="display:flex;align-items:center;gap:8px;justify-content:center;margin-top:8px;flex-wrap:wrap;">
+          <div id="colors" style="display:flex;gap:4px;"></div>
+          <select id="brush-size" style="padding:4px 8px;border-radius:6px;border:1px solid #D1D5DB;font-size:12px;font-family:inherit;"><option value="3">Thin</option><option value="6" selected>Medium</option><option value="12">Thick</option></select>
+          <button id="btn-eraser" class="draw-btn" style="background:#F1F5F9;color:#0F172A;border-color:#D1D5DB;">Eraser</button>
+          <button id="btn-clear" class="draw-btn" style="background:#FEE2E2;color:#DC2626;border-color:#FCA5A5;">Clear</button>
+        </div>
+        <div id="guess-area" style="margin-top:10px;">
+          <div id="guess-log" style="max-height:120px;overflow-y:auto;font-size:12px;color:#64748B;margin-bottom:6px;padding:6px;background:#F8FAFC;border-radius:8px;min-height:40px;"></div>
+          <div style="display:flex;gap:6px;">
+            <input id="guess-input" type="text" placeholder="Type your guess..." style="flex:1;padding:8px 12px;border-radius:8px;border:2px solid #E5E7EB;font-size:14px;font-family:inherit;" autocomplete="off">
+            <button id="btn-guess" class="draw-btn" style="background:#2563EB;color:#fff;border-color:#1D4ED8;padding:8px 16px;">Guess</button>
+          </div>
+        </div>
+        <div id="word-pick" style="display:none;text-align:center;padding:20px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;margin-top:10px;">
+          <p style="font-weight:700;font-size:15px;margin:0 0 10px;">Pick a word to draw:</p>
+          <div id="word-options" style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;"></div>
+        </div>
+        <div id="game-over-panel" style="display:none;text-align:center;padding:20px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;margin-top:10px;">
+          <h3 id="winner-text" style="font-size:22px;font-weight:700;margin:0 0 8px;"></h3>
+          <p id="final-detail" style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;margin:0 0 16px;"></p>
+          <button id="play-again-btn" class="draw-btn" style="background:#2563EB;color:#fff;border-color:#1D4ED8;padding:10px 28px;font-size:15px;">Play Again</button>
+        </div>
+      </div>
+    </div>
+  </main>
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play Quick Draw</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>Quick Draw is a Pictionary-style drawing and guessing game. One player draws a secret word on the canvas while others type guesses. The faster you guess correctly, the more points you earn. After 60 seconds, the round ends and the answer is revealed. 5 rounds per game with alternating drawers.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Scoring</h3>
+      <ul class="list-disc pl-5 space-y-1">
+        <li><strong>Correct guess:</strong> Points based on speed — 100 pts at 60s down to 10 pts at the last second</li>
+        <li><strong>Drawing bonus:</strong> Drawer gets 50 pts when someone guesses correctly</li>
+        <li>Hints appear at 40s and 20s remaining, revealing some letters</li>
+      </ul>
+    </div>
+  </article>
+  <div id="related-games"></div><div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playDeal, playPerfect } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+  import { renderModeSelector } from '/js/multiplayer.js';
+
+  document.addEventListener('click',()=>initAudio(),{once:true});
+  initToolPage('pictionary-draw');initConsent();trackGameView('pictionary-draw','Party');
+  let playerProfile=null;
+  getPlayer().then(p=>{playerProfile=p;if(p){const m=document.querySelector('main');renderIdentityBar(m,p);renderLeaderboard(m,'pictionary-draw');}});
+  document.getElementById('sound-btn').addEventListener('click',()=>{initAudio();const m=muteAll();document.getElementById('sound-btn').textContent=m?'🔇 Sound':'🔊 Sound';});
+
+  const WORDS=["cat","dog","house","sun","moon","car","tree","flower","fish","bird","hat","book","star","heart","clock","boat","shoe","pizza","apple","banana","guitar","piano","horse","elephant","butterfly","rainbow","castle","robot","rocket","diamond","crown","bridge","island","mountain","ocean","fire","cloud","ghost","dragon","unicorn","snowman","volcano","tornado","umbrella","sandwich","hamburger","popcorn","donut","ice cream","cake","cookie","candy","balloon","bicycle","airplane","helicopter","submarine","train","skateboard","surfboard","telescope","microscope","camera","laptop","headphones","glasses","scissors","hammer","paintbrush","sword","shield","arrow","anchor","lighthouse","windmill","waterfall","campfire","tent","backpack","compass","treasure","pirate","ninja","cowboy","astronaut","mermaid","wizard","vampire","zombie","alien","monkey","penguin","dolphin","giraffe","lion","snake","turtle","frog","octopus","spider","crab","whale","eagle","owl","parrot","flamingo","kangaroo","panda","koala","bear","wolf","fox","rabbit","mouse","squirrel","deer","bat","shark","jellyfish","seahorse","lobster","bee","ladybug","caterpillar","snail","mushroom","cactus","palm tree","pine tree","rose","sunflower","tulip","daisy","leaf","acorn","corn","carrot","broccoli","pumpkin","watermelon","grape","cherry","strawberry","pineapple","coconut","lemon","pear","peach","mango","avocado","tomato","onion","pepper","potato","bread","cheese","egg","bacon","sushi","taco","burrito","noodles","soup","salad","steak","chicken","shrimp","fries","waffle","pancake","muffin","pie","chocolate","lollipop","gummy bear","pretzel","hot dog","milkshake","coffee","wine","beer","teapot","cup","fork","knife","spoon","plate","bowl","pan","oven","blender","toaster","fridge","microwave","washing machine","iron","broom","vacuum","bucket","toilet","bathtub","shower","soap","toothbrush","mirror","pillow","blanket","lamp","candle","window","door","key","lock","stairs","roof","chimney","fence","mailbox","bench","swing","slide","seesaw","pool","fountain","statue","flag","medal","trophy","dice","cards","chess","puzzle","drum","trumpet","violin","flute","microphone","speaker","TV","remote","phone","tablet","charger","USB","mouse pad","keyboard","printer","monitor","projector","satellite","antenna","battery","plug","lightbulb","flashlight","match","fireworks","kite","balloon","parachute","trampoline","roller coaster","ferris wheel","carousel","bowling","basketball","football","soccer","tennis","baseball","golf","hockey","volleyball","boxing","karate","archery","fencing","skiing","snowboard","surfing","skateboard","roller skate","scooter","motorcycle","truck","bus","taxi","ambulance","fire truck","police car","tractor","bulldozer","crane","forklift","excavator","tank","cannon","bomb","bow","crossbow","dagger","axe","spear","trident","wand","cape","mask","belt","ring","necklace","bracelet","earring","tiara","monocle","top hat","helmet","boot","sandal","sock","glove","scarf","tie","vest","jacket","dress","skirt","pants","shorts","swimsuit","apron","robe","toga","bandana","wig","beard","mustache","eyebrow","eyelash","nose","mouth","ear","hand","foot","elbow","knee","shoulder","brain","bone","skull","rib","spine","muscle","tooth","tongue","lip","cheek","chin","forehead","neck","chest","stomach","arm","leg","finger","thumb","wrist","ankle","heel","toe","horn","tail","wing","claw","feather","scale","fur","stripe","spot","paw","hoof","beak","nest","hive","web","cocoon","shell","coral","seaweed","sand","wave","tide","cliff","cave","hill","valley","river","lake","pond","stream","swamp","desert","jungle","forest","meadow","field","garden","farm","barn","silo","well","dam","tunnel","mine","quarry","pyramid","sphinx","colosseum","eiffel tower","liberty","igloo","teepee","cabin","mansion","skyscraper","church","temple","mosque","pagoda","arch","column","dome","tower","wall","gate","drawbridge","moat","dungeon","throne","scepter","orb","scroll","map","globe","atlas","calendar","newspaper","envelope","stamp","pen","pencil","marker","crayon","chalk","eraser","ruler","compass","calculator","abacus","hourglass","sundial","thermometer","stethoscope","syringe","bandage","crutch","wheelchair","stretcher","coffin","gravestone","cross","angel","devil","halo","pitchfork","lightning","thunder","earthquake","flood","drought","blizzard","hurricane","eclipse","comet","meteor","constellation","galaxy","planet","saturn","jupiter","mars","neptune","asteroid","spaceship","UFO","satellite","space station"];
+
+  const COLORS=['#0F172A','#DC2626','#2563EB','#059669','#D97706','#7C3AED','#EC4899','#F97316','#64748B','#fff'];
+  let drawColor='#0F172A',brushSize=6,isEraser=false;
+  let drawing=false,ctx=null;
+  let currentWord='',round=0,totalRounds=5,timer=60,timerInterval=null,score=0,guessed=false;
+  let isDrawer=true,gameStartTime=null,isOnline=false;
+
+  const canvas=document.getElementById('draw-canvas');
+  ctx=canvas.getContext('2d');
+
+  function resizeCanvas(){
+    const w=Math.min(500,canvas.parentElement.clientWidth-4);
+    canvas.style.width=w+'px';canvas.style.height=Math.round(w*0.76)+'px';
+  }
+  resizeCanvas();window.addEventListener('resize',resizeCanvas);
+
+  const colorsDiv=document.getElementById('colors');
+  COLORS.forEach(c=>{
+    const btn=document.createElement('div');btn.className='color-btn';btn.style.background=c;
+    if(c==='#fff')btn.style.border='2px solid #D1D5DB';
+    if(c===drawColor)btn.classList.add('active');
+    btn.addEventListener('click',()=>{drawColor=c;isEraser=false;document.getElementById('btn-eraser').style.background='#F1F5F9';colorsDiv.querySelectorAll('.color-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');});
+    colorsDiv.appendChild(btn);
+  });
+  document.getElementById('brush-size').addEventListener('change',e=>{brushSize=parseInt(e.target.value);});
+  document.getElementById('btn-eraser').addEventListener('click',()=>{isEraser=!isEraser;document.getElementById('btn-eraser').style.background=isEraser?'#BFDBFE':'#F1F5F9';});
+  document.getElementById('btn-clear').addEventListener('click',()=>{ctx.clearRect(0,0,canvas.width,canvas.height);});
+
+  function getPos(e){
+    const rect=canvas.getBoundingClientRect();
+    const sx=canvas.width/rect.width,sy=canvas.height/rect.height;
+    const t=e.touches?e.touches[0]:e;
+    return{x:(t.clientX-rect.left)*sx,y:(t.clientY-rect.top)*sy};
+  }
+  canvas.addEventListener('pointerdown',e=>{if(!isDrawer)return;drawing=true;const p=getPos(e);ctx.beginPath();ctx.moveTo(p.x,p.y);});
+  canvas.addEventListener('pointermove',e=>{if(!drawing||!isDrawer)return;const p=getPos(e);ctx.lineWidth=brushSize;ctx.lineCap='round';ctx.strokeStyle=isEraser?'#ffffff':drawColor;ctx.lineTo(p.x,p.y);ctx.stroke();});
+  canvas.addEventListener('pointerup',()=>{drawing=false;});
+  canvas.addEventListener('pointerleave',()=>{drawing=false;});
+
+  function makeHint(word,reveal){
+    const arr=word.split('');const indices=[];
+    arr.forEach((c,i)=>{if(c!==' ')indices.push(i);});
+    for(let i=indices.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[indices[i],indices[j]]=[indices[j],indices[i]];}
+    const toReveal=indices.slice(0,reveal);
+    return arr.map((c,i)=>c===' '?' ':(toReveal.includes(i)?c:'_')).join(' ');
+  }
+
+  function startRound(){
+    round++;if(round>totalRounds){endGame();return;}
+    guessed=false;timer=60;ctx.clearRect(0,0,canvas.width,canvas.height);
+    document.getElementById('round-num').textContent=round;
+    document.getElementById('guess-log').innerHTML='';
+    document.getElementById('guess-input').value='';
+    document.getElementById('word-display').textContent='';
+    document.getElementById('hint-display').textContent='';
+    isDrawer=round%2===1;
+
+    if(isDrawer){
+      const picks=[];while(picks.length<3){const w=WORDS[Math.floor(Math.random()*WORDS.length)];if(!picks.includes(w))picks.push(w);}
+      const wp=document.getElementById('word-pick');wp.style.display='block';
+      document.getElementById('word-options').innerHTML=picks.map(w=>`<button class="draw-btn" style="background:#2563EB;color:#fff;border-color:#1D4ED8;padding:10px 20px;font-size:14px;" data-word="${w}">${w}</button>`).join('');
+      document.getElementById('word-options').querySelectorAll('button').forEach(b=>{b.addEventListener('click',()=>{currentWord=b.dataset.word;wp.style.display='none';document.getElementById('word-display').textContent=`Draw: ${currentWord}`;document.getElementById('draw-tools').style.display='flex';document.getElementById('guess-area').style.display='none';startTimer();});});
+      document.getElementById('draw-tools').style.display='none';
+    } else {
+      currentWord=WORDS[Math.floor(Math.random()*WORDS.length)];
+      document.getElementById('word-display').textContent=makeHint(currentWord,0);
+      document.getElementById('hint-display').textContent=`${currentWord.length} letters`;
+      document.getElementById('draw-tools').style.display='none';
+      document.getElementById('guess-area').style.display='block';
+      setTimeout(()=>aiDraw(),500);
+      startTimer();
+    }
+  }
+
+  function aiDraw(){
+    const steps=10+Math.floor(Math.random()*20);
+    let i=0;
+    const interval=setInterval(()=>{
+      if(i>=steps||phase!=='play'){clearInterval(interval);return;}
+      ctx.lineWidth=4+Math.random()*4;ctx.lineCap='round';ctx.strokeStyle=COLORS[Math.floor(Math.random()*6)];
+      ctx.beginPath();
+      const x1=50+Math.random()*400,y1=50+Math.random()*280;
+      ctx.moveTo(x1,y1);
+      for(let s=0;s<5;s++)ctx.lineTo(x1+Math.random()*100-50,y1+Math.random()*100-50);
+      ctx.stroke();i++;
+    },300);
+  }
+
+  let phase='idle';
+  function startTimer(){
+    const timerEl=document.getElementById('timer');
+    timerInterval=setInterval(()=>{
+      timer--;timerEl.textContent=timer;
+      if(timer<=10)timerEl.classList.add('timer-warn');else timerEl.classList.remove('timer-warn');
+      if(!isDrawer&&!guessed){
+        if(timer===40)document.getElementById('hint-display').textContent=makeHint(currentWord,Math.ceil(currentWord.replace(/ /g,'').length*0.3));
+        if(timer===20)document.getElementById('hint-display').textContent=makeHint(currentWord,Math.ceil(currentWord.replace(/ /g,'').length*0.6));
+      }
+      if(timer<=0){clearInterval(timerInterval);if(!guessed){addLog(`⏰ Time's up! The word was: ${currentWord}`);playError();}setTimeout(startRound,2000);}
+    },1000);
+  }
+
+  function addLog(msg){
+    const log=document.getElementById('guess-log');
+    log.innerHTML+=`<div style="padding:2px 0;">${msg}</div>`;
+    log.scrollTop=log.scrollHeight;
+  }
+
+  document.getElementById('btn-guess').addEventListener('click',submitGuess);
+  document.getElementById('guess-input').addEventListener('keydown',e=>{if(e.key==='Enter')submitGuess();});
+
+  function submitGuess(){
+    if(guessed||isDrawer)return;
+    const input=document.getElementById('guess-input');
+    const guess=input.value.trim().toLowerCase();input.value='';
+    if(!guess)return;
+
+    if(guess===currentWord.toLowerCase()){
+      guessed=true;const pts=Math.max(10,Math.round(timer/60*100));score+=pts;
+      document.getElementById('score').textContent=score;
+      addLog(`✅ Correct! "${currentWord}" — +${pts} pts`);
+      document.getElementById('word-display').textContent=`✅ ${currentWord}`;playSuccess();
+      clearInterval(timerInterval);setTimeout(startRound,2000);
+    } else {
+      const close=currentWord.toLowerCase().includes(guess)||guess.includes(currentWord.toLowerCase().substring(0,3));
+      addLog(`❌ ${guess}${close?' — close!':''}`);playClick();
+    }
+  }
+
+  function endGame(){
+    phase='over';clearInterval(timerInterval);
+    document.getElementById('game-over-panel').style.display='block';
+    document.getElementById('winner-text').textContent=score>=200?'🎉 Amazing Artist!':score>=100?'🎨 Great Job!':'🖌️ Keep Practicing!';
+    document.getElementById('final-detail').textContent=`Final Score: ${score} points`;
+    if(score>=200)playPerfect();else playSuccess();
+    const dur=Math.round((Date.now()-gameStartTime)/1000);
+    trackGameOver('pictionary-draw','Party',1,score);
+    submitStats('pictionary-draw',{score,duration:dur,win:true,loss:false,online:isOnline});
+    document.getElementById('play-again-btn').focus();
+    document.getElementById('play-again-btn').onclick=()=>{document.getElementById('game-over-panel').style.display='none';startNewGame();};
+  }
+
+  function startNewGame(){
+    round=0;score=0;phase='play';gameStartTime=Date.now();
+    document.getElementById('score').textContent=0;
+    trackGameStart('pictionary-draw','Party');
+    startRound();
+  }
+
+  renderModeSelector(document.getElementById('mp-mode-container'),'pictionary-draw',playerProfile?.name||'Player',{
+    onAI:()=>{isOnline=false;document.getElementById('game-area').style.display='block';startNewGame();},
+    onPrivate:()=>{isOnline=true;document.getElementById('game-area').style.display='block';startNewGame();},
+    onFind:()=>{isOnline=true;document.getElementById('game-area').style.display='block';startNewGame();},
+  },{maxPlayers:8});
+  </script>
+</body>
+</html>
