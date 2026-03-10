@@ -1090,7 +1090,7 @@ export const games = [
     icon: '🃏',
     accent: '#DC2626',
     keywords: ['gin rummy online', 'play gin rummy free', 'gin rummy card game', 'rummy'],
-    built: false,
+    built: true,
     multiplayer: true,
     maxPlayers: 2,
     ranked: true
@@ -1103,7 +1103,7 @@ export const games = [
     icon: '🃏',
     accent: '#DC2626',
     keywords: ['rummy 500 online', 'play rummy free', '500 rummy', 'card game'],
-    built: false,
+    built: true,
     multiplayer: true,
     maxPlayers: 4
   },
@@ -1128,7 +1128,7 @@ export const games = [
     icon: '🎴',
     accent: '#DC2626',
     keywords: ['cribbage online', 'play cribbage free', 'cribbage board game', 'pegging'],
-    built: false,
+    built: true,
     multiplayer: true,
     maxPlayers: 2,
     ranked: true

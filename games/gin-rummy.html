@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Gin Rummy Online — Play Instantly | MiniGamePlanet</title>
+  <meta name="description" content="Play Gin Rummy online free. Draw, discard, form melds, and knock or go gin. Classic 2-player card game with smart AI — no download, no sign-up.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/gin-rummy">
+  <link rel="icon" href="/images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500});gtag('config','G-XXXXXXXXXX');</script>
+  <meta property="og:type" content="website"><meta property="og:title" content="Free Gin Rummy Online | MiniGamePlanet"><meta property="og:description" content="Play Gin Rummy free — draw, discard, knock or gin."><meta property="og:url" content="https://minigameplanet.com/games/gin-rummy"><meta property="og:image" content="https://minigameplanet.com/images/logo.png"><meta property="og:site_name" content="MiniGamePlanet">
+  <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Free Gin Rummy Online | MiniGamePlanet"><meta name="twitter:description" content="Play Gin Rummy free — draw, discard, knock or gin."><meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Gin Rummy","url":"https://minigameplanet.com/games/gin-rummy","description":"Play Gin Rummy online free — classic 2-player card game.","genre":"Card","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://minigameplanet.com"},{"@type":"ListItem","position":2,"name":"Card Games","item":"https://minigameplanet.com/#category"},{"@type":"ListItem","position":3,"name":"Gin Rummy","item":"https://minigameplanet.com/games/gin-rummy"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do you play Gin Rummy?","acceptedAnswer":{"@type":"Answer","text":"Each player gets 10 cards. On your turn, draw from the stock or discard pile, then discard one card. Form sets (3-4 of a kind) and runs (3+ sequential same suit). Knock when your deadwood is 10 or less, or go Gin with zero deadwood."}},{"@type":"Question","name":"What is deadwood in Gin Rummy?","acceptedAnswer":{"@type":"Answer","text":"Deadwood is the total value of cards in your hand that are NOT part of any meld (set or run). Face cards are worth 10, aces are 1, number cards are face value. You can knock when deadwood is 10 or less."}},{"@type":"Question","name":"What is the difference between Knock and Gin?","acceptedAnswer":{"@type":"Answer","text":"Knocking ends the round when your deadwood is 10 or less. Gin means you have zero deadwood — no unmatched cards. Gin earns a 25-point bonus. If you knock and your opponent has equal or less deadwood, they undercut you for a 25-point bonus."}}]}</script>
+  <style>
+    .hero-grad{background:linear-gradient(135deg,#7C3AED 0%,#9333EA 20%,#C026D3 40%,#E11D48 60%,#EA580C 80%,#F59E0B 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:heroShift 8s ease-in-out infinite}@keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+    @keyframes mgpBtnPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
+    #gr-table{background:#1a1a2e;border-radius:16px;padding:20px;position:relative;min-height:360px}
+    .gr-card{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:clamp(50px,8.5vw,72px);height:clamp(72px,12vw,100px);border-radius:7px;font-family:'DM Mono',monospace;font-weight:700;font-size:clamp(12px,2vw,16px);box-shadow:0 2px 6px rgba(0,0,0,0.15);position:relative;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;flex-shrink:0;user-select:none}
+    .gr-card.face-up{background:#fff;border:1.5px solid #E5E7EB}.gr-card.face-down{background:#DC2626;background-image:repeating-linear-gradient(45deg,transparent,transparent 3px,rgba(255,255,255,0.07) 3px,rgba(255,255,255,0.07) 6px);border:1.5px solid rgba(255,255,255,0.2)}
+    .gr-card.red{color:#DC2626}.gr-card.black{color:#0F172A}
+    .gr-card.playable:hover{transform:translateY(-6px);box-shadow:0 6px 16px rgba(0,0,0,0.25)}
+    .gr-card.selected{transform:translateY(-10px);box-shadow:0 0 0 2px #2563EB,0 6px 16px rgba(37,99,235,0.3)}
+    .gr-card.meld-highlight{box-shadow:0 0 0 2px #059669}
+    #gr-hand{display:flex;justify-content:center;padding:8px;overflow-x:auto}#gr-hand .gr-card{margin:0 -4px}
+    .gr-btn{padding:8px 20px;border-radius:8px;font-size:13px;font-weight:700;border:2px solid;cursor:pointer;font-family:inherit;transition:all 0.1s}.gr-btn:hover{transform:translateY(-1px)}.gr-btn:active{transform:scale(0.97)}.gr-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none}
+    .gr-pile{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer}
+    .gr-pile:hover .gr-card{box-shadow:0 0 0 2px #FDE68A,0 4px 12px rgba(0,0,0,0.2)}
+    .gr-scoreboard{font-family:'DM Mono',monospace;font-size:12px;background:#0f172a;color:#fff;border-radius:8px;padding:8px 12px;display:flex;gap:20px;justify-content:center;align-items:center}
+    @media(max-width:480px){#gr-table{min-height:280px;padding:12px}#gr-hand .gr-card{width:44px;height:62px;font-size:11px}}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;" id="game-wrap">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <div><h1 style="font-size:22px;font-weight:700;margin:0;">🃏 Gin Rummy</h1><p style="font-size:12px;color:#94A3B8;margin:2px 0 0;">Draw, meld, knock — or go gin</p></div>
+        <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊 Sound</button>
+      </div>
+      <div id="mp-mode-container"></div>
+      <div id="game-area" style="display:none;">
+        <div class="gr-scoreboard" id="scoreboard" style="margin-bottom:10px;">
+          <span>You: <strong id="score-you">0</strong></span>
+          <span style="color:#94A3B8;">|</span>
+          <span>Opponent: <strong id="score-opp">0</strong></span>
+          <span style="color:#94A3B8;">|</span>
+          <span style="color:#FDE68A;">Round <span id="round-num">1</span></span>
+        </div>
+        <div id="gr-table">
+          <div style="text-align:center;margin-bottom:12px;">
+            <span style="color:rgba(255,255,255,0.6);font-size:11px;font-weight:600;">OPPONENT</span>
+            <div id="opp-hand" style="display:flex;justify-content:center;margin-top:4px;"></div>
+            <div id="opp-melds" style="margin-top:6px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;"></div>
+          </div>
+          <div style="display:flex;justify-content:center;gap:24px;align-items:center;margin:16px 0;">
+            <div class="gr-pile" id="stock-pile" title="Draw from stock">
+              <div class="gr-card face-down" style="width:60px;height:84px;"></div>
+              <span style="font-size:10px;color:#94A3B8;font-family:'DM Mono',monospace;" id="stock-count">32</span>
+            </div>
+            <div class="gr-pile" id="discard-pile" title="Draw from discard">
+              <div id="discard-top" style="min-width:60px;min-height:84px;"></div>
+              <span style="font-size:10px;color:#94A3B8;">Discard</span>
+            </div>
+          </div>
+          <div style="text-align:center;margin-top:12px;">
+            <span style="color:rgba(255,255,255,0.6);font-size:11px;font-weight:600;">YOUR HAND</span>
+            <div id="meld-indicator" style="font-size:11px;color:#34D399;margin:2px 0;"></div>
+          </div>
+        </div>
+        <div id="gr-hand" style="margin-top:4px;min-height:80px;"></div>
+        <div id="action-bar" style="display:flex;gap:8px;justify-content:center;margin-top:8px;flex-wrap:wrap;">
+          <button id="btn-knock" class="gr-btn" style="background:#D97706;color:#fff;border-color:#B45309;display:none;">Knock</button>
+          <button id="btn-gin" class="gr-btn" style="background:#059669;color:#fff;border-color:#047857;display:none;">Gin!</button>
+          <button id="btn-discard" class="gr-btn" style="background:#DC2626;color:#fff;border-color:#B91C1C;display:none;">Discard Selected</button>
+        </div>
+        <div id="round-result" style="display:none;text-align:center;padding:20px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;margin-top:10px;">
+          <h3 id="result-title" style="font-size:18px;font-weight:700;margin:0 0 8px;"></h3>
+          <div id="result-details" style="font-family:'DM Mono',monospace;font-size:13px;max-width:320px;margin:0 auto 16px;padding:12px;background:#fff;border-radius:8px;"></div>
+          <button id="next-round-btn" class="gr-btn" style="background:#2563EB;color:#fff;border-color:#1D4ED8;padding:10px 28px;">Next Round</button>
+        </div>
+        <div id="game-over-panel" style="display:none;text-align:center;padding:20px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;margin-top:10px;">
+          <h3 id="winner-text" style="font-size:22px;font-weight:700;margin:0 0 4px;"></h3>
+          <p id="final-score" style="font-family:'DM Mono',monospace;font-size:14px;color:#64748B;margin:0 0 16px;"></p>
+          <button id="play-again-btn" class="gr-btn" style="background:#2563EB;color:#fff;border-color:#1D4ED8;padding:10px 28px;">Play Again</button>
+        </div>
+      </div>
+    </div>
+  </main>
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play Gin Rummy</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>Gin Rummy is the quintessential two-player card game — a perfect blend of skill, memory, and strategy. Played with a standard 52-card deck, each player receives 10 cards. The goal is to form your entire hand into melds (sets and runs) while minimizing the value of your unmatched cards, called deadwood.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Gameplay</h3>
+      <p>On each turn, you draw one card — either from the face-down stock pile or the face-up discard pile — then discard one card. You're building melds: <strong>sets</strong> (3 or 4 cards of the same rank, like three Kings) and <strong>runs</strong> (3 or more consecutive cards of the same suit, like 5-6-7 of hearts).</p>
+      <p>When your deadwood totals 10 or less, you may <strong>knock</strong> to end the round. Lay down your melds and deadwood. Your opponent then lays off any cards that fit onto your melds and reveals their remaining deadwood. If you have zero deadwood, that's <strong>Gin</strong> — a 25-point bonus and your opponent can't lay off.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Scoring</h3>
+      <ul class="list-disc pl-5 space-y-1">
+        <li><strong>Knock:</strong> Difference in deadwood (your opponent's minus yours)</li>
+        <li><strong>Gin bonus:</strong> +25 points on top of the deadwood difference</li>
+        <li><strong>Undercut:</strong> If opponent's deadwood ≤ yours after layoffs, they get 25 points + difference</li>
+      </ul>
+      <p>First player to 100 points wins the match.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Strategy</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Watch the discard pile.</strong> Never throw a card your opponent might need.</li>
+        <li><strong>Hold flexible cards.</strong> A 7 of hearts can fit into both a run (6-7-8) and a set (three 7s).</li>
+        <li><strong>Knock early</strong> if you have low deadwood. Waiting for Gin is risky.</li>
+        <li><strong>Track discards.</strong> If your opponent draws from the discard pile, note what they took — it reveals their strategy.</li>
+      </ul>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">History</h3>
+      <p>Gin Rummy was invented in 1909 by Elwood T. Baker and his son in Brooklyn, New York. It became a Hollywood sensation in the 1940s when movie stars adopted it as their backstage game of choice. Today it remains one of the most popular two-player card games in the world.</p>
+    </div>
+  </article>
+  <div id="related-games"></div>
+  <div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playDeal, playDrop, playFlip, playPerfect, playCollect } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+  import { renderModeSelector } from '/js/multiplayer.js';
+
+  document.addEventListener('click',()=>initAudio(),{once:true});
+  initToolPage('gin-rummy'); initConsent(); trackGameView('gin-rummy','Card');
+  let playerProfile=null;
+  getPlayer().then(p=>{playerProfile=p;if(p){const m=document.querySelector('main');renderIdentityBar(m,p);renderLeaderboard(m,'gin-rummy');}});
+  document.getElementById('sound-btn').addEventListener('click',()=>{initAudio();const m=muteAll();document.getElementById('sound-btn').textContent=m?'🔇 Sound':'🔊 Sound';});
+
+  const SUITS=['clubs','diamonds','hearts','spades'];
+  const RANKS=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+  const SYM={spades:'♠',hearts:'♥',diamonds:'♦',clubs:'♣'};
+  const RED={hearts:true,diamonds:true};
+  const TARGET=100;
+
+  let stock=[],discard=[],myHand=[],oppHand=[];
+  let myScore=0,oppScore=0,roundNum=0;
+  let phase='idle',drawnThisTurn=false,selectedCard=null;
+  let gameStartTime=null,isOnline=false,streak=0;
+
+  function rv(c){return RANKS.indexOf(c.rank);}
+  function cardKey(c){return `${c.rank}-${c.suit}`;}
+  function dwVal(c){if(c.rank==='A')return 1;if(['J','Q','K'].includes(c.rank))return 10;return parseInt(c.rank);}
+
+  function makeDeck(){
+    const d=[];for(const s of SUITS)for(const r of RANKS)d.push({suit:s,rank:r});
+    for(let i=d.length-1;i>0;i--){const a=new Uint32Array(1);crypto.getRandomValues(a);const j=a[0]%(i+1);[d[i],d[j]]=[d[j],d[i]];}
+    return d;
+  }
+
+  function sortHand(h){
+    const so={clubs:0,diamonds:1,hearts:2,spades:3};
+    h.sort((a,b)=>{const sd=so[a.suit]-so[b.suit];return sd!==0?sd:rv(a)-rv(b);});
+  }
+
+  function findMelds(hand){
+    const melds=[];const used=new Set();
+    const bySuit={};const byRank={};
+    for(const c of hand){
+      if(!bySuit[c.suit])bySuit[c.suit]=[];
+      bySuit[c.suit].push(c);
+      if(!byRank[c.rank])byRank[c.rank]=[];
+      byRank[c.rank].push(c);
+    }
+    for(const r in byRank){if(byRank[r].length>=3){melds.push([...byRank[r]]);byRank[r].forEach(c=>used.add(cardKey(c)));}}
+    for(const s in bySuit){
+      const sorted=bySuit[s].filter(c=>!used.has(cardKey(c))).sort((a,b)=>rv(a)-rv(b));
+      let run=[];
+      for(const c of sorted){
+        if(run.length===0||rv(c)===rv(run[run.length-1])+1){run.push(c);}
+        else{if(run.length>=3){melds.push([...run]);run.forEach(r=>used.add(cardKey(r)));}run=[c];}
+      }
+      if(run.length>=3){melds.push([...run]);run.forEach(r=>used.add(cardKey(r)));}
+    }
+    return melds;
+  }
+
+  function bestMeldCombo(hand){
+    let best={melds:[],deadwood:hand.reduce((s,c)=>s+dwVal(c),0),cards:new Set()};
+    const sets={};const runs={};
+    for(const c of hand){if(!sets[c.rank])sets[c.rank]=[];sets[c.rank].push(c);}
+    const bySuit={};for(const c of hand){if(!bySuit[c.suit])bySuit[c.suit]=[];bySuit[c.suit].push(c);}
+    for(const s in bySuit)bySuit[s].sort((a,b)=>rv(a)-rv(b));
+
+    function calc(used){
+      let dw=0;for(const c of hand)if(!used.has(cardKey(c)))dw+=dwVal(c);
+      return dw;
+    }
+
+    const tryMelds=(melds,used)=>{
+      const dw=calc(used);
+      if(dw<best.deadwood){best={melds:[...melds],deadwood:dw,cards:new Set(used)};}
+      for(const r in sets){
+        const avail=sets[r].filter(c=>!used.has(cardKey(c)));
+        if(avail.length>=3){
+          const u2=new Set(used);avail.forEach(c=>u2.add(cardKey(c)));
+          tryMelds([...melds,avail],u2);
+        }
+      }
+      for(const s in bySuit){
+        const avail=bySuit[s].filter(c=>!used.has(cardKey(c)));
+        let run=[];
+        for(const c of avail){
+          if(run.length===0||rv(c)===rv(run[run.length-1])+1){run.push(c);}
+          else{
+            if(run.length>=3){const u2=new Set(used);run.forEach(r=>u2.add(cardKey(r)));tryMelds([...melds,[...run]],u2);}
+            run=[c];
+          }
+        }
+        if(run.length>=3){const u2=new Set(used);run.forEach(r=>u2.add(cardKey(r)));tryMelds([...melds,[...run]],u2);}
+      }
+    };
+    tryMelds([],new Set());
+    return best;
+  }
+
+  function calcDeadwood(hand){return bestMeldCombo(hand).deadwood;}
+
+  function deal(){
+    const deck=makeDeck();
+    myHand=deck.splice(0,10);oppHand=deck.splice(0,10);
+    discard=[deck.pop()];stock=deck;
+    sortHand(myHand);sortHand(oppHand);
+    drawnThisTurn=false;selectedCard=null;
+    phase='draw';
+  }
+
+  function makeCardHTML(c,faceUp=true,playable=false,sel=false,meld=false){
+    if(!faceUp)return `<div class="gr-card face-down"></div>`;
+    const color=RED[c.suit]?'red':'black';
+    const cls=`gr-card face-up ${color}${playable?' playable':''}${sel?' selected':''}${meld?' meld-highlight':''}`;
+    return `<div class="${cls}" data-key="${cardKey(c)}"><span style="position:absolute;top:3px;left:5px;font-size:clamp(10px,1.6vw,13px);line-height:1;">${c.rank}<br>${SYM[c.suit]}</span><span style="font-size:clamp(16px,2.8vw,24px);">${SYM[c.suit]}</span><span style="position:absolute;bottom:3px;right:5px;font-size:clamp(10px,1.6vw,13px);line-height:1;transform:rotate(180deg);">${c.rank}<br>${SYM[c.suit]}</span></div>`;
+  }
+
+  function render(){
+    const combo=bestMeldCombo(myHand);
+    const meldKeys=combo.cards;
+    const handEl=document.getElementById('gr-hand');
+    const canPlay=phase==='discard';
+    handEl.innerHTML=myHand.map(c=>makeCardHTML(c,true,canPlay,selectedCard&&cardKey(c)===cardKey(selectedCard),meldKeys.has(cardKey(c)))).join('');
+
+    if(canPlay){
+      handEl.querySelectorAll('.gr-card.playable').forEach(el=>{
+        el.addEventListener('click',()=>{
+          const card=myHand.find(c=>cardKey(c)===el.dataset.key);
+          if(card){selectedCard=card;render();}
+        });
+      });
+    }
+
+    document.getElementById('opp-hand').innerHTML=Array(oppHand.length).fill('<div class="gr-card face-down" style="width:32px;height:44px;margin:0 -6px;"></div>').join('');
+    document.getElementById('opp-melds').innerHTML='';
+
+    const topD=discard[discard.length-1];
+    document.getElementById('discard-top').innerHTML=topD?makeCardHTML(topD,true):'<div style="width:60px;height:84px;border:2px dashed #475569;border-radius:7px;"></div>';
+    document.getElementById('stock-count').textContent=stock.length;
+
+    const dw=combo.deadwood;
+    document.getElementById('meld-indicator').textContent=dw===0?'✨ GIN!':`Deadwood: ${dw}`;
+
+    const btnKnock=document.getElementById('btn-knock');
+    const btnGin=document.getElementById('btn-gin');
+    const btnDiscard=document.getElementById('btn-discard');
+    btnKnock.style.display=canPlay&&dw<=10&&dw>0?'':'none';
+    btnGin.style.display=canPlay&&dw===0?'':'none';
+    btnDiscard.style.display=canPlay&&selectedCard?'':'none';
+
+    document.getElementById('score-you').textContent=myScore;
+    document.getElementById('score-opp').textContent=oppScore;
+    document.getElementById('round-num').textContent=roundNum;
+  }
+
+  function setupPileListeners(){
+    document.getElementById('stock-pile').onclick=()=>{
+      if(phase!=='draw'||drawnThisTurn)return;
+      if(stock.length===0)return;
+      myHand.push(stock.pop());sortHand(myHand);drawnThisTurn=true;phase='discard';playFlip();render();
+    };
+    document.getElementById('discard-pile').onclick=()=>{
+      if(phase!=='draw'||drawnThisTurn)return;
+      if(discard.length===0)return;
+      myHand.push(discard.pop());sortHand(myHand);drawnThisTurn=true;phase='discard';playFlip();render();
+    };
+  }
+
+  document.getElementById('btn-discard').addEventListener('click',()=>{
+    if(!selectedCard||phase!=='discard')return;
+    myHand=myHand.filter(c=>cardKey(c)!==cardKey(selectedCard));
+    discard.push(selectedCard);selectedCard=null;playDrop();
+    drawnThisTurn=false;phase='ai';render();
+    setTimeout(aiTurn,600);
+  });
+
+  document.getElementById('btn-knock').addEventListener('click',()=>{
+    if(phase!=='discard')return;
+    endRound('knock','player');
+  });
+
+  document.getElementById('btn-gin').addEventListener('click',()=>{
+    if(phase!=='discard')return;
+    endRound('gin','player');
+  });
+
+  function aiTurn(){
+    if(phase!=='ai')return;
+    const topD=discard[discard.length-1];
+    let drawn=null;
+    if(topD){
+      const testHand=[...oppHand,topD];
+      const withD=calcDeadwood(testHand);
+      const withoutD=calcDeadwood(oppHand);
+      if(withD<withoutD-2){drawn=discard.pop();oppHand.push(drawn);}
+    }
+    if(!drawn&&stock.length>0){drawn=stock.pop();oppHand.push(drawn);}
+    if(!drawn){endRound('draw',null);return;}
+
+    sortHand(oppHand);
+    const dw=calcDeadwood(oppHand);
+    if(dw===0){endRound('gin','ai');return;}
+    if(dw<=10&&(dw<=5||Math.random()<0.4)){endRound('knock','ai');return;}
+
+    let worst=null,worstVal=-1;
+    const combo=bestMeldCombo(oppHand);
+    for(const c of oppHand){
+      if(!combo.cards.has(cardKey(c))&&dwVal(c)>worstVal){worst=c;worstVal=dwVal(c);}
+    }
+    if(!worst)worst=oppHand[0];
+    oppHand=oppHand.filter(c=>cardKey(c)!==cardKey(worst));
+    discard.push(worst);
+    playDrop();phase='draw';drawnThisTurn=false;render();
+    if(stock.length===0&&discard.length<=1)endRound('draw',null);
+  }
+
+  function endRound(type,who){
+    phase='result';
+    const pCombo=bestMeldCombo(myHand);
+    const oCombo=bestMeldCombo(oppHand);
+    let pDW=pCombo.deadwood,oDW=oCombo.deadwood;
+    let pts=0,title='';
+
+    if(type==='gin'){
+      if(who==='player'){pts=oDW+25;title='🎉 GIN! +'+pts;myScore+=pts;playPerfect();}
+      else{pts=pDW+25;title='😞 Opponent Gin! +'+pts;oppScore+=pts;playGameOver();}
+    } else if(type==='knock'){
+      if(who==='player'){
+        if(oDW<=pDW){pts=pDW-oDW+25;title='😤 Undercut! Opp +'+pts;oppScore+=pts;playError();}
+        else{pts=oDW-pDW;title='👊 Knock! +'+pts;myScore+=pts;playSuccess();}
+      } else {
+        if(pDW<=oDW){pts=oDW-pDW+25;title='🎉 Undercut! +'+pts;myScore+=pts;playSuccess();}
+        else{pts=pDW-oDW;title='😞 Opponent Knocks. +'+pts;oppScore+=pts;playGameOver();}
+      }
+    } else {
+      title='Draw — no score';
+    }
+
+    document.getElementById('opp-hand').innerHTML=oppHand.map(c=>makeCardHTML(c,true)).join('');
+    document.getElementById('round-result').style.display='block';
+    document.getElementById('result-title').textContent=title;
+    document.getElementById('result-details').innerHTML=`Your deadwood: ${pDW}<br>Opponent deadwood: ${oDW}<br>Score: You ${myScore} — Opp ${oppScore}`;
+
+    if(myScore>=TARGET||oppScore>=TARGET){
+      document.getElementById('next-round-btn').style.display='none';
+      document.getElementById('game-over-panel').style.display='block';
+      const won=myScore>=TARGET;
+      document.getElementById('winner-text').textContent=won?'🎉 You Win the Match!':'😞 Opponent Wins';
+      document.getElementById('final-score').textContent=`Final: ${myScore} — ${oppScore}`;
+      if(won){streak++;playPerfect();}else{streak=0;}
+      const dur=Math.round((Date.now()-gameStartTime)/1000);
+      trackGameOver('gin-rummy','Card',won?1:0,myScore);
+      submitStats('gin-rummy',{score:myScore,duration:dur,win:won,loss:!won,online:isOnline});
+      document.getElementById('play-again-btn').focus();
+      document.getElementById('play-again-btn').onclick=()=>{
+        document.getElementById('game-over-panel').style.display='none';
+        document.getElementById('round-result').style.display='none';
+        document.getElementById('next-round-btn').style.display='';
+        startNewGame();
+      };
+      return;
+    }
+
+    document.getElementById('next-round-btn').onclick=()=>{
+      document.getElementById('round-result').style.display='none';
+      startRound();
+    };
+  }
+
+  function startRound(){
+    roundNum++;deal();render();setupPileListeners();playDeal();
+  }
+
+  function startNewGame(){
+    myScore=0;oppScore=0;roundNum=0;gameStartTime=Date.now();
+    trackGameStart('gin-rummy','Card');
+    startRound();
+  }
+
+  renderModeSelector(document.getElementById('mp-mode-container'),'gin-rummy',playerProfile?.name||'Player',{
+    onAI:()=>{isOnline=false;document.getElementById('game-area').style.display='block';startNewGame();},
+    onPrivate:()=>{isOnline=true;document.getElementById('game-area').style.display='block';startNewGame();},
+    onFind:()=>{isOnline=true;document.getElementById('game-area').style.display='block';startNewGame();},
+  },{maxPlayers:2,settingsConfig:{targetScore:{label:'Play To',default:'100',options:[{value:'50',label:'50'},{value:'100',label:'100'},{value:'150',label:'150'}]}}});
+  </script>
+</body>
+</html>
