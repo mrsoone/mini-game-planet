@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Texas Hold'em Poker Online — No Limit | MiniGamePlanet</title>
+  <meta name="description" content="Play No Limit Texas Hold'em poker free online. Persistent chip bankroll, play with friends or AI. 2-8 players, no download, no sign-up.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/texas-holdem">
+  <link rel="icon" href="/images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500});gtag('config','G-XXXXXXXXXX');</script>
+  <meta property="og:type" content="website"><meta property="og:title" content="Free Texas Hold'em Poker | MiniGamePlanet"><meta property="og:description" content="No Limit Hold'em — persistent chips, real stakes."><meta property="og:url" content="https://minigameplanet.com/games/texas-holdem"><meta property="og:image" content="https://minigameplanet.com/images/logo.png"><meta property="og:site_name" content="MiniGamePlanet">
+  <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Free Texas Hold'em | MiniGamePlanet"><meta name="twitter:description" content="Play poker free — no download."><meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Texas Hold'em Poker","url":"https://minigameplanet.com/games/texas-holdem","description":"Free No Limit Texas Hold'em poker with persistent chip bankroll.","genre":"Casino","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://minigameplanet.com"},{"@type":"ListItem","position":2,"name":"Casino Games","item":"https://minigameplanet.com/#category"},{"@type":"ListItem","position":3,"name":"Texas Hold'em","item":"https://minigameplanet.com/games/texas-holdem"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is this real gambling?","acceptedAnswer":{"@type":"Answer","text":"No. This is a free game for entertainment only. Chips have no real monetary value and cannot be bought, sold, or exchanged."}},{"@type":"Question","name":"Can I play with friends?","acceptedAnswer":{"@type":"Answer","text":"Yes! Create a private table and share the room code with friends. Up to 8 players per table."}},{"@type":"Question","name":"What happens if I run out of chips?","acceptedAnswer":{"@type":"Answer","text":"If your bankroll drops below 1,000 chips, you can claim a free top-up of 5,000 chips once per week."}}]}</script>
+  <style>
+    :root{--felt-dark:#0d4f2a;--felt-light:#1a6b3c;--felt-border:#0a3d20;--gold:#F59E0B;--gold-dark:#D97706;--chip-shadow:0 2px 8px rgba(0,0,0,0.4)}
+    .hero-grad{background:linear-gradient(135deg,#7C3AED 0%,#9333EA 20%,#C026D3 40%,#E11D48 60%,#EA580C 80%,#F59E0B 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:heroShift 8s ease-in-out infinite}@keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+
+    /* Poker Table */
+    .poker-container{background:#0F172A;border-radius:16px;padding:16px;position:relative}
+    .poker-table{position:relative;width:100%;max-width:700px;margin:0 auto;aspect-ratio:7/4.5;background:linear-gradient(135deg,var(--felt-light),var(--felt-dark));border-radius:50%;border:8px solid #3d2b1f;box-shadow:inset 0 0 60px rgba(0,0,0,0.3),0 4px 20px rgba(0,0,0,0.5);overflow:visible}
+    .poker-table::before{content:'';position:absolute;inset:8px;border-radius:50%;border:2px solid rgba(255,255,255,0.06)}
+
+    /* Seats */
+    .seat{position:absolute;display:flex;flex-direction:column;align-items:center;gap:2px;z-index:10;transform:translate(-50%,-50%)}
+    .seat-box{background:rgba(15,23,42,0.85);border-radius:10px;padding:6px 10px;text-align:center;min-width:80px;border:2px solid transparent;backdrop-filter:blur(4px);transition:border-color 0.3s,box-shadow 0.3s}
+    .seat-box.active{border-color:var(--gold);box-shadow:0 0 12px rgba(245,158,11,0.4)}
+    .seat-box.folded{opacity:0.4}
+    .seat-box.empty{border:2px dashed rgba(255,255,255,0.15);background:rgba(15,23,42,0.4)}
+    .seat-name{font-size:11px;font-weight:700;color:#E5E7EB;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:90px}
+    .seat-stack{font-family:'DM Mono',monospace;font-size:11px;color:var(--gold);font-weight:500}
+    .seat-cards{display:flex;gap:2px;justify-content:center;margin-top:2px}
+    .seat-bet{position:absolute;font-family:'DM Mono',monospace;font-size:10px;color:#FDE68A;background:rgba(0,0,0,0.5);padding:1px 6px;border-radius:4px;white-space:nowrap}
+    .seat-status{font-size:9px;color:#94A3B8;margin-top:1px}
+    .dealer-btn{position:absolute;width:18px;height:18px;background:#fff;color:#0F172A;border-radius:50%;font-size:9px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:var(--chip-shadow);z-index:12}
+
+    /* Mini cards (opponent) */
+    .mini-card{width:22px;height:32px;border-radius:3px;display:inline-block;font-size:0}
+    .mini-card.down{background:#DC2626;background-image:repeating-linear-gradient(45deg,transparent,transparent 2px,rgba(255,255,255,0.07) 2px,rgba(255,255,255,0.07) 4px);border:1px solid rgba(255,255,255,0.15)}
+    .mini-card.up{background:#fff;border:1px solid #D1D5DB;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-weight:700;font-size:8px;line-height:1}
+    .mini-card.up.red{color:#DC2626}.mini-card.up.black{color:#0F172A}
+
+    /* Community cards */
+    .community-area{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;gap:6px;align-items:center}
+    .comm-card{width:clamp(44px,7vw,60px);height:clamp(62px,10vw,84px);border-radius:6px;font-family:'DM Mono',monospace;font-weight:700;font-size:clamp(12px,1.8vw,16px);box-shadow:0 2px 8px rgba(0,0,0,0.3);display:inline-flex;flex-direction:column;align-items:center;justify-content:center;position:relative;transition:transform 0.3s}
+    .comm-card.face-up{background:#fff;border:1.5px solid #D1D5DB}
+    .comm-card.face-down{background:#1E293B;border:1.5px solid #334155}
+    .comm-card.red{color:#DC2626}.comm-card.black{color:#0F172A}
+
+    /* Pot */
+    .pot-display{position:absolute;top:38%;left:50%;transform:translate(-50%,-50%);text-align:center}
+    .pot-amount{font-family:'DM Mono',monospace;font-size:clamp(14px,2vw,18px);font-weight:700;color:var(--gold);text-shadow:0 1px 4px rgba(0,0,0,0.5)}
+    .pot-label{font-size:10px;color:rgba(255,255,255,0.5)}
+
+    /* Your hand */
+    .your-hand{display:flex;gap:8px;justify-content:center;align-items:center;padding:10px 0}
+    .hole-card{width:clamp(60px,10vw,80px);height:clamp(84px,14vw,112px);border-radius:8px;font-family:'DM Mono',monospace;font-weight:700;font-size:clamp(16px,2.5vw,22px);box-shadow:0 4px 16px rgba(0,0,0,0.3);display:inline-flex;flex-direction:column;align-items:center;justify-content:center;position:relative;background:#fff;border:2px solid #E5E7EB}
+    .hole-card.red{color:#DC2626}.hole-card.black{color:#0F172A}
+    .hole-card .top-corner{position:absolute;top:4px;left:6px;font-size:clamp(10px,1.6vw,13px);line-height:1.1}
+    .hole-card .center-suit{font-size:clamp(22px,3.5vw,32px)}
+    .hand-strength{font-size:12px;font-weight:600;margin-top:2px;text-align:center}
+    .hand-strength.weak{color:#64748B}.hand-strength.medium{color:#E5E7EB}.hand-strength.strong{color:var(--gold)}
+
+    /* Actions */
+    .actions-bar{display:flex;gap:8px;justify-content:center;align-items:stretch;flex-wrap:wrap;padding:8px 0}
+    .action-btn{padding:10px 20px;border-radius:10px;font-size:14px;font-weight:700;border:2px solid;cursor:pointer;font-family:inherit;transition:all 0.12s;min-width:80px}
+    .action-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.2)}
+    .action-btn:active:not(:disabled){transform:scale(0.96)}
+    .action-btn:disabled{opacity:0.35;cursor:not-allowed;transform:none}
+    .action-btn.fold{background:#7F1D1D;color:#FCA5A5;border-color:#991B1B}
+    .action-btn.call{background:#1E3A5F;color:#93C5FD;border-color:#1D4ED8}
+    .action-btn.raise{background:#1E293B;color:#E5E7EB;border-color:#475569}
+    .action-btn.allin{background:linear-gradient(135deg,#D97706,#F59E0B);color:#0F172A;border-color:#B45309;font-size:15px}
+    .raise-panel{background:#1E293B;border-radius:10px;padding:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center}
+    .raise-panel input[type="range"]{flex:1;min-width:120px;accent-color:var(--gold)}
+    .raise-panel input[type="number"]{width:80px;padding:6px 8px;border-radius:6px;border:1px solid #475569;background:#0F172A;color:#fff;font-family:'DM Mono',monospace;font-size:13px;text-align:center}
+    .raise-quick{padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;border:1px solid #475569;background:#0F172A;color:#94A3B8;cursor:pointer;font-family:inherit}.raise-quick:hover{background:#1E293B;color:#fff}
+    .pre-actions{display:flex;gap:12px;justify-content:center;font-size:12px;color:#64748B;padding:4px 0}
+    .pre-actions label{cursor:pointer;display:flex;align-items:center;gap:4px}
+    .pre-actions input[type="checkbox"]{accent-color:var(--gold)}
+
+    /* Timer */
+    .turn-timer{position:absolute;top:68%;left:50%;transform:translateX(-50%);width:160px;height:4px;background:#334155;border-radius:2px;overflow:hidden}
+    .turn-timer-fill{height:100%;background:var(--gold);border-radius:2px;transition:width 1s linear}
+    .turn-timer-fill.urgent{background:#DC2626;animation:timerPulse 0.5s ease infinite}
+    @keyframes timerPulse{0%,100%{opacity:1}50%{opacity:0.5}}
+
+    /* Lobby */
+    .lobby-table{width:100%;border-collapse:collapse;font-size:13px}
+    .lobby-table th{text-align:left;padding:8px 12px;color:#94A3B8;font-weight:600;font-size:11px;text-transform:uppercase;border-bottom:1px solid #1E293B}
+    .lobby-table td{padding:8px 12px;border-bottom:1px solid #1E293B;color:#E5E7EB}
+    .lobby-table tr:hover td{background:rgba(37,99,235,0.05)}
+    .lobby-btn{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:700;border:2px solid;cursor:pointer;font-family:inherit;transition:all 0.1s}
+    .lobby-btn:hover{transform:translateY(-1px)}
+    .lobby-btn.primary{background:#2563EB;color:#fff;border-color:#1D4ED8}
+    .lobby-btn.secondary{background:#1E293B;color:#E5E7EB;border-color:#334155}
+    .lobby-btn.gold{background:linear-gradient(135deg,#D97706,#F59E0B);color:#0F172A;border-color:#B45309}
+    .lobby-btn:disabled{opacity:0.4;cursor:not-allowed}
+
+    /* Bankroll */
+    .bankroll-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:linear-gradient(135deg,#0F172A,#1E293B);border-radius:10px;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+    .bankroll-amount{font-family:'DM Mono',monospace;font-size:20px;font-weight:700;color:var(--gold)}
+
+    /* Buy-in modal */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:100;padding:16px}
+    .modal-box{background:#1E293B;border-radius:16px;padding:24px;max-width:380px;width:100%;color:#E5E7EB;box-shadow:0 8px 32px rgba(0,0,0,0.5)}
+    .modal-box h3{font-size:18px;font-weight:700;margin:0 0 16px;text-align:center}
+
+    /* Responsive */
+    @media(max-width:640px){
+      .poker-table{aspect-ratio:1/1;border-radius:45%}
+      .seat-box{min-width:60px;padding:4px 6px}
+      .seat-name{font-size:9px;max-width:60px}
+      .seat-stack{font-size:9px}
+      .mini-card{width:16px;height:24px}
+      .comm-card{width:38px;height:54px;font-size:10px}
+      .action-btn{padding:8px 14px;font-size:12px;min-width:60px}
+    }
+    @media(max-width:400px){
+      .poker-table{aspect-ratio:1/1.1}
+      .hole-card{width:54px;height:76px;font-size:14px}
+    }
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <div><h1 style="font-size:22px;font-weight:700;margin:0;">🃏 Texas Hold'em Poker</h1><p style="font-size:12px;color:#94A3B8;margin:2px 0 0;">No Limit — Persistent Chip Bankroll</p></div>
+        <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊 Sound</button>
+      </div>
+
+      <!-- ═══════════ LOBBY ═══════════ -->
+      <div id="lobby-view">
+        <div class="bankroll-bar">
+          <div>
+            <span style="font-size:12px;color:#94A3B8;">🏦 Bankroll</span><br>
+            <span class="bankroll-amount" id="bankroll-display">10,000</span>
+            <span style="font-size:12px;color:#94A3B8;"> chips</span>
+          </div>
+          <button class="lobby-btn gold" id="topup-btn" style="display:none;">🎁 Free Top-Up</button>
+        </div>
+
+        <!-- Mode buttons -->
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+          <button class="lobby-btn primary" id="btn-quick-seat">🌐 Quick Seat</button>
+          <button class="lobby-btn secondary" id="btn-create-private">🔗 Create Private Table</button>
+          <button class="lobby-btn secondary" id="btn-practice">🤖 Practice vs AI</button>
+        </div>
+
+        <!-- Open tables -->
+        <div style="background:#0F172A;border-radius:12px;padding:12px;margin-bottom:16px;">
+          <h3 style="font-size:14px;font-weight:700;color:#E5E7EB;margin:0 0 8px;">Open Tables</h3>
+          <div style="overflow-x:auto;">
+            <table class="lobby-table">
+              <thead><tr><th>Table</th><th>Blinds</th><th>Players</th><th>Avg Stack</th><th></th></tr></thead>
+              <tbody id="table-list">
+                <tr><td>Casual #1</td><td style="font-family:'DM Mono',monospace;">5/10</td><td>4/8</td><td style="font-family:'DM Mono',monospace;">620</td><td><button class="lobby-btn primary" data-join="casual-1">Join</button></td></tr>
+                <tr><td>Casual #2</td><td style="font-family:'DM Mono',monospace;">5/10</td><td>2/8</td><td style="font-family:'DM Mono',monospace;">480</td><td><button class="lobby-btn primary" data-join="casual-2">Join</button></td></tr>
+                <tr><td>Regular #1</td><td style="font-family:'DM Mono',monospace;">25/50</td><td>6/8</td><td style="font-family:'DM Mono',monospace;">3,200</td><td><button class="lobby-btn primary" data-join="regular-1">Join</button></td></tr>
+                <tr><td style="color:var(--gold);">High Stakes</td><td style="font-family:'DM Mono',monospace;color:var(--gold);">100/200</td><td>3/8</td><td style="font-family:'DM Mono',monospace;">15,400</td><td><button class="lobby-btn gold" data-join="high-1">Join</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Stats + Leaderboard side by side -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div style="background:#0F172A;border-radius:12px;padding:12px;">
+            <h3 style="font-size:14px;font-weight:700;color:#E5E7EB;margin:0 0 8px;">📊 Your Poker Stats</h3>
+            <div style="font-family:'DM Mono',monospace;font-size:12px;color:#94A3B8;display:grid;grid-template-columns:auto auto;gap:4px 12px;">
+              <span>Hands Played:</span><span style="color:#E5E7EB;" id="stat-hands">0</span>
+              <span>Hands Won:</span><span style="color:#E5E7EB;" id="stat-won">0 (0%)</span>
+              <span>Biggest Pot:</span><span style="color:var(--gold);" id="stat-biggest">0</span>
+              <span>Net Profit:</span><span style="color:#22C55E;" id="stat-profit">+0</span>
+              <span>All-Ins Won:</span><span style="color:#E5E7EB;" id="stat-allins">0/0</span>
+            </div>
+          </div>
+          <div style="background:#0F172A;border-radius:12px;padding:12px;">
+            <h3 style="font-size:14px;font-weight:700;color:#E5E7EB;margin:0 0 8px;">🏆 Chip Leaders</h3>
+            <div id="leaderboard-list" style="font-family:'DM Mono',monospace;font-size:11px;color:#94A3B8;display:flex;flex-direction:column;gap:3px;">
+              <div><span style="color:var(--gold);">#1</span> ThunderWolf88 <span style="color:var(--gold);float:right;">127,400</span></div>
+              <div><span style="color:#CBD5E1;">#2</span> GoldPanda22 <span style="color:#CBD5E1;float:right;">89,100</span></div>
+              <div><span style="color:#92400E;">#3</span> BraveHawk55 <span style="color:#92400E;float:right;">72,300</span></div>
+              <div style="color:#64748B;">···</div>
+              <div style="color:#60A5FA;">You: #47 <span style="float:right;">10,000</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════ TABLE ═══════════ -->
+      <div id="table-view" style="display:none;">
+        <!-- Table header -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <button class="lobby-btn secondary" id="btn-leave" style="padding:4px 10px;font-size:11px;">← Leave</button>
+            <span style="font-size:12px;color:#64748B;">Casual #1 — Blinds 5/10</span>
+          </div>
+          <div style="font-family:'DM Mono',monospace;font-size:13px;">
+            <span style="color:#94A3B8;">🏦</span> <span style="color:var(--gold);" id="table-bankroll">9,400</span>
+          </div>
+        </div>
+
+        <div class="poker-container">
+          <!-- The Table -->
+          <div class="poker-table" id="poker-table">
+            <!-- Pot -->
+            <div class="pot-display">
+              <div class="pot-label">POT</div>
+              <div class="pot-amount" id="pot-amount">1,250</div>
+            </div>
+
+            <!-- Community Cards -->
+            <div class="community-area" id="community-cards">
+              <div class="comm-card face-up black"><span style="position:absolute;top:3px;left:4px;font-size:9px;line-height:1;">A<br>♠</span><span style="font-size:clamp(16px,2.8vw,24px);">♠</span></div>
+              <div class="comm-card face-up red"><span style="position:absolute;top:3px;left:4px;font-size:9px;line-height:1;">K<br>♥</span><span style="font-size:clamp(16px,2.8vw,24px);">♥</span></div>
+              <div class="comm-card face-up black"><span style="position:absolute;top:3px;left:4px;font-size:9px;line-height:1;">10<br>♣</span><span style="font-size:clamp(16px,2.8vw,24px);">♣</span></div>
+              <div class="comm-card face-up red"><span style="position:absolute;top:3px;left:4px;font-size:9px;line-height:1;">7<br>♦</span><span style="font-size:clamp(16px,2.8vw,24px);">♦</span></div>
+              <div class="comm-card face-down"></div>
+            </div>
+
+            <!-- Turn Timer -->
+            <div class="turn-timer"><div class="turn-timer-fill" id="turn-timer-fill" style="width:65%;"></div></div>
+
+            <!-- 8 Seats positioned around the oval -->
+            <!-- Seat 1 (You - bottom center) -->
+            <div class="seat" style="bottom:-14%;left:50%;">
+              <div class="seat-box active">
+                <div class="seat-name" style="color:#60A5FA;">You</div>
+                <div class="seat-stack">2,450</div>
+                <div class="seat-cards"><div class="mini-card down"></div><div class="mini-card down"></div></div>
+              </div>
+              <div class="seat-bet" style="top:-18px;">250</div>
+              <div class="dealer-btn" style="top:-8px;right:-14px;">D</div>
+            </div>
+
+            <!-- Seat 2 (bottom left) -->
+            <div class="seat" style="bottom:2%;left:15%;">
+              <div class="seat-box">
+                <div class="seat-name">SteadyBear41 🤖</div>
+                <div class="seat-stack">1,830</div>
+                <div class="seat-cards"><div class="mini-card down"></div><div class="mini-card down"></div></div>
+              </div>
+              <div class="seat-bet" style="top:-18px;">100</div>
+            </div>
+
+            <!-- Seat 3 (left) -->
+            <div class="seat" style="top:30%;left:-2%;">
+              <div class="seat-box folded">
+                <div class="seat-name">CalmEagle17</div>
+                <div class="seat-stack">620</div>
+                <div class="seat-status">Fold</div>
+              </div>
+            </div>
+
+            <!-- Seat 4 (top left) -->
+            <div class="seat" style="top:-8%;left:20%;">
+              <div class="seat-box">
+                <div class="seat-name">RedFox99 🤖</div>
+                <div class="seat-stack">3,100</div>
+                <div class="seat-cards"><div class="mini-card down"></div><div class="mini-card down"></div></div>
+              </div>
+              <div class="seat-bet" style="bottom:-18px;">500</div>
+            </div>
+
+            <!-- Seat 5 (top center) -->
+            <div class="seat" style="top:-14%;left:50%;">
+              <div class="seat-box empty">
+                <div class="seat-name" style="color:#475569;">Empty Seat</div>
+              </div>
+            </div>
+
+            <!-- Seat 6 (top right) -->
+            <div class="seat" style="top:-8%;right:12%;">
+              <div class="seat-box" style="border-color:#DC2626;box-shadow:0 0 8px rgba(220,38,38,0.3);">
+                <div class="seat-name">BlueWolf55</div>
+                <div class="seat-stack" style="color:#DC2626;">ALL IN</div>
+                <div class="seat-cards"><div class="mini-card down"></div><div class="mini-card down"></div></div>
+              </div>
+              <div class="seat-bet" style="bottom:-18px;color:#FCA5A5;">4,200</div>
+            </div>
+
+            <!-- Seat 7 (right) -->
+            <div class="seat" style="top:30%;right:-2%;">
+              <div class="seat-box folded">
+                <div class="seat-name">QuietPanda88 🤖</div>
+                <div class="seat-stack">950</div>
+                <div class="seat-status">Fold</div>
+              </div>
+            </div>
+
+            <!-- Seat 8 (bottom right) -->
+            <div class="seat" style="bottom:2%;right:10%;">
+              <div class="seat-box">
+                <div class="seat-name">SwiftHawk12</div>
+                <div class="seat-stack">2,100</div>
+                <div class="seat-cards"><div class="mini-card down"></div><div class="mini-card down"></div></div>
+              </div>
+              <div class="seat-bet" style="top:-18px;">250</div>
+            </div>
+          </div>
+
+          <!-- Your Hand -->
+          <div class="your-hand" id="your-hand">
+            <div class="hole-card black">
+              <span class="top-corner">A<br>♠</span>
+              <span class="center-suit">♠</span>
+            </div>
+            <div class="hole-card red">
+              <span class="top-corner">K<br>♥</span>
+              <span class="center-suit">♥</span>
+            </div>
+          </div>
+          <div class="hand-strength strong" id="hand-strength">Top Pair — Ace Kicker</div>
+
+          <div style="text-align:center;font-family:'DM Mono',monospace;font-size:11px;color:#64748B;margin-bottom:4px;">Your Stack: <span style="color:var(--gold);">2,450</span> | To Call: <span style="color:#93C5FD;">250</span></div>
+
+          <!-- Action Buttons -->
+          <div class="actions-bar" id="actions-bar">
+            <button class="action-btn fold" id="btn-fold">Fold</button>
+            <button class="action-btn call" id="btn-call">Call 250</button>
+            <button class="action-btn raise" id="btn-raise">Raise</button>
+            <button class="action-btn allin" id="btn-allin">All-In</button>
+          </div>
+
+          <!-- Raise Panel (shown when Raise clicked) -->
+          <div class="raise-panel" id="raise-panel" style="display:none;">
+            <input type="range" id="raise-slider" min="500" max="2450" value="500" step="10">
+            <input type="number" id="raise-input" value="500" min="500" max="2450" step="10">
+            <div style="display:flex;gap:4px;flex-wrap:wrap;">
+              <button class="raise-quick" data-size="min">Min</button>
+              <button class="raise-quick" data-size="half">½ Pot</button>
+              <button class="raise-quick" data-size="pot">Pot</button>
+              <button class="raise-quick" data-size="allin">All-In</button>
+            </div>
+            <button class="lobby-btn primary" id="raise-confirm" style="padding:6px 16px;">Raise to 500</button>
+          </div>
+
+          <!-- Pre-action toggles -->
+          <div class="pre-actions">
+            <label><input type="checkbox" id="pre-checkfold"> Check/Fold</label>
+            <label><input type="checkbox" id="pre-callany"> Call Any</label>
+          </div>
+        </div>
+
+        <p style="text-align:center;font-size:10px;color:#94A3B8;margin:8px 0 0;">Free game for entertainment only. No real money. No real gambling.</p>
+      </div>
+
+      <!-- ═══════════ BUY-IN MODAL ═══════════ -->
+      <div class="modal-overlay" id="buyin-modal" style="display:none;">
+        <div class="modal-box">
+          <h3>💰 Buy In</h3>
+          <div style="text-align:center;margin-bottom:16px;">
+            <span style="font-size:12px;color:#94A3B8;">Bankroll:</span>
+            <span style="font-family:'DM Mono',monospace;font-size:18px;color:var(--gold);"> 10,000</span>
+          </div>
+          <div style="margin-bottom:12px;">
+            <label style="font-size:12px;color:#94A3B8;display:block;margin-bottom:4px;">Buy-in amount (200 – 1,000)</label>
+            <input type="range" id="buyin-slider" min="200" max="1000" value="600" step="10" style="width:100%;accent-color:var(--gold);">
+            <div style="text-align:center;font-family:'DM Mono',monospace;font-size:24px;color:#fff;margin-top:4px;" id="buyin-amount">600</div>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:center;">
+            <button class="lobby-btn secondary" id="buyin-cancel">Cancel</button>
+            <button class="lobby-btn gold" id="buyin-confirm">Take Seat</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════ TOP-UP MODAL ═══════════ -->
+      <div class="modal-overlay" id="topup-modal" style="display:none;">
+        <div class="modal-box" style="text-align:center;">
+          <h3>🎁 Free Chip Top-Up</h3>
+          <p style="font-size:14px;color:#94A3B8;margin:0 0 16px;">Your bankroll is low. Claim <strong style="color:var(--gold);">5,000 free chips</strong> to get back in the game!</p>
+          <p style="font-size:11px;color:#64748B;margin:0 0 16px;">Available once every 7 days.</p>
+          <div style="display:flex;gap:8px;justify-content:center;">
+            <button class="lobby-btn secondary" id="topup-cancel">Not Now</button>
+            <button class="lobby-btn gold" id="topup-confirm">Claim 5,000 Chips</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ═══════════ SEO ARTICLE ═══════════ -->
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">Play Free Texas Hold'em Poker Online</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>MiniGamePlanet's Texas Hold'em is a full No Limit poker experience right in your browser. No downloads, no sign-ups, no real money — just pure poker strategy. Every player starts with a persistent 10,000-chip bankroll. Win chips at the tables, build your stack, and climb the leaderboard. Lose them all? A free weekly top-up gets you back in the game. This isn't throwaway play money — your bankroll persists across sessions, making every all-in feel real.</p>
+
+      <h3 class="text-lg font-bold text-slate-900 mt-6">How to Play Texas Hold'em</h3>
+      <p>Each player receives two private "hole" cards. Five community cards are dealt face-up on the table in three stages: the Flop (3 cards), the Turn (1 card), and the River (1 card). You make the best five-card hand from any combination of your two hole cards and the five community cards. Between each stage, there's a round of betting where you can fold, call, raise, or go all-in.</p>
+
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Hand Rankings</h3>
+      <p>From highest to lowest: <strong>Royal Flush</strong> (A-K-Q-J-10 suited), <strong>Straight Flush</strong>, <strong>Four of a Kind</strong>, <strong>Full House</strong>, <strong>Flush</strong>, <strong>Straight</strong>, <strong>Three of a Kind</strong>, <strong>Two Pair</strong>, <strong>One Pair</strong>, <strong>High Card</strong>. When two players have the same hand type, kickers (remaining highest cards) determine the winner.</p>
+
+      <h3 class="text-lg font-bold text-slate-900 mt-6">A Brief History</h3>
+      <p>Texas Hold'em originated in Robstown, Texas in the early 1900s. It was introduced to Las Vegas in 1963 and became the main event format of the World Series of Poker (WSOP) in 1970. The game exploded in popularity after Chris Moneymaker — an amateur who qualified through a $39 online satellite tournament — won the 2003 WSOP Main Event for $2.5 million. The "Moneymaker Effect" sparked a global poker boom that continues today.</p>
+
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Strategy Tips</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Position is everything.</strong> Acting last gives you information about what everyone else did. Play more hands from the button and cutoff, fewer from early position.</li>
+        <li><strong>Don't play every hand.</strong> Beginners play too many hands. Fold weak holdings pre-flop and wait for good spots.</li>
+        <li><strong>Understand pot odds.</strong> If the pot is 1,000 and it costs 200 to call, you need to win more than 1 in 6 times to be profitable. Compare this to your chance of making your hand.</li>
+        <li><strong>Manage your bankroll.</strong> Don't buy in for more than 10% of your total bankroll at any single table. Variance is real — even great players lose sessions.</li>
+        <li><strong>Watch your opponents.</strong> Who plays tight? Who bluffs too much? Adjust your strategy based on what you observe. Poker is a game of people, not just cards.</li>
+      </ul>
+
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Frequently Asked Questions</h3>
+      <p><strong>Is this real gambling?</strong> No. This is a free game for entertainment purposes only. Chips have no monetary value and cannot be bought, sold, or exchanged for anything of value.</p>
+      <p><strong>Can I play with friends?</strong> Yes! Create a private table, set your preferred blind level and number of seats, then share the room code with friends. AI fills any empty seats.</p>
+      <p><strong>What if I run out of chips?</strong> If your bankroll drops below 1,000 chips, you can claim a free top-up of 5,000 chips once every 7 days. You'll never be permanently locked out.</p>
+
+      <p style="font-size:12px;color:#94A3B8;margin-top:24px;padding-top:16px;border-top:1px solid #E5E7EB;"><strong>Disclaimer:</strong> This is a free game for entertainment only. No real money is involved. Poker chips on MiniGamePlanet have no monetary value and cannot be purchased, traded, sold, or redeemed. The weekly chip top-up is a game mechanic, not a financial transaction. This game is not real gambling.</p>
+    </div>
+  </article>
+
+  <div id="related-games"></div><div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playDeal, playDrop, playPerfect, playCollect } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar } from '/js/player.js';
+
+  document.addEventListener('click',()=>initAudio(),{once:true});
+  initToolPage('texas-holdem');initConsent();trackGameView('texas-holdem','Casino');
+  let playerProfile=null;
+  getPlayer().then(p=>{playerProfile=p;if(p){const m=document.querySelector('main');renderIdentityBar(m,p);}});
+  document.getElementById('sound-btn').addEventListener('click',()=>{initAudio();const m=muteAll();document.getElementById('sound-btn').textContent=m?'🔇 Sound':'🔊 Sound';});
+
+  const SYM={spades:'♠',hearts:'♥',diamonds:'♦',clubs:'♣'};
+  const RED_SUITS=new Set(['hearts','diamonds']);
+
+  /* ── View switching ── */
+  const lobbyView=document.getElementById('lobby-view');
+  const tableView=document.getElementById('table-view');
+  const buyinModal=document.getElementById('buyin-modal');
+  const topupModal=document.getElementById('topup-modal');
+
+  function showLobby(){lobbyView.style.display='';tableView.style.display='none';}
+  function showTable(){lobbyView.style.display='none';tableView.style.display='';}
+
+  document.getElementById('btn-leave').addEventListener('click',()=>{playClick();showLobby();});
+
+  /* ── Buy-in modal ── */
+  const buyinSlider=document.getElementById('buyin-slider');
+  const buyinAmountEl=document.getElementById('buyin-amount');
+  buyinSlider.addEventListener('input',()=>{buyinAmountEl.textContent=Number(buyinSlider.value).toLocaleString();});
+  document.getElementById('buyin-cancel').addEventListener('click',()=>{buyinModal.style.display='none';playClick();});
+  document.getElementById('buyin-confirm').addEventListener('click',()=>{buyinModal.style.display='none';playCollect();showTable();});
+
+  function openBuyIn(blindLevel){
+    const stakes={casual:{min:200,max:1000},regular:{min:1000,max:5000},high:{min:4000,max:20000}};
+    const s=stakes[blindLevel]||stakes.casual;
+    buyinSlider.min=s.min;buyinSlider.max=s.max;buyinSlider.value=Math.round((s.min+s.max)/2);
+    buyinAmountEl.textContent=Number(buyinSlider.value).toLocaleString();
+    document.querySelector('#buyin-modal label').textContent=`Buy-in amount (${s.min.toLocaleString()} – ${s.max.toLocaleString()})`;
+    buyinModal.style.display='';
+  }
+
+  /* ── Table join buttons ── */
+  document.querySelectorAll('[data-join]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      playClick();
+      const id=btn.dataset.join;
+      const level=id.startsWith('high')?'high':id.startsWith('regular')?'regular':'casual';
+      openBuyIn(level);
+    });
+  });
+
+  document.getElementById('btn-quick-seat').addEventListener('click',()=>{playClick();openBuyIn('casual');});
+  document.getElementById('btn-create-private').addEventListener('click',()=>{playClick();openBuyIn('casual');});
+  document.getElementById('btn-practice').addEventListener('click',()=>{playClick();showTable();});
+
+  /* ── Top-up modal ── */
+  document.getElementById('topup-btn').addEventListener('click',()=>{topupModal.style.display='';playClick();});
+  document.getElementById('topup-cancel').addEventListener('click',()=>{topupModal.style.display='none';playClick();});
+  document.getElementById('topup-confirm').addEventListener('click',()=>{topupModal.style.display='none';playPerfect();document.getElementById('bankroll-display').textContent='5,000';document.getElementById('topup-btn').style.display='none';});
+
+  /* ── Raise panel toggle ── */
+  const raisePanel=document.getElementById('raise-panel');
+  const raiseSlider=document.getElementById('raise-slider');
+  const raiseInput=document.getElementById('raise-input');
+  const raiseConfirm=document.getElementById('raise-confirm');
+
+  document.getElementById('btn-raise').addEventListener('click',()=>{
+    raisePanel.style.display=raisePanel.style.display==='none'?'':'none';playClick();
+  });
+
+  raiseSlider.addEventListener('input',()=>{raiseInput.value=raiseSlider.value;raiseConfirm.textContent=`Raise to ${Number(raiseSlider.value).toLocaleString()}`;});
+  raiseInput.addEventListener('input',()=>{raiseSlider.value=raiseInput.value;raiseConfirm.textContent=`Raise to ${Number(raiseInput.value).toLocaleString()}`;});
+
+  document.querySelectorAll('.raise-quick').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const pot=1250;const stack=2450;
+      const sizes={min:500,half:Math.round(pot/2),pot:pot,allin:stack};
+      const v=Math.min(sizes[btn.dataset.size]||500,stack);
+      raiseSlider.value=v;raiseInput.value=v;raiseConfirm.textContent=`Raise to ${v.toLocaleString()}`;
+      playClick();
+    });
+  });
+
+  raiseConfirm.addEventListener('click',()=>{raisePanel.style.display='none';playCollect();});
+
+  /* ── Action buttons (mock) ── */
+  document.getElementById('btn-fold').addEventListener('click',()=>{playClick();});
+  document.getElementById('btn-call').addEventListener('click',()=>{playDrop();});
+  document.getElementById('btn-allin').addEventListener('click',()=>{playCollect();});
+
+  /* ── Mock: show topup if bankroll low (demo) ── */
+  // document.getElementById('topup-btn').style.display='';
+  </script>
+</body>
+</html>
