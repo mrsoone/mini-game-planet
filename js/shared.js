@@ -413,11 +413,12 @@ function applyGamePageDecor(game) {
     #mgp-header-emojis {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: clamp(4px, 1vw, 8px);
       flex: 1 1 auto;
       justify-content: center;
       min-width: 0;
-      overflow: hidden;
+      overflow: visible;
+      padding: 4px 0;
     }
     .mgp-banner-e {
       font-size: clamp(1.1rem, 2.5vw, 1.6rem);
