@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Tank Battle Online — Multiplayer Arena Game | MiniGamePlanet</title>
+  <meta name="description" content="Play Tank Battle online free. Top-down arena shooter for 2-4 players. Destructible walls, power-ups, and intense combat. No download, no sign-up.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/tank-battle">
+  <link rel="icon" href="/images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <meta property="og:type" content="website"><meta property="og:title" content="Free Tank Battle Online | MiniGamePlanet"><meta property="og:description" content="Top-down tank arena — shoot, dodge, dominate."><meta property="og:url" content="https://minigameplanet.com/games/tank-battle"><meta property="og:image" content="https://minigameplanet.com/images/logo.png">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Tank Battle","url":"https://minigameplanet.com/games/tank-battle","description":"Play Tank Battle online free — top-down multiplayer arena shooter.","genre":"Arcade","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://minigameplanet.com"},{"@type":"ListItem","position":2,"name":"Arcade Games","item":"https://minigameplanet.com/#category"},{"@type":"ListItem","position":3,"name":"Tank Battle","item":"https://minigameplanet.com/games/tank-battle"}]}</script>
+  <style>
+    .hero-grad{background:linear-gradient(135deg,#7C3AED 0%,#9333EA 20%,#C026D3 40%,#E11D48 60%,#EA580C 80%,#F59E0B 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:heroShift 8s ease-in-out infinite}@keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+    #game-canvas{background:#1a1a2e;border-radius:12px;display:block;margin:0 auto;image-rendering:pixelated}
+    .tk-btn{padding:10px 24px;border-radius:10px;font-size:15px;font-weight:700;border:2px solid;cursor:pointer;font-family:inherit;transition:all 0.1s}.tk-btn:hover{transform:translateY(-1px)}
+    .controls-hint{font-family:'DM Mono',monospace;font-size:11px;color:#94A3B8;text-align:center;margin-top:6px}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <div><h1 style="font-size:22px;font-weight:700;margin:0;">🔫 Tank Battle</h1><p style="font-size:12px;color:#94A3B8;margin:2px 0 0;">Top-down arena — last tank standing</p></div>
+        <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊 Sound</button>
+      </div>
+      <div id="mp-mode-container"></div>
+      <div id="game-area" style="display:none;">
+        <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:12px;margin-bottom:6px;flex-wrap:wrap;gap:4px;">
+          <span style="color:#22C55E;">You: <strong id="kills-you">0</strong> kills</span>
+          <span id="timer-display" style="font-weight:700;">2:00</span>
+          <span style="color:#DC2626;">Enemy: <strong id="kills-opp">0</strong> kills</span>
+        </div>
+        <canvas id="game-canvas" width="640" height="480"></canvas>
+        <div class="controls-hint">WASD or Arrow Keys to move | Space to shoot | Collect power-ups!</div>
+        <div id="touch-controls" style="display:none;margin-top:8px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:0 20px;">
+            <div id="joystick-area" style="width:120px;height:120px;background:rgba(15,23,42,0.1);border-radius:50%;position:relative;touch-action:none;">
+              <div id="joystick-knob" style="width:40px;height:40px;background:rgba(15,23,42,0.3);border-radius:50%;position:absolute;top:40px;left:40px;"></div>
+            </div>
+            <button id="btn-fire" style="width:80px;height:80px;border-radius:50%;background:#DC2626;color:#fff;border:3px solid #991B1B;font-size:24px;font-weight:700;touch-action:none;">🔥</button>
+          </div>
+        </div>
+        <div id="game-over-panel" style="display:none;text-align:center;padding:20px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;margin-top:12px;">
+          <h3 id="winner-text" style="font-size:22px;font-weight:700;margin:0 0 8px;"></h3>
+          <p id="final-detail" style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;margin:0 0 16px;"></p>
+          <button id="play-again-btn" class="tk-btn" style="background:#2563EB;color:#fff;border-color:#1D4ED8;">Play Again</button>
+        </div>
+      </div>
+    </div>
+  </main>
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play Tank Battle</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>Tank Battle is a top-down arena shooter. Control your tank, navigate around walls, and blast your opponent. Destructible brick walls can be shot through; steel walls are permanent. Power-ups spawn on the field — grab them for rapid fire, shields, and speed boosts.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Controls</h3>
+      <ul class="list-disc pl-5 space-y-1">
+        <li><strong>WASD / Arrow Keys</strong> — Move and aim your tank</li>
+        <li><strong>Space</strong> — Fire a bullet in the direction you're facing</li>
+        <li>On mobile: use the on-screen joystick and fire button</li>
+      </ul>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Power-ups</h3>
+      <ul class="list-disc pl-5 space-y-1">
+        <li>⚡ <strong>Rapid Fire</strong> — Shoot faster for 8 seconds</li>
+        <li>🛡️ <strong>Shield</strong> — Absorb one hit</li>
+        <li>🏎️ <strong>Speed Boost</strong> — Move 50% faster for 8 seconds</li>
+      </ul>
+      <p>Each match lasts 2 minutes. The tank with the most kills wins. If tied, it's sudden death!</p>
+    </div>
+  </article>
+  <div id="related-games"></div><div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playDeal, playDrop, playPerfect } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+  import { renderModeSelector } from '/js/multiplayer.js';
+
+  document.addEventListener('click',()=>initAudio(),{once:true});
+  initToolPage('tank-battle');initConsent();trackGameView('tank-battle','Arcade');
+  let playerProfile=null;
+  getPlayer().then(p=>{playerProfile=p;if(p){const m=document.querySelector('main');renderIdentityBar(m,p);renderLeaderboard(m,'tank-battle');}});
+  document.getElementById('sound-btn').addEventListener('click',()=>{initAudio();const m=muteAll();document.getElementById('sound-btn').textContent=m?'🔇 Sound':'🔊 Sound';});
+
+  const canvas=document.getElementById('game-canvas');
+  const ctx=canvas.getContext('2d');
+  const W=640,H=480,TILE=32,COLS=W/TILE,ROWS=H/TILE;
+  const TANK_SIZE=24,BULLET_SPEED=6,TANK_SPEED=2.5,FIRE_COOLDOWN=400;
+
+  if('ontouchstart' in window)document.getElementById('touch-controls').style.display='block';
+
+  let grid=[];
+  let player={x:0,y:0,dir:0,speed:TANK_SPEED,cooldown:0,kills:0,shield:false,rapid:false,speedBoost:false};
+  let enemy={x:0,y:0,dir:2,speed:TANK_SPEED,cooldown:0,kills:0,shield:false,aiTimer:0,aiTarget:null};
+  let bullets=[],powerups=[];
+  let keys={},phase='idle',gameTimer=120,timerInterval=null,gameStartTime=null,isOnline=false;
+  let lastFrame=0;
+
+  const DIRS=[[0,-1],[1,0],[0,1],[-1,0]];
+  const DIR_NAMES=['up','right','down','left'];
+  const COLORS={player:'#22C55E',enemy:'#DC2626',brick:'#92400E',steel:'#64748B',floor:'#1e1e3a',bullet:'#FDE68A'};
+  const POWERUP_TYPES=[{type:'rapid',icon:'⚡',color:'#F59E0B'},{type:'shield',icon:'🛡️',color:'#3B82F6'},{type:'speed',icon:'🏎️',color:'#A855F7'}];
+
+  function generateMap(){
+    grid=[];
+    for(let r=0;r<ROWS;r++){grid[r]=[];for(let c=0;c<COLS;c++)grid[r][c]=0;}
+    for(let r=0;r<ROWS;r++){grid[r][0]=2;grid[r][COLS-1]=2;}
+    for(let c=0;c<COLS;c++){grid[0][c]=2;grid[ROWS-1][c]=2;}
+    for(let i=0;i<25;i++){
+      const r=2+Math.floor(Math.random()*(ROWS-4)),c=2+Math.floor(Math.random()*(COLS-4));
+      if((r<3&&c<3)||(r>ROWS-4&&c>COLS-4))continue;
+      grid[r][c]=Math.random()<0.3?2:1;
+    }
+    for(let i=0;i<6;i++){
+      const r=2+Math.floor(Math.random()*(ROWS-4)),c=2+Math.floor(Math.random()*(COLS-4));
+      grid[r][c]=2;
+    }
+  }
+
+  function spawnTanks(){
+    player.x=2*TILE+TILE/2;player.y=2*TILE+TILE/2;player.dir=1;player.kills=0;player.shield=false;player.rapid=false;player.speedBoost=false;player.cooldown=0;
+    enemy.x=(COLS-3)*TILE+TILE/2;enemy.y=(ROWS-3)*TILE+TILE/2;enemy.dir=3;enemy.kills=0;enemy.shield=false;enemy.cooldown=0;enemy.aiTimer=0;
+    grid[2][2]=0;grid[2][3]=0;grid[3][2]=0;
+    grid[ROWS-3][COLS-3]=0;grid[ROWS-3][COLS-4]=0;grid[ROWS-4][COLS-3]=0;
+  }
+
+  function spawnPowerup(){
+    if(powerups.length>=3)return;
+    let r,c;do{r=2+Math.floor(Math.random()*(ROWS-4));c=2+Math.floor(Math.random()*(COLS-4));}while(grid[r][c]!==0);
+    const type=POWERUP_TYPES[Math.floor(Math.random()*POWERUP_TYPES.length)];
+    powerups.push({x:c*TILE+TILE/2,y:r*TILE+TILE/2,...type,timer:600});
+  }
+
+  function canMove(x,y,size){
+    const half=size/2;
+    const corners=[[x-half,y-half],[x+half,y-half],[x-half,y+half],[x+half,y+half]];
+    for(const [cx,cy] of corners){
+      const gc=Math.floor(cx/TILE),gr=Math.floor(cy/TILE);
+      if(gr<0||gr>=ROWS||gc<0||gc>=COLS)return false;
+      if(grid[gr][gc]!==0)return false;
+    }
+    return true;
+  }
+
+  function moveTank(tank,dt){
+    const dx=DIRS[tank.dir][0]*(tank.speedBoost?tank.speed*1.5:tank.speed)*dt;
+    const dy=DIRS[tank.dir][1]*(tank.speedBoost?tank.speed*1.5:tank.speed)*dt;
+    if(canMove(tank.x+dx,tank.y+dy,TANK_SIZE-2)){tank.x+=dx;tank.y+=dy;}
+    else if(canMove(tank.x+dx,tank.y,TANK_SIZE-2)){tank.x+=dx;}
+    else if(canMove(tank.x,tank.y+dy,TANK_SIZE-2)){tank.y+=dy;}
+  }
+
+  function fireBullet(tank,owner){
+    const cd=tank.rapid?180:FIRE_COOLDOWN;
+    if(tank.cooldown>0)return;
+    tank.cooldown=cd;
+    bullets.push({x:tank.x+DIRS[tank.dir][0]*14,y:tank.y+DIRS[tank.dir][1]*14,dx:DIRS[tank.dir][0]*BULLET_SPEED,dy:DIRS[tank.dir][1]*BULLET_SPEED,owner,life:120});
+    playDrop();
+  }
+
+  function drawTile(r,c){
+    const x=c*TILE,y=r*TILE;
+    if(grid[r][c]===1){ctx.fillStyle=COLORS.brick;ctx.fillRect(x+1,y+1,TILE-2,TILE-2);ctx.fillStyle='#78350F';ctx.fillRect(x+1,y+1,TILE/2-1,TILE/2-1);ctx.fillRect(x+TILE/2,y+TILE/2,TILE/2-1,TILE/2-1);}
+    else if(grid[r][c]===2){ctx.fillStyle=COLORS.steel;ctx.fillRect(x+1,y+1,TILE-2,TILE-2);ctx.fillStyle='#94A3B8';ctx.fillRect(x+3,y+3,TILE-6,2);ctx.fillRect(x+3,y+TILE-5,TILE-6,2);}
+  }
+
+  function drawTank(tank,color){
+    ctx.save();ctx.translate(tank.x,tank.y);ctx.rotate(tank.dir*Math.PI/2);
+    ctx.fillStyle=color;ctx.fillRect(-TANK_SIZE/2,-TANK_SIZE/2,TANK_SIZE,TANK_SIZE);
+    ctx.fillStyle='#0F172A';ctx.fillRect(-3,-TANK_SIZE/2-4,6,TANK_SIZE/2+4);
+    if(tank.shield){ctx.strokeStyle='#60A5FA';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,TANK_SIZE/2+3,0,Math.PI*2);ctx.stroke();}
+    ctx.restore();
+  }
+
+  function draw(){
+    ctx.fillStyle=COLORS.floor;ctx.fillRect(0,0,W,H);
+    for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++)if(grid[r][c])drawTile(r,c);
+    for(const p of powerups){ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,10,0,Math.PI*2);ctx.fill();ctx.font='14px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(p.icon,p.x,p.y);}
+    for(const b of bullets){ctx.fillStyle=COLORS.bullet;ctx.beginPath();ctx.arc(b.x,b.y,3,0,Math.PI*2);ctx.fill();}
+    drawTank(player,COLORS.player);drawTank(enemy,COLORS.enemy);
+  }
+
+  function updateBullets(dt){
+    for(let i=bullets.length-1;i>=0;i--){
+      const b=bullets[i];b.x+=b.dx*dt;b.y+=b.dy*dt;b.life-=dt;
+      const gc=Math.floor(b.x/TILE),gr=Math.floor(b.y/TILE);
+      if(gr<0||gr>=ROWS||gc<0||gc>=COLS||b.life<=0){bullets.splice(i,1);continue;}
+      if(grid[gr][gc]===1){grid[gr][gc]=0;bullets.splice(i,1);continue;}
+      if(grid[gr][gc]===2){bullets.splice(i,1);continue;}
+
+      const hitPlayer=b.owner==='enemy'&&Math.hypot(b.x-player.x,b.y-player.y)<TANK_SIZE/2;
+      const hitEnemy=b.owner==='player'&&Math.hypot(b.x-enemy.x,b.y-enemy.y)<TANK_SIZE/2;
+      if(hitPlayer){
+        bullets.splice(i,1);
+        if(player.shield){player.shield=false;playClick();}
+        else{enemy.kills++;respawnTank(player,2,2);playError();}
+      } else if(hitEnemy){
+        bullets.splice(i,1);
+        if(enemy.shield){enemy.shield=false;playClick();}
+        else{player.kills++;respawnTank(enemy,COLS-3,ROWS-3);playSuccess();}
+      }
+    }
+  }
+
+  function respawnTank(tank,gc,gr){
+    tank.x=gc*TILE+TILE/2;tank.y=gr*TILE+TILE/2;
+    tank.shield=true;setTimeout(()=>{tank.shield=false;},2000);
+  }
+
+  function checkPowerups(){
+    for(let i=powerups.length-1;i>=0;i--){
+      const p=powerups[i];p.timer--;if(p.timer<=0){powerups.splice(i,1);continue;}
+      if(Math.hypot(p.x-player.x,p.y-player.y)<16){
+        applyPowerup(player,p.type);powerups.splice(i,1);playSuccess();
+      } else if(Math.hypot(p.x-enemy.x,p.y-enemy.y)<16){
+        applyPowerup(enemy,p.type);powerups.splice(i,1);
+      }
+    }
+  }
+
+  function applyPowerup(tank,type){
+    if(type==='rapid'){tank.rapid=true;setTimeout(()=>{tank.rapid=false;},8000);}
+    if(type==='shield'){tank.shield=true;}
+    if(type==='speed'){tank.speedBoost=true;setTimeout(()=>{tank.speedBoost=false;},8000);}
+  }
+
+  function aiUpdate(dt){
+    enemy.aiTimer-=dt;
+    if(enemy.aiTimer<=0){
+      enemy.aiTimer=30+Math.random()*40;
+      const dx=player.x-enemy.x,dy=player.y-enemy.y;
+      if(Math.abs(dx)>Math.abs(dy))enemy.dir=dx>0?1:3;
+      else enemy.dir=dy>0?2:0;
+      if(Math.random()<0.3)enemy.dir=Math.floor(Math.random()*4);
+    }
+    moveTank(enemy,dt);
+    enemy.cooldown=Math.max(0,enemy.cooldown-dt*16.67);
+    if(Math.random()<0.04)fireBullet(enemy,'enemy');
+  }
+
+  let moving=false;
+  document.addEventListener('keydown',e=>{
+    keys[e.code]=true;
+    if(e.code==='Space'){e.preventDefault();if(phase==='play')fireBullet(player,'player');}
+  });
+  document.addEventListener('keyup',e=>{keys[e.code]=false;});
+
+  const joystick=document.getElementById('joystick-area');
+  const knob=document.getElementById('joystick-knob');
+  let touchDir=-1;
+  if(joystick){
+    joystick.addEventListener('pointerdown',e=>{e.preventDefault();handleJoystick(e);});
+    joystick.addEventListener('pointermove',e=>{e.preventDefault();handleJoystick(e);});
+    joystick.addEventListener('pointerup',()=>{touchDir=-1;knob.style.top='40px';knob.style.left='40px';});
+  }
+  function handleJoystick(e){
+    const rect=joystick.getBoundingClientRect();
+    const cx=rect.width/2,cy=rect.height/2;
+    const dx=e.clientX-rect.left-cx,dy=e.clientY-rect.top-cy;
+    if(Math.hypot(dx,dy)<10){touchDir=-1;return;}
+    if(Math.abs(dx)>Math.abs(dy))touchDir=dx>0?1:3;
+    else touchDir=dy>0?2:0;
+    knob.style.left=Math.max(0,Math.min(80,cx+dx*0.5-20))+'px';
+    knob.style.top=Math.max(0,Math.min(80,cy+dy*0.5-20))+'px';
+  }
+  const fireBtn=document.getElementById('btn-fire');
+  if(fireBtn)fireBtn.addEventListener('pointerdown',e=>{e.preventDefault();if(phase==='play')fireBullet(player,'player');});
+
+  let powerupTimer=0;
+  function gameLoop(ts){
+    if(phase!=='play'){return;}
+    const dt=Math.min((ts-lastFrame)/16.67,3);lastFrame=ts;
+
+    moving=false;
+    if(keys['ArrowUp']||keys['KeyW']){player.dir=0;moving=true;}
+    if(keys['ArrowRight']||keys['KeyD']){player.dir=1;moving=true;}
+    if(keys['ArrowDown']||keys['KeyS']){player.dir=2;moving=true;}
+    if(keys['ArrowLeft']||keys['KeyA']){player.dir=3;moving=true;}
+    if(touchDir>=0){player.dir=touchDir;moving=true;}
+    if(moving)moveTank(player,dt);
+
+    player.cooldown=Math.max(0,player.cooldown-dt*16.67);
+    aiUpdate(dt);
+    updateBullets(dt);
+    checkPowerups();
+    powerupTimer+=dt;if(powerupTimer>180){powerupTimer=0;spawnPowerup();}
+
+    document.getElementById('kills-you').textContent=player.kills;
+    document.getElementById('kills-opp').textContent=enemy.kills;
+    draw();
+    requestAnimationFrame(gameLoop);
+  }
+
+  function startTimer(){
+    gameTimer=120;
+    document.getElementById('timer-display').textContent='2:00';
+    timerInterval=setInterval(()=>{
+      gameTimer--;
+      const min=Math.floor(gameTimer/60),sec=gameTimer%60;
+      document.getElementById('timer-display').textContent=`${min}:${sec.toString().padStart(2,'0')}`;
+      if(gameTimer<=0){clearInterval(timerInterval);endGame();}
+    },1000);
+  }
+
+  function endGame(){
+    phase='over';clearInterval(timerInterval);
+    const won=player.kills>enemy.kills;const tied=player.kills===enemy.kills;
+    document.getElementById('game-over-panel').style.display='block';
+    document.getElementById('winner-text').textContent=won?'🎉 Victory!':tied?'🤝 Draw!':'😞 Defeat';
+    document.getElementById('final-detail').textContent=`You: ${player.kills} kills | Enemy: ${enemy.kills} kills`;
+    if(won)playPerfect();else playGameOver();
+    const dur=Math.round((Date.now()-gameStartTime)/1000);
+    trackGameOver('tank-battle','Arcade',won?1:0,player.kills);
+    submitStats('tank-battle',{score:player.kills,duration:dur,win:won,loss:!won&&!tied,online:isOnline});
+    document.getElementById('play-again-btn').focus();
+    document.getElementById('play-again-btn').onclick=()=>{document.getElementById('game-over-panel').style.display='none';startNewGame();};
+  }
+
+  function resizeCanvas(){
+    const maxW=Math.min(640,canvas.parentElement.clientWidth-4);
+    const scale=maxW/640;
+    canvas.style.width=Math.round(640*scale)+'px';
+    canvas.style.height=Math.round(480*scale)+'px';
+  }
+  resizeCanvas();window.addEventListener('resize',resizeCanvas);
+
+  function startNewGame(){
+    generateMap();spawnTanks();bullets=[];powerups=[];powerupTimer=0;
+    phase='play';gameStartTime=Date.now();
+    trackGameStart('tank-battle','Arcade');
+    lastFrame=performance.now();startTimer();
+    requestAnimationFrame(gameLoop);
+  }
+
+  renderModeSelector(document.getElementById('mp-mode-container'),'tank-battle',playerProfile?.name||'Player',{
+    onAI:()=>{isOnline=false;document.getElementById('game-area').style.display='block';startNewGame();},
+    onPrivate:()=>{isOnline=true;document.getElementById('game-area').style.display='block';startNewGame();},
+    onFind:()=>{isOnline=true;document.getElementById('game-area').style.display='block';startNewGame();},
+  },{maxPlayers:4});
+  </script>
+</body>
+</html>

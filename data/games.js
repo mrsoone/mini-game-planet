@@ -1225,7 +1225,7 @@ export const games = [
     icon: '🪖',
     accent: '#0891B2',
     keywords: ['tank game online', 'tank battle multiplayer', 'arena shooter browser', 'tank war'],
-    built: false,
+    built: true,
     multiplayer: true,
     maxPlayers: 4
   },
@@ -1237,7 +1237,7 @@ export const games = [
     icon: '🐍',
     accent: '#0891B2',
     keywords: ['battle snake online', 'multiplayer snake', 'snake game online', 'snake battle'],
-    built: false,
+    built: true,
     multiplayer: true,
     maxPlayers: 4
   },

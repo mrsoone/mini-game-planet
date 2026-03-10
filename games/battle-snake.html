@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Battle Snake Online — Multiplayer Snake Game | MiniGamePlanet</title>
+  <meta name="description" content="Play Battle Snake online free. Classic snake but multiplayer — eat food, grow, and outlast opponents on the same board. Power-ups, speed increases. No download.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/battle-snake">
+  <link rel="icon" href="/images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <meta property="og:type" content="website"><meta property="og:title" content="Free Battle Snake Online | MiniGamePlanet"><meta property="og:description" content="Multiplayer snake — eat, grow, outlast."><meta property="og:url" content="https://minigameplanet.com/games/battle-snake"><meta property="og:image" content="https://minigameplanet.com/images/logo.png">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Battle Snake","url":"https://minigameplanet.com/games/battle-snake","description":"Play Battle Snake online free — multiplayer snake arena.","genre":"Arcade","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://minigameplanet.com"},{"@type":"ListItem","position":2,"name":"Arcade Games","item":"https://minigameplanet.com/#category"},{"@type":"ListItem","position":3,"name":"Battle Snake","item":"https://minigameplanet.com/games/battle-snake"}]}</script>
+  <style>
+    .hero-grad{background:linear-gradient(135deg,#7C3AED 0%,#9333EA 20%,#C026D3 40%,#E11D48 60%,#EA580C 80%,#F59E0B 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:heroShift 8s ease-in-out infinite}@keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+    #game-canvas{background:#0f172a;border-radius:12px;display:block;margin:0 auto}
+    .bs-btn{padding:10px 24px;border-radius:10px;font-size:15px;font-weight:700;border:2px solid;cursor:pointer;font-family:inherit;transition:all 0.1s}.bs-btn:hover{transform:translateY(-1px)}
+    .controls-hint{font-family:'DM Mono',monospace;font-size:11px;color:#94A3B8;text-align:center;margin-top:6px}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <div><h1 style="font-size:22px;font-weight:700;margin:0;">🐍 Battle Snake</h1><p style="font-size:12px;color:#94A3B8;margin:2px 0 0;">Eat, grow, outlast — multiplayer snake arena</p></div>
+        <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊 Sound</button>
+      </div>
+      <div id="mp-mode-container"></div>
+      <div id="game-area" style="display:none;">
+        <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:12px;margin-bottom:6px;flex-wrap:wrap;gap:4px;">
+          <span style="color:#22C55E;">🟢 You: <strong id="len-you">3</strong></span>
+          <span style="color:#DC2626;">🔴 Enemy: <strong id="len-opp">3</strong></span>
+          <span style="color:#94A3B8;">Speed: <span id="speed-display">1</span>x</span>
+        </div>
+        <canvas id="game-canvas" width="600" height="600"></canvas>
+        <div class="controls-hint">Arrow Keys or WASD to steer | Don't crash into walls or snakes!</div>
+        <div id="touch-controls" style="display:none;margin-top:8px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;max-width:180px;margin:0 auto;">
+            <div></div>
+            <button class="bs-btn" data-dir="0" style="background:#1E293B;color:#fff;border-color:#334155;padding:12px;">▲</button>
+            <div></div>
+            <button class="bs-btn" data-dir="3" style="background:#1E293B;color:#fff;border-color:#334155;padding:12px;">◀</button>
+            <div></div>
+            <button class="bs-btn" data-dir="1" style="background:#1E293B;color:#fff;border-color:#334155;padding:12px;">▶</button>
+            <div></div>
+            <button class="bs-btn" data-dir="2" style="background:#1E293B;color:#fff;border-color:#334155;padding:12px;">▼</button>
+            <div></div>
+          </div>
+        </div>
+        <div id="game-over-panel" style="display:none;text-align:center;padding:20px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;margin-top:12px;">
+          <h3 id="winner-text" style="font-size:22px;font-weight:700;margin:0 0 8px;"></h3>
+          <p id="final-detail" style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;margin:0 0 16px;"></p>
+          <button id="play-again-btn" class="bs-btn" style="background:#2563EB;color:#fff;border-color:#1D4ED8;">Play Again</button>
+        </div>
+      </div>
+    </div>
+  </main>
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play Battle Snake</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>Battle Snake is classic Snake but multiplayer. Both snakes are on the same board, competing for food and survival. Eat food to grow longer. Crash into a wall, yourself, or the other snake and you're out. Last snake alive wins.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Rules</h3>
+      <ul class="list-disc pl-5 space-y-1">
+        <li>Steer with <strong>Arrow Keys</strong> or <strong>WASD</strong></li>
+        <li>Eat the red food to grow longer</li>
+        <li>Speed increases as snakes get longer — the game gets harder over time</li>
+        <li>Crash into anything and you lose</li>
+      </ul>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Power-ups</h3>
+      <ul class="list-disc pl-5 space-y-1">
+        <li>⚡ <strong>Speed Boost</strong> — temporary burst of speed</li>
+        <li>👻 <strong>Ghost</strong> — pass through the other snake briefly</li>
+        <li>🧲 <strong>Magnet</strong> — food is attracted toward you</li>
+      </ul>
+    </div>
+  </article>
+  <div id="related-games"></div><div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playDeal, playDrop, playPerfect } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+  import { renderModeSelector } from '/js/multiplayer.js';
+
+  document.addEventListener('click',()=>initAudio(),{once:true});
+  initToolPage('battle-snake');initConsent();trackGameView('battle-snake','Arcade');
+  let playerProfile=null;
+  getPlayer().then(p=>{playerProfile=p;if(p){const m=document.querySelector('main');renderIdentityBar(m,p);renderLeaderboard(m,'battle-snake');}});
+  document.getElementById('sound-btn').addEventListener('click',()=>{initAudio();const m=muteAll();document.getElementById('sound-btn').textContent=m?'🔇 Sound':'🔊 Sound';});
+
+  if('ontouchstart' in window)document.getElementById('touch-controls').style.display='block';
+
+  const canvas=document.getElementById('game-canvas');
+  const ctx=canvas.getContext('2d');
+  const GRID=30,CELL=canvas.width/GRID;
+  const DIRS=[[0,-1],[1,0],[0,1],[-1,0]];
+  const COLORS={player:'#22C55E',playerHead:'#16A34A',enemy:'#DC2626',enemyHead:'#B91C1C',food:'#F59E0B',bg:'#0f172a',grid:'#1e293b',powerup:'#A855F7'};
+
+  let playerSnake=[],enemySnake=[],playerDir=1,enemyDir=3,nextPlayerDir=1,nextEnemyDir=3;
+  let food={x:0,y:0},powerup=null,powerupTimer=0;
+  let playerGhost=false,enemyGhost=false,playerMagnet=false;
+  let phase='idle',gameInterval=null,baseSpeed=140,speedLevel=1;
+  let gameStartTime=null,isOnline=false;
+
+  function spawnFood(){
+    let x,y;
+    do{x=Math.floor(Math.random()*GRID);y=Math.floor(Math.random()*GRID);}
+    while(isOccupied(x,y));
+    food={x,y};
+  }
+
+  function spawnPowerup(){
+    if(powerup)return;
+    let x,y;
+    do{x=Math.floor(Math.random()*GRID);y=Math.floor(Math.random()*GRID);}
+    while(isOccupied(x,y));
+    const types=['speed','ghost','magnet'];
+    powerup={x,y,type:types[Math.floor(Math.random()*types.length)],timer:80};
+  }
+
+  function isOccupied(x,y){
+    return playerSnake.some(s=>s.x===x&&s.y===y)||enemySnake.some(s=>s.x===x&&s.y===y)||(food.x===x&&food.y===y);
+  }
+
+  function initSnakes(){
+    playerSnake=[{x:5,y:15},{x:4,y:15},{x:3,y:15}];
+    enemySnake=[{x:25,y:15},{x:26,y:15},{x:27,y:15}];
+    playerDir=1;enemyDir=3;nextPlayerDir=1;nextEnemyDir=3;
+    playerGhost=false;enemyGhost=false;playerMagnet=false;
+    powerup=null;powerupTimer=0;speedLevel=1;
+  }
+
+  function draw(){
+    ctx.fillStyle=COLORS.bg;ctx.fillRect(0,0,canvas.width,canvas.height);
+    for(let r=0;r<GRID;r++)for(let c=0;c<GRID;c++){if((r+c)%2===0){ctx.fillStyle=COLORS.grid;ctx.fillRect(c*CELL,r*CELL,CELL,CELL);}}
+
+    ctx.fillStyle=COLORS.food;ctx.beginPath();ctx.arc(food.x*CELL+CELL/2,food.y*CELL+CELL/2,CELL/2-2,0,Math.PI*2);ctx.fill();
+
+    if(powerup){
+      ctx.fillStyle=COLORS.powerup;ctx.beginPath();ctx.arc(powerup.x*CELL+CELL/2,powerup.y*CELL+CELL/2,CELL/2-1,0,Math.PI*2);ctx.fill();
+      ctx.font=`${CELL-4}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+      const icon=powerup.type==='speed'?'⚡':powerup.type==='ghost'?'👻':'🧲';
+      ctx.fillText(icon,powerup.x*CELL+CELL/2,powerup.y*CELL+CELL/2);
+    }
+
+    drawSnake(playerSnake,COLORS.player,COLORS.playerHead,playerGhost);
+    drawSnake(enemySnake,COLORS.enemy,COLORS.enemyHead,enemyGhost);
+  }
+
+  function drawSnake(snake,bodyColor,headColor,ghost){
+    const alpha=ghost?0.4:1;
+    for(let i=snake.length-1;i>=0;i--){
+      const s=snake[i];
+      ctx.globalAlpha=alpha;
+      ctx.fillStyle=i===0?headColor:bodyColor;
+      ctx.fillRect(s.x*CELL+1,s.y*CELL+1,CELL-2,CELL-2);
+      if(i===0){
+        ctx.fillStyle='#fff';
+        const cx=s.x*CELL+CELL/2,cy=s.y*CELL+CELL/2;
+        ctx.beginPath();ctx.arc(cx-3,cy-2,2,0,Math.PI*2);ctx.fill();
+        ctx.beginPath();ctx.arc(cx+3,cy-2,2,0,Math.PI*2);ctx.fill();
+      }
+    }
+    ctx.globalAlpha=1;
+  }
+
+  function moveSnake(snake,dir,isPlayer){
+    const head={...snake[0]};
+    head.x+=DIRS[dir][0];head.y+=DIRS[dir][1];
+
+    if(head.x<0||head.x>=GRID||head.y<0||head.y>=GRID)return 'dead';
+    if(snake.some((s,i)=>i>0&&s.x===head.x&&s.y===head.y))return 'dead';
+
+    const otherSnake=isPlayer?enemySnake:playerSnake;
+    const isGhost=isPlayer?playerGhost:enemyGhost;
+    if(!isGhost&&otherSnake.some(s=>s.x===head.x&&s.y===head.y))return 'dead';
+
+    snake.unshift(head);
+
+    if(head.x===food.x&&head.y===food.y){
+      spawnFood();playDrop();
+      return 'ate';
+    }
+
+    if(powerup&&head.x===powerup.x&&head.y===powerup.y){
+      applyPowerup(isPlayer,powerup.type);powerup=null;playSuccess();
+    }
+
+    snake.pop();
+    return 'ok';
+  }
+
+  function applyPowerup(isPlayer,type){
+    if(type==='speed'){}
+    if(type==='ghost'){
+      if(isPlayer){playerGhost=true;setTimeout(()=>{playerGhost=false;},4000);}
+      else{enemyGhost=true;setTimeout(()=>{enemyGhost=false;},4000);}
+    }
+    if(type==='magnet'&&isPlayer){playerMagnet=true;setTimeout(()=>{playerMagnet=false;},5000);}
+  }
+
+  function aiDecide(){
+    const head=enemySnake[0];
+    const fx=food.x,fy=food.y;
+    const dx=fx-head.x,dy=fy-head.y;
+
+    let preferred;
+    if(Math.abs(dx)>Math.abs(dy))preferred=dx>0?1:3;
+    else preferred=dy>0?2:0;
+
+    const opposite=[2,3,0,1];
+    if(preferred===opposite[enemyDir])preferred=enemyDir;
+
+    const tryDirs=[preferred,enemyDir,(preferred+1)%4,(preferred+3)%4];
+    for(const d of tryDirs){
+      if(d===opposite[enemyDir])continue;
+      const nx=head.x+DIRS[d][0],ny=head.y+DIRS[d][1];
+      if(nx<0||nx>=GRID||ny<0||ny>=GRID)continue;
+      if(enemySnake.some(s=>s.x===nx&&s.y===ny))continue;
+      if(!enemyGhost&&playerSnake.some(s=>s.x===nx&&s.y===ny))continue;
+      nextEnemyDir=d;return;
+    }
+    nextEnemyDir=enemyDir;
+  }
+
+  function tick(){
+    if(phase!=='play')return;
+
+    playerDir=nextPlayerDir;
+    aiDecide();enemyDir=nextEnemyDir;
+
+    if(playerMagnet){
+      const head=playerSnake[0];
+      const dx=food.x-head.x,dy=food.y-head.y;
+      if(Math.abs(dx)+Math.abs(dy)<=5){
+        if(Math.abs(dx)>0)food.x-=Math.sign(dx);
+        else if(Math.abs(dy)>0)food.y-=Math.sign(dy);
+      }
+    }
+
+    const pResult=moveSnake(playerSnake,playerDir,true);
+    const eResult=moveSnake(enemySnake,enemyDir,false);
+
+    const totalLen=playerSnake.length+enemySnake.length;
+    speedLevel=1+Math.floor(totalLen/12)*0.2;
+    document.getElementById('speed-display').textContent=speedLevel.toFixed(1);
+
+    powerupTimer++;
+    if(powerupTimer>=60){powerupTimer=0;if(Math.random()<0.4)spawnPowerup();}
+    if(powerup){powerup.timer--;if(powerup.timer<=0)powerup=null;}
+
+    document.getElementById('len-you').textContent=playerSnake.length;
+    document.getElementById('len-opp').textContent=enemySnake.length;
+
+    if(pResult==='dead'&&eResult==='dead'){endGame('tie');return;}
+    if(pResult==='dead'){endGame('enemy');return;}
+    if(eResult==='dead'){endGame('player');return;}
+
+    draw();
+
+    clearInterval(gameInterval);
+    const speed=Math.max(50,baseSpeed-totalLen*2);
+    gameInterval=setInterval(tick,speed);
+  }
+
+  function endGame(winner){
+    phase='over';clearInterval(gameInterval);
+    const won=winner==='player';const tied=winner==='tie';
+    document.getElementById('game-over-panel').style.display='block';
+    document.getElementById('winner-text').textContent=won?'🎉 You Win!':tied?'💀 Both Crashed!':'😞 You Crashed!';
+    document.getElementById('final-detail').textContent=`Your length: ${playerSnake.length} | Enemy: ${enemySnake.length}`;
+    if(won)playPerfect();else playGameOver();
+    const dur=Math.round((Date.now()-gameStartTime)/1000);
+    trackGameOver('battle-snake','Arcade',won?1:0,playerSnake.length);
+    submitStats('battle-snake',{score:playerSnake.length,duration:dur,win:won,loss:!won&&!tied,online:isOnline});
+    document.getElementById('play-again-btn').focus();
+    document.getElementById('play-again-btn').onclick=()=>{document.getElementById('game-over-panel').style.display='none';startNewGame();};
+    draw();
+  }
+
+  document.addEventListener('keydown',e=>{
+    if(phase!=='play')return;
+    const opposite=[2,3,0,1];
+    let d=-1;
+    if(e.code==='ArrowUp'||e.code==='KeyW')d=0;
+    if(e.code==='ArrowRight'||e.code==='KeyD')d=1;
+    if(e.code==='ArrowDown'||e.code==='KeyS')d=2;
+    if(e.code==='ArrowLeft'||e.code==='KeyA')d=3;
+    if(d>=0&&d!==opposite[playerDir]){e.preventDefault();nextPlayerDir=d;}
+  });
+
+  document.querySelectorAll('[data-dir]').forEach(btn=>{
+    btn.addEventListener('pointerdown',e=>{
+      e.preventDefault();
+      if(phase!=='play')return;
+      const d=parseInt(btn.dataset.dir);
+      const opposite=[2,3,0,1];
+      if(d!==opposite[playerDir])nextPlayerDir=d;
+    });
+  });
+
+  function resizeCanvas(){
+    const maxW=Math.min(600,canvas.parentElement.clientWidth-4);
+    canvas.style.width=maxW+'px';canvas.style.height=maxW+'px';
+  }
+  resizeCanvas();window.addEventListener('resize',resizeCanvas);
+
+  function startNewGame(){
+    initSnakes();spawnFood();powerup=null;powerupTimer=0;
+    phase='play';gameStartTime=Date.now();
+    trackGameStart('battle-snake','Arcade');
+    draw();
+    clearInterval(gameInterval);
+    gameInterval=setInterval(tick,baseSpeed);
+  }
+
+  renderModeSelector(document.getElementById('mp-mode-container'),'battle-snake',playerProfile?.name||'Player',{
+    onAI:()=>{isOnline=false;document.getElementById('game-area').style.display='block';startNewGame();},
+    onPrivate:()=>{isOnline=true;document.getElementById('game-area').style.display='block';startNewGame();},
+    onFind:()=>{isOnline=true;document.getElementById('game-area').style.display='block';startNewGame();},
+  },{maxPlayers:4});
+  </script>
+</body>
+</html>
