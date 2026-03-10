@@ -476,6 +476,7 @@
     return `
     <a href="${href}" style="text-decoration:none;display:block;opacity:${opacity};" ${!g.built ? 'title="Coming soon"' : ''}>
       <div class="game-tile" style="position:relative;overflow:hidden;border-radius:14px;height:200px;background:${g.accent};cursor:pointer;" onmouseover="this.style.boxShadow='0 8px 28px ${g.accent}55'" onmouseout="this.style.boxShadow=''">
+        ${g.featured ? `<div style="position:absolute;top:10px;right:10px;z-index:2;background:linear-gradient(135deg,#F59E0B,#D97706);color:#fff;font-size:11px;font-weight:900;padding:4px 10px;border-radius:20px;letter-spacing:0.3px;">⭐ FEATURED</div>` : ''}
         ${showHotBadge ? `<div style="position:absolute;top:10px;left:10px;z-index:2;background:#fff;color:${g.accent};font-size:11px;font-weight:900;padding:4px 10px;border-radius:20px;letter-spacing:0.3px;">HOT 🔥</div>` : ''}
         <div class="tile-bg-emoji" style="position:absolute;bottom:-10px;right:-10px;font-size:140px;opacity:0.1;transform:rotate(-12deg);line-height:1;transition:opacity 0.2s,transform 0.2s;pointer-events:none;">${g.icon}</div>
         <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,0.35) 0%, transparent 100%);pointer-events:none;"></div>

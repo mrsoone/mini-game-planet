@@ -1241,4 +1241,17 @@ export const games = [
     multiplayer: true,
     maxPlayers: 4
   },
+  {
+    name: "Texas Hold'em Poker",
+    slug: 'texas-holdem',
+    category: 'Casino',
+    description: "Free No Limit Texas Hold'em poker. Play with friends or strangers. Persistent chip bankroll, 3 AI difficulties. No download, no signup.",
+    icon: '🃏',
+    accent: '#059669',
+    keywords: ['texas holdem', 'free poker', 'poker online', 'no limit holdem', 'play poker free'],
+    built: true,
+    multiplayer: true,
+    maxPlayers: 8,
+    featured: true
+  },
 ];

@@ -8,12 +8,12 @@ ENVIRONMENT = "production"
 
 [[kv_namespaces]]
 binding = "PLAYERS"
-id = "YOUR_KV_NAMESPACE_ID"
+id = "9331e298c0514faa851dc40f1d072de6"
 
 [[d1_databases]]
 binding = "DB"
 database_name = "minigameplanet"
-database_id = "YOUR_D1_DATABASE_ID"
+database_id = "49e12166-cc1b-40a1-ad7c-e87424157c3d"
 
 [durable_objects]
 bindings = [
