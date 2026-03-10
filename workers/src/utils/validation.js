@@ -99,6 +99,22 @@ const GAME_RULES = {
   'geography-quiz':    { minDuration: 5,  maxScore: 9999,   type: 'high_score' },
   'history-timeline':  { minDuration: 5,  maxScore: 9999,   type: 'high_score' },
   'periodic-table-quiz':{ minDuration: 5, maxScore: 9999,   type: 'high_score' },
+  // Expansion games
+  'spades':            { minDuration: 30, maxScore: null,   type: 'win_loss' },
+  'hearts':            { minDuration: 30, maxScore: null,   type: 'win_loss' },
+  'gin-rummy':         { minDuration: 15, maxScore: null,   type: 'win_loss' },
+  'rummy-500':         { minDuration: 15, maxScore: null,   type: 'win_loss' },
+  'euchre':            { minDuration: 10, maxScore: null,   type: 'win_loss' },
+  'cribbage':          { minDuration: 15, maxScore: null,   type: 'win_loss' },
+  'oh-hell':           { minDuration: 10, maxScore: null,   type: 'win_loss' },
+  'pitch':             { minDuration: 10, maxScore: null,   type: 'win_loss' },
+  'presidents':        { minDuration: 5,  maxScore: null,   type: 'win_loss' },
+  'egyptian-rat-screw':{ minDuration: 5,  maxScore: null,   type: 'win_loss' },
+  'pictionary-draw':   { minDuration: 10, maxScore: 99999,  type: 'high_score' },
+  'word-bomb':         { minDuration: 5,  maxScore: null,   type: 'win_loss' },
+  'trivia-battle':     { minDuration: 10, maxScore: 99999,  type: 'high_score' },
+  'tank-battle':       { minDuration: 10, maxScore: 9999,   type: 'high_score' },
+  'battle-snake':      { minDuration: 5,  maxScore: 9999,   type: 'high_score' },
 };
 
 export function validateSubmission(gameSlug, result) {
