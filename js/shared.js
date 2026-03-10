@@ -333,37 +333,42 @@ function applyGamePageDecor(game) {
   const oldBanner = document.getElementById('mgp-emoji-banner');
   if (oldBanner) oldBanner.remove();
 
-  let banner = document.getElementById('mgp-header-emojis');
-  if (!banner) {
-    banner = document.createElement('div');
-    banner.id = 'mgp-header-emojis';
-    banner.setAttribute('aria-hidden', 'true');
-    const mainEl = document.querySelector('main');
-    const gameCard = mainEl && mainEl.querySelector(':scope > div, :scope > article');
-    if (gameCard) {
-      const h1 = gameCard.querySelector('h1');
-      let headerRow = null;
-      if (h1) {
-        let el = h1.parentElement;
-        while (el && el !== gameCard) {
-          if (el.parentElement === gameCard) { headerRow = el; break; }
-          el = el.parentElement;
-        }
-      }
-      if (headerRow) {
-        const lastChild = headerRow.lastElementChild;
-        if (lastChild && lastChild !== banner) headerRow.insertBefore(banner, lastChild);
-        else if (!lastChild) headerRow.appendChild(banner);
-      } else {
-        const firstChild = gameCard.firstElementChild;
-        if (firstChild) gameCard.insertBefore(banner, firstChild.nextElementSibling);
-        else gameCard.appendChild(banner);
-      }
+  const bannerEmojis = [gameEmoji, ...vibeEmojis.slice(0,5), gameEmoji];
+  const emojiHTML = bannerEmojis.map(e => `<span class="mgp-banner-e">${e}</span>`).join('');
+
+  function placeEmojis(id, insertFn) {
+    let el = document.getElementById(id);
+    if (!el) {
+      el = document.createElement('div');
+      el.id = id;
+      el.setAttribute('aria-hidden', 'true');
+      insertFn(el);
     }
+    el.innerHTML = emojiHTML;
   }
-  if (banner) {
-    const bannerEmojis = [gameEmoji, ...vibeEmojis.slice(0,5), gameEmoji];
-    banner.innerHTML = bannerEmojis.map(e => `<span class="mgp-banner-e">${e}</span>`).join('');
+
+  const h1 = document.querySelector('main h1, body > div h1, article h1');
+  if (h1) {
+    const headerParent = h1.closest('div[style*="display:flex"], header, div.flex');
+    placeEmojis('mgp-header-emojis', (el) => {
+      if (headerParent) {
+        headerParent.style.position = 'relative';
+        headerParent.appendChild(el);
+      } else {
+        h1.parentElement.style.position = 'relative';
+        h1.insertAdjacentElement('afterend', el);
+      }
+    });
+
+    placeEmojis('mgp-footer-emojis', (el) => {
+      const mainEl = document.querySelector('main');
+      const gameCard = mainEl && (mainEl.querySelector(':scope > div') || mainEl.querySelector(':scope > article') || mainEl);
+      if (gameCard) {
+        const disclaimer = gameCard.querySelector('[style*="background:#FEF3C7"], .bg-amber-50');
+        if (disclaimer) disclaimer.insertAdjacentElement('beforebegin', el);
+        else gameCard.appendChild(el);
+      }
+    });
   }
 
   let style = document.getElementById('mgp-game-decor-style');
@@ -379,6 +384,11 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page main > article,
     body.mgp-themed-page main > section,
     body.mgp-themed-page main > .card,
+    body.mgp-themed-page main.bg-white,
+    body.mgp-themed-page main.rounded-2xl,
+    body.mgp-themed-page > div:not(#nav-container):not(#footer-container):not(#related-games):not(#mgp-game-bg):not(#mgp-emoji-scatter) > main,
+    body.mgp-themed-page > div:not(#nav-container):not(#footer-container):not(#related-games):not(#mgp-game-bg):not(#mgp-emoji-scatter) > main > div,
+    body.mgp-themed-page > div:not(#nav-container):not(#footer-container):not(#related-games):not(#mgp-game-bg):not(#mgp-emoji-scatter) > main > article,
     body.mgp-themed-page > article,
     body.mgp-themed-page > section:not(#nav-container):not(#footer-container):not(#related-games),
     body.mgp-themed-page > div.max-w-3xl,
@@ -409,23 +419,25 @@ function applyGamePageDecor(game) {
       50% { transform: translateY(-14px) rotate(var(--mgp-r, 0deg)) scale(1.08); }
     }
 
-    /* ── Animated emojis inside header row ── */
-    #mgp-header-emojis {
+    /* ── Animated emojis ── */
+    #mgp-header-emojis,
+    #mgp-footer-emojis {
       display: flex;
       align-items: center;
       gap: clamp(5px, 1.2vw, 10px);
       justify-content: center;
       overflow: visible;
-      padding: 4px 0;
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
+      padding: 6px 0;
       pointer-events: none;
     }
-    /* Header row needs relative positioning for absolute emoji centering */
-    body.mgp-themed-page main > div > div:first-child,
-    body.mgp-themed-page main > article > div:first-child {
-      position: relative !important;
+    #mgp-header-emojis {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+    #mgp-footer-emojis {
+      margin: 12px auto 4px;
     }
     .mgp-banner-e {
       font-size: clamp(1.2rem, 2.8vw, 1.8rem);
@@ -874,6 +886,15 @@ function applyGamePageDecor(game) {
       color: rgba(255,255,255,0.7) !important;
     }
 
+    /* ── Wrapper divs around main should be transparent, not cards ── */
+    body.mgp-themed-page > div:not(#nav-container):not(#footer-container):not(#related-games):not(#mgp-game-bg):not(#mgp-emoji-scatter) {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+      max-width: 100% !important;
+    }
+
     /* ── Content cards ── */
     ${CONTENT} {
       background: #ffffff !important;
@@ -889,32 +910,26 @@ function applyGamePageDecor(game) {
       overflow-x: auto !important;
     }
     /* ── LAYER 1: Force dark readable text on ALL content areas ── */
-    body.mgp-themed-page main > div,
-    body.mgp-themed-page main > article,
-    body.mgp-themed-page main > section,
-    body.mgp-themed-page > article,
-    body.mgp-themed-page main ~ article,
-    body.mgp-themed-page main ~ section,
-    body.mgp-themed-page main ~ div:not(#related-games):not(#footer-container):not(#nav-container):not(#mgp-game-bg):not(#mgp-emoji-scatter) {
+    ${CONTENT} {
       color: #0F172A !important;
     }
-    body.mgp-themed-page main > div p,
-    body.mgp-themed-page main > div div:not([style*="background:#"]):not([style*="background:linear"]):not([style*="background:radial"]),
-    body.mgp-themed-page main > div span:not([style*="color:"]),
-    body.mgp-themed-page main > div label,
-    body.mgp-themed-page main > div strong,
-    body.mgp-themed-page main > div em,
-    body.mgp-themed-page main > div b,
-    body.mgp-themed-page main > div h1,
-    body.mgp-themed-page main > div h2,
-    body.mgp-themed-page main > div h3,
-    body.mgp-themed-page main > div h4,
-    body.mgp-themed-page main > div td,
-    body.mgp-themed-page main > div th,
-    body.mgp-themed-page main > div select,
-    body.mgp-themed-page main > div input,
-    body.mgp-themed-page > article p,
-    body.mgp-themed-page > article span:not([style*="color:"]),
+    body.mgp-themed-page main p:not([class*="text-white"]),
+    body.mgp-themed-page main div:not([style*="background:#"]):not([style*="background:linear"]):not([style*="background:radial"]):not(#mgp-header-emojis):not(#mgp-footer-emojis):not([class*="bg-black"]):not([class*="bg-gray-9"]):not([class*="bg-slate-9"]),
+    body.mgp-themed-page main span:not([style*="color:"]):not(.mgp-banner-e):not(.mgp-scatter-emoji):not([class*="text-white"]),
+    body.mgp-themed-page main label:not([class*="text-white"]),
+    body.mgp-themed-page main strong:not([class*="text-white"]),
+    body.mgp-themed-page main em,
+    body.mgp-themed-page main b,
+    body.mgp-themed-page main h1:not([class*="text-white"]),
+    body.mgp-themed-page main h2:not([class*="text-white"]),
+    body.mgp-themed-page main h3:not([class*="text-white"]),
+    body.mgp-themed-page main h4,
+    body.mgp-themed-page main td,
+    body.mgp-themed-page main th,
+    body.mgp-themed-page main select,
+    body.mgp-themed-page main input,
+    body.mgp-themed-page > article p:not([class*="text-white"]),
+    body.mgp-themed-page > article span:not([style*="color:"]):not([class*="text-white"]),
     body.mgp-themed-page > article li,
     body.mgp-themed-page main ~ article p,
     body.mgp-themed-page main ~ article span:not([style*="color:"]),
@@ -922,6 +937,17 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page main ~ section p,
     body.mgp-themed-page main ~ section li {
       color: #0F172A !important;
+    }
+    /* Preserve Tailwind white text on dark overlays/backgrounds */
+    body.mgp-themed-page [class*="bg-black"] p,
+    body.mgp-themed-page [class*="bg-black"] span,
+    body.mgp-themed-page [class*="bg-black"] strong,
+    body.mgp-themed-page [class*="bg-black"] button,
+    body.mgp-themed-page [class*="bg-gray-9"] p,
+    body.mgp-themed-page [class*="bg-gray-9"] span,
+    body.mgp-themed-page [class*="bg-slate-9"] p,
+    body.mgp-themed-page [class*="bg-slate-9"] span {
+      color: #fff !important;
     }
     body.mgp-themed-page main > div a,
     body.mgp-themed-page > article a,
@@ -1111,10 +1137,13 @@ function applyGamePageDecor(game) {
 // ─── NAV ────────────────────────────────────────────────────────
 
 function renderNav(gameName) {
-  const el = document.getElementById('nav-container');
+  let el = document.getElementById('nav-container');
+  if (!el) {
+    el = document.querySelector('.nav-container');
+  }
   if (!el) return;
 
-  el.innerHTML = `
+  const navHTML = `
     <nav style="position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:2px solid #0F172A;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;max-width:100%;">
       <a href="/" style="display:flex;align-items:center;text-decoration:none;">
         <img src="/images/logo.png" alt="Mini Game Planet" style="height:36px;width:auto;">
@@ -1129,6 +1158,16 @@ function renderNav(gameName) {
       </div>
     </nav>
   `;
+
+  if (el.tagName === 'NAV') {
+    const wrapper = document.createElement('div');
+    wrapper.id = 'nav-container';
+    wrapper.innerHTML = navHTML;
+    el.replaceWith(wrapper);
+  } else {
+    el.id = 'nav-container';
+    el.innerHTML = navHTML;
+  }
 
   const btn = document.getElementById('sound-toggle-nav');
   const icon = document.getElementById('sound-icon-nav');
@@ -1145,10 +1184,10 @@ function renderNav(gameName) {
 // ─── FOOTER ─────────────────────────────────────────────────────
 
 function renderFooter() {
-  const el = document.getElementById('footer-container');
+  let el = document.getElementById('footer-container');
   if (!el) return;
 
-  el.innerHTML = `
+  const footerHTML = `
     <footer style="border-top:2px solid #0F172A;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;max-width:100%;">
       <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:#64748B;">
         <img src="/images/logo.png" alt="" style="height:20px;width:auto;">
@@ -1166,6 +1205,15 @@ function renderFooter() {
     </footer>
   `;
 
+  if (el.tagName === 'FOOTER') {
+    const wrapper = document.createElement('div');
+    wrapper.id = 'footer-container';
+    wrapper.innerHTML = footerHTML;
+    el.replaceWith(wrapper);
+  } else {
+    el.innerHTML = footerHTML;
+  }
+
   const cookieBtn = document.getElementById('footer-cookie-settings');
   if (cookieBtn) {
     cookieBtn.addEventListener('click', () => openConsentBanner());
@@ -1175,8 +1223,15 @@ function renderFooter() {
 // ─── RELATED GAMES — Full-Bleed Color Tiles ─────────────────────
 
 function renderRelatedGames(currentSlug, category) {
-  const el = document.getElementById('related-games');
+  let el = document.getElementById('related-games');
   if (!el) return;
+
+  if (el.tagName === 'SECTION') {
+    const wrapper = document.createElement('div');
+    wrapper.id = 'related-games';
+    el.replaceWith(wrapper);
+    el = wrapper;
+  }
 
   const builtGames = games.filter(g => g.built && g.category === category && g.slug !== currentSlug);
   let related = [];
