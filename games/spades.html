@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Spades Online — Play With Friends or AI | MiniGamePlanet</title>
+  <meta name="description" content="Play Spades online free — classic 4-player partnership trick-taking card game. Bid, play tricks, avoid sandbags, and race to 500. No download, no sign-up.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/spades">
+  <link rel="icon" href="/images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500});gtag('config','G-XXXXXXXXXX');</script>
+  <meta property="og:type" content="website"><meta property="og:title" content="Free Spades Online | MiniGamePlanet"><meta property="og:description" content="Play Spades online free with friends or AI."><meta property="og:url" content="https://minigameplanet.com/games/spades"><meta property="og:image" content="https://minigameplanet.com/images/logo.png">
+  <meta property="og:site_name" content="MiniGamePlanet">
+  <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Free Spades Online | MiniGamePlanet"><meta name="twitter:description" content="Play Spades online free with friends or AI."><meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Spades","url":"https://minigameplanet.com/games/spades","description":"Play Spades online free — 4-player partnership trick-taking card game.","genre":"Card","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://minigameplanet.com"},{"@type":"ListItem","position":2,"name":"Card Games","item":"https://minigameplanet.com/#category"},{"@type":"ListItem","position":3,"name":"Spades","item":"https://minigameplanet.com/games/spades"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do you play Spades?","acceptedAnswer":{"@type":"Answer","text":"Spades is a 4-player partnership trick-taking card game. Players bid how many tricks they expect to win, then play 13 tricks per round. You must follow suit, and spades are always trump. Your team scores points by meeting your combined bid."}},{"@type":"Question","name":"What is a sandbag in Spades?","acceptedAnswer":{"@type":"Answer","text":"A sandbag (or bag) is an overtrick — a trick won beyond your bid. Each bag adds 1 point, but accumulating 10 bags results in a -100 point penalty. This discourages overbidding and adds strategic depth."}},{"@type":"Question","name":"Can you play Spades online for free?","acceptedAnswer":{"@type":"Answer","text":"Yes! MiniGamePlanet offers free Spades with AI opponents, private rooms for friends, and matchmaking to play with strangers. No download or sign-up required."}}]}</script>
+  <style>
+    .hero-grad{background:linear-gradient(135deg,#7C3AED 0%,#9333EA 20%,#C026D3 40%,#E11D48 60%,#EA580C 80%,#F59E0B 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:heroShift 8s ease-in-out infinite}
+    @keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+    @keyframes mgpBtnPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
+    #spades-table{background:#1a1a2e;border-radius:16px;padding:16px;position:relative;min-height:480px;overflow:hidden}
+    .sp-seat{position:absolute;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:rgba(255,255,255,0.8);font-family:'Space Grotesk',sans-serif}
+    .sp-seat .sp-name{font-weight:600;font-size:13px;padding:2px 10px;border-radius:6px;white-space:nowrap}
+    .sp-seat .sp-bid-display{font-family:'DM Mono',monospace;font-size:11px;color:#FDE68A}
+    .sp-seat .sp-tricks{font-family:'DM Mono',monospace;font-size:11px;color:#94A3B8}
+    .sp-seat.active .sp-name{box-shadow:0 0 0 2px #DC2626;animation:mgpBtnPulse 1s ease infinite}
+    .sp-card{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:clamp(48px,8vw,68px);height:clamp(68px,11.5vw,96px);border-radius:7px;font-family:'DM Mono',monospace;font-weight:700;font-size:clamp(12px,2vw,16px);box-shadow:0 2px 6px rgba(0,0,0,0.15);position:relative;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;flex-shrink:0;user-select:none}
+    .sp-card.face-up{background:#fff;border:1.5px solid #E5E7EB}
+    .sp-card.face-down{background:#DC2626;background-image:repeating-linear-gradient(45deg,transparent,transparent 3px,rgba(255,255,255,0.07) 3px,rgba(255,255,255,0.07) 6px);border:1.5px solid rgba(255,255,255,0.2)}
+    .sp-card.red{color:#DC2626}.sp-card.black{color:#0F172A}
+    .sp-card.playable:hover{transform:translateY(-6px);box-shadow:0 6px 16px rgba(0,0,0,0.25)}
+    .sp-card.selected{transform:translateY(-10px);box-shadow:0 0 0 2px #DC2626,0 6px 16px rgba(220,38,38,0.3)}
+    .sp-trick-area{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:grid;grid-template-areas:"t t t" "l c r" "b b b";grid-template-columns:1fr auto 1fr;gap:4px;justify-items:center;align-items:center;min-width:200px;min-height:160px}
+    #sp-hand{display:flex;justify-content:center;gap:-6px;padding:8px;flex-wrap:nowrap;overflow-x:auto}
+    #sp-hand .sp-card{margin:0 -5px}
+    .sp-scoreboard{font-family:'DM Mono',monospace;font-size:12px;background:#0f172a;color:#fff;border-radius:8px;padding:8px 12px;display:grid;grid-template-columns:1fr auto auto auto;gap:4px 12px;align-items:center}
+    .sp-scoreboard .team-label{font-weight:700;font-size:13px}
+    .sp-btn{padding:8px 20px;border-radius:8px;font-size:13px;font-weight:700;border:2px solid;cursor:pointer;font-family:inherit;transition:all 0.1s}
+    .sp-btn:hover{transform:translateY(-1px)}.sp-btn:active{transform:scale(0.97)}.sp-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none}
+    @media(max-width:480px){#spades-table{min-height:400px;padding:10px}#sp-hand .sp-card{width:44px;height:62px;font-size:11px}}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;" id="game-wrap">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <div><h1 style="font-size:22px;font-weight:700;margin:0;">♠ Spades</h1>
+        <p style="font-size:12px;color:#94A3B8;margin:2px 0 0;">4-player partnership trick-taking</p></div>
+        <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊 Sound</button>
+      </div>
+
+      <div id="mp-mode-container"></div>
+
+      <div id="game-area" style="display:none;">
+        <div class="sp-scoreboard" id="scoreboard" style="margin-bottom:10px;">
+          <span></span><span style="color:#94A3B8;font-size:10px;">SCORE</span><span style="color:#94A3B8;font-size:10px;">BAGS</span><span style="color:#94A3B8;font-size:10px;">BID</span>
+          <span class="team-label" style="color:#60A5FA;">Team 1 <span style="font-size:10px;font-weight:400;">(You + North)</span></span><span id="score-t1">0</span><span id="bags-t1">0</span><span id="bid-t1">—</span>
+          <span class="team-label" style="color:#F87171;">Team 2 <span style="font-size:10px;font-weight:400;">(East + West)</span></span><span id="score-t2">0</span><span id="bags-t2">0</span><span id="bid-t2">—</span>
+        </div>
+
+        <div id="spades-table">
+          <div class="sp-seat" id="seat-north" style="top:8px;left:50%;transform:translateX(-50%);">
+            <span class="sp-name" style="background:rgba(96,165,250,0.2);color:#93C5FD;">North (Partner)</span>
+            <span class="sp-bid-display" id="bid-north"></span>
+            <span class="sp-tricks" id="tricks-north">Tricks: 0</span>
+            <div id="hand-north" style="display:flex;gap:-4px;margin-top:4px;"></div>
+          </div>
+          <div class="sp-seat" id="seat-east" style="top:50%;right:8px;transform:translateY(-50%);">
+            <span class="sp-name" style="background:rgba(248,113,113,0.2);color:#FCA5A5;">East</span>
+            <span class="sp-bid-display" id="bid-east"></span>
+            <span class="sp-tricks" id="tricks-east">Tricks: 0</span>
+            <div id="hand-east" style="display:flex;flex-direction:column;gap:-4px;margin-top:4px;"></div>
+          </div>
+          <div class="sp-seat" id="seat-west" style="top:50%;left:8px;transform:translateY(-50%);">
+            <span class="sp-name" style="background:rgba(248,113,113,0.2);color:#FCA5A5;">West</span>
+            <span class="sp-bid-display" id="bid-west"></span>
+            <span class="sp-tricks" id="tricks-west">Tricks: 0</span>
+            <div id="hand-west" style="display:flex;flex-direction:column;gap:-4px;margin-top:4px;"></div>
+          </div>
+          <div class="sp-trick-area" id="trick-area"></div>
+          <div class="sp-seat" id="seat-south" style="bottom:8px;left:50%;transform:translateX(-50%);width:90%;max-width:600px;">
+            <span class="sp-name" style="background:rgba(96,165,250,0.2);color:#93C5FD;">You</span>
+            <span class="sp-bid-display" id="bid-south"></span>
+            <span class="sp-tricks" id="tricks-south">Tricks: 0</span>
+          </div>
+        </div>
+        <div id="sp-hand" style="margin-top:4px;min-height:80px;"></div>
+
+        <div id="bid-panel" style="display:none;text-align:center;padding:16px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;margin-top:10px;">
+          <p style="font-size:15px;font-weight:700;margin:0 0 8px;" id="bid-prompt">Your Bid</p>
+          <div id="bid-buttons" style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:8px;"></div>
+          <div style="display:flex;gap:8px;justify-content:center;">
+            <button id="bid-nil" class="sp-btn" style="background:#D97706;color:#fff;border-color:#B45309;">Nil (0)</button>
+            <button id="bid-blind-nil" class="sp-btn" style="background:#7C3AED;color:#fff;border-color:#6D28D9;">Blind Nil</button>
+          </div>
+        </div>
+
+        <div id="round-summary" style="display:none;text-align:center;padding:20px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;margin-top:10px;">
+          <h3 style="font-size:18px;font-weight:700;margin:0 0 12px;">Round Summary</h3>
+          <div id="round-details" style="font-family:'DM Mono',monospace;font-size:13px;text-align:left;max-width:320px;margin:0 auto 16px;padding:12px;background:#fff;border-radius:8px;"></div>
+          <button id="next-round-btn" class="sp-btn" style="background:#2563EB;color:#fff;border-color:#1D4ED8;padding:10px 28px;">Next Round</button>
+        </div>
+
+        <div id="game-over-panel" style="display:none;text-align:center;padding:20px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;margin-top:10px;">
+          <h3 style="font-size:22px;font-weight:700;margin:0 0 4px;" id="winner-text"></h3>
+          <p id="final-score-text" style="font-family:'DM Mono',monospace;font-size:14px;color:#64748B;margin:0 0 16px;"></p>
+          <div style="display:flex;gap:8px;justify-content:center;">
+            <button id="play-again-btn" class="sp-btn" style="background:#2563EB;color:#fff;border-color:#1D4ED8;padding:10px 28px;">Play Again</button>
+          </div>
+        </div>
+
+        <div id="near-miss" style="display:none;text-align:center;padding:3px;font-size:12px;font-weight:600;color:#D97706;margin-top:4px;"></div>
+      </div>
+    </div>
+  </main>
+
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play Spades Online</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>Spades is one of the most popular trick-taking card games in the world. Played with a standard 52-card deck by four players in fixed partnerships (you and your partner sit across from each other), the goal is to accurately predict how many tricks your team will win each round, then execute your strategy to meet — but not exceed — that bid.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">The Rules</h3>
+      <p>Each round begins with dealing 13 cards to each player. After looking at your hand, you bid the number of tricks you expect to take (0–13). Your partner also bids, and your team's total bid is the target. Special bids include <strong>Nil</strong> (you bid zero tricks — risky but worth +100 if you succeed, -100 if you fail) and <strong>Blind Nil</strong> (bid zero before seeing your cards — +200/-200).</p>
+      <p>The player to the dealer's left leads the first trick. Players must follow the led suit if possible. If you can't follow suit, you may play any card — including a spade. Spades are always trump and beat any non-trump card. The highest card of the led suit wins the trick unless a spade was played, in which case the highest spade wins.</p>
+      <p><strong>Spades cannot be led</strong> until they've been "broken" — played on a non-spade trick because a player couldn't follow suit. The exception: if your hand contains only spades, you may lead them.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Scoring</h3>
+      <ul class="list-disc pl-5 space-y-1">
+        <li>If your team meets its bid: <strong>bid × 10 points</strong> + 1 point per overtrick (bag).</li>
+        <li>If your team fails its bid: <strong>-bid × 10 points</strong>.</li>
+        <li>Accumulating <strong>10 bags</strong> results in a <strong>-100 point penalty</strong>, and the bag count resets.</li>
+        <li><strong>Nil made</strong>: +100 points. <strong>Nil set</strong>: -100 points (partner's bid scored separately).</li>
+        <li><strong>Blind Nil made</strong>: +200. <strong>Blind Nil set</strong>: -200.</li>
+      </ul>
+      <p>First team to reach <strong>500 points</strong> wins. If both teams cross 500 in the same round, the higher score wins.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Strategy Tips</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Count your tricks honestly.</strong> Overbidding leads to penalties. Underbidding piles up bags.</li>
+        <li><strong>Lead with your off-suit winners first</strong> (Aces and Kings of non-spade suits) before drawing out trumps.</li>
+        <li><strong>Track played cards.</strong> Knowing which spades and high cards are gone helps you decide when to play aggressively.</li>
+        <li><strong>Cover your partner.</strong> If your partner bids Nil, lead low cards in their weak suits to help them avoid winning tricks.</li>
+        <li><strong>Bags matter.</strong> Getting 9 bags feels fine — until that 10th bag costs you 100 points. Plan your plays to avoid unnecessary overtricks.</li>
+      </ul>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">History</h3>
+      <p>Spades was invented in Cincinnati, Ohio in the late 1930s. It gained enormous popularity among American college students and military personnel during World War II because it was easy to learn and fast to play. Today, Spades remains one of the most played card games in the United States, with a thriving online community. Searching "play spades online free" reveals just how beloved this game is — and now you can play it right here, with smart AI opponents or real players, directly in your browser.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">FAQ</h3>
+      <h4 class="font-semibold text-slate-800">Is this free?</h4>
+      <p>Yes — 100% free, no sign-up, no download. Play Spades instantly in your browser against AI or with friends.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">Can I play with real people?</h4>
+      <p>Absolutely. Create a private room and share the code with friends, or use "Find Match" to play with random opponents. AI fills empty seats so you're never stuck waiting.</p>
+    </div>
+  </article>
+  <div id="related-games"></div>
+  <div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playDeal, playDrop, playFlip, playPerfect, playLevelUp, playAlarm, playCollect } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+  import { renderModeSelector, renderQuickChat, sendMove, onMove, onStart, onTurn, onGameOver, onChat, showChatToast, leaveRoom, isConnected } from '/js/multiplayer.js';
+
+  document.addEventListener('click',()=>initAudio(),{once:true});
+  initToolPage('spades'); initConsent(); trackGameView('spades','Card');
+
+  let playerProfile = null;
+  getPlayer().then(p => {
+    playerProfile = p;
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'spades');
+    }
+  });
+
+  document.getElementById('sound-btn').addEventListener('click',()=>{initAudio();const m=muteAll();document.getElementById('sound-btn').textContent=m?'🔇 Sound':'🔊 Sound';});
+
+  // --- Constants ---
+  const SUITS = ['spades','hearts','diamonds','clubs'];
+  const RANKS = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+  const SYM = {spades:'♠',hearts:'♥',diamonds:'♦',clubs:'♣'};
+  const RED = {hearts:true,diamonds:true};
+  const SEAT_ORDER = ['south','west','north','east'];
+  const TEAM = {south:0,north:0,east:1,west:1};
+  const TARGET_SCORE = 500;
+
+  // --- State ---
+  let hands = {south:[],west:[],north:[],east:[]};
+  let bids = {south:null,west:null,north:null,east:null};
+  let tricks = {south:0,west:0,north:0,east:0};
+  let scores = [0,0];
+  let bags = [0,0];
+  let currentTrick = [];
+  let leadSeat = null;
+  let currentSeat = null;
+  let spadesBroken = false;
+  let phase = 'idle';
+  let bidIndex = 0;
+  let dealer = 0;
+  let roundNum = 0;
+  let playedCards = [];
+  let gameStartTime = null;
+  let isOnline = false;
+  let streak = 0;
+
+  function rv(card){ return RANKS.indexOf(card.rank); }
+  function cardKey(c){ return `${c.rank}-${c.suit}`; }
+  function isSpade(c){ return c.suit === 'spades'; }
+
+  // --- Deck & Deal ---
+  function makeDeck(){
+    const d=[];
+    for(const s of SUITS) for(const r of RANKS) d.push({suit:s,rank:r});
+    for(let i=d.length-1;i>0;i--){const a=new Uint32Array(1);crypto.getRandomValues(a);const j=a[0]%(i+1);[d[i],d[j]]=[d[j],d[i]];}
+    return d;
+  }
+
+  function deal(){
+    const deck=makeDeck();
+    for(const s of SEAT_ORDER) hands[s]=[];
+    for(let i=0;i<52;i++) hands[SEAT_ORDER[i%4]].push(deck[i]);
+    for(const s of SEAT_ORDER) sortHand(hands[s]);
+    bids={south:null,west:null,north:null,east:null};
+    tricks={south:0,west:0,north:0,east:0};
+    currentTrick=[];
+    spadesBroken=false;
+    playedCards=[];
+  }
+
+  function sortHand(h){
+    const so={clubs:0,diamonds:1,hearts:2,spades:3};
+    h.sort((a,b)=>{const sd=so[a.suit]-so[b.suit];return sd!==0?sd:rv(a)-rv(b);});
+  }
+
+  // --- Rendering ---
+  function makeCardHTML(card, faceUp=true, playable=false){
+    if(!faceUp) return `<div class="sp-card face-down"></div>`;
+    const color = RED[card.suit]?'red':'black';
+    const cls = `sp-card face-up ${color}${playable?' playable':''}`;
+    return `<div class="${cls}" data-key="${cardKey(card)}">
+      <span style="position:absolute;top:3px;left:5px;font-size:clamp(10px,1.6vw,13px);line-height:1;">${card.rank}<br>${SYM[card.suit]}</span>
+      <span style="font-size:clamp(16px,2.8vw,24px);">${SYM[card.suit]}</span>
+      <span style="position:absolute;bottom:3px;right:5px;font-size:clamp(10px,1.6vw,13px);line-height:1;transform:rotate(180deg);">${card.rank}<br>${SYM[card.suit]}</span>
+    </div>`;
+  }
+
+  function renderAllHands(){
+    const handEl = document.getElementById('sp-hand');
+    const validCards = getValidCards();
+    handEl.innerHTML = hands.south.map(c => makeCardHTML(c, true, phase==='play'&&currentSeat==='south'&&validCards.some(v=>cardKey(v)===cardKey(c)))).join('');
+
+    for(const seat of ['north','east','west']){
+      const el = document.getElementById(`hand-${seat}`);
+      el.innerHTML = Array(hands[seat].length).fill('<div class="sp-card face-down" style="width:28px;height:40px;margin:-8px 0;font-size:8px;"></div>').join('');
+    }
+
+    handEl.querySelectorAll('.sp-card.playable').forEach(el=>{
+      el.addEventListener('click',()=>{
+        if(phase!=='play'||currentSeat!=='south') return;
+        const key=el.dataset.key;
+        const card=hands.south.find(c=>cardKey(c)===key);
+        if(card) playCard('south',card);
+      });
+    });
+  }
+
+  function renderTrickArea(){
+    const area=document.getElementById('trick-area');
+    const positions = {south:'b',west:'l',north:'t',east:'r'};
+    const areas = {t:'grid-area:t;',l:'grid-area:l;',r:'grid-area:r;',b:'grid-area:b;'};
+    let html='';
+    for(const entry of currentTrick){
+      const a=areas[positions[entry.seat]];
+      html+=`<div style="${a}">${makeCardHTML(entry.card,true)}</div>`;
+    }
+    area.innerHTML=html;
+  }
+
+  function updateSeatIndicators(){
+    for(const s of SEAT_ORDER){
+      const el=document.getElementById(`seat-${s}`);
+      el.classList.toggle('active',s===currentSeat);
+      document.getElementById(`bid-${s}`).textContent=bids[s]!==null?(bids[s]===-1?'Blind Nil':bids[s]===0?'Nil':`Bid: ${bids[s]}`):'';
+      document.getElementById(`tricks-${s}`).textContent=`Tricks: ${tricks[s]}`;
+    }
+  }
+
+  function updateScoreboard(){
+    document.getElementById('score-t1').textContent=scores[0];
+    document.getElementById('score-t2').textContent=scores[1];
+    document.getElementById('bags-t1').textContent=bags[0];
+    document.getElementById('bags-t2').textContent=bags[1];
+    const t1bid=(bids.south!==null?Math.max(0,bids.south):0)+(bids.north!==null?Math.max(0,bids.north):0);
+    const t2bid=(bids.east!==null?Math.max(0,bids.east):0)+(bids.west!==null?Math.max(0,bids.west):0);
+    document.getElementById('bid-t1').textContent=t1bid||'—';
+    document.getElementById('bid-t2').textContent=t2bid||'—';
+  }
+
+  // --- Bidding ---
+  function startBidding(){
+    phase='bid';
+    bidIndex=0;
+    const startSeat=SEAT_ORDER[(dealer+1)%4];
+    leadSeat=startSeat;
+    processBidTurn();
+  }
+
+  function processBidTurn(){
+    const seatIdx=(SEAT_ORDER.indexOf(leadSeat)+bidIndex)%4;
+    currentSeat=SEAT_ORDER[seatIdx];
+    updateSeatIndicators();
+    if(currentSeat==='south'){
+      showBidPanel();
+    } else {
+      setTimeout(()=>{
+        bids[currentSeat]=aiBid(currentSeat);
+        playClick();
+        updateSeatIndicators();
+        updateScoreboard();
+        bidIndex++;
+        if(bidIndex>=4) startPlaying();
+        else processBidTurn();
+      },600+Math.random()*400);
+    }
+  }
+
+  function showBidPanel(){
+    const panel=document.getElementById('bid-panel');
+    panel.style.display='block';
+    const btnsDiv=document.getElementById('bid-buttons');
+    btnsDiv.innerHTML='';
+    for(let i=1;i<=13;i++){
+      const btn=document.createElement('button');
+      btn.className='sp-btn';
+      btn.style.cssText='background:#2563EB;color:#fff;border-color:#1D4ED8;padding:6px 12px;min-width:36px;';
+      btn.textContent=i;
+      btn.addEventListener('click',()=>submitBid(i));
+      btnsDiv.appendChild(btn);
+    }
+    document.getElementById('bid-nil').onclick=()=>submitBid(0);
+    document.getElementById('bid-blind-nil').onclick=()=>submitBid(-1);
+  }
+
+  function submitBid(val){
+    bids.south=val;
+    document.getElementById('bid-panel').style.display='none';
+    playClick();
+    updateSeatIndicators();
+    updateScoreboard();
+    bidIndex++;
+    if(bidIndex>=4) startPlaying();
+    else processBidTurn();
+  }
+
+  // --- AI Bidding ---
+  function aiBid(seat){
+    const hand=hands[seat];
+    let estimate=0;
+    const spadesInHand=hand.filter(isSpade);
+    for(const c of spadesInHand){
+      if(rv(c)>=10) estimate++;
+      else if(rv(c)>=8) estimate+=0.6;
+      else estimate+=0.3;
+    }
+    for(const suit of ['hearts','diamonds','clubs']){
+      const suited=hand.filter(c=>c.suit===suit);
+      if(suited.length>0){
+        const highest=suited[suited.length-1];
+        if(rv(highest)===12) estimate+=0.9;
+        else if(rv(highest)===11) estimate+=0.7;
+      }
+      if(suited.length<=1 && spadesInHand.length>0) estimate+=0.3;
+    }
+    return Math.max(1,Math.round(estimate));
+  }
+
+  // --- Playing ---
+  function startPlaying(){
+    phase='play';
+    const startIdx=(dealer+1)%4;
+    leadSeat=SEAT_ORDER[startIdx];
+    currentSeat=leadSeat;
+    currentTrick=[];
+    renderAllHands();
+    renderTrickArea();
+    updateSeatIndicators();
+    if(currentSeat!=='south') scheduleAIPlay();
+  }
+
+  function getValidCards(){
+    if(currentSeat!=='south') return [];
+    const hand=hands.south;
+    if(currentTrick.length===0){
+      if(!spadesBroken){
+        const nonSpades=hand.filter(c=>!isSpade(c));
+        return nonSpades.length>0?nonSpades:hand;
+      }
+      return hand;
+    }
+    const ledSuit=currentTrick[0].card.suit;
+    const following=hand.filter(c=>c.suit===ledSuit);
+    return following.length>0?following:hand;
+  }
+
+  function playCard(seat,card){
+    hands[seat]=hands[seat].filter(c=>cardKey(c)!==cardKey(card));
+    currentTrick.push({seat,card});
+    playedCards.push(card);
+    if(isSpade(card)&&currentTrick[0].card.suit!=='spades') spadesBroken=true;
+    playDrop();
+    renderTrickArea();
+    renderAllHands();
+
+    if(currentTrick.length===4){
+      setTimeout(()=>resolveTrick(),800);
+    } else {
+      const nextIdx=(SEAT_ORDER.indexOf(seat)+1)%4;
+      currentSeat=SEAT_ORDER[nextIdx];
+      updateSeatIndicators();
+      if(currentSeat!=='south') scheduleAIPlay();
+      else renderAllHands();
+    }
+  }
+
+  function scheduleAIPlay(){
+    setTimeout(()=>{
+      if(phase!=='play') return;
+      const card=aiChooseCard(currentSeat);
+      if(card) playCard(currentSeat,card);
+    },500+Math.random()*500);
+  }
+
+  // --- AI Card Play ---
+  function aiChooseCard(seat){
+    const hand=hands[seat];
+    if(hand.length===0) return null;
+    const leading=currentTrick.length===0;
+    if(leading){
+      if(!spadesBroken){
+        const nonSpades=hand.filter(c=>!isSpade(c));
+        const pool=nonSpades.length>0?nonSpades:hand;
+        const aces=pool.filter(c=>rv(c)===12&&!isSpade(c));
+        if(aces.length>0) return aces[0];
+        return pool[pool.length-1];
+      }
+      const aces=hand.filter(c=>rv(c)===12);
+      if(aces.length>0) return aces[0];
+      return hand[Math.floor(hand.length/2)];
+    }
+    const ledSuit=currentTrick[0].card.suit;
+    const following=hand.filter(c=>c.suit===ledSuit);
+    if(following.length>0){
+      const trickCards=currentTrick.filter(e=>e.card.suit===ledSuit);
+      const highestInTrick=trickCards.reduce((h,e)=>rv(e.card)>rv(h)?rv(e.card):h,0);
+      const canWin=following.filter(c=>rv(c)>highestInTrick);
+      const partnerSeat=SEAT_ORDER[(SEAT_ORDER.indexOf(seat)+2)%4];
+      const partnerPlayed=currentTrick.find(e=>e.seat===partnerSeat);
+      if(partnerPlayed&&trickWinner()===partnerSeat){
+        return following[0];
+      }
+      if(canWin.length>0) return canWin[0];
+      return following[0];
+    }
+    const partnerSeat=SEAT_ORDER[(SEAT_ORDER.indexOf(seat)+2)%4];
+    const partnerPlayed=currentTrick.find(e=>e.seat===partnerSeat);
+    if(partnerPlayed&&trickWinner()===partnerSeat){
+      const lowest=hand.filter(c=>!isSpade(c)).sort((a,b)=>rv(a)-rv(b));
+      return lowest.length>0?lowest[0]:hand[0];
+    }
+    const spades=hand.filter(isSpade).sort((a,b)=>rv(a)-rv(b));
+    const trumpsInTrick=currentTrick.filter(e=>isSpade(e.card));
+    if(spades.length>0){
+      if(trumpsInTrick.length>0){
+        const highestTrump=Math.max(...trumpsInTrick.map(e=>rv(e.card)));
+        const beats=spades.filter(c=>rv(c)>highestTrump);
+        if(beats.length>0) return beats[0];
+      } else {
+        return spades[0];
+      }
+    }
+    return hand.sort((a,b)=>rv(a)-rv(b))[0];
+  }
+
+  function trickWinner(){
+    if(currentTrick.length===0) return null;
+    const ledSuit=currentTrick[0].card.suit;
+    let winner=currentTrick[0];
+    for(let i=1;i<currentTrick.length;i++){
+      const e=currentTrick[i];
+      if(isSpade(e.card)&&!isSpade(winner.card)){winner=e;continue;}
+      if(!isSpade(e.card)&&isSpade(winner.card)) continue;
+      if(e.card.suit===winner.card.suit&&rv(e.card)>rv(winner.card)) winner=e;
+    }
+    return winner.seat;
+  }
+
+  function resolveTrick(){
+    const winner=trickWinner();
+    tricks[winner]++;
+    playCollect();
+    currentTrick=[];
+    renderTrickArea();
+    updateSeatIndicators();
+
+    const totalTricks=SEAT_ORDER.reduce((s,seat)=>s+tricks[seat],0);
+    if(totalTricks>=13){
+      setTimeout(()=>endRound(),600);
+    } else {
+      leadSeat=winner;
+      currentSeat=winner;
+      updateSeatIndicators();
+      renderAllHands();
+      if(currentSeat!=='south') scheduleAIPlay();
+    }
+  }
+
+  // --- Round Scoring ---
+  function endRound(){
+    phase='scoring';
+    const details=[];
+    for(let t=0;t<2;t++){
+      const seats=SEAT_ORDER.filter(s=>TEAM[s]===t);
+      let teamTricks=seats.reduce((s,seat)=>s+tricks[seat],0);
+      let teamBid=0;
+      let nilBonus=0;
+      for(const seat of seats){
+        const b=bids[seat];
+        if(b===0||b===-1){
+          const made=tricks[seat]===0;
+          const pts=b===-1?(made?200:-200):(made?100:-100);
+          nilBonus+=pts;
+          details.push(`${seat}: ${b===-1?'Blind ':''} Nil ${made?'made ✅':'set ❌'} (${pts>0?'+':''}${pts})`);
+        } else {
+          teamBid+=b;
+        }
+      }
+      let trickPts=0;
+      let newBags=bags[t];
+      if(teamTricks>=teamBid){
+        const over=teamTricks-teamBid;
+        trickPts=teamBid*10+over;
+        newBags+=over;
+        if(newBags>=10){
+          trickPts-=100;
+          newBags-=10;
+          details.push(`Team ${t+1}: 🎒 10-bag penalty! -100`);
+        }
+      } else {
+        trickPts=-teamBid*10;
+      }
+      const roundPts=trickPts+nilBonus;
+      scores[t]+=roundPts;
+      bags[t]=newBags;
+      details.push(`Team ${t+1}: tricks ${teamTricks}/${teamBid} → ${roundPts>0?'+':''}${roundPts} pts (${bags[t]} bags)`);
+    }
+    updateScoreboard();
+
+    if(scores[0]>=TARGET_SCORE||scores[1]>=TARGET_SCORE){
+      endGame(details);
+      return;
+    }
+
+    document.getElementById('round-summary').style.display='block';
+    document.getElementById('round-details').innerHTML=details.join('<br>');
+    document.getElementById('next-round-btn').onclick=()=>{
+      document.getElementById('round-summary').style.display='none';
+      startRound();
+    };
+  }
+
+  function endGame(details){
+    phase='over';
+    const won=scores[0]>scores[1];
+    const tied=scores[0]===scores[1];
+    document.getElementById('game-over-panel').style.display='block';
+    document.getElementById('winner-text').textContent=tied?'Tie Game!':won?'🎉 Your Team Wins!':'😞 Opponent Team Wins';
+    document.getElementById('final-score-text').textContent=`Final: ${scores[0]} — ${scores[1]}`;
+
+    if(won){playPerfect();streak++;}
+    else {playGameOver();streak=0;}
+
+    const dur=Math.round((Date.now()-gameStartTime)/1000);
+    trackGameOver('spades','Card',won?1:0,scores[0]);
+    submitStats('spades',{score:scores[0],duration:dur,win:won&&!tied,loss:!won&&!tied,draw:tied,online:isOnline});
+
+    document.getElementById('play-again-btn').focus();
+    document.getElementById('play-again-btn').onclick=()=>{
+      document.getElementById('game-over-panel').style.display='none';
+      document.getElementById('round-summary').style.display='none';
+      startNewGame();
+    };
+  }
+
+  // --- Game Flow ---
+  function startNewGame(){
+    scores=[0,0];
+    bags=[0,0];
+    roundNum=0;
+    dealer=0;
+    gameStartTime=Date.now();
+    trackGameStart('spades','Card');
+    startRound();
+  }
+
+  function startRound(){
+    roundNum++;
+    dealer=(dealer+1)%4;
+    deal();
+    renderAllHands();
+    renderTrickArea();
+    updateScoreboard();
+    playDeal();
+    startBidding();
+  }
+
+  // --- Mode Selection ---
+  renderModeSelector(
+    document.getElementById('mp-mode-container'),
+    'spades',
+    playerProfile?.name||'Player',
+    {
+      onAI: ()=>{ isOnline=false; document.getElementById('game-area').style.display='block'; startNewGame(); },
+      onPrivate: ()=>{ isOnline=true; document.getElementById('game-area').style.display='block'; startNewGame(); },
+      onFind: ()=>{ isOnline=true; document.getElementById('game-area').style.display='block'; startNewGame(); },
+    },
+    { maxPlayers:4, teams:true, settingsConfig:{
+      turnTimer:{label:'Turn Timer',default:'20',options:[{value:'15',label:'15s'},{value:'20',label:'20s'},{value:'30',label:'30s'},{value:'60',label:'60s'}]},
+      targetScore:{label:'Play To',default:'500',options:[{value:'200',label:'200'},{value:'300',label:'300'},{value:'500',label:'500'}]},
+    }}
+  );
+
+  </script>
+</body>
+</html>

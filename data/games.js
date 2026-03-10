@@ -1064,7 +1064,7 @@ export const games = [
     icon: '♠',
     accent: '#DC2626',
     keywords: ['spades online', 'play spades free', 'spades card game', 'trick taking game'],
-    built: false,
+    built: true,
     multiplayer: true,
     maxPlayers: 4,
     ranked: true
@@ -1077,7 +1077,7 @@ export const games = [
     icon: '♥',
     accent: '#DC2626',
     keywords: ['hearts online', 'play hearts free', 'hearts card game', 'queen of spades'],
-    built: false,
+    built: true,
     multiplayer: true,
     maxPlayers: 4,
     ranked: true

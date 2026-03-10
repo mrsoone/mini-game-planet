@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Hearts Online — Play Card Game Instantly | MiniGamePlanet</title>
+  <meta name="description" content="Play Hearts online free — classic 4-player card game. Avoid hearts and the Queen of Spades, or shoot the moon. No download, no sign-up required.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/hearts">
+  <link rel="icon" href="/images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500});gtag('config','G-XXXXXXXXXX');</script>
+  <meta property="og:type" content="website"><meta property="og:title" content="Free Hearts Online | MiniGamePlanet"><meta property="og:description" content="Play Hearts online free — avoid hearts and the Queen of Spades."><meta property="og:url" content="https://minigameplanet.com/games/hearts"><meta property="og:image" content="https://minigameplanet.com/images/logo.png">
+  <meta property="og:site_name" content="MiniGamePlanet">
+  <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Free Hearts Online | MiniGamePlanet"><meta name="twitter:description" content="Play Hearts online free — avoid hearts and the Queen of Spades."><meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Hearts","url":"https://minigameplanet.com/games/hearts","description":"Play Hearts online free — classic 4-player trick-taking card game.","genre":"Card","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://minigameplanet.com"},{"@type":"ListItem","position":2,"name":"Card Games","item":"https://minigameplanet.com/#category"},{"@type":"ListItem","position":3,"name":"Hearts","item":"https://minigameplanet.com/games/hearts"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do you play Hearts?","acceptedAnswer":{"@type":"Answer","text":"Hearts is a 4-player trick-taking game where you avoid taking hearts (1 point each) and the Queen of Spades (13 points). Lowest score wins. Players pass 3 cards each round and the 2 of clubs leads the first trick."}},{"@type":"Question","name":"What is shooting the moon in Hearts?","acceptedAnswer":{"@type":"Answer","text":"Shooting the moon means taking ALL hearts plus the Queen of Spades in a single round. Instead of gaining 26 points, you give every other player 26 points — or subtract 26 from your own score."}},{"@type":"Question","name":"Can I play Hearts for free online?","acceptedAnswer":{"@type":"Answer","text":"Yes! MiniGamePlanet offers free Hearts with AI opponents or real players. No download, no sign-up needed. Just open and play."}}]}</script>
+  <style>
+    .hero-grad{background:linear-gradient(135deg,#7C3AED 0%,#9333EA 20%,#C026D3 40%,#E11D48 60%,#EA580C 80%,#F59E0B 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:heroShift 8s ease-in-out infinite}
+    @keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+    @keyframes mgpBtnPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
+    #hearts-table{background:#1a1a2e;border-radius:16px;padding:16px;position:relative;min-height:480px;overflow:hidden}
+    .ht-seat{position:absolute;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:rgba(255,255,255,0.8);font-family:'Space Grotesk',sans-serif}
+    .ht-seat .ht-name{font-weight:600;font-size:13px;padding:2px 10px;border-radius:6px;white-space:nowrap}
+    .ht-seat .ht-pts{font-family:'DM Mono',monospace;font-size:11px;color:#FCA5A5}
+    .ht-seat.active .ht-name{box-shadow:0 0 0 2px #DC2626;animation:mgpBtnPulse 1s ease infinite}
+    .ht-card{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:clamp(48px,8vw,68px);height:clamp(68px,11.5vw,96px);border-radius:7px;font-family:'DM Mono',monospace;font-weight:700;font-size:clamp(12px,2vw,16px);box-shadow:0 2px 6px rgba(0,0,0,0.15);position:relative;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;flex-shrink:0;user-select:none}
+    .ht-card.face-up{background:#fff;border:1.5px solid #E5E7EB}
+    .ht-card.face-down{background:#DC2626;background-image:repeating-linear-gradient(45deg,transparent,transparent 3px,rgba(255,255,255,0.07) 3px,rgba(255,255,255,0.07) 6px);border:1.5px solid rgba(255,255,255,0.2)}
+    .ht-card.red{color:#DC2626}.ht-card.black{color:#0F172A}
+    .ht-card.playable:hover{transform:translateY(-6px);box-shadow:0 6px 16px rgba(0,0,0,0.25)}
+    .ht-card.selected{transform:translateY(-10px);box-shadow:0 0 0 2px #DC2626,0 6px 16px rgba(220,38,38,0.3)}
+    .ht-trick-area{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:grid;grid-template-areas:"t t t" "l c r" "b b b";grid-template-columns:1fr auto 1fr;gap:4px;justify-items:center;align-items:center;min-width:200px;min-height:160px}
+    #ht-hand{display:flex;justify-content:center;padding:8px;flex-wrap:nowrap;overflow-x:auto}
+    #ht-hand .ht-card{margin:0 -5px}
+    .ht-scoreboard{font-family:'DM Mono',monospace;font-size:12px;background:#0f172a;color:#fff;border-radius:8px;padding:8px 12px;display:grid;grid-template-columns:1fr auto auto;gap:4px 16px;align-items:center}
+    .ht-btn{padding:8px 20px;border-radius:8px;font-size:13px;font-weight:700;border:2px solid;cursor:pointer;font-family:inherit;transition:all 0.1s}
+    .ht-btn:hover{transform:translateY(-1px)}.ht-btn:active{transform:scale(0.97)}.ht-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none}
+    @media(max-width:480px){#hearts-table{min-height:400px;padding:10px}#ht-hand .ht-card{width:44px;height:62px;font-size:11px}}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;" id="game-wrap">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <div><h1 style="font-size:22px;font-weight:700;margin:0;">♥ Hearts</h1>
+        <p style="font-size:12px;color:#94A3B8;margin:2px 0 0;">Avoid hearts — or shoot the moon</p></div>
+        <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊 Sound</button>
+      </div>
+
+      <div id="mp-mode-container"></div>
+
+      <div id="game-area" style="display:none;">
+        <div class="ht-scoreboard" id="scoreboard" style="margin-bottom:10px;">
+          <span></span><span style="color:#94A3B8;font-size:10px;">ROUND</span><span style="color:#94A3B8;font-size:10px;">TOTAL</span>
+          <span id="sb-you" style="font-weight:700;color:#60A5FA;">You</span><span id="rnd-you">0</span><span id="tot-you">0</span>
+          <span id="sb-west">West</span><span id="rnd-west">0</span><span id="tot-west">0</span>
+          <span id="sb-north">North</span><span id="rnd-north">0</span><span id="tot-north">0</span>
+          <span id="sb-east">East</span><span id="rnd-east">0</span><span id="tot-east">0</span>
+        </div>
+
+        <div id="hearts-table">
+          <div class="ht-seat" id="seat-north" style="top:8px;left:50%;transform:translateX(-50%);">
+            <span class="ht-name" style="background:rgba(255,255,255,0.1);color:#E5E7EB;">North</span>
+            <span class="ht-pts" id="pts-north"></span>
+            <div id="hand-north" style="display:flex;gap:-4px;margin-top:4px;"></div>
+          </div>
+          <div class="ht-seat" id="seat-east" style="top:50%;right:8px;transform:translateY(-50%);">
+            <span class="ht-name" style="background:rgba(255,255,255,0.1);color:#E5E7EB;">East</span>
+            <span class="ht-pts" id="pts-east"></span>
+            <div id="hand-east" style="display:flex;flex-direction:column;gap:-4px;margin-top:4px;"></div>
+          </div>
+          <div class="ht-seat" id="seat-west" style="top:50%;left:8px;transform:translateY(-50%);">
+            <span class="ht-name" style="background:rgba(255,255,255,0.1);color:#E5E7EB;">West</span>
+            <span class="ht-pts" id="pts-west"></span>
+            <div id="hand-west" style="display:flex;flex-direction:column;gap:-4px;margin-top:4px;"></div>
+          </div>
+          <div class="ht-trick-area" id="trick-area"></div>
+          <div class="ht-seat" id="seat-south" style="bottom:8px;left:50%;transform:translateX(-50%);width:90%;max-width:600px;">
+            <span class="ht-name" style="background:rgba(96,165,250,0.2);color:#93C5FD;">You</span>
+            <span class="ht-pts" id="pts-south"></span>
+          </div>
+        </div>
+        <div id="ht-hand" style="margin-top:4px;min-height:80px;"></div>
+
+        <div id="pass-panel" style="display:none;text-align:center;padding:16px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;margin-top:10px;">
+          <p style="font-size:15px;font-weight:700;margin:0 0 4px;" id="pass-prompt">Select 3 cards to pass</p>
+          <p id="pass-dir" style="font-size:12px;color:#64748B;margin:0 0 8px;"></p>
+          <button id="pass-btn" class="ht-btn" style="background:#2563EB;color:#fff;border-color:#1D4ED8;" disabled>Pass Cards</button>
+        </div>
+
+        <div id="round-summary" style="display:none;text-align:center;padding:20px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;margin-top:10px;">
+          <h3 style="font-size:18px;font-weight:700;margin:0 0 12px;">Round Summary</h3>
+          <div id="round-details" style="font-family:'DM Mono',monospace;font-size:13px;text-align:left;max-width:320px;margin:0 auto 16px;padding:12px;background:#fff;border-radius:8px;"></div>
+          <button id="next-round-btn" class="ht-btn" style="background:#2563EB;color:#fff;border-color:#1D4ED8;padding:10px 28px;">Next Round</button>
+        </div>
+
+        <div id="game-over-panel" style="display:none;text-align:center;padding:20px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;margin-top:10px;">
+          <h3 style="font-size:22px;font-weight:700;margin:0 0 4px;" id="winner-text"></h3>
+          <p id="final-score-text" style="font-family:'DM Mono',monospace;font-size:14px;color:#64748B;margin:0 0 16px;"></p>
+          <button id="play-again-btn" class="ht-btn" style="background:#2563EB;color:#fff;border-color:#1D4ED8;padding:10px 28px;">Play Again</button>
+        </div>
+
+        <div id="near-miss" style="display:none;text-align:center;padding:3px;font-size:12px;font-weight:600;color:#D97706;margin-top:4px;"></div>
+      </div>
+    </div>
+  </main>
+
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play Hearts Online</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>Hearts is a classic trick-taking card game for four players where the objective is to avoid taking penalty cards — hearts (worth 1 point each) and the dreaded Queen of Spades (worth 13 points). The player with the lowest score when someone reaches 100 points wins. It's a game of careful card management, reading your opponents, and knowing when to take risks.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">The Rules</h3>
+      <p>Each round begins by dealing all 52 cards evenly (13 per player). Before playing, each player selects 3 cards to pass to another player. The passing direction rotates each round: <strong>left → right → across → hold</strong> (no pass). After passing, the player holding the <strong>2 of Clubs</strong> leads the first trick.</p>
+      <p>Players must follow the led suit if possible. If you can't follow suit, you may play any card — but <strong>hearts and the Queen of Spades cannot be played on the first trick</strong> (unless that's all you have). Hearts cannot be led until they've been "broken" — played on a non-heart lead because a player was void in the led suit.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Scoring</h3>
+      <ul class="list-disc pl-5 space-y-1">
+        <li>Each <strong>Heart</strong> taken in a trick = <strong>1 point</strong></li>
+        <li><strong>Queen of Spades</strong> = <strong>13 points</strong></li>
+        <li>Total penalty points per round: <strong>26</strong></li>
+        <li><strong>Shooting the Moon:</strong> take ALL 26 penalty points → every other player gets +26 instead (or subtract 26 from your own score — your choice).</li>
+      </ul>
+      <p>The game ends when any player reaches <strong>100 points</strong>. The player with the <strong>lowest score</strong> at that point wins.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Strategy Tips</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Dump high hearts early</strong> — pass the Ace, King, and Queen of hearts during the pass phase if you don't want to collect hearts.</li>
+        <li><strong>Void a suit.</strong> In the pass phase, try to get rid of all cards in one suit. This lets you dump penalty cards when that suit is led.</li>
+        <li><strong>Watch for moon shooters.</strong> If one player is collecting all the hearts, play defensively — take a heart yourself to break the moon attempt.</li>
+        <li><strong>Lead low.</strong> Leading low cards forces others to play higher, potentially taking unwanted tricks.</li>
+        <li><strong>Count the Queen of Spades.</strong> If the Q♠ hasn't appeared, be very careful playing high spades.</li>
+      </ul>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">History</h3>
+      <p>Hearts evolved from a family of "avoidance" trick-taking games dating to 18th-century Spain and France. The modern rules solidified in the late 19th century in America. Hearts gained massive popularity when Microsoft included it in Windows 3.1 in 1992, introducing millions of computer users to the game. It remains one of the most played card games in the world — and now you can play it free online with AI opponents or real players, right in your browser.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">FAQ</h3>
+      <h4 class="font-semibold text-slate-800">Can I shoot the moon?</h4>
+      <p>Yes! If you take all 13 hearts plus the Queen of Spades in a single round, you "shoot the moon." Every other player gets +26 points while you get nothing. It's a high-risk, high-reward strategy.</p>
+      <h4 class="font-semibold text-slate-800 mt-3">Is this game really free?</h4>
+      <p>100% free — no sign-up, no download, no ads. Play Hearts instantly against smart AI or challenge real players online.</p>
+    </div>
+  </article>
+  <div id="related-games"></div>
+  <div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playDeal, playDrop, playFlip, playPerfect, playLevelUp, playAlarm, playCollect } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+  import { renderModeSelector, renderQuickChat, sendMove, onMove, onStart, onTurn, onGameOver, onChat, showChatToast, leaveRoom, isConnected } from '/js/multiplayer.js';
+
+  document.addEventListener('click',()=>initAudio(),{once:true});
+  initToolPage('hearts'); initConsent(); trackGameView('hearts','Card');
+
+  let playerProfile = null;
+  getPlayer().then(p => {
+    playerProfile = p;
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'hearts');
+    }
+  });
+
+  document.getElementById('sound-btn').addEventListener('click',()=>{initAudio();const m=muteAll();document.getElementById('sound-btn').textContent=m?'🔇 Sound':'🔊 Sound';});
+
+  // --- Constants ---
+  const SUITS = ['clubs','diamonds','hearts','spades'];
+  const RANKS = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+  const SYM = {spades:'♠',hearts:'♥',diamonds:'♦',clubs:'♣'};
+  const RED = {hearts:true,diamonds:true};
+  const SEATS = ['south','west','north','east'];
+  const PASS_DIRS = ['left','right','across','hold'];
+  const TARGET = 100;
+
+  // --- State ---
+  let hands = {south:[],west:[],north:[],east:[]};
+  let totalScores = {south:0,west:0,north:0,east:0};
+  let roundScores = {south:0,west:0,north:0,east:0};
+  let currentTrick = [];
+  let tricksTaken = {south:[],west:[],north:[],east:[]};
+  let leadSeat = null;
+  let currentSeat = null;
+  let heartsBroken = false;
+  let firstTrick = true;
+  let phase = 'idle';
+  let roundNum = 0;
+  let passDir = 0;
+  let selectedPass = [];
+  let gameStartTime = null;
+  let isOnline = false;
+  let streak = 0;
+
+  function rv(card){ return RANKS.indexOf(card.rank); }
+  function cardKey(c){ return `${c.rank}-${c.suit}`; }
+  function isHeart(c){ return c.suit === 'hearts'; }
+  function isQoS(c){ return c.rank === 'Q' && c.suit === 'spades'; }
+  function penaltyPoints(c){ if(isHeart(c)) return 1; if(isQoS(c)) return 13; return 0; }
+
+  // --- Deck & Deal ---
+  function makeDeck(){
+    const d=[];
+    for(const s of SUITS) for(const r of RANKS) d.push({suit:s,rank:r});
+    for(let i=d.length-1;i>0;i--){const a=new Uint32Array(1);crypto.getRandomValues(a);const j=a[0]%(i+1);[d[i],d[j]]=[d[j],d[i]];}
+    return d;
+  }
+
+  function deal(){
+    const deck=makeDeck();
+    for(const s of SEATS) hands[s]=[];
+    for(let i=0;i<52;i++) hands[SEATS[i%4]].push(deck[i]);
+    for(const s of SEATS) sortHand(hands[s]);
+    roundScores={south:0,west:0,north:0,east:0};
+    tricksTaken={south:[],west:[],north:[],east:[]};
+    currentTrick=[];
+    heartsBroken=false;
+    firstTrick=true;
+    selectedPass=[];
+  }
+
+  function sortHand(h){
+    const so={clubs:0,diamonds:1,hearts:2,spades:3};
+    h.sort((a,b)=>{const sd=so[a.suit]-so[b.suit];return sd!==0?sd:rv(a)-rv(b);});
+  }
+
+  // --- Rendering ---
+  function makeCardHTML(card, faceUp=true, playable=false, selectable=false){
+    if(!faceUp) return `<div class="ht-card face-down"></div>`;
+    const color = RED[card.suit]?'red':'black';
+    const sel = selectable&&selectedPass.some(c=>cardKey(c)===cardKey(card))?'selected':'';
+    const cls = `ht-card face-up ${color}${playable?' playable':''}${sel?' selected':''}`;
+    return `<div class="${cls}" data-key="${cardKey(card)}">
+      <span style="position:absolute;top:3px;left:5px;font-size:clamp(10px,1.6vw,13px);line-height:1;">${card.rank}<br>${SYM[card.suit]}</span>
+      <span style="font-size:clamp(16px,2.8vw,24px);">${SYM[card.suit]}</span>
+      <span style="position:absolute;bottom:3px;right:5px;font-size:clamp(10px,1.6vw,13px);line-height:1;transform:rotate(180deg);">${card.rank}<br>${SYM[card.suit]}</span>
+    </div>`;
+  }
+
+  function renderAllHands(){
+    const handEl = document.getElementById('ht-hand');
+    const valid = getValidCards();
+    const isPassPhase = phase === 'pass';
+    handEl.innerHTML = hands.south.map(c =>
+      makeCardHTML(c, true,
+        phase==='play'&&currentSeat==='south'&&valid.some(v=>cardKey(v)===cardKey(c)),
+        isPassPhase
+      )
+    ).join('');
+
+    for(const seat of ['north','east','west']){
+      const el = document.getElementById(`hand-${seat}`);
+      el.innerHTML = Array(hands[seat].length).fill('<div class="ht-card face-down" style="width:28px;height:40px;margin:-8px 0;font-size:8px;"></div>').join('');
+    }
+
+    handEl.querySelectorAll('.ht-card.playable').forEach(el=>{
+      el.addEventListener('click',()=>{
+        if(phase!=='play'||currentSeat!=='south') return;
+        const card=hands.south.find(c=>cardKey(c)===el.dataset.key);
+        if(card) playCard('south',card);
+      });
+    });
+
+    if(isPassPhase){
+      handEl.querySelectorAll('.ht-card.face-up').forEach(el=>{
+        el.addEventListener('click',()=>{
+          const key=el.dataset.key;
+          const card=hands.south.find(c=>cardKey(c)===key);
+          if(!card) return;
+          const idx=selectedPass.findIndex(c=>cardKey(c)===key);
+          if(idx>=0) selectedPass.splice(idx,1);
+          else if(selectedPass.length<3) selectedPass.push(card);
+          renderAllHands();
+          document.getElementById('pass-btn').disabled=selectedPass.length!==3;
+        });
+      });
+    }
+  }
+
+  function renderTrickArea(){
+    const area=document.getElementById('trick-area');
+    const pos={south:'b',west:'l',north:'t',east:'r'};
+    const areas={t:'grid-area:t;',l:'grid-area:l;',r:'grid-area:r;',b:'grid-area:b;'};
+    let html='';
+    for(const entry of currentTrick){
+      html+=`<div style="${areas[pos[entry.seat]]}">${makeCardHTML(entry.card,true)}</div>`;
+    }
+    area.innerHTML=html;
+  }
+
+  function updateSeatUI(){
+    for(const s of SEATS){
+      document.getElementById(`seat-${s}`).classList.toggle('active',s===currentSeat);
+      document.getElementById(`pts-${s}`).textContent=roundScores[s]>0?`${roundScores[s]} pts this round`:'';
+    }
+  }
+
+  function updateScoreboard(){
+    for(const s of SEATS){
+      const k=s==='south'?'you':s;
+      document.getElementById(`rnd-${k}`).textContent=roundScores[s];
+      document.getElementById(`tot-${k}`).textContent=totalScores[s];
+    }
+  }
+
+  // --- Pass Phase ---
+  function startPassPhase(){
+    const dir=PASS_DIRS[passDir%4];
+    if(dir==='hold'){
+      startPlaying();
+      return;
+    }
+    phase='pass';
+    selectedPass=[];
+    document.getElementById('pass-panel').style.display='block';
+    document.getElementById('pass-dir').textContent=`Passing ${dir}: ${dir==='left'?'to West':dir==='right'?'to East':'to North'}`;
+    document.getElementById('pass-btn').disabled=true;
+    renderAllHands();
+
+    document.getElementById('pass-btn').onclick=()=>{
+      if(selectedPass.length!==3) return;
+      executePass();
+    };
+  }
+
+  function executePass(){
+    const dir=PASS_DIRS[passDir%4];
+    const targetMap={left:'west',right:'east',across:'north'};
+    const target=targetMap[dir];
+
+    for(const c of selectedPass){
+      hands.south=hands.south.filter(h=>cardKey(h)!==cardKey(c));
+      hands[target].push(c);
+    }
+
+    for(const seat of ['west','north','east']){
+      const src=hands[seat];
+      const aiPass=aiSelectPass(src);
+      const aiTarget=getPassTarget(seat,dir);
+      for(const c of aiPass){
+        hands[seat]=hands[seat].filter(h=>cardKey(h)!==cardKey(c));
+        hands[aiTarget].push(c);
+      }
+    }
+
+    for(const s of SEATS) sortHand(hands[s]);
+    document.getElementById('pass-panel').style.display='none';
+    playFlip();
+    startPlaying();
+  }
+
+  function getPassTarget(seat,dir){
+    const idx=SEATS.indexOf(seat);
+    if(dir==='left') return SEATS[(idx+1)%4];
+    if(dir==='right') return SEATS[(idx+3)%4];
+    return SEATS[(idx+2)%4];
+  }
+
+  function aiSelectPass(hand){
+    const sorted=[...hand].sort((a,b)=>{
+      if(isQoS(a)) return -1;
+      if(isQoS(b)) return 1;
+      if(a.suit==='spades'&&rv(a)>10&&!isQoS(a)) return -1;
+      if(b.suit==='spades'&&rv(b)>10&&!isQoS(b)) return 1;
+      return rv(b)-rv(a);
+    });
+    return sorted.slice(0,3);
+  }
+
+  // --- Playing ---
+  function startPlaying(){
+    phase='play';
+    firstTrick=true;
+    const starter=findTwoOfClubs();
+    leadSeat=starter;
+    currentSeat=starter;
+    currentTrick=[];
+    renderAllHands();
+    renderTrickArea();
+    updateSeatUI();
+    if(currentSeat!=='south') scheduleAIPlay();
+  }
+
+  function findTwoOfClubs(){
+    for(const s of SEATS){
+      if(hands[s].some(c=>c.rank==='2'&&c.suit==='clubs')) return s;
+    }
+    return 'south';
+  }
+
+  function getValidCards(){
+    if(currentSeat!=='south') return [];
+    const hand=hands.south;
+    if(hand.length===0) return [];
+
+    if(currentTrick.length===0){
+      if(firstTrick) return hand.filter(c=>c.rank==='2'&&c.suit==='clubs').length>0?hand.filter(c=>c.rank==='2'&&c.suit==='clubs'):hand;
+      if(!heartsBroken){
+        const nonHearts=hand.filter(c=>!isHeart(c));
+        return nonHearts.length>0?nonHearts:hand;
+      }
+      return hand;
+    }
+
+    const ledSuit=currentTrick[0].card.suit;
+    const following=hand.filter(c=>c.suit===ledSuit);
+    if(following.length>0) return following;
+
+    if(firstTrick){
+      const noPenalty=hand.filter(c=>!isHeart(c)&&!isQoS(c));
+      return noPenalty.length>0?noPenalty:hand;
+    }
+    return hand;
+  }
+
+  function playCard(seat,card){
+    hands[seat]=hands[seat].filter(c=>cardKey(c)!==cardKey(card));
+    currentTrick.push({seat,card});
+    if(isHeart(card)) heartsBroken=true;
+    playDrop();
+    renderTrickArea();
+    renderAllHands();
+
+    if(currentTrick.length===4){
+      setTimeout(()=>resolveTrick(),800);
+    } else {
+      const nextIdx=(SEATS.indexOf(seat)+1)%4;
+      currentSeat=SEATS[nextIdx];
+      updateSeatUI();
+      if(currentSeat!=='south') scheduleAIPlay();
+      else renderAllHands();
+    }
+  }
+
+  function scheduleAIPlay(){
+    setTimeout(()=>{
+      if(phase!=='play') return;
+      const card=aiChooseCard(currentSeat);
+      if(card) playCard(currentSeat,card);
+    },400+Math.random()*400);
+  }
+
+  // --- AI ---
+  function aiChooseCard(seat){
+    const hand=hands[seat];
+    if(hand.length===0) return null;
+    const leading=currentTrick.length===0;
+
+    if(leading){
+      if(firstTrick){
+        const two=hand.find(c=>c.rank==='2'&&c.suit==='clubs');
+        if(two) return two;
+      }
+      if(!heartsBroken){
+        const safe=hand.filter(c=>!isHeart(c));
+        const pool=safe.length>0?safe:hand;
+        return pool.sort((a,b)=>rv(a)-rv(b))[0];
+      }
+      return hand.sort((a,b)=>rv(a)-rv(b))[0];
+    }
+
+    const ledSuit=currentTrick[0].card.suit;
+    const following=hand.filter(c=>c.suit===ledSuit);
+
+    if(following.length>0){
+      const highest=Math.max(...currentTrick.map(e=>e.card.suit===ledSuit?rv(e.card):-1));
+      const safe=following.filter(c=>rv(c)<highest);
+      if(safe.length>0) return safe[safe.length-1];
+      return following[0];
+    }
+
+    if(firstTrick){
+      const noPenalty=hand.filter(c=>!isHeart(c)&&!isQoS(c));
+      if(noPenalty.length>0) return noPenalty.sort((a,b)=>rv(b)-rv(a))[0];
+    }
+
+    const qos=hand.find(isQoS);
+    if(qos) return qos;
+    const hearts=hand.filter(isHeart).sort((a,b)=>rv(b)-rv(a));
+    if(hearts.length>0) return hearts[0];
+    return hand.sort((a,b)=>rv(b)-rv(a))[0];
+  }
+
+  function trickWinner(){
+    const ledSuit=currentTrick[0].card.suit;
+    let winner=currentTrick[0];
+    for(let i=1;i<currentTrick.length;i++){
+      const e=currentTrick[i];
+      if(e.card.suit===ledSuit&&rv(e.card)>rv(winner.card)) winner=e;
+    }
+    return winner.seat;
+  }
+
+  function resolveTrick(){
+    const winner=trickWinner();
+    let pts=0;
+    for(const e of currentTrick){
+      pts+=penaltyPoints(e.card);
+      tricksTaken[winner].push(e.card);
+    }
+    roundScores[winner]+=pts;
+
+    if(pts>0) playError();
+    else playCollect();
+
+    firstTrick=false;
+    currentTrick=[];
+    renderTrickArea();
+    updateSeatUI();
+    updateScoreboard();
+
+    const totalCards=SEATS.reduce((s,seat)=>s+hands[seat].length,0);
+    if(totalCards===0){
+      setTimeout(()=>endRound(),600);
+    } else {
+      leadSeat=winner;
+      currentSeat=winner;
+      updateSeatUI();
+      renderAllHands();
+      if(currentSeat!=='south') scheduleAIPlay();
+    }
+  }
+
+  // --- Round End ---
+  function endRound(){
+    phase='scoring';
+
+    // Check for moon shot
+    for(const s of SEATS){
+      if(roundScores[s]===26){
+        // Shoot the moon!
+        playPerfect();
+        for(const other of SEATS){
+          if(other!==s) roundScores[other]=26;
+        }
+        roundScores[s]=0;
+        break;
+      }
+    }
+
+    for(const s of SEATS) totalScores[s]+=roundScores[s];
+    updateScoreboard();
+
+    const maxScore=Math.max(...SEATS.map(s=>totalScores[s]));
+    if(maxScore>=TARGET){
+      endGame();
+      return;
+    }
+
+    const details=SEATS.map(s=>`${s==='south'?'You':s}: +${roundScores[s]} (total: ${totalScores[s]})`).join('<br>');
+    document.getElementById('round-summary').style.display='block';
+    document.getElementById('round-details').innerHTML=details;
+    document.getElementById('next-round-btn').onclick=()=>{
+      document.getElementById('round-summary').style.display='none';
+      startRound();
+    };
+  }
+
+  function endGame(){
+    phase='over';
+    const minScore=Math.min(...SEATS.map(s=>totalScores[s]));
+    const winner=SEATS.find(s=>totalScores[s]===minScore);
+    const won=winner==='south';
+
+    document.getElementById('game-over-panel').style.display='block';
+    document.getElementById('winner-text').textContent=won?'🎉 You Win!':'😞 '+winner.charAt(0).toUpperCase()+winner.slice(1)+' Wins';
+    document.getElementById('final-score-text').textContent=SEATS.map(s=>`${s==='south'?'You':s}: ${totalScores[s]}`).join(' | ');
+
+    if(won){playPerfect();streak++;}
+    else {playGameOver();streak=0;}
+
+    const dur=Math.round((Date.now()-gameStartTime)/1000);
+    trackGameOver('hearts','Card',won?1:0,totalScores.south);
+    submitStats('hearts',{score:totalScores.south,duration:dur,win:won,loss:!won,online:isOnline});
+
+    document.getElementById('play-again-btn').focus();
+    document.getElementById('play-again-btn').onclick=()=>{
+      document.getElementById('game-over-panel').style.display='none';
+      document.getElementById('round-summary').style.display='none';
+      startNewGame();
+    };
+  }
+
+  // --- Game Flow ---
+  function startNewGame(){
+    totalScores={south:0,west:0,north:0,east:0};
+    roundNum=0;
+    passDir=0;
+    gameStartTime=Date.now();
+    trackGameStart('hearts','Card');
+    startRound();
+  }
+
+  function startRound(){
+    roundNum++;
+    deal();
+    renderAllHands();
+    renderTrickArea();
+    updateScoreboard();
+    updateSeatUI();
+    playDeal();
+    startPassPhase();
+  }
+
+  // --- Mode Selection ---
+  renderModeSelector(
+    document.getElementById('mp-mode-container'),
+    'hearts',
+    playerProfile?.name||'Player',
+    {
+      onAI: ()=>{ isOnline=false; document.getElementById('game-area').style.display='block'; startNewGame(); },
+      onPrivate: ()=>{ isOnline=true; document.getElementById('game-area').style.display='block'; startNewGame(); },
+      onFind: ()=>{ isOnline=true; document.getElementById('game-area').style.display='block'; startNewGame(); },
+    },
+    { maxPlayers:4, settingsConfig:{
+      turnTimer:{label:'Turn Timer',default:'15',options:[{value:'10',label:'10s'},{value:'15',label:'15s'},{value:'20',label:'20s'},{value:'30',label:'30s'}]},
+      targetScore:{label:'Play To',default:'100',options:[{value:'50',label:'50'},{value:'100',label:'100'},{value:'150',label:'150'}]},
+    }}
+  );
+
+  </script>
+</body>
+</html>
