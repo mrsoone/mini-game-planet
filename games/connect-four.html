@@ -50,6 +50,10 @@
   <meta name="twitter:title" content="Connect Four - Strategy Game | Mini Game Planet">
   <meta name="twitter:description" content="Play Connect Four online. Drop colored discs, connect four in a row to win. Play vs AI or a friend.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Strategy", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Tic Tac Toe", "item": "https://minigameplanet.com/games/connect-four"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Strategy Tips", "acceptedAnswer": {"@type": "Answer", "text": "The center column is the most powerful position on the board because it offers the most opportunities for creating winning lines. Try to control the center early in the game. Always watch for your opponent's threats—if they have two in a row with an open end, block it. Look for \"double threats,\" positions where you can create two ways to win on your next turn, making it impossible for your opponent to block both. Avoid playing directly under your opponent's disc when they can build upward; inste"}}, {"@type": "Question", "name": "Play Online for Free", "acceptedAnswer": {"@type": "Answer", "text": "Our online version features smooth falling animations, highlighted winning combinations, and session statistics including wins, streaks, and personal bests. The game uses cryptographically secure randomness for fair AI play. Enjoy Connect Four anytime, anywhere—no installation required. Simply open this page in your browser and start playing. Track your progress with built-in stats and challenge yourself to beat your personal best streak."}}]}</script>
 </head>
 <body class="min-h-screen text-gray-800 antialiased">
   <div id="nav-container"></div>
@@ -136,7 +140,9 @@
       <p class="text-gray-600 leading-relaxed">
         Our online version features smooth falling animations, highlighted winning combinations, and session statistics including wins, streaks, and personal bests. The game uses cryptographically secure randomness for fair AI play. Enjoy Connect Four anytime, anywhere—no installation required. Simply open this page in your browser and start playing. Track your progress with built-in stats and challenge yourself to beat your personal best streak.
       </p>
-    </article>
+    
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-strategy-games-browser" style="color:#2563EB;text-decoration:underline;">10 Best Free Strategy Games</a>.</p>
+      </article>
 
     <div id="related-games" class="mb-8"></div>
     <!-- AdSense placeholder (uncomment when ready)
@@ -152,10 +158,34 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+  import { renderModeSelector, onMove, onChat, onStart, onTurn, onPlayerLeave, sendMove, sendChat, sendRematch, sendGameOver, renderQuickChat, showChatToast, leaveRoom, isConnected } from '/js/multiplayer.js';
 
     initToolPage('connect-four');
     initConsent();
     trackGameView('connect-four', 'Strategy');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'connect-four');
+    }
+  });
+
+  // Multiplayer mode selector
+  const mpContainer = document.querySelector('main');
+  if (mpContainer) {
+    getPlayer().then(p => {
+      const pName = p ? p.name : 'Player';
+      renderModeSelector(mpContainer, 'connect-four', pName, {
+        onAI: () => { /* default single-player, already running */ },
+        onPrivate: () => { /* room joined, wire moves */ },
+        onFind: () => { /* match found, wire moves */ },
+      });
+    });
+    onChat(data => showChatToast(data.messageId, data.from));
+  }
 
     const COLS = 7, ROWS = 6;
     const RED = 1, YELLOW = 2;

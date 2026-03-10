@@ -35,6 +35,10 @@
   <meta name="twitter:title" content="Free Anagram Scramble Online | MiniGamePlanet">
   <meta name="twitter:description" content="Unscramble jumbled letters to find the hidden word. Drag tiles or type. Timer and hints.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Word", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Word Search", "item": "https://minigameplanet.com/games/anagram-scramble"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How to Play", "acceptedAnswer": {"@type": "Answer", "text": "When a new round starts, you see a row of scrambled letter tiles. Drag each tile into the answer slots above to build your guess, or simply type the word in the text box. When your arrangement matches the hidden word, you win the round. The timer runs from the moment you start until you solve it. Use the Hint button to reveal one correct letter in its proper position — helpful when you are close but not quite there. Choose Easy (4–5 letters), Medium (6–7 letters), or Hard (8+ letters) to adjust "}}, {"@type": "Question", "name": "History &amp; Origin", "acceptedAnswer": {"@type": "Answer", "text": "Anagrams have fascinated people for thousands of years. The word \"anagram\" comes from the Greek \"ana\" (again) and \"gramma\" (letter) — literally \"rearrange letters.\" Ancient Greeks and Romans used anagrams for divination and secret messages. In the Middle Ages, anagrams were popular among scholars and mystics; some believed that rearranging the letters of a name could reveal hidden truths. Lewis Carroll, the author of \"Alice in Wonderland,\" was famously fond of anagrams and often included them in"}}]}</script>
 </head>
 <body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
   <div id="nav-container"></div>
@@ -104,7 +108,9 @@
       <p>No. Words are chosen randomly from a large built-in list for each difficulty. Every game is different, so you can play again and again without repetition.</p>
       <p class="mt-6">Play Anagram Scramble free in your browser. Unscramble letters, beat your best time, and build your streak.</p>
     </div>
-  </article>
+  
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-word-games-online" style="color:#2563EB;text-decoration:underline;">8 Best Free Word Games</a>.</p>
+      </article>
   <div id="related-games"></div>
   <div id="footer-container"></div>
 
@@ -113,9 +119,18 @@
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
   document.addEventListener('click',()=>initAudio(),{once:true});
   initToolPage('anagram-scramble'); initConsent(); trackGameView('anagram-scramble','Word');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'anagram-scramble');
+    }
+  });
 
   const WORDS = {
     easy: ['BEAR','CARE','TEAM','NOTE','RATE','SALE','MATE','TAME','LIST','EAST','SEAT','TEAS','ARTS','STAR','RATS','TARS','PANS','SNAP','SPAN','PAST','PATS','TAPS','SPAT','PEAR','REAP','RAPE','PEAS','APES','SEAP','LIVE','EVIL','VILE','VEIL','DARE','READ','DEAR','ARED','ROSE','SORE','ORES','EROS','TIRE','RITE','TIER','TRIM','MIRT','MELT','MOTE','TOME','ITEM','EMIT','TIME','DIME','IDEM','EDIT','TIDE','DIET','TIED','FATE','FEAT','TEAF','TEAM','MATE','TAME','MEAT','META','BARE','BEAR','BRAE','ABER','REAB','RACE','ACRE','CARE','TEAR','RATE','TARE','EARTH','HEART','TEAMS','STEAM','MEATS','STONE','NOTES','TONES','ONSET','PIANO','PAINS','SNAPS','PASTE','PEATS','PESTO','SPATE','TAPES','LIGHT','THING','NIGHT','BRING','STING','DROVE','MOVED','VOMED','GODLY','MOLDY','LOVED','DEVOL','SOLVE','VOLES','LOVES'],

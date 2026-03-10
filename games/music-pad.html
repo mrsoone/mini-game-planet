@@ -49,6 +49,10 @@
   <meta name="twitter:title" content="Music Pad — Beat Maker & Sequencer | Mini Game Planet">
   <meta name="twitter:description" content="Create beats with our free Music Pad beat maker. 4x4 tap pads, 16-step sequencer, multiple sound kits, and record mode.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Builder", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Sand Simulation", "item": "https://minigameplanet.com/games/music-pad"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "4x4 Tap Pads", "acceptedAnswer": {"@type": "Answer", "text": "Our 4x4 grid of tap pads gives you 16 distinct sounds at your fingertips. Each pad triggers a unique sound—from kicks and snares to synths and FX—depending on the kit you select. Tap pads light up when pressed, giving you instant visual feedback. The pads respond to both mouse clicks and touch, making Music Pad fully mobile-friendly."}}, {"@type": "Question", "name": "16-Step Sequencer", "acceptedAnswer": {"@type": "Answer", "text": "The 16-step sequencer at the bottom of the interface lets you program patterns that play in a loop. Click any cell to toggle it on or off. When you press Play, the sequencer steps through each beat at your chosen BPM, triggering the corresponding pads. This classic step-sequencer workflow is the foundation of electronic music production, used in everything from drum machines to DAWs."}}, {"@type": "Question", "name": "Multiple Sound Kits", "acceptedAnswer": {"@type": "Answer", "text": "Music Pad includes three distinct sound kits: Drums, Electronic, and Lo-Fi. The Drums kit features punchy kicks, crisp snares, hi-hats, and percussion. The Electronic kit offers synthesized bass, leads, and FX for electronic and EDM-style beats. The Lo-Fi kit provides warm, vinyl-style sounds perfect for chill beats and lo-fi hip-hop. Switch between kits instantly to explore different sonic palettes."}}, {"@type": "Question", "name": "Record & Replay", "acceptedAnswer": {"@type": "Answer", "text": "Record mode captures your live pad taps and replays them in sync with the sequencer. Hit Record, play your pattern on the pads, then hit Stop. Your performance is saved and will play back when you start the sequencer. This lets you layer live improvisation on top of programmed patterns or capture spontaneous ideas for later refinement."}}, {"@type": "Question", "name": "BPM Control", "acceptedAnswer": {"@type": "Answer", "text": "Adjust the tempo from 60 to 180 BPM using the slider. This range covers everything from slow, ambient grooves to fast, energetic beats. The BPM affects both the sequencer playback and the timing of recorded performances, so you can match the tempo to your creative vision."}}]}</script>
 </head>
 <body class="min-h-screen text-gray-800">
   <!-- AdSense placeholder (uncomment when ready)
@@ -129,7 +133,9 @@
 
         <p class="mt-6">Music Pad runs entirely in your browser using the Web Audio API—no plugins or installations required. Start creating beats today at Mini Game Planet.</p>
       </section>
-    </article>
+    
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-free-browser-games" style="color:#2563EB;text-decoration:underline;">10 Best Free Browser Games</a>.</p>
+      </article>
 
     <section id="related-games" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
       <h2 class="text-lg font-bold text-gray-900 mb-4">Related Games</h2>
@@ -152,10 +158,19 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
     initToolPage('music-pad');
     initConsent();
     trackGameView('music-pad', 'Builder');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'music-pad');
+    }
+  });
 
     // --- Web Audio API ---
     let audioCtx = null;

@@ -113,6 +113,8 @@
   <meta name="twitter:title" content="Coin Flip - Free Online Casino Game">
   <meta name="twitter:description" content="Flip a virtual coin with realistic 3D animation. Choose heads or tails, track stats and streaks.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Casino", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Dice Roller", "item": "https://minigameplanet.com/games/coin-flip"}]}</script>
 </head>
 <body class="min-h-screen text-gray-800">
   <div id="nav-container" class="bg-white/80 backdrop-blur border-b border-gray-200 sticky top-0 z-50">
@@ -211,7 +213,9 @@
         <h2 class="text-xl font-bold text-gray-900 mt-8 mb-4">Play Responsibly</h2>
         <p>While our coin flip game is designed for entertainment, it's important to remember that it simulates a game of chance. There is no strategy that can improve your odds—each flip is independent. Use it for fun, for decisions, or for learning about probability, but always play responsibly. Enjoy the game!</p>
       </div>
-    </article>
+    
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-free-browser-games" style="color:#2563EB;text-decoration:underline;">10 Best Free Browser Games</a>.</p>
+      </article>
 
     <div id="related-games" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
       <h2 class="text-lg font-bold text-gray-900 mb-4">Related Games</h2>
@@ -234,10 +238,19 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
     initToolPage('coin-flip');
     initConsent();
     trackGameView('coin-flip', 'Casino');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'coin-flip');
+    }
+  });
 
     // State
     let stats = {

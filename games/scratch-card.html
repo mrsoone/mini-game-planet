@@ -61,6 +61,10 @@
   <meta name="twitter:title" content="Scratch Card - Free Casino Game | Mini Game Planet">
   <meta name="twitter:description" content="Scratch the coating and reveal symbols. Match 3 to win! Virtual credits, no real money.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Casino", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Spin the Wheel", "item": "https://minigameplanet.com/games/scratch-card"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How to Play", "acceptedAnswer": {"@type": "Answer", "text": "Select your bet size (1 to 20 credits), pick a card theme (Fruit, Lucky, or Diamond), and click \"Buy New Card.\" A 3×3 grid of symbols will be hidden beneath a silver scratch coating. Use your mouse or touch to scratch away the coating and reveal the symbols. The more you scratch, the more you reveal. Match three or more of the same symbol to win. If you don't want to scratch manually, scratch at least 70% of the card to unlock the \"Reveal All\" button and instantly see your results."}}, {"@type": "Question", "name": "Scratch Card Themes", "acceptedAnswer": {"@type": "Answer", "text": "Our scratch card features three distinct themes. The Fruit theme uses classic symbols like cherries, lemons, oranges, and grapes. The Lucky theme includes clovers, horseshoes, stars, and bells. The Diamond theme offers premium symbols: diamonds, crowns, coins, and gems. Each theme has its own payout structure, with rarer symbols paying higher amounts. Switch themes anytime before buying a new card."}}, {"@type": "Question", "name": "Prize Tiers", "acceptedAnswer": {"@type": "Answer", "text": "Winnings depend on how many matching symbols you reveal. Three of a kind is the minimum to win, with payouts scaling by symbol rarity. Four matches pay more, and five or more of the same symbol (if the grid allowed it) would pay the highest. The exact payout multiplies your bet, so a higher bet means bigger potential wins—and bigger potential losses. Start with smaller bets to learn the game, then increase when you're comfortable."}}, {"@type": "Question", "name": "Entertainment Only", "acceptedAnswer": {"@type": "Answer", "text": "This game is designed purely for entertainment. There is no real gambling, no cash prizes, and no way to deposit or withdraw money. It's a safe way to enjoy the thrill of scratching a card from the comfort of your device. Parents can rest assured that children can play without any financial risk. All credits are virtual and reset when you refresh the page."}}, {"@type": "Question", "name": "Why Play Free Scratch Cards?", "acceptedAnswer": {"@type": "Answer", "text": "Free scratch card games let you experience the excitement of revealing symbols, matching combinations, and watching your credits grow without any of the risks associated with real-money gambling. They're perfect for learning how scratch card mechanics work, passing time, or simply enjoying a bit of casual fun. Our scratch card uses cryptographically secure randomness for fair, unpredictable results on every card."}}]}</script>
 </head>
 <body class="min-h-screen text-gray-800 antialiased">
   <!-- GA4 Consent (defaults) - initConsent() from consent.js -->
@@ -156,7 +160,9 @@
         <h3 class="text-xl font-semibold mt-6">Session Stats and Streaks</h3>
         <p>Track your performance with built-in session statistics. See your total wins, losses, and current winning streak. A streak increases each time you match three or more symbols and resets when you don't. Try to beat your personal best streak! Credits start at 100 and can grow or shrink with each card. When you run out, refresh the page to start over.</p>
       </section>
-    </article>
+    
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-free-browser-games" style="color:#2563EB;text-decoration:underline;">10 Best Free Browser Games</a>.</p>
+      </article>
 
     <div id="related-games" class="mb-8"></div>
   </main>
@@ -168,11 +174,20 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
     document.addEventListener('click', () => initAudio(), { once: true });
     initToolPage('scratch-card');
     initConsent();
     trackGameView('scratch-card', 'Casino');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'scratch-card');
+    }
+  });
 
     const THEMES = {
       fruit: { symbols: ['🍒', '🍋', '🟠', '🍇', '🍎', '🍊'], payouts: { 3: 2, 4: 5, 5: 15, 6: 40, 7: 100, 8: 250, 9: 500 } },

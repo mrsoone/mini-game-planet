@@ -53,6 +53,10 @@
   <meta name="twitter:title" content="Pong - Classic Arcade Game">
   <meta name="twitter:description" content="Play Pong online. Single player vs AI or 2-player local. Free classic arcade game.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Arcade", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Snake", "item": "https://minigameplanet.com/games/pong"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "History of Pong", "acceptedAnswer": {"@type": "Answer", "text": "Pong was created by Allan Alcorn at Atari in 1972, inspired by an electronic ping-pong game included in \n        the Magnavox Odyssey. It became the first commercially successful video game, spawning the entire arcade \n        industry. The original cabinet featured simple two-dimensional graphics and analog circuitry. Pong's \n        success proved that video games could be a viable business, leading to the golden age of arcades and \n        eventually the home console revolution."}}, {"@type": "Question", "name": "Strategy Tips", "acceptedAnswer": {"@type": "Answer", "text": "Master the angles: hitting the ball with the edge of your paddle creates sharper angles that are harder \n        to return. Aim for the corners when attacking. When defending, try to stay centered and react quickly— \n        the ball accelerates during long rallies. Against the AI, vary your shot placement; predictable patterns \n        are easily exploited on higher difficulties. In 2-player matches, psychological warfare matters—mix up \n        your timing and placement to keep your opponent g"}}]}</script>
 </head>
 <body class="min-h-screen text-gray-800">
   <!-- GA4 Consent (defaults) -->
@@ -164,7 +168,9 @@
         <dt class="font-medium">Can I play on mobile?</dt>
         <dd class="text-gray-700 ml-4 mb-2">The game works best with a keyboard. Touch controls may be added in future updates.</dd>
       </dl>
-    </article>
+    
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-free-browser-games" style="color:#2563EB;text-decoration:underline;">10 Best Free Browser Games</a>.</p>
+      </article>
 
     <!-- Related Games -->
     <div class="related-games mb-6">
@@ -187,10 +193,36 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+  import { initGamepad, onButtonPress, isGamepadConnected } from '/js/gamepad.js';
+  import { renderModeSelector, onMove, onChat, onStart, onTurn, onPlayerLeave, sendMove, sendChat, sendRematch, sendGameOver, renderQuickChat, showChatToast, leaveRoom, isConnected } from '/js/multiplayer.js';
 
     initToolPage('pong');
     initConsent();
+  initGamepad();
     trackGameView('pong', 'Arcade');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'pong');
+    }
+  });
+
+  // Multiplayer mode selector
+  const mpContainer = document.querySelector('main');
+  if (mpContainer) {
+    getPlayer().then(p => {
+      const pName = p ? p.name : 'Player';
+      renderModeSelector(mpContainer, 'pong', pName, {
+        onAI: () => { /* default single-player, already running */ },
+        onPrivate: () => { /* room joined, wire moves */ },
+        onFind: () => { /* match found, wire moves */ },
+      });
+    });
+    onChat(data => showChatToast(data.messageId, data.from));
+  }
 
     // Crypto-based random
     function randomFloat() {

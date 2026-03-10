@@ -32,6 +32,10 @@
   <meta name="twitter:title" content="Free Color Flood Online | MiniGamePlanet">
   <meta name="twitter:description" content="Play Color Flood free. Flood-fill the board one color at a time.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Puzzle", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Pipe Connect", "item": "https://minigameplanet.com/games/color-flood"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How to Play", "acceptedAnswer": {"@type": "Answer", "text": "The board starts as a randomly colored grid. Your \"flood region\" begins as the single cell in the top-left corner. Each turn, you pick one of the six available colors by clicking a color button. Your flood region changes to that color, and any adjacent cells that match the new color are absorbed into your region. The goal is to flood the entire board — make every cell the same color — before you run out of moves."}}, {"@type": "Question", "name": "History &amp; Origin", "acceptedAnswer": {"@type": "Answer", "text": "Color Flood games first appeared on the web in the mid-2000s. The most famous version, \"Flood-It,\" was created by LabPixies (later acquired by Google) and became one of the most popular puzzle apps on early smartphones. The underlying algorithm — flood fill — is fundamental to computer graphics and is the same one used by the paint bucket tool in image editors. The puzzle variant turns this algorithm into a strategic decision at each step: which color maximizes territory gain? The game has been "}}]}</script>
 </head>
 <body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
   <div id="nav-container"></div>
@@ -105,9 +109,18 @@
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
   document.addEventListener('click',()=>initAudio(),{once:true});
   initToolPage('color-flood'); initConsent(); trackGameView('color-flood','Puzzle');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'color-flood');
+    }
+  });
 
   const COLORS=['#EF4444','#F59E0B','#22C55E','#3B82F6','#A855F7','#EC4899'];
   const MAX_MOVES={10:25,14:30,18:38};

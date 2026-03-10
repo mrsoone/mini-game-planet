@@ -41,6 +41,8 @@
   <meta name="twitter:title" content="Endless Runner - Free Arcade Game">
   <meta name="twitter:description" content="Jump, duck, and collect coins in this addictive endless runner. How far can you go?">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Arcade", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Fruit Slicer", "item": "https://minigameplanet.com/games/endless-runner"}]}</script>
 </head>
 <body class="min-h-screen text-gray-800">
   <div id="nav-container"></div>
@@ -111,6 +113,8 @@
         <p class="text-gray-600 leading-relaxed mt-4">
           Play Endless Runner free on Mini Game Planet. Perfect for desktop and mobile, with touch controls optimized for phones and tablets. Jump in, run far, and enjoy the ride.
         </p>
+      
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-free-browser-games" style="color:#2563EB;text-decoration:underline;">10 Best Free Browser Games</a>.</p>
       </article>
     </div>
 
@@ -123,10 +127,21 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+  import { initGamepad, onButtonPress, isGamepadConnected } from '/js/gamepad.js';
 
     initToolPage('endless-runner');
     initConsent();
+  initGamepad();
     trackGameView('endless-runner', 'Arcade');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'endless-runner');
+    }
+  });
 
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');

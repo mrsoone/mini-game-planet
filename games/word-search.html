@@ -34,6 +34,10 @@
   <meta name="twitter:title" content="Free Word Search Online | MiniGamePlanet">
   <meta name="twitter:description" content="Play Word Search free. Find hidden words in a letter grid.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Word", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Hangman", "item": "https://minigameplanet.com/games/word-search"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How to Play", "acceptedAnswer": {"@type": "Answer", "text": "Look at the word list below the grid. Each word is hidden somewhere in the letter grid. Words run in straight lines: horizontal (left to right or right to left), vertical (top to bottom or bottom to top), or diagonal (in any of four diagonal directions). Click the first letter of a word, then click the last letter. If the selected line of letters matches a word in the list, it lights up green and gets crossed off. Find all words to win."}}, {"@type": "Question", "name": "History &amp; Origin", "acceptedAnswer": {"@type": "Answer", "text": "The word search puzzle was invented in 1968 by Norman E. Gibat, who published it in the Selenby Digest in Norman, Oklahoma. It quickly became a newspaper staple and classroom favorite. Spanish-language word searches (\"sopas de letras\") are equally popular in Latin America. The format is simple enough for children yet engaging enough for adults, making it one of the most universally enjoyed puzzle types in the world. Competitive word search solving has even emerged as a niche hobby, with solvers "}}]}</script>
 </head>
 <body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
   <div id="nav-container"></div>
@@ -106,9 +110,18 @@
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
   document.addEventListener('click',()=>initAudio(),{once:true});
   initToolPage('word-search'); initConsent(); trackGameView('word-search','Puzzle');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'word-search');
+    }
+  });
 
   const THEMES=[
     {name:'Animals',words:['TIGER','WHALE','EAGLE','SHARK','PANDA','HORSE','SNAKE','MOUSE','CRANE','BISON']},

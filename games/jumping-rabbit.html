@@ -48,6 +48,8 @@
   <meta name="twitter:title" content="Jumping Rabbit - Doodle Jump Style Platformer">
   <meta name="twitter:description" content="Bounce your rabbit upward through endless platforms. Avoid falling and reach new heights!">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Action", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Card Dodger", "item": "https://minigameplanet.com/games/jumping-rabbit"}]}</script>
 </head>
 <body class="min-h-screen text-gray-800 antialiased">
   <!-- AdSense placeholder (uncomment when ready) -->
@@ -119,7 +121,9 @@
       <p class="text-gray-600 leading-relaxed">
         Jumping Rabbit is part of Mini Game Planet's collection of free browser games. No registration or download is needed—just open the page and play. The game uses secure random number generation for fair platform placement and runs smoothly on desktop and mobile. Share your high scores with friends and challenge them to beat your best. Start bouncing and see how high you can go!
       </p>
-    </article>
+    
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-free-browser-games" style="color:#2563EB;text-decoration:underline;">10 Best Free Browser Games</a>.</p>
+      </article>
 
     <section id="related-games" class="mt-8">
       <h2 class="text-xl font-bold text-gray-900 mb-4">Related Games</h2>
@@ -140,10 +144,21 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+  import { initGamepad, onButtonPress, isGamepadConnected } from '/js/gamepad.js';
 
     initToolPage('jumping-rabbit');
     initConsent();
+  initGamepad();
     trackGameView('jumping-rabbit', 'Action');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'jumping-rabbit');
+    }
+  });
 
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');

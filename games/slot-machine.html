@@ -151,6 +151,10 @@
   <meta name="twitter:title" content="Slot Machine - Free Casino Game | Mini Game Planet">
   <meta name="twitter:description" content="Spin the reels! Free slot machine with 3 and 5-reel modes. Virtual credits, no real money.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Word", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Spelling Bee", "item": "https://minigameplanet.com/games/slot-machine"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How to Play", "acceptedAnswer": {"@type": "Answer", "text": "Choose your bet size (1 to 10 credits), pick 3-reel or 5-reel mode, and hit SPIN. The reels will spin with a satisfying animation and stop one by one with a smooth deceleration effect. Match three symbols in a row for a big win, or two for a small win. Your credits increase with wins and decrease with each spin. Start with 100 free credits and see how long you can keep the fun going."}}, {"@type": "Question", "name": "Slot Symbols", "acceptedAnswer": {"@type": "Answer", "text": "Our slot machine features six classic symbols: cherry, lemon, orange, bar, seven, and diamond. The diamond and seven typically pay the highest, while cherries offer smaller but more frequent wins. The combination of symbols and reel count creates endless variety in every spin."}}, {"@type": "Question", "name": "Entertainment Only", "acceptedAnswer": {"@type": "Answer", "text": "This game is designed purely for entertainment. There is no real gambling, no cash prizes, and no way to deposit or withdraw money. It's a safe way to enjoy the thrill of a slot machine from the comfort of your device. Parents can rest assured that children can play without any financial risk."}}, {"@type": "Question", "name": "Why Play Free Slots?", "acceptedAnswer": {"@type": "Answer", "text": "Free slot games let you experience the excitement of spinning reels, matching symbols, and watching win animations without any of the risks associated with real-money gambling. They're perfect for learning how slot mechanics work, passing time, or simply enjoying a bit of casual fun. Our slot machine uses cryptographically secure randomness for fair, unpredictable results on every spin."}}, {"@type": "Question", "name": "3-Reel vs 5-Reel Mode", "acceptedAnswer": {"@type": "Answer", "text": "Switch between classic 3-reel and extended 5-reel gameplay with a single click. The 3-reel mode offers quick, nostalgic spins reminiscent of vintage fruit machines. The 5-reel mode adds more symbols to match and increases the variety of winning combinations. Both modes use the same virtual credit system and payout structure."}}]}</script>
 </head>
 <body class="min-h-screen text-gray-800 antialiased">
   <!-- GA4 Consent (defaults) - initConsent() from consent.js -->
@@ -263,7 +267,9 @@
         <h3 class="text-xl font-semibold mt-6">Session Stats and Streaks</h3>
         <p>Track your performance with built-in session statistics. See your total wins, losses, and current winning streak. A streak increases each time you land a matching combination and resets when you miss. Try to beat your personal best streak!</p>
       </section>
-    </article>
+    
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-word-games-online" style="color:#2563EB;text-decoration:underline;">8 Best Free Word Games</a>.</p>
+      </article>
 
     <div id="related-games" class="mb-8"></div>
   </main>
@@ -275,10 +281,19 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
     initToolPage('slot-machine');
     initConsent();
     trackGameView('slot-machine', 'Casino');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'slot-machine');
+    }
+  });
 
     const SYMBOLS = ['🍒', '🍋', '🟠', '📊', '7️⃣', '💎'];
     const PAYOUTS = { '🍒': [0, 2, 5, 15, 40], '🍋': [0, 3, 8, 25, 60], '🟠': [0, 4, 12, 35, 90], '📊': [0, 6, 20, 55, 150], '7️⃣': [0, 10, 50, 120, 300], '💎': [0, 15, 100, 250, 500] };

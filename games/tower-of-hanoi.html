@@ -34,6 +34,10 @@
   <meta name="twitter:title" content="Free Tower of Hanoi Online | MiniGamePlanet">
   <meta name="twitter:description" content="Play Tower of Hanoi free. Move discs between pegs — 3 to 7 discs.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Puzzle", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Sliding Puzzle", "item": "https://minigameplanet.com/games/tower-of-hanoi"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How to Play", "acceptedAnswer": {"@type": "Answer", "text": "Click on a peg to pick up its top disc (it will lift and highlight). Then click on another peg to place it there. You can only place a disc on an empty peg or on top of a larger disc. The puzzle is solved when all discs are moved from the leftmost peg to the rightmost peg. You can choose between 3 and 7 discs — more discs means exponentially more moves required."}}, {"@type": "Question", "name": "History &amp; Origin", "acceptedAnswer": {"@type": "Answer", "text": "The Tower of Hanoi was invented in 1883 by French mathematician Édouard Lucas. He sold it as a toy puzzle accompanied by a legend about monks in a temple moving 64 golden discs between three diamond pegs, following the same rules. According to the legend, when the monks complete the puzzle, the world will end — which, at one move per second, would take over 584 billion years. The puzzle became a fundamental example in computer science for teaching recursive algorithms, as the optimal solution is"}}]}</script>
 </head>
 <body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
   <div id="nav-container"></div>
@@ -106,9 +110,18 @@
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
   document.addEventListener('click',()=>initAudio(),{once:true});
   initToolPage('tower-of-hanoi'); initConsent(); trackGameView('tower-of-hanoi','Puzzle');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'tower-of-hanoi');
+    }
+  });
 
   const DISC_COLORS=['#2563EB','#0891B2','#0D9488','#059669','#D97706','#EA580C','#DC2626'];
   let numDiscs=3, pegs=[[],[],[]], selectedPeg=-1, moveCount=0, timerInterval, seconds=0, gameActive=false, gameStarted=false;

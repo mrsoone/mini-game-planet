@@ -40,6 +40,10 @@
   <meta name="twitter:title" content="Knife Throw - Stick Knives in the Rotating Log">
   <meta name="twitter:description" content="Throw knives into a spinning log. Avoid hitting other knives—boss levels every 5 rounds!">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Action", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Color Switch", "item": "https://minigameplanet.com/games/knife-throw"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Game Mechanics", "acceptedAnswer": {"@type": "Answer", "text": "Each level gives you a set number of knives to throw. Level 1 starts with three knives; later levels add more. Your score equals the number of levels you complete. The log rotates at a steady pace, so timing matters—throw when there's a clear gap. Stuck knives rotate with the log, shrinking the available space. Plan your throws carefully and watch the rotation to find safe angles. The difficulty ramps up as you progress: more knives per level means more precision required. Early levels teach you"}}, {"@type": "Question", "name": "Boss Levels", "acceptedAnswer": {"@type": "Answer", "text": "Every five levels is a boss round. The log's rotation pattern changes: it might speed up, reverse direction, or follow a sine wave that makes timing trickier. Boss levels test your adaptability. Survive the pattern change and you'll advance with a higher score. Many players find boss levels the most exciting part of the game. The first boss at level 5 doubles the rotation speed. Level 10 reverses direction. Level 15 introduces a sine-wave pattern that speeds up and slows down. Each boss forces y"}}, {"@type": "Question", "name": "Tips for High Scores", "acceptedAnswer": {"@type": "Answer", "text": "Watch the log's rotation before throwing. Identify gaps and wait for the right moment. Don't rush—each knife narrows your options. On boss levels, observe the new pattern for a full rotation before throwing. Space your knives evenly when possible to leave room for later throws. Your personal best is saved, so aim to beat it each session. Some players prefer to throw when the log's rotation brings a large gap to the bottom. Others wait for specific angles. Find a strategy that works for you and s"}}, {"@type": "Question", "name": "Controls", "acceptedAnswer": {"@type": "Answer", "text": "On desktop, click anywhere or press the spacebar to throw a knife. On mobile, tap the screen. The controls are simple: one action per throw. The real skill is in reading the log's rotation and choosing the right moment to release. No complex gestures or combos—just tap when you see an opening."}}, {"@type": "Question", "name": "Visual Design", "acceptedAnswer": {"@type": "Answer", "text": "The game features a dark wood log circle in the center and silver knife shapes that stick out from its surface. The minimalist style keeps focus on the action. Wood grain textures give the log a realistic feel, while the metallic knives stand out clearly against the dark background. Play Knife Throw free on Mini Game Planet—no downloads, no sign-up. Perfect for quick sessions or chasing a new high score. Session stats and personal best tracking help you measure your progress."}}]}</script>
 </head>
 <body class="min-h-screen text-gray-800 antialiased">
   <div id="consent-banner" class="hidden fixed bottom-0 left-0 right-0 z-50 p-4 bg-gray-900 text-white text-sm">
@@ -124,7 +128,9 @@
           <p>The game features a dark wood log circle in the center and silver knife shapes that stick out from its surface. The minimalist style keeps focus on the action. Wood grain textures give the log a realistic feel, while the metallic knives stand out clearly against the dark background. Play Knife Throw free on Mini Game Planet—no downloads, no sign-up. Perfect for quick sessions or chasing a new high score. Session stats and personal best tracking help you measure your progress.</p>
         </div>
       </div>
-    </article>
+    
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-free-browser-games" style="color:#2563EB;text-decoration:underline;">10 Best Free Browser Games</a>.</p>
+      </article>
 
     <section id="related-games" class="mb-8">
       <h2 class="text-xl font-semibold mb-4">Related Games</h2>
@@ -148,10 +154,21 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+  import { initGamepad, onButtonPress, isGamepadConnected } from '/js/gamepad.js';
 
     initToolPage('knife-throw');
     initConsent();
+  initGamepad();
     trackGameView('knife-throw', 'Action');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'knife-throw');
+    }
+  });
 
     const canvas = document.getElementById('game-canvas');
     const ctx = canvas.getContext('2d');

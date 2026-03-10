@@ -72,6 +72,10 @@
   <meta name="twitter:title" content="Color Match - Stroop Effect Game">
   <meta name="twitter:description" content="Test your brain with the Stroop effect. Match the ink color, not the word. Free cognitive training game.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Casual", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Aim Trainer", "item": "https://minigameplanet.com/games/color-match"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Why Does It Happen?", "acceptedAnswer": {"@type": "Answer", "text": "Psychologists explain the Stroop effect through the concept of automaticity. Reading words becomes so automatic that it happens without conscious effort. Color naming, however, requires more deliberate attention. When both are presented together and conflict, the automatic process (reading) wins the race and creates interference. Some theories also suggest that the brain's pathways for word recognition are simply faster than those for color perception, leading to a bottleneck when both are activ"}}, {"@type": "Question", "name": "Uses in Research and Training", "acceptedAnswer": {"@type": "Answer", "text": "The Stroop test is widely used to measure selective attention, cognitive flexibility, and processing speed. It appears in clinical assessments, brain training apps, and research on aging, ADHD, and other conditions. Practicing Stroop-like tasks may help improve your ability to suppress automatic responses and focus on the relevant dimension—a skill useful in many real-life situations, from driving to multitasking at work."}}, {"@type": "Question", "name": "Tips for Better Performance", "acceptedAnswer": {"@type": "Answer", "text": "To improve at Color Match and Stroop tasks in general, try to focus your eyes on the center of the word and consciously ignore the meaning of the text. Some players find it helps to say the ink color silently before clicking. With practice, you can train your brain to prioritize color over reading, though the effect never fully disappears. Staying calm and avoiding haste also reduces errors—accuracy matters as much as speed."}}, {"@type": "Question", "name": "A Brief History", "acceptedAnswer": {"@type": "Answer", "text": "Stroop's original 1935 paper described several experiments. In one, participants named the color of ink for color words; in another, they read the words regardless of ink. The interference from incongruent conditions was clear. Since then, researchers have adapted the task for digital platforms, added variations like emotional Stroop tests, and used it to study bilingualism and cognitive development."}}, {"@type": "Question", "name": "How to Play Color Match", "acceptedAnswer": {"@type": "Answer", "text": "In this game, a color word appears in a different ink color. Your job is to click the button that matches the ink color, not the word. For example, if you see \"GREEN\" in red ink, click the red button. Build streaks for bonus points, and watch the pace increase as you score higher. The game uses six colors: red, blue, green, yellow, purple, and orange. Good luck!"}}]}</script>
 </head>
 <body class="min-h-screen text-gray-800 antialiased">
   <div id="nav-container"></div>
@@ -130,7 +134,9 @@
       <p>Stroop's original 1935 paper described several experiments. In one, participants named the color of ink for color words; in another, they read the words regardless of ink. The interference from incongruent conditions was clear. Since then, researchers have adapted the task for digital platforms, added variations like emotional Stroop tests, and used it to study bilingualism and cognitive development.</p>
       <h3 class="text-lg font-semibold mt-6 mb-2">How to Play Color Match</h3>
       <p>In this game, a color word appears in a different ink color. Your job is to click the button that matches the <strong>ink color</strong>, not the word. For example, if you see "GREEN" in red ink, click the red button. Build streaks for bonus points, and watch the pace increase as you score higher. The game uses six colors: red, blue, green, yellow, purple, and orange. Good luck!</p>
-    </article>
+    
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-games-for-work-breaks" style="color:#2563EB;text-decoration:underline;">12 Quick Games for Work Breaks</a>.</p>
+      </article>
 
     <div id="related-games" class="mt-8"></div>
   </main>
@@ -144,10 +150,19 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
     initToolPage('color-match');
     initConsent();
     trackGameView('color-match', 'Casual');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'color-match');
+    }
+  });
 
     const COLORS = [
       { name: 'Red', class: 'color-red', btnClass: 'btn-red', value: 'red' },

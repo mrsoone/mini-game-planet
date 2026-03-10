@@ -36,6 +36,10 @@
   <meta name="twitter:title" content="Free Blackjack Online | MiniGamePlanet">
   <meta name="twitter:description" content="Play free Blackjack 21 card game online.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Card", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Casual", "item": "https://minigameplanet.com/games/blackjack"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How to Play", "acceptedAnswer": {"@type": "Answer", "text": "Place your bet using the chip buttons, then click Deal. You and the dealer each receive two cards. One of the dealer's cards is face-down (the \"hole card\"). You then choose your action:"}}, {"@type": "Question", "name": "History &amp; Origin", "acceptedAnswer": {"@type": "Answer", "text": "Blackjack's origins trace to 17th-century France, where the game \"Vingt-et-Un\" (Twenty-One) was played in casinos. It came to America in the 19th century. The name \"Blackjack\" originated from a promotional bonus offered by American casinos: a 10-to-1 payout for a hand containing the Ace of Spades and a black Jack. Though that bonus is long gone, the name stuck. In the 1960s, mathematician Edward Thorp published \"Beat the Dealer,\" proving that card counting could give players an edge — revolution"}}]}</script>
 </head>
 <body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
   <div id="nav-container"></div>
@@ -160,9 +164,18 @@
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
   document.addEventListener('click',()=>initAudio(),{once:true});
   initToolPage('blackjack'); initConsent(); trackGameView('blackjack','Card');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'blackjack');
+    }
+  });
 
   const SUITS=['♠','♥','♦','♣'];
   const RANKS=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];

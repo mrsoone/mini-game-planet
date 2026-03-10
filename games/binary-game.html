@@ -42,6 +42,10 @@
   <meta name="twitter:title" content="Binary Game — Decimal & Binary Conversion Challenge | MiniGamePlanet">
   <meta name="twitter:description" content="Master binary conversion in 60 seconds. Decimal↔Binary, 4-bit & 8-bit, streak bonuses.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Math", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Number Puzzle", "item": "https://minigameplanet.com/games/binary-game"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How It Works", "acceptedAnswer": {"@type": "Answer", "text": "Choose your mode before starting: Decimal to Binary or Binary to Decimal. In Decimal-to-Binary mode, you'll see a decimal number like 13 and must type its binary representation—1101. In Binary-to-Decimal mode, you'll see a binary number like 1101 and must type the decimal equivalent—13. Type your answer and press Enter to submit. The game uses crypto.getRandomValues() to generate every number, ensuring fair, unpredictable challenges. No patterns, no repetition bias—just pure random conversion pr"}}, {"@type": "Question", "name": "4-Bit and 8-Bit Modes", "acceptedAnswer": {"@type": "Answer", "text": "For the first 30 seconds, the game uses 4-bit numbers. In binary, 4 bits can represent values from 0 to 15. The bit positions are 8, 4, 2, and 1. For example, the decimal number 13 equals 8 + 4 + 1, so in binary it's 1101. After 30 seconds, the game switches to 8-bit mode. Eight bits can represent 0 to 255, with place values 128, 64, 32, 16, 8, 4, 2, and 1. The decimal number 255 is 11111111 in binary—every bit is 1. The visual display shows these place values so you can quickly see which bits a"}}, {"@type": "Question", "name": "Scoring and Streaks", "acceptedAnswer": {"@type": "Answer", "text": "Each correct answer earns base points. Your streak multiplier starts at 1× and increases by 1 for every consecutive correct answer. A 5-question streak means 5× points per correct answer. Miss one and the streak drops back to 1. This rewards both speed and consistency. Your personal best score is saved in your browser's localStorage, so you can track improvement over time. Session statistics show how many conversions you solved correctly in the current browsing session."}}, {"@type": "Question", "name": "Why Learn Binary?", "acceptedAnswer": {"@type": "Answer", "text": "Binary is the language of computers. Every piece of data—text, images, sound—is ultimately stored as sequences of 0s and 1s. Understanding binary conversion helps you grasp how computers work, how memory is addressed, and how colors and numbers are encoded. Programmers, computer science students, and anyone curious about technology benefit from fluency in binary. The Binary Game turns this essential skill into a timed challenge that sharpens your mental conversion speed."}}, {"@type": "Question", "name": "Conversion Tips\n      \n        Memorize powers of 2. 1, 2, 4, 8, 16, 32, 64, 128—these are your building blocks. Decimal 13 = 8 + 4 + 1, so binary 1101.\n        Work from largest to smallest. For decimal to binary, subtract the largest power of 2 that fits, mark that bit as 1, repeat.\n        Binary to decimal is addition. For 1101, add 8 + 4 + 0 + 1 = 13. Only add the place values where the bit is 1.\n        Leading zeros don't matter. 1101 and 00001101 both equal 13. The game accepts either format.\n      \n      Free and Private", "acceptedAnswer": {"@type": "Answer", "text": "The Binary Game runs entirely in your browser. No account required, no data sent to servers. Your personal best is stored locally. The game works offline once loaded. Perfect for a quick brain break, computer science warm-up, or competitive practice with friends. Give it a try and see how many conversions you can complete in 60 seconds."}}]}</script>
 </head>
 <body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
   <div id="nav-container"></div>
@@ -112,7 +116,9 @@
       <h3 class="text-lg font-bold text-slate-900 mt-6">Free and Private</h3>
       <p>The Binary Game runs entirely in your browser. No account required, no data sent to servers. Your personal best is stored locally. The game works offline once loaded. Perfect for a quick brain break, computer science warm-up, or competitive practice with friends. Give it a try and see how many conversions you can complete in 60 seconds.</p>
     </div>
-  </article>
+  
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/math-games-brain-benefits" style="color:#2563EB;text-decoration:underline;">Do Math Games Make You Smarter?</a>.</p>
+      </article>
   <div id="related-games"></div>
   <div id="footer-container"></div>
 
@@ -121,9 +127,18 @@
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
   document.addEventListener('click',()=>initAudio(),{once:true});
   initToolPage('binary-game'); initConsent(); trackGameView('binary-game','Math');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'binary-game');
+    }
+  });
 
   const STORAGE_KEY = 'mgp_binary_game_best';
   const BIT_4 = [8, 4, 2, 1];

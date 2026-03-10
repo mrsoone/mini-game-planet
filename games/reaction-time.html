@@ -60,6 +60,8 @@
   <meta name="twitter:title" content="Reaction Time Test - Measure Your Reflexes">
   <meta name="twitter:description" content="Test your reaction time. Wait for green, click as fast as you can. 5 rounds, track your average and best score.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Casual", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Clicker Game", "item": "https://minigameplanet.com/games/reaction-time"}]}</script>
 </head>
 <body class="min-h-screen text-gray-800">
   <!-- GA4 Consent defaults handled by initConsent() -->
@@ -132,7 +134,9 @@
       <p class="text-gray-600 leading-relaxed mb-4">
         Our test is free, runs entirely in your browser, and requires no downloads or accounts. The large colored area makes it easy to see the change from red to green, and the simple rules make it accessible to anyone. Try it on different devices—desktop, tablet, or phone—to see how input method and screen size affect your results. Challenge friends to beat your best average, or use it as a quick warm-up before gaming or sports. Give it a try and see how fast you can react!
       </p>
-    </article>
+    
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-games-for-work-breaks" style="color:#2563EB;text-decoration:underline;">12 Quick Games for Work Breaks</a>.</p>
+      </article>
 
     <!-- Related Games -->
     <section id="related-games" class="mt-12">
@@ -157,10 +161,19 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
     initToolPage('reaction-time');
     initConsent();
     trackGameView('reaction-time', 'Casual');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'reaction-time');
+    }
+  });
 
     const STORAGE_KEY = 'reaction_time_best_avg';
     const ROUNDS = 5;

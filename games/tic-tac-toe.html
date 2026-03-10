@@ -60,6 +60,10 @@
   <meta name="twitter:title" content="Tic Tac Toe - Play Free Online | Mini Game Planet">
   <meta name="twitter:description" content="Play Tic Tac Toe online. Challenge AI or play 2-player. Easy, Normal, and unbeatable Hard mode.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Casino", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Baccarat", "item": "https://minigameplanet.com/games/tic-tac-toe"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How to Play", "acceptedAnswer": {"@type": "Answer", "text": "To play Tic Tac Toe, simply click an empty cell on the grid to place your mark. In Player vs AI mode, you play as X and always go first. The AI plays as O and responds based on the difficulty you select. In 2-Player mode, players alternate turns—one plays X, the other O. The game automatically detects when someone wins or when the board is full (a draw). Click \"New Game\" at any time to start over. Your session statistics—wins, losses, draws, and streaks—are tracked and saved locally."}}, {"@type": "Question", "name": "Strategy Tips", "acceptedAnswer": {"@type": "Answer", "text": "Although Tic Tac Toe is solved (meaning optimal play always leads to a draw), strategy still matters against human opponents or lower-difficulty AI. The center square is the most powerful position—taking it gives you the most winning combinations. Corners are stronger than edges. If your opponent takes the center, occupy a corner to avoid losing. When you have two in a row, always complete the line to win. When your opponent has two in a row, block them immediately. In 2-player games, forcing yo"}}, {"@type": "Question", "name": "History", "acceptedAnswer": {"@type": "Answer", "text": "Tic Tac Toe has ancient roots. Evidence of similar games dates back to ancient Egypt around 1300 BCE. The Roman Empire had a game called \"Terni Lapilli\" played on grids. The modern name \"Tic Tac Toe\" appeared in the late 19th century, possibly derived from \"tick-tack,\" an older name for backgammon. The game became a staple of pencil-and-paper play and was one of the first games programmed for early computers. In 1952, OXO (or Noughts and Crosses) for the EDSAC computer was one of the first video"}}]}</script>
 </head>
 <body class="min-h-screen text-gray-800 antialiased">
   <div id="nav-container"></div>
@@ -144,7 +148,9 @@
 
       <h4 class="font-semibold text-gray-800 mt-4">How is the streak calculated?</h4>
       <p>Your streak increases with each win and resets to zero after a loss or draw. Your best streak is the highest streak you've achieved in this session and is saved in your browser.</p>
-    </article>
+    
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-free-browser-games" style="color:#2563EB;text-decoration:underline;">10 Best Free Browser Games</a>.</p>
+      </article>
 
     <div id="related-games" class="mt-8"></div>
   </main>
@@ -156,11 +162,35 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+  import { renderModeSelector, onMove, onChat, onStart, onTurn, onPlayerLeave, sendMove, sendChat, sendRematch, sendGameOver, renderQuickChat, showChatToast, leaveRoom, isConnected } from '/js/multiplayer.js';
 
     initToolPage('tic-tac-toe');
     initConsent();
     initAudio();
     trackGameView('tic-tac-toe', 'Strategy');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'tic-tac-toe');
+    }
+  });
+
+  // Multiplayer mode selector
+  const mpContainer = document.querySelector('main');
+  if (mpContainer) {
+    getPlayer().then(p => {
+      const pName = p ? p.name : 'Player';
+      renderModeSelector(mpContainer, 'tic-tac-toe', pName, {
+        onAI: () => { /* default single-player, already running */ },
+        onPrivate: () => { /* room joined, wire moves */ },
+        onFind: () => { /* match found, wire moves */ },
+      });
+    });
+    onChat(data => showChatToast(data.messageId, data.from));
+  }
 
     // GA4 consent defaults denied - handled by initConsent
     const STORAGE_KEY = 'tic-tac-toe-stats';

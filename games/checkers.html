@@ -58,6 +58,10 @@
   <meta name="twitter:title" content="Checkers - Play Draughts Online | Mini Game Planet">
   <meta name="twitter:description" content="Play Checkers online. Classic strategy board game. Play vs AI or 2-player. Free.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Strategy", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Reversi", "item": "https://minigameplanet.com/games/checkers"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Basic Rules", "acceptedAnswer": {"@type": "Answer", "text": "Pieces move one square diagonally forward. If an opponent's piece is adjacent and the square beyond it is empty, you must jump over it and capture the piece. Captures are mandatory—if you can jump, you must. Multiple jumps in a single turn are allowed when landing on a square that enables another capture."}}, {"@type": "Question", "name": "Strategy Tips", "acceptedAnswer": {"@type": "Answer", "text": "Control the center of the board, protect your back row to prevent your opponent from making kings, and try to force your opponent into positions where they must give up pieces. Setting up double or triple jumps can turn the tide of the game. Sacrificing a piece to gain a positional advantage is a classic tactic in advanced play."}}, {"@type": "Question", "name": "Play Online", "acceptedAnswer": {"@type": "Answer", "text": "This free online Checkers game runs in your browser with no download required. Choose 2-player mode to play with a friend on the same device, or challenge the AI at Easy, Medium, or Hard difficulty. Track your session stats and build winning streaks as you improve your strategy."}}]}</script>
 </head>
 <body class="min-h-screen text-stone-800">
   <div class="max-w-4xl mx-auto px-4 py-6">
@@ -104,7 +108,9 @@
             <p>Control the center of the board, protect your back row to prevent your opponent from making kings, and try to force your opponent into positions where they must give up pieces. Setting up double or triple jumps can turn the tide of the game. Sacrificing a piece to gain a positional advantage is a classic tactic in advanced play.</p>
             <h3 class="text-base font-semibold">Play Online</h3>
             <p>This free online Checkers game runs in your browser with no download required. Choose 2-player mode to play with a friend on the same device, or challenge the AI at Easy, Medium, or Hard difficulty. Track your session stats and build winning streaks as you improve your strategy.</p>
-          </article>
+          
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-strategy-games-browser" style="color:#2563EB;text-decoration:underline;">10 Best Free Strategy Games</a>.</p>
+      </article>
         </div>
       </div>
 
@@ -128,11 +134,35 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+  import { renderModeSelector, onMove, onChat, onStart, onTurn, onPlayerLeave, sendMove, sendChat, sendRematch, sendGameOver, renderQuickChat, showChatToast, leaveRoom, isConnected } from '/js/multiplayer.js';
 
     initToolPage('checkers');
     initConsent();
     initAudio?.();
     trackGameView('checkers', 'Strategy');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'checkers');
+    }
+  });
+
+  // Multiplayer mode selector
+  const mpContainer = document.querySelector('main');
+  if (mpContainer) {
+    getPlayer().then(p => {
+      const pName = p ? p.name : 'Player';
+      renderModeSelector(mpContainer, 'checkers', pName, {
+        onAI: () => { /* default single-player, already running */ },
+        onPrivate: () => { /* room joined, wire moves */ },
+        onFind: () => { /* match found, wire moves */ },
+      });
+    });
+    onChat(data => showChatToast(data.messageId, data.from));
+  }
 
     const RED = 1, BLACK = -1;
     const PIECE = 1, KING = 2;

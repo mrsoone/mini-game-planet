@@ -44,6 +44,10 @@
   <meta name="twitter:title" content="Free Jigsaw Puzzle Online | MiniGamePlanet">
   <meta name="twitter:description" content="Play Jigsaw Puzzle free online. Drag and snap geometric art pieces into place on 3×3, 4×4, or 5×5 grids.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Puzzle", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Color Flood", "item": "https://minigameplanet.com/games/jigsaw"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How to Play", "acceptedAnswer": {"@type": "Answer", "text": "Click and hold any piece, then drag it toward its correct position on the board. When a piece is close enough to its target slot — typically within about a quarter of the piece size — it will automatically snap into place. You'll hear a satisfying click and the piece will lock. Continue until all pieces are correctly positioned. The game tracks your moves (each time you drop a piece counts as one move) and elapsed time. Choose from three grid sizes: 3×3 (9 pieces — ideal for beginners), 4×4 (16 "}}, {"@type": "Question", "name": "Strategy &amp; Tips\n      \n        Start with the edges. Identify pieces that belong to the border — they have at least one straight edge. Building the frame first gives you a clear structure to work within.\n        Use color and shape cues. The geometric art uses distinct regions of color and pattern. Group pieces by similar hues or shapes before placing them.\n        Work in sections. Complete one quadrant or region before moving to the next. This reduces cognitive load and makes progress feel tangible.\n        Minimize moves. Think before you drag. Each drop counts as a move, so planning your placement can help you beat your personal best.\n        Practice with 3×3 first. Get familiar with the snap behavior and the image layout on the smallest grid before tackling larger sizes.\n      \n\n      Benefits of Jigsaw Puzzles", "acceptedAnswer": {"@type": "Answer", "text": "Jigsaw puzzles offer more than entertainment. They exercise visual-spatial reasoning, improve short-term memory, and encourage patience and persistence. Studies suggest that regular puzzle-solving can help maintain cognitive function and reduce stress. The meditative quality of fitting pieces together — combined with the satisfaction of completing an image — makes jigsaws a rewarding activity for all ages."}}]}</script>
 </head>
 <body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
   <div id="nav-container"></div>
@@ -114,7 +118,9 @@
 
       <p class="mt-6">Play the Jigsaw Puzzle free right here in your browser — no downloads, no accounts. Pick a grid size, drag the pieces, and enjoy the satisfaction of completing the image.</p>
     </div>
-  </article>
+  
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-puzzle-games-online" style="color:#2563EB;text-decoration:underline;">10 Best Free Puzzle Games</a>.</p>
+      </article>
 
   <div id="related-games"></div>
   <div id="footer-container"></div>
@@ -124,11 +130,20 @@
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
   document.addEventListener('click', () => initAudio(), { once: true });
   initToolPage('jigsaw');
   initConsent();
   trackGameView('jigsaw', 'Puzzle');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'jigsaw');
+    }
+  });
 
   let size = 4, pieceSize = 0, boardSize = 0, gap = 6;
   let piecePositions = [], slots = [], imageDataUrl = '';

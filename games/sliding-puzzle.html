@@ -43,6 +43,10 @@
   <meta name="twitter:title" content="Free Sliding Puzzle Online | MiniGamePlanet">
   <meta name="twitter:description" content="Play the classic Sliding Puzzle free online. Slide numbered tiles into order on 3x3, 4x4, or 5x5 grids.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Puzzle", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Nonogram", "item": "https://minigameplanet.com/games/sliding-puzzle"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How to Play", "acceptedAnswer": {"@type": "Answer", "text": "Click or tap any tile that is directly adjacent (horizontally or vertically) to the empty gap. That tile will slide into the gap's position. You can also use the arrow keys on your keyboard — pressing an arrow key slides the tile from that direction into the gap. For example, pressing the right arrow moves the tile to the left of the gap into the gap position."}}, {"@type": "Question", "name": "History &amp; Origin", "acceptedAnswer": {"@type": "Answer", "text": "The sliding puzzle was invented in the 1870s by Noyes Palmer Chapman, a postmaster in Canastota, New York. It was initially a physical wooden toy with 15 numbered blocks in a 4×4 tray. The puzzle became a worldwide sensation in the 1880s, with newspapers offering cash prizes for solutions. Notably, mathematicians proved that exactly half of all possible starting configurations are unsolvable — the puzzle can only be solved if the permutation of tiles is \"even.\" Sam Loyd, the famous puzzle design"}}]}</script>
 </head>
 <body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
   <div id="nav-container"></div>
@@ -129,11 +133,20 @@
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
   document.addEventListener('click', () => initAudio(), { once: true });
   initToolPage('sliding-puzzle');
   initConsent();
   trackGameView('sliding-puzzle', 'Puzzle');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'sliding-puzzle');
+    }
+  });
 
   let size = 4, tiles, emptyPos, moveCount, timerInterval, seconds, gameActive, gameStarted;
   let streak = 0, best = { 3: null, 4: null, 5: null };

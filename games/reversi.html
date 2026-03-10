@@ -56,6 +56,8 @@
   <meta name="twitter:title" content="Reversi (Othello) - Free Online Strategy Game">
   <meta name="twitter:description" content="Play Reversi online. Classic strategy game with AI. Outflank and flip opponent discs to win.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Strategy", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Connect Four", "item": "https://minigameplanet.com/games/reversi"}]}</script>
 </head>
 <body class="min-h-screen bg-[#F5F5F4] text-gray-800">
   <div id="nav-container"></div>
@@ -104,7 +106,9 @@
       <p>At the start of the game, four discs are placed in the center: two black and two white, arranged in a checkerboard pattern. Black typically moves first. Each player takes turns placing one disc of their color on an empty square that outflanks at least one opponent disc. If a player has no valid moves, they must pass their turn. The game ends when neither player can make a legal move—usually when the board is full.</p>
       <p>Winning requires careful planning. Corner squares are especially valuable because discs in corners cannot be flipped. Controlling the edges and avoiding "bad" squares adjacent to corners (which give your opponent easy corner access) is crucial. Skilled players think several moves ahead, sacrificing short-term gains for long-term board control.</p>
       <p>Our online Reversi game features three AI difficulty levels. Easy mode makes occasional mistakes and is perfect for beginners. Medium difficulty offers a solid challenge for intermediate players. Hard mode uses stronger evaluation and lookahead to provide a formidable opponent. Whether you're learning the basics or honing advanced strategy, this free game offers endless replay value.</p>
-    </article>
+    
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-strategy-games-browser" style="color:#2563EB;text-decoration:underline;">10 Best Free Strategy Games</a>.</p>
+      </article>
 
     <div id="related-games" class="mb-8"></div>
   </main>
@@ -116,10 +120,34 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+  import { renderModeSelector, onMove, onChat, onStart, onTurn, onPlayerLeave, sendMove, sendChat, sendRematch, sendGameOver, renderQuickChat, showChatToast, leaveRoom, isConnected } from '/js/multiplayer.js';
 
     initToolPage('reversi');
     initConsent();
     trackGameView('reversi', 'Strategy');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'reversi');
+    }
+  });
+
+  // Multiplayer mode selector
+  const mpContainer = document.querySelector('main');
+  if (mpContainer) {
+    getPlayer().then(p => {
+      const pName = p ? p.name : 'Player';
+      renderModeSelector(mpContainer, 'reversi', pName, {
+        onAI: () => { /* default single-player, already running */ },
+        onPrivate: () => { /* room joined, wire moves */ },
+        onFind: () => { /* match found, wire moves */ },
+      });
+    });
+    onChat(data => showChatToast(data.messageId, data.from));
+  }
 
     const BLACK = 1, WHITE = -1;
     let board = [], currentPlayer = BLACK, gameOver = false, difficulty = 1;

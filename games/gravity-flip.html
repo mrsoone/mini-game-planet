@@ -55,6 +55,8 @@
   <meta name="twitter:title" content="Gravity Flip - Run & Flip Action Game">
   <meta name="twitter:description" content="Flip gravity to dodge obstacles. Run on floor or ceiling. How far can you go?">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Action", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Ball Bounce", "item": "https://minigameplanet.com/games/gravity-flip"}]}</script>
 </head>
 <body class="min-h-screen text-gray-800">
   <nav class="nav-container bg-white/80 backdrop-blur border-b border-gray-200 sticky top-0 z-50">
@@ -101,7 +103,9 @@
       <p>Scoring is simple: your score equals the distance you've traveled. The farther you go, the higher your score—and the faster the game gets. Personal bests are saved in your browser, so you can always try to beat your record. Session stats track how many games you've played in one sitting, perfect for quick play sessions or marathon runs.</p>
       <p>Whether you're on desktop or mobile, Gravity Flip is built to feel responsive. Touch controls work great on phones and tablets, while keyboard and mouse work seamlessly on computers. The game loop is optimized for smooth 60fps gameplay, and the canvas-based rendering keeps things lightweight and fast.</p>
       <p>Ready to flip? Hit play, tap to flip gravity, and see how far you can run. Every run is different thanks to procedural obstacle placement, so no two games feel the same. Master the rhythm, learn the patterns, and push your score higher. Gravity Flip—where up and down are just suggestions.</p>
-    </article>
+    
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-free-browser-games" style="color:#2563EB;text-decoration:underline;">10 Best Free Browser Games</a>.</p>
+      </article>
 
     <div class="related-games card p-6 mb-6">
       <h3 class="font-semibold mb-3">Related Games</h3>
@@ -122,10 +126,21 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+  import { initGamepad, onButtonPress, isGamepadConnected } from '/js/gamepad.js';
 
     initToolPage('gravity-flip');
     initConsent();
+  initGamepad();
     trackGameView('gravity-flip', 'Action');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'gravity-flip');
+    }
+  });
 
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');

@@ -53,6 +53,8 @@
   <meta name="twitter:title" content="Card Dodger - Dodge Falling Cards | Mini Game Planet">
   <meta name="twitter:description" content="Dodge falling cards, collect power-ups, and survive in this addictive action game.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Casual", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Spot the Difference", "item": "https://minigameplanet.com/games/card-dodger"}]}</script>
 </head>
 <body class="min-h-screen text-gray-800">
   <nav class="nav-container bg-white/80 backdrop-blur border-b border-gray-200 sticky top-0 z-50">
@@ -112,7 +114,9 @@
       <p>Coins scattered throughout the game add an extra layer of strategy. Do you risk moving toward a coin and potentially into the path of a card? Or play it safe and focus purely on survival? The choice is yours. Your final score combines time survived with coins collected, so balancing risk and reward is key to reaching the top of the leaderboard.</p>
       <p>Card Dodger supports multiple control schemes to suit your preference. Use the arrow keys or A and D for keyboard control, or simply click and drag on the game area for mouse and touch support. This makes the game accessible on desktop and mobile devices alike. Whether you're on a lunch break or commuting, a quick game of Card Dodger is always within reach.</p>
       <p>The game features session statistics including your personal best score, current streak of games played, and total games this session. Your best score is saved locally so you can always strive to beat your record. With procedurally generated obstacles and increasing difficulty, no two games are exactly alike. Card Dodger is free to play, requires no installation, and runs entirely in your browser. Give it a try and see how long you can last!</p>
-    </article>
+    
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-games-for-work-breaks" style="color:#2563EB;text-decoration:underline;">12 Quick Games for Work Breaks</a>.</p>
+      </article>
 
     <section class="related-games card p-6 mb-6">
       <h2 class="text-lg font-bold mb-4">Related Games</h2>
@@ -135,10 +139,21 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+  import { initGamepad, onButtonPress, isGamepadConnected } from '/js/gamepad.js';
 
     initToolPage('card-dodger');
     initConsent();
+  initGamepad();
     trackGameView('card-dodger', 'Action');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'card-dodger');
+    }
+  });
 
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');

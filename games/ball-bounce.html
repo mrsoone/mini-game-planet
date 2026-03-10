@@ -50,6 +50,10 @@
   <meta name="twitter:title" content="Ball Bounce - Action Game | Mini Game Planet">
   <meta name="twitter:description" content="Keep the ball bouncing by placing platforms. Platforms shrink, ball speeds up. How many bounces can you score?">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Action", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Knife Throw", "item": "https://minigameplanet.com/games/ball-bounce"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Controls", "acceptedAnswer": {"@type": "Answer", "text": "Use your mouse or touchscreen to place and move platforms. Click or tap anywhere on the game area to spawn a platform at that position. You can also click and drag to move an existing platform before releasing. This gives you flexibility to position platforms exactly where the ball needs them. On mobile devices, a single tap places your platform, and dragging your finger moves it in real time."}}, {"@type": "Question", "name": "Game Mechanics", "acceptedAnswer": {"@type": "Answer", "text": "Platforms appear at different heights as the ball bounces. Each platform you place will shrink over time, so you must be strategic about when and where to place them. The ball gains speed as it bounces, so the game becomes progressively harder. If the ball falls off the screen without hitting a platform, it's game over. The game also spawns additional platforms at random positions to give you a helping hand, but your main tool is the platform you control."}}, {"@type": "Question", "name": "Scoring", "acceptedAnswer": {"@type": "Answer", "text": "Your score is the number of successful bounces. Every time the ball bounces off a platform, you earn one point. Try to beat your personal best and see how high you can score. The game tracks your session best and displays it alongside your current score. Your all-time best is saved in your browser so you can always try to beat it."}}, {"@type": "Question", "name": "Tips for High Scores", "acceptedAnswer": {"@type": "Answer", "text": "Place platforms slightly ahead of where the ball is heading—anticipate its trajectory. Don't wait until the last moment; platforms take a moment to appear. When the ball speeds up, place platforms closer to the ball's path. Use the drag feature to fine-tune platform position. Stay calm and focus on the ball's movement pattern. Watch the ball's horizontal movement: it bounces off the walls, so you can predict where it will land. Keep your platform wide enough to catch the ball even when it's movi"}}, {"@type": "Question", "name": "Why Play Ball Bounce?", "acceptedAnswer": {"@type": "Answer", "text": "Ball Bounce is perfect for quick gaming sessions. It's easy to learn but hard to master. The minimalist design keeps you focused on the action. Whether you have a minute or ten, Ball Bounce delivers fast-paced fun. Play on any device—desktop, tablet, or phone—and enjoy the game anywhere. No downloads or sign-ups required. Just open the page and start bouncing. Challenge your friends to beat your high score and see who has the quickest reflexes."}}]}</script>
 </head>
 <body class="min-h-screen text-gray-800">
   <nav id="nav-container" class="bg-white/80 backdrop-blur border-b border-gray-200 sticky top-0 z-50">
@@ -111,7 +115,9 @@
         <h3>Why Play Ball Bounce?</h3>
         <p>Ball Bounce is perfect for quick gaming sessions. It's easy to learn but hard to master. The minimalist design keeps you focused on the action. Whether you have a minute or ten, Ball Bounce delivers fast-paced fun. Play on any device—desktop, tablet, or phone—and enjoy the game anywhere. No downloads or sign-ups required. Just open the page and start bouncing. Challenge your friends to beat your high score and see who has the quickest reflexes.</p>
       </div>
-    </article>
+    
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-free-browser-games" style="color:#2563EB;text-decoration:underline;">10 Best Free Browser Games</a>.</p>
+      </article>
 
     <section id="related-games" class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
       <h2 class="text-lg font-semibold mb-4">Related Games</h2>
@@ -132,10 +138,21 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+  import { initGamepad, onButtonPress, isGamepadConnected } from '/js/gamepad.js';
 
     initToolPage('ball-bounce');
     initConsent();
+  initGamepad();
     trackGameView('ball-bounce', 'Action');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'ball-bounce');
+    }
+  });
 
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');

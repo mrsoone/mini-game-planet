@@ -68,6 +68,10 @@
   <meta name="twitter:title" content="Mini Crossword - Free 5x5 Crossword Puzzle Game">
   <meta name="twitter:description" content="Solve quick 5x5 crossword puzzles. Track streaks, beat your best time, and enjoy bite-sized word fun.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Word", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Typing Race", "item": "https://minigameplanet.com/games/crossword-mini"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Across\n          \n        \n        \n          Down\n          \n        \n      \n\n      \n      \n        \n      \n\n      \n      \n        \n          Check\n        \n        \n          Reveal\n        \n        \n          New Puzzle\n        \n      \n\n      \n      \n        Session\n        \n      \n\n      \n      \n    \n\n    \n    \n      How to Play Mini Crossword\n      \n        Mini Crossword is a compact 5×5 word puzzle that brings the classic crossword experience into a quick, bite-sized format. Each puzzle features a small grid where some cells may be blocked (black), and your goal is to fill in the white cells with letters that satisfy both the across and down clues. Click any cell to select it, then type to enter letters. Use the Tab key to switch between across and down directions, and arrow keys to move between cells. When you think you've solved the puzzle, hit Check to validate your answers. The timer starts when you make your first input, so you can take your time reading the clues before the clock begins.\n      \n\n      History of Crossword Puzzles", "acceptedAnswer": {"@type": "Answer", "text": "The first crossword puzzle was published on December 21, 1913, in the New York World newspaper, created by journalist Arthur Wynne. It was originally called a \"word-cross\" and featured a diamond-shaped grid. The puzzle quickly gained popularity and spread to other publications. By the 1920s, crosswords had become a cultural phenomenon, with newspapers competing to feature the best puzzles. The New York Times began publishing its famous daily crossword in 1942, and the \"mini\" format emerged later"}}, {"@type": "Question", "name": "Strategy Tips", "acceptedAnswer": {"@type": "Answer", "text": "Start with the clues that have the fewest letters or the most obvious answers—these often provide anchor points for the rest of the grid. Fill in words you're confident about first, then use the crossing letters to help with trickier clues. If you're stuck, look for common letter patterns: vowels like E, A, and O appear frequently, while Q is almost always followed by U. Pay attention to plural forms and verb tenses in the clues. For mini crosswords specifically, the small grid means each letter"}}]}</script>
 </head>
 <body class="min-h-screen text-stone-800">
   <div id="nav-container"></div>
@@ -78,6 +82,10 @@
         <h1 class="text-2xl md:text-3xl font-bold text-stone-900">Mini Crossword</h1>
         <p class="text-stone-600 mt-1">5×5 word puzzles</p>
       </header>
+      <div style="text-align:center;margin:8px 0;">
+        <button id="mgp-daily-btn" style="padding:8px 20px;border:2px solid #059669;border-radius:10px;background:#fff;color:#059669;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;transition:all 0.15s;" onclick="">📅 Daily Challenge</button>
+        <span id="mgp-daily-status" style="display:none;font-size:12px;color:#64748B;margin-left:8px;"></span>
+      </div>
 
       <!-- Stats bar -->
       <div class="flex flex-wrap gap-4 justify-center mb-6 text-sm">
@@ -166,7 +174,9 @@
         <dt class="font-semibold text-stone-800">Can I play without sound?</dt>
         <dd>Yes. Use the sound toggle in the stats bar to mute or unmute game sounds. Your preference is remembered for future visits.</dd>
       </dl>
-    </article>
+    
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-word-games-online" style="color:#2563EB;text-decoration:underline;">8 Best Free Word Games</a>.</p>
+      </article>
   </main>
 
   <div id="related-games"></div>
@@ -177,10 +187,36 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+
+  // Daily Challenge: date-seeded random
+  function dailySeedRandom(seed) {
+    let h = 0;
+    for (let i = 0; i < seed.length; i++) { h = ((h << 5) - h + seed.charCodeAt(i)) | 0; }
+    return function() { h = (h * 1103515245 + 12345) & 0x7fffffff; return h / 0x7fffffff; };
+  }
+  let isDailyMode = false;
+  let dailyRng = null;
+  function getDailyDate() { return new Date().toISOString().slice(0, 10); }
+  function startDailyChallenge() {
+    isDailyMode = true;
+    dailyRng = dailySeedRandom(getDailyDate() + '-crossword-mini');
+    const btn = document.getElementById('mgp-daily-btn');
+    if (btn) { btn.textContent = '📅 Daily Mode (Active)'; btn.style.background = '#059669'; btn.style.color = '#fff'; }
+  }
+
 
     initToolPage('crossword-mini');
     initConsent();
     trackGameView('crossword-mini', 'Word');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'crossword-mini');
+    }
+  });
 
     const STORAGE_KEY = 'crossword-mini';
     const STORAGE_BEST = 'crossword-mini-best';

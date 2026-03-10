@@ -31,6 +31,10 @@
   <meta name="twitter:title" content="Free Spot the Difference | MiniGamePlanet">
   <meta name="twitter:description" content="Find subtle differences between two geometric art panels. Free online observation game.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Casual", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Sequence Memory", "item": "https://minigameplanet.com/games/spot-the-difference"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Game Rules", "acceptedAnswer": {"@type": "Answer", "text": "Two canvas panels display geometric art. The left panel is the original; the right panel has three to five deliberate differences. Click directly on each difference to mark it. A green circle appears when you find one correctly. Wrong clicks produce no effect. Find all differences before the round ends to win. The timer runs from the moment you start until you complete the level, so faster completion means a better time."}}, {"@type": "Question", "name": "Types of Differences\n      \n        Color change — A shape has a different color on the right panel.\n        Shape removed — A shape appears on the left but is missing on the right. Click it on the left panel.\n        Shape moved — A shape is in a different position on the right panel.\n        Size change — A shape is larger or smaller on the right panel.\n      \n      Levels and Difficulty", "acceptedAnswer": {"@type": "Answer", "text": "Early levels use fewer shapes and three differences. As you progress, the number of shapes increases and differences become subtler. Higher levels may include more shapes, smaller elements, and color variations that are harder to spot. Your streak increases each time you complete a level without giving up, and your best time per level is tracked for bragging rights."}}, {"@type": "Question", "name": "Strategy Tips\n      \n        Scan systematically. Move your eyes in a pattern (e.g., top-left to bottom-right) to avoid missing areas.\n        Compare shapes one by one. Mentally match each shape on the left with its counterpart on the right.\n        Watch for missing shapes. If a shape exists on the left but not the right, that's a difference—click it on the left.\n        Check colors carefully. Slight hue shifts can be easy to overlook.\n      \n      Why Spot the Difference?", "acceptedAnswer": {"@type": "Answer", "text": "Spot the difference games have been popular for decades, from newspaper puzzles to video games. They train visual perception, sustained attention, and working memory. Practicing observation skills can help in everyday tasks like proofreading, finding lost items, and noticing changes in your environment. This free online version uses procedural generation so you never run out of new puzzles. Play anytime, no download required."}}, {"@type": "Question", "name": "A Brief History", "acceptedAnswer": {"@type": "Answer", "text": "Spot the difference puzzles date back to the nineteenth century, when they appeared in magazines and children's books. The format became a staple of puzzle books and later migrated to digital platforms. Today, spot the difference games are used in cognitive training apps, educational software, and casual mobile games. The core mechanic—comparing two images to find discrepancies—remains unchanged and continues to engage players of all ages."}}, {"@type": "Question", "name": "Cognitive Benefits", "acceptedAnswer": {"@type": "Answer", "text": "Playing spot the difference regularly can improve visual discrimination, pattern recognition, and sustained focus. These skills transfer to real-world tasks such as quality control, medical imaging review, and security screening. The game also exercises working memory as you hold the left image in mind while scanning the right. Whether you play for fun or to sharpen your observation skills, spot the difference offers a rewarding mental workout."}}]}</script>
 </head>
 <body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
   <div id="nav-container"></div>
@@ -90,7 +94,9 @@
       <p>Playing spot the difference regularly can improve visual discrimination, pattern recognition, and sustained focus. These skills transfer to real-world tasks such as quality control, medical imaging review, and security screening. The game also exercises working memory as you hold the left image in mind while scanning the right. Whether you play for fun or to sharpen your observation skills, spot the difference offers a rewarding mental workout.</p>
       <p class="mt-6">Play Spot the Difference free in your browser—test your eyes, beat the clock, and climb the levels.</p>
     </div>
-  </article>
+  
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-games-for-work-breaks" style="color:#2563EB;text-decoration:underline;">12 Quick Games for Work Breaks</a>.</p>
+      </article>
   <div id="related-games"></div>
   <div id="footer-container"></div>
   <div id="consent-banner"></div>
@@ -100,9 +106,18 @@
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
   document.addEventListener('click',()=>initAudio(),{once:true});
   initToolPage('spot-the-difference'); initConsent(); trackGameView('spot-the-difference','Casual');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'spot-the-difference');
+    }
+  });
 
   const COLORS=['#ef4444','#f97316','#eab308','#22c55e','#06b6d4','#3b82f6','#8b5cf6','#ec4899'];
   const DIFF_COLORS=['#dc2626','#ea580c','#ca8a04','#16a34a','#0891b2','#2563eb','#7c3aed','#db2777'];

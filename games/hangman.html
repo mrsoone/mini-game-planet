@@ -31,6 +31,8 @@
   <meta name="twitter:title" content="Free Hangman Online | MiniGamePlanet">
   <meta name="twitter:description" content="Guess letters to reveal the hidden word.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Word", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Word Guess", "item": "https://minigameplanet.com/games/hangman"}]}</script>
 </head>
 <body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
   <div id="nav-container"></div>
@@ -77,7 +79,9 @@
       </ul>
       <p class="mt-6">Play Hangman free — guess letters, save the figure, reveal the word.</p>
     </div>
-  </article>
+  
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-word-games-online" style="color:#2563EB;text-decoration:underline;">8 Best Free Word Games</a>.</p>
+      </article>
   <div id="related-games"></div>
   <div id="footer-container"></div>
 
@@ -86,9 +90,18 @@
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
   document.addEventListener('click',()=>initAudio(),{once:true});
   initToolPage('hangman'); initConsent(); trackGameView('hangman','Word');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'hangman');
+    }
+  });
 
   const CATEGORIES=[
     {name:'Animals',words:['ELEPHANT','GIRAFFE','PENGUIN','DOLPHIN','LEOPARD','CHEETAH','BUFFALO','HAMSTER','GORILLA','PANTHER','RACCOON','OCTOPUS','SPARROW','PELICAN','LOBSTER']},

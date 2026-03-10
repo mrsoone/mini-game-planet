@@ -57,6 +57,8 @@
   <meta name="twitter:title" content="Color Switch - Free Online Action Game">
   <meta name="twitter:description" content="Match your ball's color to pass through rotating barriers. Tap or press Space to jump. Beat your high score!">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Action", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Rhythm Tap", "item": "https://minigameplanet.com/games/color-switch"}]}</script>
 </head>
 <body class="min-h-screen text-gray-800">
   <!-- GA4 Consent defaults, AdSense commented -->
@@ -128,6 +130,8 @@
         <p class="text-gray-600 leading-relaxed">
           Whether you're looking for a quick break or an addictive challenge, Color Switch delivers. Perfect for players who enjoy rhythm games, reaction-based gameplay, and colorful arcade experiences. Share your high score with friends and see who can reach the furthest. Good luck, and may your colors always match!
         </p>
+      
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-free-browser-games" style="color:#2563EB;text-decoration:underline;">10 Best Free Browser Games</a>.</p>
       </article>
 
       <!-- Related Games -->
@@ -155,10 +159,21 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+  import { initGamepad, onButtonPress, isGamepadConnected } from '/js/gamepad.js';
 
     initToolPage('color-switch');
     initConsent();
+  initGamepad();
     trackGameView('color-switch', 'Action');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'color-switch');
+    }
+  });
 
     // Secure random via crypto
     function secureRandom() {

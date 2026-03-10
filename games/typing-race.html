@@ -38,6 +38,10 @@
   <meta name="twitter:title" content="Free Typing Race Online | MiniGamePlanet">
   <meta name="twitter:description" content="Test your typing speed with real-time WPM and accuracy.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Word", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Anagram Scramble", "item": "https://minigameplanet.com/games/typing-race"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Race Complete!\n        \n          WPM: 0\n          Accuracy: 0%\n          Time: 0s\n        \n        Session: 0 races | Best: 0 WPM\n        ▶ Race Again\n      \n    \n  \n\n  \n    How to Play Typing Race\n    \n      Typing Race is a free online typing speed test that measures your words per minute (WPM) and accuracy in real time. You'll see a sentence or paragraph on screen, and your job is to type it exactly as shown. The timer starts the moment you press your first key, so there's no countdown—just focus and type.\n      How It Works", "acceptedAnswer": {"@type": "Answer", "text": "Each character you type is checked instantly. Correct characters turn green, mistakes turn red, and characters you haven't reached yet stay gray. A progress bar and car animation show how far you've gotten. Your WPM and accuracy update live as you type. WPM is calculated using the standard of five characters per word, so even short sentences contribute to your score."}}, {"@type": "Question", "name": "Improving Your Typing Speed", "acceptedAnswer": {"@type": "Answer", "text": "Consistency matters more than raw speed at first. Aim for high accuracy before pushing for faster WPM. Many typists find that slowing down slightly actually improves their overall score because fewer errors mean less backtracking. Use proper touch typing technique: keep your fingers on the home row (ASDF and JKL;) and let each finger handle its designated keys."}}, {"@type": "Question", "name": "Track Your Progress", "acceptedAnswer": {"@type": "Answer", "text": "The game saves your personal best WPM in your browser, so you can see improvement over time. Streak tracking rewards consecutive accurate completions—finish with 95% accuracy or higher to extend your streak. Session stats show how many races you've done and your best result in the current session. Zero-friction restart lets you jump into another race immediately with a single click or keystroke."}}]}</script>
 </head>
 <body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
   <div id="nav-container"></div>
@@ -45,6 +49,10 @@
     <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
         <h1 style="font-size:22px;font-weight:700;margin:0;">⌨️ Typing Race</h1>
+      <div style="text-align:center;margin:8px 0;">
+        <button id="mgp-daily-btn" style="padding:8px 20px;border:2px solid #059669;border-radius:10px;background:#fff;color:#059669;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;transition:all 0.15s;" onclick="">📅 Daily Challenge</button>
+        <span id="mgp-daily-status" style="display:none;font-size:12px;color:#64748B;margin-left:8px;"></span>
+      </div>
         <div style="display:flex;gap:6px;">
           <button id="restart-btn" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:2px solid #E5E7EB;background:#fff;color:#334155;cursor:pointer;font-family:inherit;">🔄 Restart</button>
           <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊</button>
@@ -104,7 +112,9 @@
       </ul>
       <p class="mt-6">Play Typing Race free—test your speed, beat your personal best, and race against yourself. No sign-up required, no ads blocking the game, just pure typing practice whenever you need it.</p>
     </div>
-  </article>
+  
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/how-to-improve-typing-speed" style="color:#2563EB;text-decoration:underline;">How to Improve Typing Speed</a>.</p>
+      </article>
   <div id="related-games"></div>
   <div id="footer-container"></div>
 
@@ -113,9 +123,35 @@
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+
+  // Daily Challenge: date-seeded random
+  function dailySeedRandom(seed) {
+    let h = 0;
+    for (let i = 0; i < seed.length; i++) { h = ((h << 5) - h + seed.charCodeAt(i)) | 0; }
+    return function() { h = (h * 1103515245 + 12345) & 0x7fffffff; return h / 0x7fffffff; };
+  }
+  let isDailyMode = false;
+  let dailyRng = null;
+  function getDailyDate() { return new Date().toISOString().slice(0, 10); }
+  function startDailyChallenge() {
+    isDailyMode = true;
+    dailyRng = dailySeedRandom(getDailyDate() + '-typing-race');
+    const btn = document.getElementById('mgp-daily-btn');
+    if (btn) { btn.textContent = '📅 Daily Mode (Active)'; btn.style.background = '#059669'; btn.style.color = '#fff'; }
+  }
+
 
   document.addEventListener('click',()=>initAudio(),{once:true});
   initToolPage('typing-race'); initConsent(); trackGameView('typing-race','Word');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'typing-race');
+    }
+  });
 
   const SENTENCES=[
     'The quick brown fox jumps over the lazy dog.',

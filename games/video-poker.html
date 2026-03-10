@@ -32,6 +32,8 @@
   <meta name="twitter:title" content="Free Video Poker Online | MiniGamePlanet">
   <meta name="twitter:description" content="Play Video Poker Jacks or Better free.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Card", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "FreeCell", "item": "https://minigameplanet.com/games/video-poker"}]}</script>
 </head>
 <body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
   <div id="nav-container"></div>
@@ -96,7 +98,9 @@
       <p>No. This is a 100% free game with virtual credits. No real money, deposits, or withdrawals.</p>
       <p class="mt-6">Play Video Poker free — practice perfect strategy without risking a cent.</p>
     </div>
-  </article>
+  
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-card-games-online" style="color:#2563EB;text-decoration:underline;">8 Best Free Card Games</a>.</p>
+      </article>
   <div id="related-games"></div>
   <div id="footer-container"></div>
 
@@ -105,9 +109,18 @@
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
   document.addEventListener('click',()=>initAudio(),{once:true});
   initToolPage('video-poker'); initConsent(); trackGameView('video-poker','Card');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'video-poker');
+    }
+  });
 
   const SUITS=['♠','♥','♦','♣'], RANKS=['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
   const RV={'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'10':10,J:11,Q:12,K:13,A:14};

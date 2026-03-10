@@ -67,6 +67,8 @@
   <meta name="twitter:title" content="Snake - Classic Arcade Game | Mini Game Planet">
   <meta name="twitter:description" content="Play the classic Snake game online. Eat food, grow longer, and avoid walls and yourself.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Card", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "High Low Card Game", "item": "https://minigameplanet.com/games/snake"}]}</script>
 </head>
 <body class="min-h-screen text-gray-800">
   <div id="nav-container"></div>
@@ -131,7 +133,9 @@
       <p><strong>How is the best score saved?</strong> Your best score is stored in your browser's localStorage and persists between sessions.</p>
       <p><strong>What are session stats and streak?</strong> Session games count how many games you've played in the current browser session. Streak tracks consecutive games where you beat your previous score.</p>
       <p><strong>Why does the game feel faster as I grow?</strong> To increase challenge, the game speed scales with snake length, making late-game play more intense.</p>
-    </article>
+    
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-card-games-online" style="color:#2563EB;text-decoration:underline;">8 Best Free Card Games</a>.</p>
+      </article>
   </main>
 
   <div id="related-games"></div>
@@ -142,10 +146,21 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+  import { initGamepad, onButtonPress, isGamepadConnected } from '/js/gamepad.js';
 
     initToolPage('snake');
     initConsent();
+  initGamepad();
     trackGameView('snake', 'Arcade');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'snake');
+    }
+  });
 
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');

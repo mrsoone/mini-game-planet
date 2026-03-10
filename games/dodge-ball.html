@@ -48,6 +48,10 @@
   <meta name="twitter:title" content="Dodge Ball Arcade - Mini Game Planet">
   <meta name="twitter:description" content="Dodge falling balls, collect power-ups, and survive as long as possible in this fast-paced arcade game.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Arcade", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Target Shooter", "item": "https://minigameplanet.com/games/dodge-ball"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Controls", "acceptedAnswer": {"@type": "Answer", "text": "Use your mouse or touch to move your player left and right. Keyboard players can use the arrow keys or A and D. Your circle follows your cursor or finger, so precise movement is key when the screen gets crowded. The game hides your cursor over the play area so nothing blocks your view—your player circle is your focus."}}, {"@type": "Question", "name": "Power-Ups", "acceptedAnswer": {"@type": "Answer", "text": "Occasionally, helpful power-ups will fall from the sky. Grab them before they hit the ground! The Shield (blue) grants temporary invincibility—you can pass through balls without taking damage for several seconds. Slow-Mo (purple) slows down everything on screen, giving you more time to react when things get hectic. The Shrink (green) power-up makes your player smaller, so you're a harder target to hit. Power-ups are rare, so prioritize them when it's safe to do so."}}, {"@type": "Question", "name": "Strategy", "acceptedAnswer": {"@type": "Answer", "text": "Early on, the game is forgiving. Balls fall slowly and infrequently. As time passes, both speed and spawn rate increase. Plan your movements ahead—don't get trapped in a corner. Watch for bouncing balls that change direction; they can catch you off guard. When you have a shield, you can take risks to grab power-ups or clear a path through dense clusters. Use slow-mo wisely during intense moments when multiple balls converge. A smaller player from the Shrink power-up is especially valuable in the"}}, {"@type": "Question", "name": "Scoring", "acceptedAnswer": {"@type": "Answer", "text": "Your score is the number of seconds you've survived. The game tracks your personal best and your current session streak—how many games in a row you've improved or matched your best. Zero-friction restart means you can jump right back in with one click. No menus, no delays."}}, {"@type": "Question", "name": "Tips for High Scores", "acceptedAnswer": {"@type": "Answer", "text": "Stay near the center when possible—you have more room to dodge in either direction. When balls cluster on one side, drift toward the open space before they spread. Bouncing balls require extra attention; track their angles. Combine power-ups when you can: a shield plus shrink makes you nearly untouchable. Most importantly, stay calm. Panic movements often lead to collisions. Breathe, watch the patterns, and move deliberately."}}]}</script>
 </head>
 <body class="min-h-screen text-gray-800">
   <!-- AdSense placeholder (commented)
@@ -105,6 +109,8 @@
 
         <h3>Tips for High Scores</h3>
         <p>Stay near the center when possible—you have more room to dodge in either direction. When balls cluster on one side, drift toward the open space before they spread. Bouncing balls require extra attention; track their angles. Combine power-ups when you can: a shield plus shrink makes you nearly untouchable. Most importantly, stay calm. Panic movements often lead to collisions. Breathe, watch the patterns, and move deliberately.</p>
+      
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-free-browser-games" style="color:#2563EB;text-decoration:underline;">10 Best Free Browser Games</a>.</p>
       </article>
     </div>
 
@@ -128,10 +134,21 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+  import { initGamepad, onButtonPress, isGamepadConnected } from '/js/gamepad.js';
 
     initToolPage('dodge-ball');
     initConsent();
+  initGamepad();
     trackGameView('dodge-ball', 'Arcade');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'dodge-ball');
+    }
+  });
 
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');

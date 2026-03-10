@@ -57,6 +57,8 @@
   <meta name="twitter:title" content="Chess - Play Online Strategy Game">
   <meta name="twitter:description" content="Play Chess online against AI. Full rules including castling, en passant, and pawn promotion.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Strategy", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Checkers", "item": "https://minigameplanet.com/games/chess"}]}</script>
 </head>
 <body class="min-h-screen text-stone-800">
   <nav class="nav-container bg-white/80 backdrop-blur border-b border-stone-200 sticky top-0 z-50">
@@ -128,7 +130,9 @@
       <p>Special rules add depth to the game. Castling allows the king and rook to move together under certain conditions—either king-side (short) or queen-side (long). En passant lets a pawn capture an opponent's pawn that just advanced two squares, as if it had moved only one. When a pawn reaches the opposite end of the board, it promotes to a queen, rook, bishop, or knight.</p>
       <p>Check occurs when the king is under attack. The player must get out of check on their next move. Checkmate ends the game when the king cannot escape. Stalemate is a draw when the player to move has no legal moves but is not in check.</p>
       <p>Strategy in chess involves controlling the center, developing pieces early, ensuring king safety, and creating threats. Our AI offers three difficulty levels: Easy plays random valid moves, Normal evaluates captures and center control, and Hard uses minimax search with piece values to find stronger moves. Whether you're learning or sharpening your skills, this online chess game provides a full, rule-complete experience.</p>
-    </article>
+    
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/chess-openings-for-beginners" style="color:#2563EB;text-decoration:underline;">Chess Openings for Beginners</a>.</p>
+      </article>
 
     <footer class="footer-container text-center text-sm text-stone-500 py-6">
       <p>© Mini Game Planet. Play free strategy games online.</p>
@@ -140,10 +144,34 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+  import { renderModeSelector, onMove, onChat, onStart, onTurn, onPlayerLeave, sendMove, sendChat, sendRematch, sendGameOver, renderQuickChat, showChatToast, leaveRoom, isConnected } from '/js/multiplayer.js';
 
     initToolPage('chess');
     initConsent();
     trackGameView('chess', 'Strategy');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'chess');
+    }
+  });
+
+  // Multiplayer mode selector
+  const mpContainer = document.querySelector('main');
+  if (mpContainer) {
+    getPlayer().then(p => {
+      const pName = p ? p.name : 'Player';
+      renderModeSelector(mpContainer, 'chess', pName, {
+        onAI: () => { /* default single-player, already running */ },
+        onPrivate: () => { /* room joined, wire moves */ },
+        onFind: () => { /* match found, wire moves */ },
+      });
+    });
+    onChat(data => showChatToast(data.messageId, data.from));
+  }
 
     const PIECES = { P: '♙', N: '♘', B: '♗', R: '♖', Q: '♕', K: '♔', p: '♟', n: '♞', b: '♝', r: '♜', q: '♛', k: '♚' };
     const VALUES = { P: 1, N: 3, B: 3, R: 5, Q: 9, K: 0, p: -1, n: -3, b: -3, r: -5, q: -9, k: 0 };

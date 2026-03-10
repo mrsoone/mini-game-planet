@@ -42,6 +42,10 @@
   <meta name="twitter:title" content="Equation Builder — Math Puzzle Game | MiniGamePlanet">
   <meta name="twitter:description" content="Arrange numbers and operators to hit the target. Drag-and-drop math puzzle with 50+ puzzles, timer, hints.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Math", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Binary Game", "item": "https://minigameplanet.com/games/equation-builder"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How to Play", "acceptedAnswer": {"@type": "Answer", "text": "Select a difficulty level (Easy, Medium, or Hard) and click New to load a puzzle. The target number appears at the top. Below it are empty slots where you'll build your equation. The tiles—numbers and operators—appear in a row beneath. Drag each tile into a slot. The equation must read left to right: number, operator, number, operator, number, and so on. Standard order of operations applies: multiplication and division happen before addition and subtraction. When you think you've got it, click V"}}, {"@type": "Question", "name": "Difficulty Levels", "acceptedAnswer": {"@type": "Answer", "text": "Easy puzzles use small numbers and only addition and subtraction. Examples: 5 + 3 = 8, or 10 − 4 − 2 = 4. Perfect for warming up or younger players. Medium puzzles introduce multiplication with 3–4 numbers. You might see 4 × 3 + 2 = 14 or 8 − 2 × 3 = 2. Hard puzzles use all four operations with larger numbers and longer expressions. Think 8 × 2 + 12 ÷ 3 = 20 or 15 ÷ 3 + 4 × 2 = 13. Division always yields whole numbers in our puzzles—no fractions."}}, {"@type": "Question", "name": "Timer and Hints", "acceptedAnswer": {"@type": "Answer", "text": "The timer starts when a puzzle loads and stops when you validate correctly. Your personal best time per difficulty is saved in your browser. Stuck? Click the Hint button to reveal one correct placement. The game will place one tile in its correct slot for you. Use hints sparingly—they're there to nudge you without giving away the whole solution. Each puzzle can be solved with the given tiles; there's always at least one valid arrangement."}}, {"@type": "Question", "name": "Session Stats and Personal Best", "acceptedAnswer": {"@type": "Answer", "text": "Session statistics track how many puzzles you've solved in the current browsing session and your total solve time. Your personal best time—the fastest you've ever solved a puzzle at each difficulty—is stored in localStorage. Beat your best to see it update. The game uses crypto.getRandomValues() to select puzzles fairly, so you'll get a good mix across difficulty levels."}}, {"@type": "Question", "name": "Why Equation Builder Matters", "acceptedAnswer": {"@type": "Answer", "text": "Mental math and number sense improve with practice. Equation Builder trains you to think about how numbers combine—which operations to apply first, how to reach a target efficiently, and how to spot patterns. Teachers use similar puzzles in classrooms; adults enjoy them as a quick brain workout. The drag-and-drop interface makes it accessible on touch devices and desktops alike. No account required, no data sent to servers. Everything runs in your browser."}}]}</script>
 </head>
 <body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
   <div id="nav-container"></div>
@@ -120,7 +124,9 @@
       <h3 class="text-lg font-bold text-slate-900 mt-6">Free and Private</h3>
       <p>Equation Builder runs entirely in your browser. No downloads, no signups, no data sent to servers. Your personal best times are stored locally. Perfect for a coffee break, classroom activity, or competitive challenge with friends. Give it a try and see how fast you can build the perfect equation.</p>
     </div>
-  </article>
+  
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/math-games-brain-benefits" style="color:#2563EB;text-decoration:underline;">Do Math Games Make You Smarter?</a>.</p>
+      </article>
   <div id="related-games"></div>
   <div id="footer-container"></div>
 
@@ -129,9 +135,18 @@
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
   document.addEventListener('click',()=>initAudio(),{once:true});
   initToolPage('equation-builder'); initConsent(); trackGameView('equation-builder','Math');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'equation-builder');
+    }
+  });
 
   const STORAGE_KEY = 'mgp_equation_builder_best';
 

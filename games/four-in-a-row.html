@@ -43,6 +43,10 @@
   <meta name="twitter:title" content="Gomoku (Five in a Row) - Strategy Game | Mini Game Planet">
   <meta name="twitter:description" content="Play Gomoku online. Place stones on a 15×15 grid. First to get five in a row wins. Play vs AI with three difficulty levels.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Strategy", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Dots and Boxes", "item": "https://minigameplanet.com/games/four-in-a-row"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Strategy Tips", "acceptedAnswer": {"@type": "Answer", "text": "Control the center early. The middle of the board offers the most flexibility for building winning lines in multiple directions. Watch for \"open threes\"—three stones in a row with both ends open—because they can often be extended into an unstoppable four. Learn to recognize \"double threats,\" positions where you create two ways to win on your next move, forcing your opponent to block one while you complete the other. Always block your opponent's four-in-a-row immediately, and be wary of leaving o"}}, {"@type": "Question", "name": "Play Online for Free", "acceptedAnswer": {"@type": "Answer", "text": "Our Gomoku game features a beautiful wooden-style board rendered on canvas, with smooth stone placement and a clear last-move indicator. Play against the computer at three difficulty levels: Easy AI makes random valid moves for beginners, Normal AI uses pattern matching to block threats and create opportunities, and Hard AI evaluates the board to find strong defensive and offensive moves. Session statistics track your wins, current streak, and best streak. The game uses cryptographically secure "}}]}</script>
 </head>
 <body class="min-h-screen text-gray-800 antialiased">
   <div id="nav-container"></div>
@@ -122,7 +126,9 @@
       <p class="text-gray-600 leading-relaxed">
         Our Gomoku game features a beautiful wooden-style board rendered on canvas, with smooth stone placement and a clear last-move indicator. Play against the computer at three difficulty levels: Easy AI makes random valid moves for beginners, Normal AI uses pattern matching to block threats and create opportunities, and Hard AI evaluates the board to find strong defensive and offensive moves. Session statistics track your wins, current streak, and best streak. The game uses cryptographically secure randomness for fair AI play. No installation required—just open this page and start playing. Challenge yourself to improve your streak and outthink the AI. Perfect for quick breaks, commutes, or honing your strategic thinking.
       </p>
-    </article>
+    
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-strategy-games-browser" style="color:#2563EB;text-decoration:underline;">10 Best Free Strategy Games</a>.</p>
+      </article>
 
     <div id="related-games" class="mb-8"></div>
     <!-- AdSense placeholder (uncomment when ready)
@@ -138,10 +144,34 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+  import { renderModeSelector, onMove, onChat, onStart, onTurn, onPlayerLeave, sendMove, sendChat, sendRematch, sendGameOver, renderQuickChat, showChatToast, leaveRoom, isConnected } from '/js/multiplayer.js';
 
     initToolPage('four-in-a-row');
     initConsent();
     trackGameView('four-in-a-row', 'Strategy');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'four-in-a-row');
+    }
+  });
+
+  // Multiplayer mode selector
+  const mpContainer = document.querySelector('main');
+  if (mpContainer) {
+    getPlayer().then(p => {
+      const pName = p ? p.name : 'Player';
+      renderModeSelector(mpContainer, 'four-in-a-row', pName, {
+        onAI: () => { /* default single-player, already running */ },
+        onPrivate: () => { /* room joined, wire moves */ },
+        onFind: () => { /* match found, wire moves */ },
+      });
+    });
+    onChat(data => showChatToast(data.messageId, data.from));
+  }
 
     const SIZE = 15;
     const BLACK = 1, WHITE = 2;

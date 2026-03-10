@@ -37,6 +37,10 @@
   <meta name="twitter:title" content="Math Sprint — 60-Second Arithmetic Challenge | MiniGamePlanet">
   <meta name="twitter:description" content="Race against the clock. Solve math problems, build streaks, beat your best. Four difficulty levels.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Board", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Dominoes", "item": "https://minigameplanet.com/games/math-sprint"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How It Works", "acceptedAnswer": {"@type": "Answer", "text": "When you click Start, the 60-second countdown begins. A math problem appears—addition, subtraction, multiplication, or division depending on your chosen difficulty. Type the answer in the input field and press Enter. If you're correct, you earn base points multiplied by your current streak. Get one wrong and your streak resets to 1. The game uses crypto.getRandomValues() to generate every problem, ensuring fair, unpredictable arithmetic. No patterns, no repetition bias—just pure random math."}}, {"@type": "Question", "name": "Difficulty Levels", "acceptedAnswer": {"@type": "Answer", "text": "Easy uses single-digit addition and subtraction (e.g., 7 + 4, 9 − 3). Perfect for warming up or younger players. Normal steps up to double-digit addition and subtraction (e.g., 47 + 28, 91 − 35). Hard focuses on multiplication and division with smaller numbers (e.g., 6 × 8, 48 ÷ 6). Expert mixes all four operations with larger numbers, including multi-digit multiplication and division. Choose the level that matches your skill and push yourself to improve."}}, {"@type": "Question", "name": "Scoring and Streaks", "acceptedAnswer": {"@type": "Answer", "text": "Each correct answer earns base points. Your streak multiplier starts at 1× and increases by 1 for every consecutive correct answer. A 5-question streak means 5× points per correct answer. Miss one and the streak drops back to 1. This rewards both speed and consistency. Your personal best score is saved in your browser's localStorage, so you can track improvement over time. Session statistics show how many problems you solved correctly in the current browsing session."}}, {"@type": "Question", "name": "Instant Feedback", "acceptedAnswer": {"@type": "Answer", "text": "The input field flashes green when you answer correctly and red when you're wrong. This instant visual feedback helps you stay in the flow and correct mistakes quickly. There's no penalty for wrong answers beyond losing your streak—so take your best guess and keep going. The timer never stops, so every second counts."}}, {"@type": "Question", "name": "Why Mental Math Matters", "acceptedAnswer": {"@type": "Answer", "text": "Mental arithmetic strengthens number sense, improves concentration, and builds confidence with numbers. Whether you're splitting a bill, estimating a tip, or checking a receipt, quick mental math is a practical skill. Math Sprint turns practice into a game—no worksheets, no drills, just you against the clock. Regular practice can improve both speed and accuracy over time."}}]}</script>
 </head>
 <body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
   <div id="nav-container"></div>
@@ -44,6 +48,10 @@
     <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:24px;">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
         <h1 style="font-size:22px;font-weight:700;margin:0;">📐 Math Sprint</h1>
+      <div style="text-align:center;margin:8px 0;">
+        <button id="mgp-daily-btn" style="padding:8px 20px;border:2px solid #059669;border-radius:10px;background:#fff;color:#059669;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;transition:all 0.15s;" onclick="">📅 Daily Challenge</button>
+        <span id="mgp-daily-status" style="display:none;font-size:12px;color:#64748B;margin-left:8px;"></span>
+      </div>
         <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊</button>
       </div>
 
@@ -107,7 +115,9 @@
       <h3 class="text-lg font-bold text-slate-900 mt-6">Free and Private</h3>
       <p>Math Sprint runs entirely in your browser. No account required, no data sent to servers. Your personal best is stored locally. The game works offline once loaded. Perfect for a quick brain break, classroom warm-up, or competitive practice with friends. Give it a try and see how high you can score in 60 seconds.</p>
     </div>
-  </article>
+  
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-strategy-games-browser" style="color:#2563EB;text-decoration:underline;">10 Best Free Strategy Games</a>.</p>
+      </article>
   <div id="related-games"></div>
   <div id="footer-container"></div>
 
@@ -116,9 +126,35 @@
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+
+  // Daily Challenge: date-seeded random
+  function dailySeedRandom(seed) {
+    let h = 0;
+    for (let i = 0; i < seed.length; i++) { h = ((h << 5) - h + seed.charCodeAt(i)) | 0; }
+    return function() { h = (h * 1103515245 + 12345) & 0x7fffffff; return h / 0x7fffffff; };
+  }
+  let isDailyMode = false;
+  let dailyRng = null;
+  function getDailyDate() { return new Date().toISOString().slice(0, 10); }
+  function startDailyChallenge() {
+    isDailyMode = true;
+    dailyRng = dailySeedRandom(getDailyDate() + '-math-sprint');
+    const btn = document.getElementById('mgp-daily-btn');
+    if (btn) { btn.textContent = '📅 Daily Mode (Active)'; btn.style.background = '#059669'; btn.style.color = '#fff'; }
+  }
+
 
   document.addEventListener('click',()=>initAudio(),{once:true});
   initToolPage('math-sprint'); initConsent(); trackGameView('math-sprint','Math');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'math-sprint');
+    }
+  });
 
   const STORAGE_KEY = 'mgp_math_sprint_best';
 

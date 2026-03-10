@@ -43,6 +43,10 @@
   <meta name="twitter:title" content="Free Match Three Online | MiniGamePlanet">
   <meta name="twitter:description" content="Play Match Three free online. Swap gems to make 3+ in a row. Chain reactions and bonus scoring.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Puzzle", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Block Puzzle", "item": "https://minigameplanet.com/games/match-three"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How to Play", "acceptedAnswer": {"@type": "Answer", "text": "Click or tap a gem to select it. Then click an adjacent gem (up, down, left, or right) to swap them. The swap only happens if it creates at least one match of three or more. If no match is made, the gems swap back. Matched gems disappear, and gems above fall to fill the gaps. New gems drop from the top. If the falling gems create new matches, you get a chain reaction and bonus points. Each chain multiplies your score."}}, {"@type": "Question", "name": "History &amp; Origin", "acceptedAnswer": {"@type": "Answer", "text": "Match-three games trace their roots to Shariki (1994), a Russian DOS game, and the genre exploded with Bejeweled (2001) by PopCap Games. Bejeweled became one of the first viral casual games, spawning countless clones and inspiring Candy Crush Saga, which has generated billions in revenue. The core mechanic — swap two adjacent items to make three in a row — is simple to learn but offers deep strategic play. Players must look ahead for chain reactions and plan swaps that set up cascading matches."}}]}</script>
 </head>
 <body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
   <div id="nav-container"></div>
@@ -120,7 +124,9 @@
 
       <p class="mt-6">Play Match Three free in your browser — no download, no account needed. Swap gems, build chains, and beat your best score.</p>
     </div>
-  </article>
+  
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-puzzle-games-online" style="color:#2563EB;text-decoration:underline;">10 Best Free Puzzle Games</a>.</p>
+      </article>
 
   <div id="related-games"></div>
   <div id="footer-container"></div>
@@ -130,11 +136,20 @@
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
   document.addEventListener('click', () => initAudio(), { once: true });
   initToolPage('match-three');
   initConsent();
   trackGameView('match-three', 'Puzzle');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'match-three');
+    }
+  });
 
   const COLS = 8, ROWS = 8;
   const GEM_COLORS = [

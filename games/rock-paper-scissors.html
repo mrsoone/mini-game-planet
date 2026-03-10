@@ -69,6 +69,10 @@
   <meta name="twitter:title" content="Rock Paper Scissors - Play Online Free">
   <meta name="twitter:description" content="Play Rock Paper Scissors online. Classic and Lizard-Spock variants, best of 5 mode.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Strategy", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Nim", "item": "https://minigameplanet.com/games/rock-paper-scissors"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How to Play Rock Paper Scissors", "acceptedAnswer": {"@type": "Answer", "text": "The rules are beautifully simple. Two players simultaneously form one of three shapes with their hand: Rock (a fist), Paper (an open palm), or Scissors (a peace sign). Rock beats Scissors, Scissors beat Paper, and Paper beats Rock. If both players choose the same shape, it's a draw. The game requires no equipment, no setup, and no prior experience—just quick thinking and a bit of luck."}}, {"@type": "Question", "name": "The Lizard-Spock Expansion", "acceptedAnswer": {"@type": "Answer", "text": "Popularized by The Big Bang Theory, the Lizard-Spock variant adds two more choices: Lizard and Spock. This creates a more complex web of outcomes. Scissors cut Paper and decapitate Lizard. Paper covers Rock and disproves Spock. Rock crushes Lizard and Scissors. Lizard poisons Spock and eats Paper. Spock smashes Scissors and vaporizes Rock. With five options instead of three, the game becomes more strategic and less predictable."}}, {"@type": "Question", "name": "Best of 5 Mode", "acceptedAnswer": {"@type": "Answer", "text": "For a more competitive experience, try our Best of 5 mode. The first player to win three rounds takes the match. This format reduces the impact of a single lucky guess and rewards consistency. Track your wins, losses, draws, and current streak as you play. Session statistics help you see how you're performing over time."}}, {"@type": "Question", "name": "Why Play Online?", "acceptedAnswer": {"@type": "Answer", "text": "Our online Rock Paper Scissors game features smooth animations, clear feedback, and an AI opponent that chooses randomly—so every game is fair. The animated reveal adds excitement as both choices are shown after a brief shake. Whether you're killing a few minutes during a break or introducing someone to the game for the first time, Mini Game Planet's version is free, fast, and fun."}}, {"@type": "Question", "name": "A Game for Everyone", "acceptedAnswer": {"@type": "Answer", "text": "Rock Paper Scissors transcends age and culture. Children learn it in seconds; adults use it for everything from choosing who goes first to making trivial decisions. It's a universal language of play. Switch between Classic and Lizard-Spock modes, toggle Best of 5 for a longer match, and enjoy the timeless appeal of this simple yet endlessly entertaining game."}}]}</script>
 </head>
 <body class="min-h-screen text-gray-800">
   <!-- Nav -->
@@ -164,7 +168,9 @@
 
       <h3 class="text-lg font-semibold mt-6 mb-2">A Game for Everyone</h3>
       <p>Rock Paper Scissors transcends age and culture. Children learn it in seconds; adults use it for everything from choosing who goes first to making trivial decisions. It's a universal language of play. Switch between Classic and Lizard-Spock modes, toggle Best of 5 for a longer match, and enjoy the timeless appeal of this simple yet endlessly entertaining game.</p>
-    </article>
+    
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-strategy-games-browser" style="color:#2563EB;text-decoration:underline;">10 Best Free Strategy Games</a>.</p>
+      </article>
 
     <!-- Related Games -->
     <section class="related-games mb-8">
@@ -189,10 +195,19 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
     initToolPage('rock-paper-scissors');
     initConsent();
     trackGameView('rock-paper-scissors', 'Casual');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'rock-paper-scissors');
+    }
+  });
 
     // Lizard-Spock rules: choice -> beats
     const BEATS = {

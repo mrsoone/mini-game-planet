@@ -42,6 +42,10 @@
   <meta name="twitter:title" content="Number Puzzle — Sum Grid Math Game | MiniGamePlanet">
   <meta name="twitter:description" content="Fill the grid so each row and column sums to the target. Timer, moves, validation. Three difficulty levels.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Math", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Math Sprint", "item": "https://minigameplanet.com/games/number-puzzle"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How to Play", "acceptedAnswer": {"@type": "Answer", "text": "Each puzzle displays a 4×4 or 5×5 grid. A target sum is shown at the top—every row and every column must add up to this number. Gray cells are fixed clues; white cells are yours to fill. Click or tap an empty cell, then type a digit (1–9). The game validates your entries in real time: if a row or column's sum is incorrect, those cells turn red. When every row and column reaches the target, you win. A timer tracks your speed, and a moves counter records how many cells you've filled. Your personal"}}, {"@type": "Question", "name": "Difficulty Levels", "acceptedAnswer": {"@type": "Answer", "text": "Easy puzzles use 4×4 grids with more pre-filled cells, so you have fewer blanks to complete. The target sums are smaller and the logic is straightforward. Medium puzzles also use 4×4 grids but with fewer clues, requiring more calculation and trial-and-error. Hard puzzles switch to 5×5 grids with fewer given numbers. The larger grid and higher target sums demand careful planning and systematic checking. Choose the level that matches your skill and work your way up."}}, {"@type": "Question", "name": "Validation and Feedback", "acceptedAnswer": {"@type": "Answer", "text": "As you type numbers, the game instantly checks each row and column. If a row's sum doesn't match the target, every cell in that row is highlighted in red. The same applies to columns. This immediate feedback helps you spot errors quickly and correct them before moving on. No need to wait until the end—you always know which lines need attention. The target numbers at the end of each row and column update in real time, turning red when incorrect and gray when correct."}}, {"@type": "Question", "name": "Strategy Tips\n      \n        Start with the most constrained rows and columns. Rows or columns with more filled cells have fewer unknowns. Calculate what the missing number must be.\n        Use the intersection. When a row and column both have one empty cell, that cell's value is determined by both constraints. Solve it first.\n        Work backwards from the target. If the target is 20 and you have 3, 7, and 5, the last cell must be 5. Subtraction is your friend.\n        Double-check before moving on. A single wrong digit can throw off multiple rows and columns. Verify each placement as you go.\n      \n      Why Number Puzzles Matter", "acceptedAnswer": {"@type": "Answer", "text": "Number placement puzzles strengthen mental arithmetic, pattern recognition, and logical reasoning. They require no special knowledge—just addition and subtraction—making them accessible to anyone who can add. Teachers use similar puzzles in classrooms to reinforce number sense; adults enjoy them as a quick mental workout. The game uses crypto.getRandomValues() to select puzzles fairly, and over 10 hand-crafted puzzles ensure variety across difficulty levels. Session statistics track your rounds "}}, {"@type": "Question", "name": "Free and Private", "acceptedAnswer": {"@type": "Answer", "text": "Number Puzzle runs entirely in your browser. No account, no downloads, no data sent to servers. Your best time lives in localStorage. Perfect for a coffee break, classroom activity, or competitive challenge with friends. Give it a try and see how fast you can complete the grid."}}]}</script>
 </head>
 <body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
   <div id="nav-container"></div>
@@ -102,7 +106,9 @@
       <h3 class="text-lg font-bold text-slate-900 mt-6">Free and Private</h3>
       <p>Number Puzzle runs entirely in your browser. No account, no downloads, no data sent to servers. Your best time lives in localStorage. Perfect for a coffee break, classroom activity, or competitive challenge with friends. Give it a try and see how fast you can complete the grid.</p>
     </div>
-  </article>
+  
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/math-games-brain-benefits" style="color:#2563EB;text-decoration:underline;">Do Math Games Make You Smarter?</a>.</p>
+      </article>
   <div id="related-games"></div>
   <div id="footer-container"></div>
 
@@ -111,9 +117,18 @@
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
   document.addEventListener('click', () => initAudio(), { once: true });
   initToolPage('number-puzzle'); initConsent(); trackGameView('number-puzzle', 'Math');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'number-puzzle');
+    }
+  });
 
   const STORAGE_KEY = 'mgp_number_puzzle_best';
 

@@ -31,6 +31,8 @@
   <meta name="twitter:title" content="Free Go Fish Online | MiniGamePlanet">
   <meta name="twitter:description" content="Play Go Fish free against AI.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Card", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Memory Match", "item": "https://minigameplanet.com/games/go-fish"}]}</script>
 </head>
 <body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
   <div id="nav-container"></div>
@@ -76,7 +78,9 @@
       <p>Click any card in your hand to ask the AI for that rank. If the AI has matching cards, they're transferred to you. If not, you draw from the fish pool. The AI then takes its turn automatically. Collect sets of four to score points.</p>
       <p class="mt-6">Play Go Fish free — no download needed.</p>
     </div>
-  </article>
+  
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-card-games-online" style="color:#2563EB;text-decoration:underline;">8 Best Free Card Games</a>.</p>
+      </article>
   <div id="related-games"></div>
   <div id="footer-container"></div>
 
@@ -85,9 +89,33 @@
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+  import { renderModeSelector, onMove, onChat, onStart, onTurn, onPlayerLeave, sendMove, sendChat, sendRematch, sendGameOver, renderQuickChat, showChatToast, leaveRoom, isConnected } from '/js/multiplayer.js';
 
   document.addEventListener('click',()=>initAudio(),{once:true});
   initToolPage('go-fish'); initConsent(); trackGameView('go-fish','Card');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'go-fish');
+    }
+  });
+
+  // Multiplayer mode selector
+  const mpContainer = document.querySelector('main');
+  if (mpContainer) {
+    getPlayer().then(p => {
+      const pName = p ? p.name : 'Player';
+      renderModeSelector(mpContainer, 'go-fish', pName, {
+        onAI: () => { /* default single-player, already running */ },
+        onPrivate: () => { /* room joined, wire moves */ },
+        onFind: () => { /* match found, wire moves */ },
+      });
+    });
+    onChat(data => showChatToast(data.messageId, data.from));
+  }
 
   const SUITS=['♠','♥','♦','♣'], RANKS=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
   const isRed=s=>s==='♥'||s==='♦';

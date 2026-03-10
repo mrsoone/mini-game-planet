@@ -63,6 +63,8 @@
   <meta name="twitter:title" content="Simon Says - Memory Game | Mini Game Planet">
   <meta name="twitter:description" content="Play Simon Says online. Test your memory with this classic pattern-matching game.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Casual", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Color Match", "item": "https://minigameplanet.com/games/simon-says"}]}</script>
 </head>
 <body class="min-h-screen text-gray-800 antialiased">
   <nav id="nav-container" class="bg-white/80 backdrop-blur border-b border-gray-200 sticky top-0 z-50">
@@ -123,7 +125,9 @@
 
         <p>Whether you're playing to sharpen your mind, pass the time, or compete for a personal best, Simon Says offers a timeless challenge. Track your streak, beat your high score, and see how many rounds you can complete. No account required—just click Start and play. Good luck, and remember: Simon says, follow the pattern!</p>
       </div>
-    </article>
+    
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-games-for-work-breaks" style="color:#2563EB;text-decoration:underline;">12 Quick Games for Work Breaks</a>.</p>
+      </article>
 
     <!-- Related games -->
     <section id="related-games" class="mb-8">
@@ -148,10 +152,19 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
     initToolPage('simon-says');
     initConsent();
     trackGameView('simon-says', 'Casual');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'simon-says');
+    }
+  });
 
     const COLORS = ['red', 'green', 'blue', 'yellow'];
     const FREQS = { red: 330, green: 440, blue: 554, yellow: 659 };

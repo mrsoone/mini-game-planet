@@ -38,6 +38,8 @@
   <meta name="twitter:title" content="Pixel Art Painter - Free Online Pixel Art Editor">
   <meta name="twitter:description" content="Create pixel art online with our free pixel art editor. Draw, fill, erase, and download your pixel artwork as PNG.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Action", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Gravity Flip", "item": "https://minigameplanet.com/games/pixel-art"}]}</script>
 </head>
 <body class="min-h-screen text-gray-800">
   <!-- AdSense placeholder (commented) -->
@@ -115,7 +117,9 @@
         <p>Pixel art teaches valuable design principles: working within constraints breeds creativity, and every pixel matters. Start small with an 8×8 grid to learn the basics, then scale up as your skills grow. The Pixel Art Painter runs entirely in your browser—no account required, no limits on how many artworks you create.</p>
         <p>Join thousands of creators who use Mini Game Planet's tools to bring their pixel art visions to life. Whether you're a seasoned pixel artist or just starting out, our editor makes the process simple and enjoyable.</p>
       </div>
-    </article>
+    
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-free-browser-games" style="color:#2563EB;text-decoration:underline;">10 Best Free Browser Games</a>.</p>
+      </article>
 
     <section id="related-games" class="mt-8">
       <h2 class="text-lg font-semibold text-gray-900 mb-4">Related Games</h2>
@@ -138,10 +142,19 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
     initToolPage('pixel-art');
     initConsent();
     trackGameView('pixel-art', 'Builder');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'pixel-art');
+    }
+  });
 
     // Pixel Art Painter Game Logic
     const canvas = document.getElementById('canvas');

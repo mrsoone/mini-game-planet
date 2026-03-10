@@ -42,6 +42,10 @@
   <meta name="twitter:title" content="Free Block Puzzle Online | MiniGamePlanet">
   <meta name="twitter:description" content="Play Block Puzzle free online. Tetris-style falling blocks, rotate, hold, ghost piece.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Puzzle", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Box Pusher", "item": "https://minigameplanet.com/games/block-puzzle"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How to Play", "acceptedAnswer": {"@type": "Answer", "text": "Use the arrow keys or WASD to move and rotate pieces. Left and right arrows move the block horizontally. Down arrow speeds up the fall. Up arrow or W rotates the piece clockwise. On mobile, use the on-screen touch buttons. A ghost piece shows exactly where your block will land, making it easier to line up perfect drops. The Hold button lets you store your current piece and swap it later — useful for saving a strong piece like the I-block for a Tetris (four-line clear)."}}, {"@type": "Question", "name": "History &amp; Origin", "acceptedAnswer": {"@type": "Answer", "text": "Block Puzzle games trace their roots to Tetris, created by Russian designer Alexey Pajitnov in 1984. The Soviet-era game became a global phenomenon, appearing on virtually every gaming platform since. Tetris popularized the falling-block puzzle genre, and countless variants have followed — Block Puzzle, Tetris 99, Puyo Puyo Tetris, and many mobile clones. The core mechanic — rotate, move, clear rows — remains timeless. The simplicity of the rules combined with the depth of strategic play has kep"}}]}</script>
 </head>
 <body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
   <div id="nav-container"></div>
@@ -133,7 +137,9 @@
 
       <p class="mt-6">Play Block Puzzle free in your browser — no download, no account needed. Rotate, drop, and clear rows to beat your best score.</p>
     </div>
-  </article>
+  
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-puzzle-games-online" style="color:#2563EB;text-decoration:underline;">10 Best Free Puzzle Games</a>.</p>
+      </article>
 
   <div id="related-games"></div>
   <div id="footer-container"></div>
@@ -143,11 +149,22 @@
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+  import { initGamepad, onButtonPress, isGamepadConnected } from '/js/gamepad.js';
 
   document.addEventListener('click', () => initAudio(), { once: true });
   initToolPage('block-puzzle');
   initConsent();
+  initGamepad();
   trackGameView('block-puzzle', 'Puzzle');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'block-puzzle');
+    }
+  });
 
   const COLS = 10, ROWS = 20;
   const TETROMINOES = [

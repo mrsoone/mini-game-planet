@@ -34,6 +34,10 @@
   <meta name="twitter:title" content="Free Spider Solitaire Online | MiniGamePlanet">
   <meta name="twitter:description" content="Play Spider Solitaire free. 1, 2, or 4 suit modes.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Card", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Klondike Solitaire", "item": "https://minigameplanet.com/games/spider-solitaire"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How to Play", "acceptedAnswer": {"@type": "Answer", "text": "Cards in the tableau can be moved if they form a descending sequence. In 1-suit mode, any descending sequence can be moved together. In 2-suit and 4-suit modes, only same-suit sequences can be moved as a group — you can still place any card on one rank higher, but only same-suit runs move together."}}, {"@type": "Question", "name": "History", "acceptedAnswer": {"@type": "Answer", "text": "Spider Solitaire was included in Microsoft Windows starting with Windows ME in 2000 and quickly became one of the most played computer games. Its name likely comes from the eight legs of a spider, corresponding to the eight foundation sequences needed to win."}}]}</script>
 </head>
 <body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
   <div id="nav-container"></div>
@@ -86,7 +90,9 @@
       <p>1-suit mode (all Spades) is the easiest and most relaxing. 4-suit mode is extremely challenging, with a win rate under 10% even with good play.</p>
       <p class="mt-6">Play Spider Solitaire free in your browser — choose your difficulty and clear the board.</p>
     </div>
-  </article>
+  
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-card-games-online" style="color:#2563EB;text-decoration:underline;">8 Best Free Card Games</a>.</p>
+      </article>
   <div id="related-games"></div>
   <div id="footer-container"></div>
 
@@ -95,9 +101,18 @@
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
   document.addEventListener('click',()=>initAudio(),{once:true});
   initToolPage('spider-solitaire'); initConsent(); trackGameView('spider-solitaire','Card');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'spider-solitaire');
+    }
+  });
 
   const SUITS_ALL=['♠','♥','♦','♣'], RANKS=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
   const RV={A:1,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'10':10,J:11,Q:12,K:13};

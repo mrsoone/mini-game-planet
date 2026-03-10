@@ -55,6 +55,8 @@
   <meta name="twitter:title" content="Dots and Boxes - Free Strategy Game">
   <meta name="twitter:description" content="Play Dots and Boxes online. Connect dots, claim boxes, outsmart the AI.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Strategy", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Battleship", "item": "https://minigameplanet.com/games/dots-and-boxes"}]}</script>
 </head>
 <body class="min-h-screen text-stone-800">
   <nav id="nav-container" class="bg-white/80 backdrop-blur border-b border-stone-200 sticky top-0 z-50"></nav>
@@ -117,7 +119,9 @@
       <p>The game begins with a grid of dots—typically 4×4, 5×5, or 6×6. Players alternate drawing a single horizontal or vertical line between two neighboring dots. When you complete the fourth side of a 1×1 square, you claim that box by coloring it in and immediately take another turn. This "chain reaction" mechanic is crucial: skilled players can force opponents into positions where they must give away multiple boxes in sequence.</p>
       <p>Strategy in Dots and Boxes revolves around "double-dealing" and "chains." A chain is a sequence of boxes where each shares a side with the next. The player who is forced to "open" a chain—by drawing the first line of it—typically loses those boxes to their opponent. Advanced players count chains and sacrifice small chains to gain larger ones. The opening moves matter: controlling the center and avoiding early chain creation can set the tone for the entire game.</p>
       <p>On Mini Game Planet, you can play Dots and Boxes against an AI at three difficulty levels. Easy mode makes random moves, Medium adds basic avoidance of giving away boxes, and Hard uses look-ahead to maximize its score. Whether you're a beginner learning the basics or an experienced player honing your chain-counting skills, our free online version offers instant play with no download required.</p>
-    </article>
+    
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-strategy-games-browser" style="color:#2563EB;text-decoration:underline;">10 Best Free Strategy Games</a>.</p>
+      </article>
 
     <section id="related-games" class="mb-8"></section>
     <footer id="footer-container"></footer>
@@ -128,11 +132,35 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+  import { renderModeSelector, onMove, onChat, onStart, onTurn, onPlayerLeave, sendMove, sendChat, sendRematch, sendGameOver, renderQuickChat, showChatToast, leaveRoom, isConnected } from '/js/multiplayer.js';
 
     initToolPage('dots-and-boxes');
     initConsent();
     initAudio();
     trackGameView('dots-and-boxes', 'Strategy');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'dots-and-boxes');
+    }
+  });
+
+  // Multiplayer mode selector
+  const mpContainer = document.querySelector('main');
+  if (mpContainer) {
+    getPlayer().then(p => {
+      const pName = p ? p.name : 'Player';
+      renderModeSelector(mpContainer, 'dots-and-boxes', pName, {
+        onAI: () => { /* default single-player, already running */ },
+        onPrivate: () => { /* room joined, wire moves */ },
+        onFind: () => { /* match found, wire moves */ },
+      });
+    });
+    onChat(data => showChatToast(data.messageId, data.from));
+  }
 
     // Secure randomness
     function secureRandom() {

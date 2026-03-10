@@ -57,6 +57,8 @@
   <meta name="twitter:title" content="Mancala - Free Strategy Board Game">
   <meta name="twitter:description" content="Play Mancala online. Classic Kalah variant with AI opponents. Capture stones and win!">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Strategy", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Gomoku", "item": "https://minigameplanet.com/games/mancala"}]}</script>
 </head>
 <body class="min-h-screen text-gray-800">
   <div id="nav-container"></div>
@@ -124,7 +126,9 @@
       <p class="mt-4">The game ends when one player has no stones left in their pits. The other player adds any remaining stones to their store. The player with the most stones in their store wins. A tie is possible if both stores end up with the same count. In competitive play, ties are rare but can occur when both players manage their stones equally well.</p>
       <p class="mt-4">Strategy tips: prioritize moves that give you another turn, set up captures by leaving empty pits, and avoid leaving your pits vulnerable when the opponent can capture. Try to empty your rightmost pit last so your final stone lands in your store. Against the AI, start with Easy to learn the flow, then challenge Medium and Hard for a real test of your skills. The Hard AI uses look-ahead search to find strong moves.</p>
       <p class="mt-4">Play Mancala free online anytime—no download, no sign-up. Enjoy this timeless strategy game right in your browser. Perfect for a quick break or a deep thinking session. Whether you're new to the game or a seasoned player, our Mancala offers a smooth experience with animated stone sowing and clear feedback on every move.</p>
-    </article>
+    
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-strategy-games-browser" style="color:#2563EB;text-decoration:underline;">10 Best Free Strategy Games</a>.</p>
+      </article>
   </main>
 
   <div id="footer-container"></div>
@@ -134,10 +138,34 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+  import { renderModeSelector, onMove, onChat, onStart, onTurn, onPlayerLeave, sendMove, sendChat, sendRematch, sendGameOver, renderQuickChat, showChatToast, leaveRoom, isConnected } from '/js/multiplayer.js';
 
     initToolPage('mancala');
     initConsent();
     trackGameView('mancala', 'Strategy');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'mancala');
+    }
+  });
+
+  // Multiplayer mode selector
+  const mpContainer = document.querySelector('main');
+  if (mpContainer) {
+    getPlayer().then(p => {
+      const pName = p ? p.name : 'Player';
+      renderModeSelector(mpContainer, 'mancala', pName, {
+        onAI: () => { /* default single-player, already running */ },
+        onPrivate: () => { /* room joined, wire moves */ },
+        onFind: () => { /* match found, wire moves */ },
+      });
+    });
+    onChat(data => showChatToast(data.messageId, data.from));
+  }
 
     const STORES = { 0: 6, 1: 13 };
     const PITS_PER_SIDE = 6;

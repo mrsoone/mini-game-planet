@@ -44,6 +44,8 @@
   <meta name="twitter:title" content="Breakout - Brick Breaker Arcade Game">
   <meta name="twitter:description" content="Play the classic Breakout brick breaker game. Break all bricks, collect power-ups, and beat your high score.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Arcade", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Pong", "item": "https://minigameplanet.com/games/breakout"}]}</script>
 </head>
 <body class="min-h-screen text-gray-800">
   <div id="nav-container" class="border-b border-gray-200 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
@@ -101,6 +103,8 @@
         <p><strong>What do the power-up colors mean?</strong> Blue widens your paddle, green slows the ball, and gold spawns extra balls. Grab them before they fall off the screen.</p>
         <p><strong>Can I play on mobile?</strong> Yes. Touch and drag to move the paddle. The game is fully responsive and works on phones and tablets.</p>
         <p><strong>Does my high score save?</strong> Your personal best and session stats are stored in your browser for the current session. Zero-friction restart lets you jump back in instantly after a game over.</p>
+      
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-free-browser-games" style="color:#2563EB;text-decoration:underline;">10 Best Free Browser Games</a>.</p>
       </article>
     </div>
 
@@ -126,10 +130,21 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+  import { initGamepad, onButtonPress, isGamepadConnected } from '/js/gamepad.js';
 
     initToolPage('breakout');
     initConsent();
+  initGamepad();
     trackGameView('breakout', 'Arcade');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'breakout');
+    }
+  });
 
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');

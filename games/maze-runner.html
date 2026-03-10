@@ -41,6 +41,10 @@
   <meta name="twitter:title" content="Free Maze Runner Online | MiniGamePlanet">
   <meta name="twitter:description" content="Play Maze Runner free online. Navigate procedurally generated mazes from start to exit. Timer, fog of war, path trail, and personal best times.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Puzzle", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Jigsaw Puzzle", "item": "https://minigameplanet.com/games/maze-runner"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How to Play", "acceptedAnswer": {"@type": "Answer", "text": "Use the arrow keys or WASD to move your character through the maze. On touch devices, swipe in the direction you want to go. You can only move through open passages — walls block your path. The timer starts the moment you make your first move and stops when you reach the exit. Choose from three grid sizes: Small (15×15 cells), Medium (25×25), or Large (35×35). Larger mazes offer more complex paths and longer solve times."}}, {"@type": "Question", "name": "Maze Generation: Recursive Backtracking", "acceptedAnswer": {"@type": "Answer", "text": "The mazes are generated using recursive backtracking, also known as the depth-first search maze algorithm. The algorithm starts with a grid where every cell is surrounded by walls. It picks a starting cell, then randomly chooses an unvisited neighbor, removes the wall between them, and recursively continues from that neighbor. When a cell has no unvisited neighbors, the algorithm backtracks to the previous cell and tries other directions. This process creates a perfect maze — one with exactly on"}}]}</script>
 </head>
 <body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
   <div id="nav-container"></div>
@@ -110,7 +114,9 @@
 
       <p class="mt-6">Play Maze Runner free right here in your browser — no downloads, no accounts. Pick a grid size, enable fog of war if you dare, and race to the exit.</p>
     </div>
-  </article>
+  
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-puzzle-games-online" style="color:#2563EB;text-decoration:underline;">10 Best Free Puzzle Games</a>.</p>
+      </article>
 
   <div id="related-games"></div>
   <div id="footer-container"></div>
@@ -120,11 +126,22 @@
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+  import { initGamepad, onButtonPress, isGamepadConnected } from '/js/gamepad.js';
 
   document.addEventListener('click', () => initAudio(), { once: true });
   initToolPage('maze-runner');
   initConsent();
+  initGamepad();
   trackGameView('maze-runner', 'Puzzle');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'maze-runner');
+    }
+  });
 
   const SIZES = { small: 15, medium: 25, large: 35 };
   const FOG_RADIUS = 2;

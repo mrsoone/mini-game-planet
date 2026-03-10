@@ -38,6 +38,10 @@
   <meta name="twitter:title" content="Free Nim Game Online | MiniGamePlanet">
   <meta name="twitter:description" content="Play Nim free. Remove stones from rows — last to take loses. Strategy game vs AI.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Strategy", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Mancala", "item": "https://minigameplanet.com/games/nim"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How to Play", "acceptedAnswer": {"@type": "Answer", "text": "Click a row to select it. A bar of buttons will appear showing how many stones you can remove (1 through the row's count). Click a number to make your move. The AI will then respond. On Easy, the AI makes random legal moves. On Normal, it sometimes plays optimally and sometimes makes mistakes. On Hard, it uses the nim-sum strategy for perfect play—you cannot beat it from a losing position."}}, {"@type": "Question", "name": "History &amp; Origin", "acceptedAnswer": {"@type": "Answer", "text": "Nim's origins are ancient. Similar games appear in Chinese literature and were played in Europe for centuries. The name \"Nim\" was coined by Charles L. Bouton, who published a complete mathematical analysis in 1901. Bouton proved that the game could be solved using binary numbers and the XOR operation. His work laid the foundation for the Sprague-Grundy theorem, which generalizes winning strategies to many impartial games. Nim has since become a staple of game theory courses and a classic example"}}, {"@type": "Question", "name": "Strategy &amp; the Nim-Sum", "acceptedAnswer": {"@type": "Answer", "text": "The key to perfect play is the nim-sum: the XOR of all heap sizes. If the nim-sum is zero, the position is losing for the player to move—assuming normal play (last to take wins). In misère Nim, when at least one heap has more than one stone, the optimal strategy is the same: play to leave a nim-sum of zero. When all heaps are of size 0 or 1, the strategy changes: you want to leave an odd number of heaps of size 1 for your opponent. Skilled players learn to compute nim-sums mentally to find winni"}}]}</script>
 </head>
 <body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
   <div id="nav-container"></div>
@@ -106,7 +110,9 @@
       <p>Bouton proved that the winning strategy depends on the binary representation of heap sizes. XOR (exclusive-or) captures the "nim-sum": when the nim-sum is 0, the position is losing. This elegant connection makes Nim a beautiful example of mathematical game theory.</p>
       <p class="mt-6">Play Nim free in your browser—no download needed. Remove stones, outthink the AI, and avoid taking the last one.</p>
     </div>
-  </article>
+  
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-strategy-games-browser" style="color:#2563EB;text-decoration:underline;">10 Best Free Strategy Games</a>.</p>
+      </article>
   <div id="related-games"></div>
   <div id="footer-container"></div>
 
@@ -115,9 +121,18 @@
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
   document.addEventListener('click',()=>initAudio(),{once:true});
   initToolPage('nim'); initConsent(); trackGameView('nim','Strategy');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'nim');
+    }
+  });
 
   const BOARDS = { small: [1,3,5], medium: [1,3,5,7], large: [1,3,5,7,9] };
   let heaps = [], size = 'medium', diff = 'normal', gameActive = false, gameStarted = false;

@@ -63,6 +63,8 @@
   <meta name="twitter:title" content="Clicker Game - Idle Incremental Clicker">
   <meta name="twitter:description" content="Click for points, buy upgrades, and prestige for permanent bonuses. Free idle clicker game.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Casual", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Rock Paper Scissors", "item": "https://minigameplanet.com/games/clicker"}]}</script>
 </head>
 <body class="min-h-screen text-gray-800">
   <!-- GA4 Consent defaults handled by initConsent() -->
@@ -173,7 +175,9 @@
       <p class="text-gray-600 leading-relaxed mb-4">
         Our version runs entirely in your browser with no downloads required. Your progress is saved automatically to your device, so you can pick up right where you left off. Whether you're killing time during a commute or optimizing your prestige strategy, the Clicker Game offers a relaxing yet engaging experience. Give it a try and see how high you can climb!
       </p>
-    </article>
+    
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-games-for-work-breaks" style="color:#2563EB;text-decoration:underline;">12 Quick Games for Work Breaks</a>.</p>
+      </article>
 
     <!-- Related Games -->
     <section id="related-games" class="mt-12">
@@ -195,11 +199,20 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
     initToolPage('clicker');
     initConsent();
     initAudio();
     trackGameView('clicker', 'Casual');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'clicker');
+    }
+  });
 
     // Game state
     const STORAGE_KEY = 'clicker_save';

@@ -57,6 +57,10 @@
   <meta name="twitter:title" content="Backgammon - Play Online | Mini Game Planet">
   <meta name="twitter:description" content="Play Backgammon online. Classic dice board game. Roll, hit, bear off. Free vs AI.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Board", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Yahtzee", "item": "https://minigameplanet.com/games/backgammon"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "The Board", "acceptedAnswer": {"@type": "Answer", "text": "The board has 24 narrow triangles called points, grouped into four quadrants of six points each. The quadrants are the player's home board and outer board, and the opponent's home board and outer board. White moves from point 24 toward point 1; Black moves from point 1 toward point 24. The bar divides the board in half—hit checkers are placed here and must re-enter before any other move."}}, {"@type": "Question", "name": "Rolling and Moving", "acceptedAnswer": {"@type": "Answer", "text": "Players take turns rolling two dice. Each die allows you to move one checker the corresponding number of points. You can move one checker for both dice (if the intermediate point is open) or move two different checkers. If you roll doubles, you play the number four times. You must use both numbers if legally possible; if only one move is possible, you must make it. If no move is possible, you lose your turn."}}, {"@type": "Question", "name": "Hitting and the Bar", "acceptedAnswer": {"@type": "Answer", "text": "You can land on a point occupied by a single opponent checker (a blot). When you do, that checker is hit and sent to the bar. A point with two or more opponent checkers is closed—you cannot land there. Hit checkers must re-enter before any other move. White re-enters on points 19–24; Black re-enters on points 1–6. You must roll a number that corresponds to an open point in that range."}}, {"@type": "Question", "name": "Bearing Off", "acceptedAnswer": {"@type": "Answer", "text": "Once all 15 of your checkers are in your home board (points 1–6 for White, 19–24 for Black), you may start bearing off. Roll a number and remove a checker from the corresponding point. If that point is empty, you may bear off from a higher-numbered point. The first player to bear off all 15 checkers wins."}}, {"@type": "Question", "name": "Strategy Tips", "acceptedAnswer": {"@type": "Answer", "text": "Build primes (multiple consecutive points) to block your opponent. Hit blots when safe to slow them down. Advance your back checkers early. Avoid leaving single checkers (blots) when your opponent can hit them. In the endgame, race efficiently and bear off without leaving stragglers."}}]}</script>
 </head>
 <body class="min-h-screen text-stone-800">
   <div class="max-w-5xl mx-auto px-4 py-6">
@@ -104,7 +108,9 @@
             <p>Build primes (multiple consecutive points) to block your opponent. Hit blots when safe to slow them down. Advance your back checkers early. Avoid leaving single checkers (blots) when your opponent can hit them. In the endgame, race efficiently and bear off without leaving stragglers.</p>
             <h3 class="text-base font-semibold">Play Online</h3>
             <p>This free online Backgammon game runs in your browser with no download required. Challenge the AI, which uses basic strategy: it prefers hitting your blots, making points, and advancing its checkers. Click a checker to select it, then click a valid destination point to move. Roll the dice when it's your turn and plan your moves carefully!</p>
-          </article>
+          
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-strategy-games-browser" style="color:#2563EB;text-decoration:underline;">10 Best Free Strategy Games</a>.</p>
+      </article>
         </div>
       </div>
 
@@ -129,11 +135,35 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+  import { renderModeSelector, onMove, onChat, onStart, onTurn, onPlayerLeave, sendMove, sendChat, sendRematch, sendGameOver, renderQuickChat, showChatToast, leaveRoom, isConnected } from '/js/multiplayer.js';
 
     initToolPage('backgammon');
     initConsent();
     initAudio?.();
     trackGameView('backgammon', 'Board');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'backgammon');
+    }
+  });
+
+  // Multiplayer mode selector
+  const mpContainer = document.querySelector('main');
+  if (mpContainer) {
+    getPlayer().then(p => {
+      const pName = p ? p.name : 'Player';
+      renderModeSelector(mpContainer, 'backgammon', pName, {
+        onAI: () => { /* default single-player, already running */ },
+        onPrivate: () => { /* room joined, wire moves */ },
+        onFind: () => { /* match found, wire moves */ },
+      });
+    });
+    onChat(data => showChatToast(data.messageId, data.from));
+  }
 
     const WHITE = 1, BLACK = -1;
     const POINT_COUNT = 24;

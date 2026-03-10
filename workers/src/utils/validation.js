@@ -1,0 +1,124 @@
+const GAME_RULES = {
+  'chess':             { minDuration: 10, maxScore: null,   type: 'win_loss' },
+  'checkers':          { minDuration: 8,  maxScore: null,   type: 'win_loss' },
+  'tic-tac-toe':       { minDuration: 3,  maxScore: null,   type: 'win_loss' },
+  'connect-four':      { minDuration: 5,  maxScore: null,   type: 'win_loss' },
+  'reversi':           { minDuration: 10, maxScore: null,   type: 'win_loss' },
+  'battleship':        { minDuration: 15, maxScore: null,   type: 'win_loss' },
+  'dots-and-boxes':    { minDuration: 5,  maxScore: null,   type: 'win_loss' },
+  'four-in-a-row':     { minDuration: 5,  maxScore: null,   type: 'win_loss' },
+  'mancala':           { minDuration: 5,  maxScore: null,   type: 'win_loss' },
+  'nim':               { minDuration: 3,  maxScore: null,   type: 'win_loss' },
+  'backgammon':        { minDuration: 10, maxScore: null,   type: 'win_loss' },
+  'dominoes':          { minDuration: 8,  maxScore: null,   type: 'win_loss' },
+  'chinese-checkers':  { minDuration: 10, maxScore: null,   type: 'win_loss' },
+  'ludo':              { minDuration: 10, maxScore: null,   type: 'win_loss' },
+  'snakes-and-ladders':{ minDuration: 5,  maxScore: null,   type: 'win_loss' },
+  'yahtzee':           { minDuration: 10, maxScore: 1575,   type: 'high_score' },
+  'blackjack':         { minDuration: 3,  maxScore: null,   type: 'win_loss' },
+  'solitaire':         { minDuration: 15, maxScore: null,   type: 'win_loss' },
+  'spider-solitaire':  { minDuration: 15, maxScore: null,   type: 'win_loss' },
+  'freecell':          { minDuration: 15, maxScore: null,   type: 'win_loss' },
+  'video-poker':       { minDuration: 3,  maxScore: null,   type: 'win_loss' },
+  'war':               { minDuration: 5,  maxScore: null,   type: 'win_loss' },
+  'memory-match':      { minDuration: 5,  maxScore: null,   type: 'best_time' },
+  'go-fish':           { minDuration: 10, maxScore: null,   type: 'win_loss' },
+  'crazy-eights':      { minDuration: 5,  maxScore: null,   type: 'win_loss' },
+  'high-low':          { minDuration: 2,  maxScore: 52,     type: 'high_score' },
+  'snake':             { minDuration: 2,  maxScore: 9999,   type: 'high_score' },
+  'pong':              { minDuration: 5,  maxScore: null,   type: 'win_loss' },
+  'breakout':          { minDuration: 5,  maxScore: 99999,  type: 'high_score' },
+  'asteroids':         { minDuration: 3,  maxScore: 999999, type: 'high_score' },
+  'space-invaders':    { minDuration: 5,  maxScore: 999999, type: 'high_score' },
+  'flappy-jump':       { minDuration: 1,  maxScore: 9999,   type: 'high_score' },
+  'fruit-slicer':      { minDuration: 3,  maxScore: 99999,  type: 'high_score' },
+  'endless-runner':    { minDuration: 2,  maxScore: 999999, type: 'high_score' },
+  'whack-a-mole':      { minDuration: 5,  maxScore: 9999,   type: 'high_score' },
+  'helicopter-game':   { minDuration: 1,  maxScore: 99999,  type: 'high_score' },
+  'duck-hunt':         { minDuration: 5,  maxScore: 9999,   type: 'high_score' },
+  'dodge-ball':        { minDuration: 2,  maxScore: 99999,  type: 'high_score' },
+  'minesweeper':       { minDuration: 3,  maxScore: null,   type: 'best_time' },
+  'twenty-forty-eight':{ minDuration: 5,  maxScore: 999999, type: 'high_score' },
+  'sudoku':            { minDuration: 20, maxScore: null,   type: 'best_time' },
+  'nonogram':          { minDuration: 10, maxScore: null,   type: 'best_time' },
+  'sliding-puzzle':    { minDuration: 3,  maxScore: null,   type: 'best_time' },
+  'tower-of-hanoi':    { minDuration: 3,  maxScore: null,   type: 'best_time' },
+  'lights-out':        { minDuration: 2,  maxScore: null,   type: 'best_time' },
+  'pipe-connect':      { minDuration: 3,  maxScore: null,   type: 'best_time' },
+  'color-flood':       { minDuration: 3,  maxScore: null,   type: 'high_score' },
+  'jigsaw':            { minDuration: 10, maxScore: null,   type: 'best_time' },
+  'maze-runner':       { minDuration: 3,  maxScore: null,   type: 'best_time' },
+  'sokoban':           { minDuration: 5,  maxScore: null,   type: 'high_score' },
+  'block-puzzle':      { minDuration: 5,  maxScore: 999999, type: 'high_score' },
+  'match-three':       { minDuration: 5,  maxScore: 999999, type: 'high_score' },
+  'word-guess':        { minDuration: 5,  maxScore: null,   type: 'win_loss' },
+  'hangman':           { minDuration: 5,  maxScore: null,   type: 'win_loss' },
+  'word-search':       { minDuration: 10, maxScore: null,   type: 'best_time' },
+  'anagram-scramble':  { minDuration: 3,  maxScore: 9999,   type: 'high_score' },
+  'typing-race':       { minDuration: 5,  maxScore: 300,    type: 'high_score' },
+  'crossword-mini':    { minDuration: 10, maxScore: null,   type: 'best_time' },
+  'word-chain':        { minDuration: 5,  maxScore: null,   type: 'best_time' },
+  'spelling-bee':      { minDuration: 10, maxScore: 9999,   type: 'high_score' },
+  'slot-machine':      { minDuration: 1,  maxScore: 999999, type: 'high_score' },
+  'roulette':          { minDuration: 2,  maxScore: 999999, type: 'high_score' },
+  'dice-roller':       { minDuration: 1,  maxScore: null,   type: 'high_score' },
+  'coin-flip':         { minDuration: 1,  maxScore: 999,    type: 'high_score' },
+  'spin-the-wheel':    { minDuration: 1,  maxScore: null,   type: 'high_score' },
+  'scratch-card':      { minDuration: 1,  maxScore: 999999, type: 'high_score' },
+  'keno':              { minDuration: 2,  maxScore: 999999, type: 'high_score' },
+  'baccarat':          { minDuration: 2,  maxScore: null,   type: 'win_loss' },
+  'rock-paper-scissors':{ minDuration: 1, maxScore: null,   type: 'win_loss' },
+  'clicker':           { minDuration: 1,  maxScore: 9999999,type: 'high_score' },
+  'reaction-time':     { minDuration: 5,  maxScore: null,   type: 'best_time' },
+  'aim-trainer':       { minDuration: 5,  maxScore: 9999,   type: 'high_score' },
+  'color-match':       { minDuration: 5,  maxScore: 9999,   type: 'high_score' },
+  'simon-says':        { minDuration: 3,  maxScore: 999,    type: 'high_score' },
+  'trivia-quiz':       { minDuration: 5,  maxScore: 9999,   type: 'high_score' },
+  'number-memory':     { minDuration: 3,  maxScore: 99,     type: 'high_score' },
+  'sequence-memory':   { minDuration: 3,  maxScore: 99,     type: 'high_score' },
+  'spot-the-difference':{ minDuration: 5, maxScore: 9999,   type: 'high_score' },
+  'card-dodger':       { minDuration: 2,  maxScore: 99999,  type: 'high_score' },
+  'jumping-rabbit':    { minDuration: 1,  maxScore: 99999,  type: 'high_score' },
+  'tower-stack':       { minDuration: 2,  maxScore: 999,    type: 'high_score' },
+  'rhythm-tap':        { minDuration: 10, maxScore: 999999, type: 'high_score' },
+  'color-switch':      { minDuration: 1,  maxScore: 9999,   type: 'high_score' },
+  'knife-throw':       { minDuration: 2,  maxScore: 9999,   type: 'high_score' },
+  'ball-bounce':       { minDuration: 1,  maxScore: 9999,   type: 'high_score' },
+  'gravity-flip':      { minDuration: 1,  maxScore: 99999,  type: 'high_score' },
+  'pixel-art':         { minDuration: 0,  maxScore: null,   type: 'none' },
+  'sand-box':          { minDuration: 0,  maxScore: null,   type: 'none' },
+  'music-pad':         { minDuration: 0,  maxScore: null,   type: 'none' },
+  'circuit-builder':   { minDuration: 0,  maxScore: null,   type: 'none' },
+  'math-sprint':       { minDuration: 5,  maxScore: 9999,   type: 'high_score' },
+  'number-puzzle':     { minDuration: 10, maxScore: null,   type: 'best_time' },
+  'binary-game':       { minDuration: 5,  maxScore: 9999,   type: 'high_score' },
+  'equation-builder':  { minDuration: 5,  maxScore: null,   type: 'best_time' },
+  'logic-grid':        { minDuration: 30, maxScore: null,   type: 'best_time' },
+  'flag-quiz':         { minDuration: 5,  maxScore: 9999,   type: 'high_score' },
+  'capital-quiz':      { minDuration: 5,  maxScore: 9999,   type: 'high_score' },
+  'geography-quiz':    { minDuration: 5,  maxScore: 9999,   type: 'high_score' },
+  'history-timeline':  { minDuration: 5,  maxScore: 9999,   type: 'high_score' },
+  'periodic-table-quiz':{ minDuration: 5, maxScore: 9999,   type: 'high_score' },
+};
+
+export function validateSubmission(gameSlug, result) {
+  const rules = GAME_RULES[gameSlug];
+  if (!rules) return { valid: false, reason: 'Unknown game' };
+  if (rules.type === 'none') return { valid: false, reason: 'Builder games have no scoring' };
+
+  if (result.duration !== undefined && result.duration < rules.minDuration) {
+    return { valid: false, reason: `Duration too short (min ${rules.minDuration}s)` };
+  }
+  if (rules.maxScore !== null && result.score !== undefined && result.score > rules.maxScore) {
+    return { valid: false, reason: `Score exceeds maximum (${rules.maxScore})` };
+  }
+  if (result.score !== undefined && result.score < 0) {
+    return { valid: false, reason: 'Negative score' };
+  }
+  return { valid: true };
+}
+
+export function getScoreType(gameSlug) {
+  const rules = GAME_RULES[gameSlug];
+  return rules ? rules.type : 'high_score';
+}

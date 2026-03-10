@@ -48,6 +48,10 @@
   <meta name="twitter:title" content="Space Invaders - Classic Arcade Game">
   <meta name="twitter:description" content="Play Space Invaders online. Classic arcade action with marching aliens, shields, and waves.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Arcade", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Asteroids", "item": "https://minigameplanet.com/games/space-invaders"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How to Play", "acceptedAnswer": {"@type": "Answer", "text": "Your mission is simple: destroy all invading aliens before they reach Earth. You control a laser cannon at the bottom of the screen. Move left and right to dodge enemy fire while shooting upward to eliminate the alien formations. The aliens march in rows, moving side to side and stepping down each time they hit the screen edge. As you clear waves, the aliens move faster and become more aggressive. Use arrow keys or A/D to move, and press Space or tap the screen to shoot."}}, {"@type": "Question", "name": "Game Features", "acceptedAnswer": {"@type": "Answer", "text": "Protective shields provide temporary cover but erode when hit by either your shots or alien bullets. Use them wisely—they won't last forever. You have three lives; lose them all and it's game over. Aliens will occasionally shoot back, so stay alert and keep moving. Your score increases with each alien destroyed, with bonus points for higher rows. Build combos for streak bonuses and try to beat your personal best! Session stats track your games played and cumulative score."}}, {"@type": "Question", "name": "Tips for High Scores", "acceptedAnswer": {"@type": "Answer", "text": "Prioritize the bottom rows first—they're worth more points and removing them reduces incoming fire from above. Time your shots to hit multiple aliens as they align horizontally. Don't waste shots on shields when you can shoot around them. As waves progress, the pace quickens; stay calm and focus on accuracy over speed. Zero-friction restart lets you jump straight back into the action after game over."}}, {"@type": "Question", "name": "Touch and Keyboard Controls", "acceptedAnswer": {"@type": "Answer", "text": "On desktop, use arrow keys or A/D to move and Space to shoot. On mobile, the screen is split into left and right halves—touch and hold the left side to move left, the right side to move right. Tap anywhere for a quick shot. The responsive layout works on phones and tablets."}}, {"@type": "Question", "name": "Classic Arcade Legacy", "acceptedAnswer": {"@type": "Answer", "text": "Space Invaders pioneered many concepts still used in games today: progressive difficulty, high-score competition, and simple yet compelling mechanics. It sparked the golden age of arcade gaming and influenced countless titles that followed. Play free in your browser—no downloads, no ads interrupting your run. Whether you're a veteran or new to the classic, this Space Invaders game delivers authentic arcade action."}}]}</script>
 </head>
 <body class="min-h-screen text-gray-800">
   <div id="nav-container"></div>
@@ -120,10 +124,21 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+  import { initGamepad, onButtonPress, isGamepadConnected } from '/js/gamepad.js';
 
     initToolPage('space-invaders');
     initConsent();
+  initGamepad();
     trackGameView('space-invaders', 'Arcade');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'space-invaders');
+    }
+  });
 
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');

@@ -69,6 +69,8 @@
   <meta name="twitter:title" content="Sokoban - Box Pusher Puzzle Game">
   <meta name="twitter:description" content="Push boxes onto targets in this classic puzzle game. 10+ levels, undo, and personal best tracking.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Puzzle", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Maze Runner", "item": "https://minigameplanet.com/games/sokoban"}]}</script>
 </head>
 <body class="min-h-screen text-gray-800 antialiased">
   <div id="nav-container"></div>
@@ -141,7 +143,9 @@
       <p class="text-gray-600 leading-relaxed">
         Use arrow keys or WASD to move, or swipe on touch devices. Select levels from the dropdown, track your best moves per level, and enjoy this classic puzzle experience. Good luck, warehouse keeper!
       </p>
-    </article>
+    
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-puzzle-games-online" style="color:#2563EB;text-decoration:underline;">10 Best Free Puzzle Games</a>.</p>
+      </article>
 
     <div id="related-games" class="mt-8"></div>
   </main>
@@ -153,11 +157,20 @@
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
   document.addEventListener('click', () => initAudio(), { once: true });
   initToolPage('sokoban');
   initConsent();
   trackGameView('sokoban', 'Puzzle');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'sokoban');
+    }
+  });
 
   const soundBtn = document.getElementById('sound-toggle');
   if (soundBtn) {

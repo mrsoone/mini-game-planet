@@ -61,6 +61,8 @@
   <meta name="twitter:title" content="Baccarat - Free Online Casino Game">
   <meta name="twitter:description" content="Play free Baccarat. Bet on Player, Banker, or Tie. Virtual credits, no real money.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Casino", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Keno", "item": "https://minigameplanet.com/games/baccarat"}]}</script>
 </head>
 <body class="min-h-screen text-gray-800">
   <!-- Nav -->
@@ -166,7 +168,9 @@
       <p class="text-gray-700">
         Baccarat has been a favorite in casinos for centuries, often associated with high rollers and glamour. Today, you can enjoy it anytime online. Remember: this game is for entertainment only. Play responsibly and have fun.
       </p>
-    </article>
+    
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-free-browser-games" style="color:#2563EB;text-decoration:underline;">10 Best Free Browser Games</a>.</p>
+      </article>
 
     <!-- Related Games -->
     <section id="related-games" class="mb-6">
@@ -193,10 +197,19 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
     initToolPage('baccarat');
     initConsent();
     trackGameView('baccarat', 'Casino');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'baccarat');
+    }
+  });
     initAudio();
 
     const SUITS = ['hearts', 'diamonds', 'clubs', 'spades'];

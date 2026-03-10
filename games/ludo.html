@@ -70,6 +70,10 @@
   <meta name="twitter:title" content="Ludo - Classic Board Game | Mini Game Planet">
   <meta name="twitter:description" content="Play Ludo online - the classic dice board game. Roll, move, and win!">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Board", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Snakes and Ladders", "item": "https://minigameplanet.com/games/ludo"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "The Basics", "acceptedAnswer": {"@type": "Answer", "text": "The Ludo board features four colored zones—Red, Blue, Green, and Yellow—each with a home area and a starting square. Each player has four tokens that begin in their home. The main track runs clockwise around the board, with a colored home stretch leading to the center for each player. The first player to get all four tokens into the center wins the game."}}, {"@type": "Question", "name": "Starting the Game", "acceptedAnswer": {"@type": "Answer", "text": "To enter a token onto the board, you must roll a six. When you roll a six, you can either bring a new token out of your home or move an existing token. Rolling a six also earns you an extra roll. If you cannot make a legal move, your turn passes to the next player."}}, {"@type": "Question", "name": "Safe Squares and Capturing", "acceptedAnswer": {"@type": "Answer", "text": "Certain squares on the board are safe zones—typically the starting squares and the first square of each home stretch. When your token lands on an opponent's token on a non-safe square, you capture it and send it back to their home. The captured token must roll a six again to re-enter. Landing on your own token is not allowed."}}, {"@type": "Question", "name": "The Home Stretch", "acceptedAnswer": {"@type": "Answer", "text": "Once a token completes a full circuit of the board, it enters its colored home stretch—a path of five squares leading to the center. Only your tokens can use your home stretch. You must roll the exact number needed to reach the center; if you roll too high, your token stays put. Strategy matters: sometimes it's better to hold back a token to block opponents or to avoid being captured."}}, {"@type": "Question", "name": "Winning the Game", "acceptedAnswer": {"@type": "Answer", "text": "The first player to get all four tokens into the center wins. In some variations, players continue until second and third place are determined. Ludo is a game of both chance and skill—while the dice determine your options, choosing which token to move and when to take risks can make all the difference."}}]}</script>
 </head>
 <body class="min-h-screen text-gray-800">
   <div id="nav-container"></div>
@@ -135,7 +139,9 @@
       <p class="mb-4">The first player to get all four tokens into the center wins. In some variations, players continue until second and third place are determined. Ludo is a game of both chance and skill—while the dice determine your options, choosing which token to move and when to take risks can make all the difference.</p>
       
       <p class="mb-4">Play Ludo online now for free. Challenge the AI or enjoy a quick game whenever you like. No downloads required—just roll the dice and have fun!</p>
-    </article>
+    
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-strategy-games-browser" style="color:#2563EB;text-decoration:underline;">10 Best Free Strategy Games</a>.</p>
+      </article>
 
     <div id="related-games" class="mb-8"></div>
     <div id="footer-container"></div>
@@ -146,6 +152,28 @@
       if (typeof initToolPage === 'function') initToolPage('ludo');
       if (typeof initConsent === 'function') initConsent();
       if (typeof trackGameView === 'function') trackGameView('ludo', 'Board');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'ludo');
+    }
+  });
+
+  // Multiplayer mode selector
+  const mpContainer = document.querySelector('main');
+  if (mpContainer) {
+    getPlayer().then(p => {
+      const pName = p ? p.name : 'Player';
+      renderModeSelector(mpContainer, 'ludo', pName, {
+        onAI: () => { /* default single-player, already running */ },
+        onPrivate: () => { /* room joined, wire moves */ },
+        onFind: () => { /* match found, wire moves */ },
+      });
+    });
+    onChat(data => showChatToast(data.messageId, data.from));
+  }
     })();
 
     const COLORS = ['#DC2626', '#2563EB', '#16A34A', '#EAB308'];

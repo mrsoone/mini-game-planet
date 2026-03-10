@@ -60,6 +60,10 @@
   <meta name="twitter:title" content="Keno - Free Online Casino Game">
   <meta name="twitter:description" content="Play free Keno online. Pick numbers, watch the draw, win virtual credits. For entertainment only.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Casino", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Scratch Card", "item": "https://minigameplanet.com/games/keno"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Drawn Numbers\n        \n          —\n        \n      \n\n      \n      \n        \n        \n      \n\n      \n      \n        Paytable\n        \n          \n            \n              \n                Picks\n                Matches → Payout\n              \n            \n            \n              \n            \n          \n        \n      \n    \n\n    \n    \n      Session Stats\n      \n        Games: 0\n        Wins: 0\n        Total Won: 0\n        Net: 0\n      \n    \n\n    \n    For entertainment only. No real money.\n\n    \n    \n      What Is Keno?\n      \n        Keno is a classic lottery-style casino game that has been enjoyed for centuries. Originating in China, the game spread across the world and became a staple in casinos and lottery halls. The game is simple to learn but offers plenty of excitement as you watch numbers get drawn one by one. In this free online version, you use virtual credits—no real money is involved. It's purely for entertainment.\n      \n      How to Play Keno", "acceptedAnswer": {"@type": "Answer", "text": "The Keno board displays numbers 1 through 80 in an 8×10 grid. Before each round, you select between 1 and 10 numbers by clicking on them. Once you're happy with your picks, place your bet and hit Play. The game then draws 20 numbers at random, one at a time, with a brief animation so you can follow along. Each time a drawn number matches one of your picks, it lights up. The more matches you get, the higher your payout according to the paytable."}}, {"@type": "Question", "name": "Payouts and Strategy", "acceptedAnswer": {"@type": "Answer", "text": "Payouts in Keno depend on how many numbers you picked and how many of those matched the 20 drawn numbers. Generally, hitting more matches yields bigger rewards. For example, picking 5 numbers and matching all 5 pays much more than picking 10 numbers and matching only 2. There's no strategy that guarantees wins—Keno is a game of chance. The best approach is to pick numbers you like, set a bet you're comfortable with, and enjoy the draw."}}, {"@type": "Question", "name": "Why Play Free Keno Online?", "acceptedAnswer": {"@type": "Answer", "text": "Playing free Keno online lets you experience the thrill of the draw without any financial risk. You start with virtual credits and can play as many rounds as you like. It's perfect for learning the rules, testing different pick sizes, or simply relaxing with a casual game. The drawing animation adds to the fun as numbers appear one at a time. Whether you're new to Keno or a longtime fan, this free version offers a quick, entertaining way to play anytime."}}]}</script>
 </head>
 <body class="min-h-screen text-gray-800 antialiased">
   <!-- Nav -->
@@ -185,7 +189,9 @@
       <p class="text-gray-600 mt-2">
         No downloads or registration are required. Just open the page, pick your numbers, and play. Session stats track your games, wins, and net credits so you can see how you're doing. Remember: this is for entertainment only. No real money is wagered or won.
       </p>
-    </article>
+    
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-free-browser-games" style="color:#2563EB;text-decoration:underline;">10 Best Free Browser Games</a>.</p>
+      </article>
 
     <!-- Related Games -->
     <section id="related-games" class="mt-12">
@@ -211,10 +217,19 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
     initToolPage('keno');
     initConsent();
     trackGameView('keno', 'Casino');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'keno');
+    }
+  });
 
     // Paytable: picks -> [matches -> multiplier]
     const PAYTABLE = {

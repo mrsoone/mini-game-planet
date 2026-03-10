@@ -50,6 +50,10 @@
   <meta name="twitter:title" content="Chinese Checkers - Play Online | Mini Game Planet">
   <meta name="twitter:description" content="Play Chinese Checkers online. Star-shaped board, step or hop moves. Free vs AI.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Board", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Backgammon", "item": "https://minigameplanet.com/games/chinese-checkers"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "The Board", "acceptedAnswer": {"@type": "Answer", "text": "The board is shaped like a six-pointed star, with each point forming a triangular \"home\" zone. In the two-player version, you use two opposite triangles. Each player has 10 marbles in their home triangle at the start. Your goal is to move all 10 marbles into the opposite triangle—your opponent's home—before they do the same."}}, {"@type": "Question", "name": "Moving Your Marbles", "acceptedAnswer": {"@type": "Answer", "text": "On your turn, you may move one marble in two ways. A step move means moving to any adjacent empty hole. A hop means jumping over a single marble (yours or your opponent's) to the empty hole directly beyond it. Chain hops are allowed: if after a hop you can hop again, you may continue in the same turn. You cannot combine a step and a hop—each move is either all steps (just one step) or a sequence of hops."}}, {"@type": "Question", "name": "Winning the Game", "acceptedAnswer": {"@type": "Answer", "text": "The first player to get all 10 marbles into the opposite triangle wins. In our simplified two-player version, you play against the computer. The AI uses different strategies based on difficulty: Easy makes mostly random moves, Medium evaluates positions and prefers advancing marbles, and Hard looks several moves ahead to block you and race toward the goal."}}, {"@type": "Question", "name": "Strategy Tips", "acceptedAnswer": {"@type": "Answer", "text": "Advance your marbles in formation rather than leaving stragglers. Use hops whenever possible—they cover more distance. Chain hops can move a marble across much of the board in one turn. Block your opponent's path when you can. Try to create \"ladders\" of your own marbles to enable long hop chains. Avoid clustering marbles in the center if it blocks your own progress."}}, {"@type": "Question", "name": "Play Online", "acceptedAnswer": {"@type": "Answer", "text": "This free online Chinese Checkers game runs in your browser with no download required. Click a marble to select it—valid destinations will highlight in green. Click a highlighted spot to move. Challenge the AI at Easy, Medium, or Hard difficulty. Track your session stats and build winning streaks as you master this timeless board game."}}]}</script>
 </head>
 <body class="min-h-screen text-stone-800">
   <div class="max-w-5xl mx-auto px-4 py-6">
@@ -99,7 +103,9 @@
             <p>This free online Chinese Checkers game runs in your browser with no download required. Click a marble to select it—valid destinations will highlight in green. Click a highlighted spot to move. Challenge the AI at Easy, Medium, or Hard difficulty. Track your session stats and build winning streaks as you master this timeless board game.</p>
             <h3 class="text-base font-semibold">Why Play Chinese Checkers?</h3>
             <p>Chinese Checkers is perfect for quick games or longer strategic sessions. The rules are easy to learn in minutes, but mastering the game takes practice. Planning hop chains, blocking your opponent, and advancing your marbles efficiently creates satisfying moments of tactical play. Whether you're new to the game or a seasoned player, our online version offers a smooth, responsive experience with a clean star-shaped board and intuitive click-to-move controls. No sign-up or download needed—just open the page and play.</p>
-          </article>
+          
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-strategy-games-browser" style="color:#2563EB;text-decoration:underline;">10 Best Free Strategy Games</a>.</p>
+      </article>
         </div>
       </div>
 
@@ -124,11 +130,35 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+  import { renderModeSelector, onMove, onChat, onStart, onTurn, onPlayerLeave, sendMove, sendChat, sendRematch, sendGameOver, renderQuickChat, showChatToast, leaveRoom, isConnected } from '/js/multiplayer.js';
 
     initToolPage('chinese-checkers');
     initConsent();
     initAudio?.();
     trackGameView('chinese-checkers', 'Board');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'chinese-checkers');
+    }
+  });
+
+  // Multiplayer mode selector
+  const mpContainer = document.querySelector('main');
+  if (mpContainer) {
+    getPlayer().then(p => {
+      const pName = p ? p.name : 'Player';
+      renderModeSelector(mpContainer, 'chinese-checkers', pName, {
+        onAI: () => { /* default single-player, already running */ },
+        onPrivate: () => { /* room joined, wire moves */ },
+        onFind: () => { /* match found, wire moves */ },
+      });
+    });
+    onChat(data => showChatToast(data.messageId, data.from));
+  }
 
     const PLAYER = 1, AI = -1;
     const ROWS = 17;

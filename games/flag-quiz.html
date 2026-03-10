@@ -355,6 +355,8 @@
   <meta name="twitter:title" content="Flag Quiz - Test Your World Flag Knowledge">
   <meta name="twitter:description" content="Identify country flags from around the world. 50+ flags, region filters, streak bonuses, and timed rounds.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Math", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Logic Grid Puzzle", "item": "https://minigameplanet.com/games/flag-quiz"}]}</script>
 </head>
 <body class="min-h-screen text-gray-800">
   <!-- Standard imports -->
@@ -438,7 +440,9 @@
         <p id="new-pb-msg" class="text-green-600 font-semibold hidden">New personal best!</p>
         <button id="play-again" class="mt-4 px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700">Play Again</button>
       </div>
-    </article>
+    
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/math-games-brain-benefits" style="color:#2563EB;text-decoration:underline;">Do Math Games Make You Smarter?</a>.</p>
+      </article>
 
     <section id="related-games" class="mb-8">
       <h2 class="text-xl font-semibold mb-4">Related Games</h2>
@@ -799,6 +803,14 @@
       if (typeof initToolPage === 'function') initToolPage('flag-quiz');
       if (typeof initConsent === 'function') initConsent();
       if (typeof trackGameView === 'function') trackGameView('flag-quiz', 'Trivia');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'flag-quiz');
+    }
+  });
     })();
   </script>
 </body>

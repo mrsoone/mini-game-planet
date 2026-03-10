@@ -42,6 +42,10 @@
   <meta name="twitter:title" content="Logic Grid — Einstein-Style Deduction Puzzles | MiniGamePlanet">
   <meta name="twitter:description" content="Solve Einstein-style logic grid puzzles. Use clues to deduce who owns what. 5 puzzles, checkmarks and X marks.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Math", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Equation Builder", "item": "https://minigameplanet.com/games/logic-grid"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Clues\n          \n          ✓ Check Solution\n          \n        \n      \n\n      \n        ✅ Correct!\n        \n        ▶ Next Puzzle\n      \n    \n  \n\n  \n    What Are Logic Grid Puzzles?\n    \n      Logic grid puzzles—sometimes called Einstein puzzles, Zebra puzzles, or logic matrix puzzles—are deductive reasoning games where you use a set of clues to fill in a grid and determine who owns what, lives where, or has which attribute. The classic version asks you to figure out who owns the zebra and who drinks water in a row of five differently colored houses. Each clue narrows the possibilities until only one arrangement satisfies every constraint. Our Logic Grid game brings this timeless brain teaser to your browser with five hand-crafted puzzles of increasing difficulty.\n      How to Play", "acceptedAnswer": {"@type": "Answer", "text": "Select a puzzle (1 through 5) from the buttons at the top. Each puzzle displays a grid with categories as rows and columns—for example, houses on the left and colors across the top. Read the clues in the panel on the right. They might say things like \"The red house is next to the green house\" or \"The person in house 2 owns the dog.\" Your job is to mark each cell as yes (✓), no (✗), or leave it empty if you're unsure. Click a cell to cycle through: empty → yes → no → empty. Each row and each colu"}}, {"@type": "Question", "name": "Understanding the Grid", "acceptedAnswer": {"@type": "Answer", "text": "The grid is a matrix of possibilities. A cell at the intersection of \"House 1\" and \"Red\" means: Is House 1 red? If you mark it yes, House 1 is red and no other house can be red. If you mark it no, House 1 is definitely not red. Use the clues to eliminate impossibilities. For instance, if a clue says \"House 3 is blue,\" you can put a yes in the House 3–Blue cell and no in every other cell in that row and column. Adjacency clues like \"next to\" require you to reason about positions: if Red is next t"}}, {"@type": "Question", "name": "Difficulty Levels", "acceptedAnswer": {"@type": "Answer", "text": "Puzzle 1 uses a small 3×3 grid with three houses and three colors. The clues are direct and few—ideal for learning the format. Puzzle 2 expands to 4×4 with more attributes and slightly trickier clues. Puzzle 3 introduces more indirect reasoning: you'll need to combine multiple clues to deduce some cells. Puzzle 4 uses a 5×5 grid with five houses and five colors, requiring careful tracking of eliminations. Puzzle 5 is the hardest: a 5×5 grid with more complex clues that depend on each other. Work"}}, {"@type": "Question", "name": "Strategy Tips\n      \n        Start with direct clues. If a clue says \"House 2 is green,\" mark that cell yes and all other cells in that row and column no immediately.\n        Use process of elimination. When a row has only one empty cell left, that cell must be yes. Same for columns.\n        Chain your reasoning. \"A is next to B\" and \"B is next to C\" means A, B, and C occupy three consecutive positions. Use that to narrow options.\n        Mark no confidently. When you know something is impossible, mark it no. Those X marks prevent you from second-guessing later.\n        Re-read clues. Easy to miss \"not\" or \"neither\"—double-check each clue as you apply it.\n      \n      Why Logic Grids Matter", "acceptedAnswer": {"@type": "Answer", "text": "Logic grid puzzles strengthen deductive reasoning, attention to detail, and systematic thinking. They require no math beyond counting—just careful reading and logical inference. Teachers use them to teach formal logic and proof techniques; puzzle enthusiasts enjoy them as a satisfying mental workout. The format is universal: once you learn to read the grid and apply clues, you can tackle logic puzzles in books, apps, or newspapers. Our game uses five unique puzzles with verified single solutions"}}, {"@type": "Question", "name": "Free and Private", "acceptedAnswer": {"@type": "Answer", "text": "Logic Grid runs entirely in your browser. No account, no downloads, no data sent to servers. Your progress is stored locally so you can return and pick up where you left off. Perfect for a coffee break, classroom activity, or competitive challenge with friends. Give it a try and see how quickly you can deduce the solution."}}]}</script>
 </head>
 <body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
   <div id="nav-container"></div>
@@ -102,7 +106,9 @@
       <h3 class="text-lg font-bold text-slate-900 mt-6">Free and Private</h3>
       <p>Logic Grid runs entirely in your browser. No account, no downloads, no data sent to servers. Your progress is stored locally so you can return and pick up where you left off. Perfect for a coffee break, classroom activity, or competitive challenge with friends. Give it a try and see how quickly you can deduce the solution.</p>
     </div>
-  </article>
+  
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/math-games-brain-benefits" style="color:#2563EB;text-decoration:underline;">Do Math Games Make You Smarter?</a>.</p>
+      </article>
   <div id="related-games"></div>
   <div id="footer-container"></div>
 
@@ -111,9 +117,18 @@
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
   document.addEventListener('click', () => initAudio(), { once: true });
   initToolPage('logic-grid'); initConsent(); trackGameView('logic-grid', 'Math');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'logic-grid');
+    }
+  });
 
   const PUZZLES = [
     {

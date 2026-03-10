@@ -35,6 +35,10 @@
   <meta name="twitter:title" content="Number Memory Test | MiniGamePlanet">
   <meta name="twitter:description" content="Test your number memory. Remember a number, type it back. Starts at 1 digit, increases each round.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Casual", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Trivia Quiz", "item": "https://minigameplanet.com/games/number-memory"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How It Works", "acceptedAnswer": {"@type": "Answer", "text": "When you click Start, a random single-digit number (0–9) appears. You have several seconds to memorize it. The number then vanishes, and an input field appears. Type what you saw and press Submit or Enter. If you're correct, you advance to level 2, which shows a two-digit number. The pattern continues: level 3 shows three digits, level 4 shows four, and so on. Each level gets slightly harder because there's more to remember, and the display time decreases a bit as the numbers grow longer. This k"}}, {"@type": "Question", "name": "Why Number Memory Matters", "acceptedAnswer": {"@type": "Answer", "text": "Short-term memory—often called working memory—is the mental scratchpad you use to hold information briefly. Phone numbers, addresses, verification codes, and one-time passwords all rely on it. Most people can hold about 7±2 items in working memory, though this varies. The classic \"magic number seven\" from psychology research suggests that digit span—how many random digits you can recall in order—is a good proxy for working memory capacity. Our test is a direct measure of that: how many random di"}}, {"@type": "Question", "name": "Tips for Better Performance\n      \n        Chunk the digits. Instead of remembering \"7-2-9-4-1\" as five separate items, try grouping: \"72\" and \"94\" and \"1,\" or \"729\" and \"41.\" Chunking reduces the cognitive load.\n        Say it aloud (or subvocalize). Rehearsing the number in your head or whispering it can reinforce the memory. The phonological loop—the part of working memory that handles speech—helps maintain the sequence.\n        Focus and minimize distractions. Working memory is easily disrupted. Close other tabs, turn off notifications, and give the number your full attention while it's on screen.\n        Practice regularly. Like any skill, digit span can improve with practice. Try a few rounds each day and see if your personal best creeps up over time.\n      \n      How We Compare", "acceptedAnswer": {"@type": "Answer", "text": "Our Number Memory Test is inspired by similar games found on brain-training and psychology sites. The core mechanic—show a number, hide it, recall it—is a standard digit-span task used in cognitive research. We've made it accessible, fast, and fun: no sign-up, no ads (until you opt in), and your best score is saved locally so you can track progress. The display time scales with digit count to keep the difficulty curve smooth, and we show the correct answer on failure so you learn from mistakes."}}]}</script>
 </head>
 <body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
   <div id="nav-container"></div>
@@ -97,7 +101,9 @@
       <p>Our Number Memory Test is inspired by similar games found on brain-training and psychology sites. The core mechanic—show a number, hide it, recall it—is a standard digit-span task used in cognitive research. We've made it accessible, fast, and fun: no sign-up, no ads (until you opt in), and your best score is saved locally so you can track progress. The display time scales with digit count to keep the difficulty curve smooth, and we show the correct answer on failure so you learn from mistakes.</p>
       <p>Whether you're curious about your working memory, want to warm up before a study session, or simply enjoy a quick mental challenge, the Number Memory Test is here. Give it a try and see how many digits you can remember. Can you beat level 10? Level 15? Your personal best is waiting.</p>
     </div>
-  </article>
+  
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-games-for-work-breaks" style="color:#2563EB;text-decoration:underline;">12 Quick Games for Work Breaks</a>.</p>
+      </article>
   <div id="related-games"></div>
   <div id="footer-container"></div>
 
@@ -106,9 +112,18 @@
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
   document.addEventListener('click',()=>initAudio(),{once:true});
   initToolPage('number-memory'); initConsent(); trackGameView('number-memory','Casual');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'number-memory');
+    }
+  });
 
   const STORAGE_KEY = 'mgp_number_memory_best';
   const BASE_MS = 2500;

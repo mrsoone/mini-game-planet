@@ -66,6 +66,10 @@
   <meta name="twitter:title" content="Word Chain - Word Ladder Puzzle Game">
   <meta name="twitter:description" content="Transform words one letter at a time in this addictive word ladder puzzle. Free to play!">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Word", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Mini Crossword", "item": "https://minigameplanet.com/games/word-chain"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Why Play Word Chain?", "acceptedAnswer": {"@type": "Answer", "text": "Word chain puzzles sharpen your vocabulary, spelling, and pattern recognition. They're perfect for students learning English, word game enthusiasts, and anyone who enjoys a quick mental workout. Unlike crossword puzzles, word ladders require no prior knowledge—just logic and a good grasp of common words. The puzzles range from easy (3-letter words like HOT to COT) to challenging (5-letter transformations like HEART to HEARD)."}}, {"@type": "Question", "name": "How to Play", "acceptedAnswer": {"@type": "Answer", "text": "Type your next word in the input box and press Submit or Enter. The game validates each word against a built-in dictionary of common 3, 4, and 5-letter words. If your word is valid and differs by exactly one letter from the previous step, it's added to your chain. Keep going until you reach the target word. Use fewer steps to improve your personal best and build your streak by solving puzzles consecutively."}}, {"@type": "Question", "name": "Tips for Success", "acceptedAnswer": {"@type": "Answer", "text": "Look at which letters differ between the start and target words. Focus on changing one letter at a time in a logical order. Sometimes the shortest path isn't obvious—try different routes. Use the near-miss feedback to learn when you're close. Track your timer and steps to challenge yourself. With practice, you'll develop an intuition for common word transformations and solve puzzles faster."}}]}</script>
 </head>
 <body class="min-h-screen bg-[#F5F5F4] text-gray-800">
   <div id="nav-container" class="bg-white shadow-sm border-b border-gray-200">
@@ -188,7 +192,9 @@
       <p class="text-gray-600 leading-relaxed">
         Word chain is free to play, works offline once loaded, and requires no sign-up. Enjoy the puzzle!
       </p>
-    </article>
+    
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-word-games-online" style="color:#2563EB;text-decoration:underline;">8 Best Free Word Games</a>.</p>
+      </article>
 
     <div id="related-games" class="mt-8 p-4 bg-white rounded-xl border border-gray-200">
       <h3 class="font-semibold text-gray-800 mb-2">Related Games</h3>
@@ -209,10 +215,19 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
     initToolPage('word-chain');
     initConsent();
     trackGameView('word-chain', 'Word');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'word-chain');
+    }
+  });
 
     // Dictionary: common 3, 4, 5 letter words (lowercase)
     const DICT = {

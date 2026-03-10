@@ -31,6 +31,8 @@
   <meta name="twitter:title" content="Free Memory Match | MiniGamePlanet">
   <meta name="twitter:description" content="Flip cards and find matching pairs.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Card", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "War Card Game", "item": "https://minigameplanet.com/games/memory-match"}]}</script>
 </head>
 <body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
   <div id="nav-container"></div>
@@ -79,7 +81,9 @@
       </ul>
       <p class="mt-6">Play Memory Match free in your browser — test your recall, beat your best time.</p>
     </div>
-  </article>
+  
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-card-games-online" style="color:#2563EB;text-decoration:underline;">8 Best Free Card Games</a>.</p>
+      </article>
   <div id="related-games"></div>
   <div id="footer-container"></div>
 
@@ -88,9 +92,18 @@
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
   document.addEventListener('click',()=>initAudio(),{once:true});
   initToolPage('memory-match'); initConsent(); trackGameView('memory-match','Card');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'memory-match');
+    }
+  });
 
   const EMOJI_POOL=['🐶','🐱','🐸','🦊','🐻','🐼','🐨','🦁','🐮','🐷','🐵','🐔','🐧','🐳','🦄','🐝','🐞','🦋','🌸','🌻','🍎','🍕','🎸','🚀','⭐','🌈','💎','🔥','🎈','🎃'];
 

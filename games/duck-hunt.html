@@ -51,6 +51,10 @@
   <meta name="twitter:title" content="Target Shooter - Duck Hunt Arcade Game">
   <meta name="twitter:description" content="Shoot flying targets in this classic arcade shooting gallery. 60-second timer, accuracy tracking, and bonus targets.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Arcade", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Helicopter", "item": "https://minigameplanet.com/games/duck-hunt"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How to Play", "acceptedAnswer": {"@type": "Answer", "text": "The rules are simple: click or tap to shoot. Your crosshair cursor helps you line up shots as targets—styled as colorful circles and bird-like shapes—move across the play area at varying speeds and trajectories. Each hit adds to your score. The game tracks your accuracy by comparing shots fired to successful hits, so precision matters as much as speed."}}, {"@type": "Question", "name": "Progression and Difficulty", "acceptedAnswer": {"@type": "Answer", "text": "As the round progresses, targets become faster and smaller. Early waves feature larger, slower-moving targets perfect for warming up. Later waves ramp up the challenge with quicker movement and reduced hit zones. Bonus targets appear periodically, worth extra points—keep an eye out for these golden opportunities to boost your score."}}, {"@type": "Question", "name": "Stats and Personal Bests", "acceptedAnswer": {"@type": "Answer", "text": "Target Shooter keeps you motivated with comprehensive session statistics. Your streak counter rewards consecutive hits, encouraging focused play. The personal best score persists across rounds, giving you a clear goal to beat. Accuracy percentage helps you improve your aim over time. Zero-friction restart means you can jump straight back into the action with a single click."}}, {"@type": "Question", "name": "Accessibility and Controls", "acceptedAnswer": {"@type": "Answer", "text": "The game works with both mouse and touch input, making it playable on desktop and mobile devices. A sound toggle lets you customize the audio experience. The clean, minimal interface keeps the focus on the targets and your crosshair. Space Grotesk and DM Mono fonts ensure readable, modern typography throughout."}}, {"@type": "Question", "name": "Free to Play", "acceptedAnswer": {"@type": "Answer", "text": "Target Shooter is completely free to play in your web browser. No downloads, no sign-ups—just instant arcade action. Part of Mini Game Planet's collection of bite-sized browser games, it's perfect for a quick break or an extended shooting session. Grab your virtual rifle and see how many targets you can hit before time runs out!"}}]}</script>
 </head>
 <body class="min-h-screen text-gray-800">
   <nav class="nav-container bg-white shadow-sm border-b border-gray-200">
@@ -115,7 +119,9 @@
 
       <h3>Free to Play</h3>
       <p>Target Shooter is completely free to play in your web browser. No downloads, no sign-ups—just instant arcade action. Part of Mini Game Planet's collection of bite-sized browser games, it's perfect for a quick break or an extended shooting session. Grab your virtual rifle and see how many targets you can hit before time runs out!</p>
-    </article>
+    
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-free-browser-games" style="color:#2563EB;text-decoration:underline;">10 Best Free Browser Games</a>.</p>
+      </article>
 
     <div class="related-games bg-white rounded-xl shadow-md p-6 mb-6">
       <h2 class="text-lg font-semibold mb-3">Related Games</h2>
@@ -136,10 +142,19 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
     initToolPage('duck-hunt');
     initConsent();
     trackGameView('duck-hunt', 'Arcade');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'duck-hunt');
+    }
+  });
 
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');

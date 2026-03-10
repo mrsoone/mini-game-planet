@@ -70,6 +70,10 @@
   <meta name="twitter:title" content="Free Sudoku Online | MiniGamePlanet">
   <meta name="twitter:description" content="Play free Sudoku puzzles at four difficulty levels with notes, timer, and daily challenges.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Puzzle", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "2048", "item": "https://minigameplanet.com/games/sudoku"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How to Play", "acceptedAnswer": {"@type": "Answer", "text": "Click or tap an empty cell to select it, then press a number key (1–9) or tap one of the number buttons below the grid to place a digit. If the digit violates the rules (appears twice in the same row, column, or 3×3 box), it will be highlighted in red if error highlighting is enabled. You have 3 errors allowed before the game ends. Press 0, Delete, or Backspace to erase a cell. Use arrow keys to navigate between cells."}}, {"@type": "Question", "name": "Daily Challenge", "acceptedAnswer": {"@type": "Answer", "text": "The 📅 Daily Challenge generates the same puzzle for everyone each day using a date-based seed. Complete today's puzzle, see your time, and come back tomorrow for a fresh challenge. It is a great way to build a daily habit and track your improvement over time."}}, {"@type": "Question", "name": "History &amp; Origin", "acceptedAnswer": {"@type": "Answer", "text": "Although Sudoku feels timeless, its modern form only emerged in 1979 when Howard Garns, a retired architect from Indianapolis, designed a puzzle called \"Number Place\" for Dell Magazines. The puzzle was introduced to Japan by publisher Nikoli in 1984, who shortened the name to \"Sudoku\" (meaning \"single number\"). It exploded into a global phenomenon in 2004–2005 when Wayne Gould, a retired Hong Kong judge, began supplying computer-generated puzzles to The Times of London. Within months, Sudoku app"}}]}</script>
 </head>
 <body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
   <div id="nav-container"></div>
@@ -183,11 +187,20 @@
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
   document.addEventListener('click', () => initAudio(), { once: true });
   initToolPage('sudoku');
   initConsent();
   trackGameView('sudoku', 'Puzzle');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'sudoku');
+    }
+  });
 
   const CLUE_COUNTS = { easy: 42, medium: 33, hard: 27, expert: 23 };
 

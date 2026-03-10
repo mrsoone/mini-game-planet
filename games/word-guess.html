@@ -34,6 +34,8 @@
   <meta name="twitter:title" content="Free Word Guess Online | MiniGamePlanet">
   <meta name="twitter:description" content="Guess the 5-letter word in 6 tries.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Puzzle", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Match Three", "item": "https://minigameplanet.com/games/word-guess"}]}</script>
 </head>
 <body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
   <div id="nav-container"></div>
@@ -78,7 +80,9 @@
       </ul>
       <p class="mt-6">Play Word Guess free — daily challenge or unlimited random mode.</p>
     </div>
-  </article>
+  
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-puzzle-games-online" style="color:#2563EB;text-decoration:underline;">10 Best Free Puzzle Games</a>.</p>
+      </article>
   <div id="related-games"></div>
   <div id="footer-container"></div>
 
@@ -87,9 +91,18 @@
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
   document.addEventListener('click',()=>initAudio(),{once:true});
   initToolPage('word-guess'); initConsent(); trackGameView('word-guess','Word');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'word-guess');
+    }
+  });
 
   const WORDS=['CRANE','SLATE','AUDIO','ABOUT','ABOVE','ABUSE','ACTED','ACUTE','ADMIT','ADOPT','AGENT','AGREE','AHEAD','ALARM','ALBUM','ALIEN','ALIGN','ALLEY','ALLOW','ALONE','ALTER','AMONG','ANGER','ANGLE','ANGRY','APART','APPLE','APPLY','ARENA','ARGUE','ARISE','ARMOR','ARRAY','ASIDE','ASSET','AVOID','AWARD','AWARE','BACON','BADGE','BADLY','BASIC','BEACH','BEARD','BEAST','BEGIN','BEING','BENCH','BIBLE','BLACK','BLADE','BLAME','BLANK','BLAST','BLAZE','BLEED','BLEND','BLIND','BLOCK','BLOOD','BLOWN','BOARD','BONUS','BOOST','BOUND','BRAIN','BRAND','BRAVE','BREAD','BREAK','BREED','BRICK','BRIEF','BRING','BROAD','BROKE','BROWN','BRUSH','BUILD','BUNCH','BURST','BUYER','CABIN','CANAL','CARRY','CATCH','CAUSE','CHAIN','CHAIR','CHASE','CHEAP','CHECK','CHEST','CHIEF','CHILD','CHINA','CHUNK','CIVIL','CLAIM','CLASS','CLEAN','CLEAR','CLIMB','CLING','CLOCK','CLOSE','CLOUD','COACH','COAST','COLON','COLOR','COMIC','CORAL','COULD','COUNT','COURT','COVER','CRACK','CRAFT','CRASH','CREAM','CRIME','CROSS','CROWD','CRUEL','CRUSH','CURVE','CYCLE','DAILY','DANCE','DEALT','DEATH','DEBUT','DELAY','DEMON','DEPTH','DERBY','DEVIL','DIRTY','DITCH','DOUBT','DOUGH','DRAFT','DRAIN','DRAMA','DRANK','DRAWN','DREAM','DRESS','DRIFT','DRINK','DRIVE','DROPS','DROVE','DRUNK','DRYER','DYING','EAGER','EARLY','EARTH','EIGHT','ELECT','ELITE','EMPTY','ENEMY','ENJOY','ENTER','EQUAL','ERROR','EVENT','EXACT','EXERT','EXIST','EXTRA','FAITH','FALSE','FANCY','FATAL','FAULT','FEAST','FENCE','FEVER','FIBER','FIELD','FIFTH','FIFTY','FIGHT','FINAL','FIRST','FIXED','FLAME','FLASH','FLEET','FLESH','FLOAT','FLOOD','FLOOR','FLOUR','FLUID','FLUSH','FOCUS','FORCE','FORGE','FORTH','FORTY','FORUM','FOUND','FRAME','FRANK','FRAUD','FRESH','FRONT','FROST','FRUIT','FULLY','GIANT','GIVEN','GLASS','GLOBE','GLOOM','GLORY','GRACE','GRADE','GRAIN','GRAND','GRANT','GRAPE','GRAPH','GRASP','GRASS','GRAVE','GREAT','GREEN','GREET','GROSS','GROUP','GROVE','GROWN','GUARD','GUESS','GUEST','GUIDE','GUILT','HABIT','HAPPY','HARSH','HEART','HEAVY','HENCE','HOBBY','HONEY','HONOR','HORSE','HOTEL','HOUSE','HUMAN','HUMOR','IDEAL','IMAGE','IMPLY','INDEX','INDIE','INNER','INPUT','ISSUE','IVORY','JEWEL','JOINT','JUDGE','JUICE','KNIFE','KNOCK','KNOWN','LABEL','LABOR','LARGE','LASER','LATER','LAUGH','LAYER','LEARN','LEASE','LEAST','LEAVE','LEGAL','LEVEL','LIGHT','LIMIT','LINEN','LIVER','LOBBY','LOCAL','LOGIC','LONELY','LOOSE','LOVER','LOWER','LUCKY','LUNCH','LYING','MAGIC','MAJOR','MAKER','MARCH','MASON','MATCH','MAYOR','MEDAL','MEDIA','MERCY','MERIT','METAL','MIGHT','MINOR','MINUS','MIXED','MODEL','MONEY','MONTH','MORAL','MOTOR','MOUNT','MOUSE','MOUTH','MOVED','MOVIE','MUSIC','NAVAL','NERVE','NEVER','NEWLY','NIGHT','NOBLE','NOISE','NORTH','NOTED','NOVEL','NURSE','OCCUR','OCEAN','OFFER','OFTEN','OLIVE','ONSET','OPERA','ORBIT','ORDER','OTHER','OUTER','OWNED','OWNER','OXIDE','PANIC','PANEL','PAPER','PARTY','PATCH','PAUSE','PEACE','PENNY','PHASE','PHONE','PHOTO','PIANO','PIECE','PILOT','PITCH','PIXEL','PLACE','PLAIN','PLANE','PLANT','PLATE','PLAZA','PLEAD','POINT','POUND','POWER','PRESS','PRICE','PRIDE','PRIME','PRINCE','PRINT','PRIOR','PRIZE','PROBE','PROOF','PROUD','PROVE','PULSE','PUNCH','PUPIL','QUEEN','QUEST','QUEUE','QUICK','QUIET','QUITE','QUOTE','RADAR','RADIO','RAISE','RALLY','RANGE','RAPID','RATIO','REACH','REACT','READY','REALM','REBEL','REFER','REIGN','RELAX','REPLY','RIDER','RIDGE','RIFLE','RIGHT','RIGID','RIVAL','RIVER','ROBOT','ROCKY','ROMAN','ROUGH','ROUND','ROUTE','ROYAL','RUGBY','RULER','RURAL','SAINT','SALAD','SAUCE','SCALE','SCENE','SCOPE','SCORE','SENSE','SERVE','SEVEN','SHADE','SHAFT','SHAKE','SHALL','SHAME','SHAPE','SHARE','SHARP','SHEEP','SHEER','SHEET','SHELF','SHELL','SHIFT','SHINE','SHIRT','SHOCK','SHOOT','SHORT','SHOUT','SIGHT','SINCE','SIXTH','SIXTY','SIZED','SKILL','SKULL','SLASH','SLAVE','SLEEP','SLIDE','SLOPE','SMALL','SMART','SMELL','SMILE','SMOKE','SNAKE','SOLAR','SOLID','SOLVE','SORRY','SOUND','SOUTH','SPACE','SPARE','SPEAK','SPEED','SPEND','SPENT','SPILL','SPINE','SPITE','SPLIT','SPOKE','SPORT','SPRAY','SQUAD','STACK','STAFF','STAGE','STAIN','STAKE','STALE','STALL','STAMP','STAND','STARK','START','STATE','STEAM','STEEL','STEEP','STEER','STICK','STIFF','STILL','STOCK','STONE','STOOD','STORE','STORM','STORY','STOVE','STRAP','STRAW','STRIP','STUCK','STUDY','STUFF','STYLE','SUGAR','SUITE','SUPER','SURGE','SWAMP','SWEAR','SWEEP','SWEET','SWEPT','SWIFT','SWING','SWORD','SWORE','SWORN','TABLE','TASTE','TEACH','TEETH','TEMPO','TENDS','TENSE','TENTH','TERMS','THEFT','THEIR','THEME','THERE','THICK','THIEF','THING','THINK','THIRD','THOSE','THREE','THREW','THROW','THUMB','TIGHT','TIMER','TIRED','TITLE','TODAY','TOKEN','TOOTH','TOPIC','TOTAL','TOUCH','TOUGH','TOWER','TOXIC','TRACE','TRACK','TRADE','TRAIL','TRAIN','TRAIT','TRASH','TREAT','TREND','TRIAL','TRIBE','TRICK','TRIED','TROOP','TRUCK','TRULY','TRUMP','TRUNK','TRUST','TRUTH','TUMOR','TWICE','TWIST','ULTRA','UNCLE','UNDER','UNION','UNITY','UNTIL','UPPER','UPSET','URBAN','USAGE','USUAL','UTTER','VALID','VALUE','VAULT','VENUE','VERSE','VIDEO','VIGOR','VINYL','VIRUS','VISIT','VITAL','VIVID','VOCAL','VOICE','VOTER','WAGON','WASTE','WATCH','WATER','WEARY','WHEAT','WHEEL','WHERE','WHICH','WHILE','WHITE','WHOLE','WHOSE','WIDER','WIDOW','WIDTH','WITCH','WOMAN','WORLD','WORRY','WORSE','WORST','WORTH','WOULD','WOUND','WRATH','WRITE','WRONG','WROTE','YACHT','YOUNG','YOUTH','ZEBRA'];
   const VALID_SET=new Set(WORDS);

@@ -41,6 +41,10 @@
   <meta name="twitter:title" content="Free Roulette Online | MiniGamePlanet">
   <meta name="twitter:description" content="Play European Roulette free. Spin the wheel, bet on red, black, numbers. Virtual credits only.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Casino", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Slot Machine", "item": "https://minigameplanet.com/games/roulette"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How to Play", "acceptedAnswer": {"@type": "Answer", "text": "Start with 500 virtual credits. Select a chip size (1, 5, 10, 25, 50, or 100), then click on the betting board to place your bets. You can bet on individual numbers (straight up), groups of numbers (split, street, corner, line), or outside bets like red/black, odd/even, dozens, and columns. Once your bets are placed, click SPIN to spin the wheel. The ball will bounce and eventually land in one of the 37 pockets. All winning bets are paid according to standard European Roulette odds."}}, {"@type": "Question", "name": "Bet Types and Payouts\n      \n        Straight up (single number): 35:1\n        Split (two adjacent numbers): 17:1\n        Street (three numbers in a row): 11:1\n        Corner (four numbers): 8:1\n        Line (six numbers): 5:1\n        Dozen (1–12, 13–24, 25–36): 2:1\n        Column (1st, 2nd, 3rd column): 2:1\n        Red / Black / Odd / Even / 1–18 / 19–36: 1:1\n      \n      History &amp; Origin", "acceptedAnswer": {"@type": "Answer", "text": "Roulette originated in 18th-century France. The name comes from the French word for \"little wheel.\" Blaise Pascal is often credited with inventing an early form while experimenting with perpetual motion machines. The single-zero European wheel became the standard in Monte Carlo, while American casinos added the double zero to increase the house edge. Today, European Roulette remains the preferred version for players seeking better odds."}}]}</script>
 </head>
 <body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
   <div id="nav-container"></div>
@@ -197,7 +201,9 @@
       <p>Yes. This game uses <code class="font-mono text-sm bg-gray-100 px-1 rounded">crypto.getRandomValues()</code> for cryptographically secure randomness. Every spin is fair and unpredictable.</p>
       <p class="mt-6">Play European Roulette free in your browser — no sign-up, no download. Spin the wheel and enjoy the thrill.</p>
     </div>
-  </article>
+  
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-free-browser-games" style="color:#2563EB;text-decoration:underline;">10 Best Free Browser Games</a>.</p>
+      </article>
   <div id="related-games"></div>
   <div id="footer-container"></div>
 
@@ -206,9 +212,18 @@
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
   document.addEventListener('click',()=>initAudio(),{once:true});
   initToolPage('roulette'); initConsent(); trackGameView('roulette','Casino');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'roulette');
+    }
+  });
 
   // European wheel order (clockwise from 0)
   const WHEEL_ORDER = [0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];

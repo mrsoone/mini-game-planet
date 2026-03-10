@@ -47,6 +47,8 @@
   <meta name="twitter:title" content="Spin the Wheel - Prize Wheel Game">
   <meta name="twitter:description" content="Spin the wheel and win! A customizable prize wheel game with realistic physics and confetti celebrations.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Casino", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Coin Flip", "item": "https://minigameplanet.com/games/spin-the-wheel"}]}</script>
 </head>
 <body class="min-h-screen bg-[#F5F5F4] text-gray-900 antialiased">
   <!-- GA4 Consent Banner (defaults) -->
@@ -130,7 +132,9 @@
           The game is fully responsive and works on desktop, tablet, and mobile devices. The canvas-based wheel renders smoothly, and the clean white card design on a warm gray background keeps the focus on the action. With Space Grotesk for headings and DM Mono for technical elements, the typography is modern and readable. Best of all, Spin the Wheel is free to play—no registration, no ads blocking the experience. Spin, win, and enjoy!
         </p>
       </div>
-    </article>
+    
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-free-browser-games" style="color:#2563EB;text-decoration:underline;">10 Best Free Browser Games</a>.</p>
+      </article>
 
     <!-- Related Games -->
     <section id="related-games" class="mt-8">
@@ -156,10 +160,19 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
     initToolPage('spin-the-wheel');
     initConsent();
     trackGameView('spin-the-wheel', 'Casino');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'spin-the-wheel');
+    }
+  });
 
     // Default segments
     const DEFAULT_SEGMENTS = [

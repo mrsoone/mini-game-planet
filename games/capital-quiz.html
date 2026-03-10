@@ -62,6 +62,8 @@
   <meta name="twitter:title" content="Capital Quiz - Test Your World Capitals Knowledge | Mini Game Planet">
   <meta name="twitter:description" content="Free capital city trivia quiz. 100+ countries, region filters, multiple choice or type-in mode, 15-second timer, streak bonuses.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Trivia", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Flag Quiz", "item": "https://minigameplanet.com/games/capital-quiz"}]}</script>
 </head>
 <body class="min-h-screen text-gray-800 antialiased">
   <nav id="nav-container" class="bg-white/80 backdrop-blur border-b border-gray-200 sticky top-0 z-50">
@@ -94,7 +96,9 @@
       <p class="text-gray-600 leading-relaxed mb-4">
         Whether you're preparing for a geography exam, brushing up before a trip, or just enjoy a quick mental challenge, our capital quiz delivers. No sign-up required—just select your region, choose your mode, hit Start, and begin. Sound effects can be toggled on or off for a personalized experience. Your session statistics track total correct answers and best streak across rounds. Ready to prove your capital expertise? Start a round and see how many you can identify!
       </p>
-    </article>
+    
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-free-browser-games" style="color:#2563EB;text-decoration:underline;">10 Best Free Browser Games</a>.</p>
+      </article>
 
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
       <div id="game-start" class="text-center">
@@ -207,10 +211,19 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
     initToolPage('capital-quiz');
     initConsent();
     trackGameView('capital-quiz', 'Trivia');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'capital-quiz');
+    }
+  });
 
     const CAPITALS = [
       { country: "Afghanistan", capital: "Kabul", region: "asia" },

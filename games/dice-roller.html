@@ -162,6 +162,10 @@
   <meta name="twitter:title" content="Dice Roller - Roll Virtual Dice Online">
   <meta name="twitter:description" content="Roll 1-6 dice online with realistic 3D animation. D&D, Yahtzee, Craps modes. Free dice roller with statistics.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Casino", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Roulette", "item": "https://minigameplanet.com/games/dice-roller"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Why Use an Online Dice Roller?", "acceptedAnswer": {"@type": "Answer", "text": "Online dice rollers offer convenience, fairness, and accessibility. You can roll anywhere, anytime, without hunting for lost dice under the couch. Our dice use cryptographically secure randomness via crypto.getRandomValues(), ensuring each roll is truly random—no predictable patterns or bias. That matters when the outcome of a game hangs on a single roll."}}, {"@type": "Question", "name": "Game Modes for Every Player", "acceptedAnswer": {"@type": "Answer", "text": "We support multiple game modes to match your needs. Custom mode lets you choose 1 to 6 standard six-sided dice—perfect for general use. D&D mode simulates polyhedral dice: d4, d6, d8, d10, d12, and d20, so you can roll for initiative, damage, or ability checks. Yahtzee mode locks in 5d6 for that classic five-dice experience. Craps mode uses 2d6, mimicking the casino dice game—with a clear gambling disclaimer that this is entertainment only."}}, {"@type": "Question", "name": "Statistics and Roll History", "acceptedAnswer": {"@type": "Answer", "text": "Curious whether the dice are fair? Our frequency distribution panel shows how often each face (1–6) has appeared across your session. Over many rolls, you'll see the distribution even out—a hallmark of true randomness. Roll history keeps the last 20 rolls so you can review past results or settle disputes."}}, {"@type": "Question", "name": "How It Works", "acceptedAnswer": {"@type": "Answer", "text": "Select your game mode, choose the number of dice (or dice type for D&D), and click Roll. Each die animates with a tumbling effect before landing on its final value. Individual results and the total are displayed immediately. The interface is clean, fast, and works on desktop and mobile."}}, {"@type": "Question", "name": "Play Responsibly", "acceptedAnswer": {"@type": "Answer", "text": "This dice roller is for fun and tabletop gaming. In Craps mode, we include a gambling disclaimer: real-money gambling may be illegal where you live, and this tool does not facilitate it. Enjoy the game, roll fairly, and may the dice be ever in your favor."}}]}</script>
 </head>
 <body class="min-h-screen bg-[#F5F5F4] text-gray-800">
   <div id="nav-container"></div>
@@ -298,7 +302,9 @@
 
       <h3 class="text-xl font-semibold mt-6 mb-2">Play Responsibly</h3>
       <p>This dice roller is for fun and tabletop gaming. In Craps mode, we include a gambling disclaimer: real-money gambling may be illegal where you live, and this tool does not facilitate it. Enjoy the game, roll fairly, and may the dice be ever in your favor.</p>
-    </article>
+    
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-free-browser-games" style="color:#2563EB;text-decoration:underline;">10 Best Free Browser Games</a>.</p>
+      </article>
 
     <div id="related-games" class="mt-6"></div>
   </main>
@@ -310,10 +316,19 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
     initToolPage('dice-roller');
     initConsent();
     trackGameView('dice-roller', 'Casino');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'dice-roller');
+    }
+  });
 
     // Secure random via crypto.getRandomValues
     function secureRandomInt(min, max) {

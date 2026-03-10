@@ -51,6 +51,10 @@
   <meta name="twitter:title" content="Sequence Memory — Grid Memory Test | Mini Game Planet">
   <meta name="twitter:description" content="Test your sequence memory. A 3×3 grid of tiles lights up—remember the order and tap them back. Each round adds one more.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Casual", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Number Memory", "item": "https://minigameplanet.com/games/sequence-memory"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How It Works", "acceptedAnswer": {"@type": "Answer", "text": "Click Start to begin. The game generates a random sequence using crypto.getRandomValues(), so each pattern is unpredictable and cryptographically secure. On round one, a single tile lights up with a blue highlight. After a short pause, it turns off. Your turn: tap that same tile. If you're correct, you advance to level 2. The game now shows a two-step sequence—tile A lights up, then tile B. You must tap A, then B in order. Level 3 adds a third tile, and so on. Each successful round extends the s"}}, {"@type": "Question", "name": "Why Sequence Memory Matters", "acceptedAnswer": {"@type": "Answer", "text": "Spatial sequence memory is used in everyday life more often than you might think. Remembering the order of turns on a drive, the sequence of buttons to press on a keypad, or the path through a building—all of these rely on holding a sequence of locations in mind. Athletes use it to remember plays; musicians use it for finger positions; anyone learning a new interface uses it to recall where to click next. Training this skill can help with navigation, procedural learning, and general cognitive fl"}}, {"@type": "Question", "name": "Tips for Better Performance\n        \n          Chunk by position. Instead of remembering \"tile 1, tile 2, tile 3,\" try grouping: \"top row left, center, bottom right.\" Giving positions verbal labels can help.\n          Use a mental grid. Imagine the grid as a numpad (1–9) or use clock positions. Encoding positions into a system can improve recall.\n          Minimize distractions. Working memory is easily disrupted. Focus fully while the sequence plays.\n          Practice regularly. Your personal best is saved in the browser. Try to beat it over time.\n        \n\n        Sequence Memory vs. Simon Says", "acceptedAnswer": {"@type": "Answer", "text": "Simon Says uses four colored quadrants—red, green, blue, yellow—each with its own sound. The colors and tones provide multiple cues. Sequence Memory strips that away: nine identical tiles, no sound cues (aside from feedback), and no color differentiation. The challenge is purely spatial and sequential. If you've mastered Simon Says, give Sequence Memory a try. It's a different beast, and many players find it surprisingly harder."}}]}</script>
 </head>
 <body class="min-h-screen text-gray-800 antialiased">
   <div id="nav-container"></div>
@@ -113,7 +117,9 @@
 
         <p>Whether you're training your brain, competing for a high score, or just passing the time, Sequence Memory offers a clean, focused challenge. No account required—just click Start and play. How many steps can you remember?</p>
       </div>
-    </article>
+    
+        <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-games-for-work-breaks" style="color:#2563EB;text-decoration:underline;">12 Quick Games for Work Breaks</a>.</p>
+      </article>
 
     <!-- Related games -->
     <section id="related-games" class="mb-8"></section>
@@ -126,10 +132,19 @@
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
     initToolPage('sequence-memory');
     initConsent();
     trackGameView('sequence-memory', 'Casual');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'sequence-memory');
+    }
+  });
 
     const GRID_SIZE = 9;
     const LIT_MS = 400;

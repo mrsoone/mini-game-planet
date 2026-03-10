@@ -31,6 +31,10 @@
   <meta name="twitter:title" content="Free Pipe Connect Online | MiniGamePlanet">
   <meta name="twitter:description" content="Play Pipe Connect free. Rotate pipes to connect water flow.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Puzzle", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Lights Out", "item": "https://minigameplanet.com/games/pipe-connect"}]}</script>
+
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How to Play", "acceptedAnswer": {"@type": "Answer", "text": "Each cell contains a pipe segment: straight pipes connect two opposite sides, corner pipes connect two adjacent sides, T-pipes connect three sides, and cross pipes connect all four. Click any cell to rotate its pipe 90° clockwise. Keep rotating until all pipes form a single connected network. The board starts scrambled — every pipe has been randomly rotated, so the solution exists but needs to be uncovered through rotation."}}, {"@type": "Question", "name": "History &amp; Origin", "acceptedAnswer": {"@type": "Answer", "text": "Pipe puzzles trace their lineage to the classic Windows game \"Pipe Dream\" (also known as \"Pipe Mania\"), released in 1989 by The Assembly Line for Lucasfilm Games. In that version, you placed pipe pieces before water started flowing. The rotation variant — where all pieces are already placed but need to be oriented — became popular in the 2000s through web and mobile games. The concept has appeared in countless puzzle collections, escape rooms, and even as minigames within larger titles like BioS"}}]}</script>
 </head>
 <body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
   <div id="nav-container"></div>
@@ -99,9 +103,18 @@
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
   document.addEventListener('click',()=>initAudio(),{once:true});
   initToolPage('pipe-connect'); initConsent(); trackGameView('pipe-connect','Puzzle');
+
+  getPlayer().then(p => {
+    if (p) {
+      const main = document.querySelector('main');
+      renderIdentityBar(main, p);
+      renderLeaderboard(main, 'pipe-connect');
+    }
+  });
 
   // Directions: 0=up, 1=right, 2=down, 3=left
   const DR=[-1,0,1,0], DC=[0,1,0,-1];
