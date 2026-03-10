@@ -333,42 +333,13 @@ function applyGamePageDecor(game) {
 
   const oldBanner = document.getElementById('mgp-emoji-banner');
   if (oldBanner) oldBanner.remove();
+  const oldHeaderEmojis = document.getElementById('mgp-header-emojis');
+  if (oldHeaderEmojis) oldHeaderEmojis.remove();
+  const oldFooterEmojis = document.getElementById('mgp-footer-emojis');
+  if (oldFooterEmojis) oldFooterEmojis.remove();
 
   const bannerEmojis = [gameEmoji, ...vibeEmojis.slice(0,5), gameEmoji];
-  const emojiHTML = bannerEmojis.map(e => `<span class="mgp-banner-e">${e}</span>`).join('');
-
-  function placeEmojis(id, insertFn) {
-    let el = document.getElementById(id);
-    if (!el) {
-      el = document.createElement('div');
-      el.id = id;
-      el.setAttribute('aria-hidden', 'true');
-      insertFn(el);
-    }
-    el.innerHTML = emojiHTML;
-  }
-
-  const h1 = document.querySelector('main h1, body > div h1, article h1');
-  if (h1) {
-    placeEmojis('mgp-header-emojis', (el) => {
-      const mainEl = document.querySelector('main');
-      if (mainEl) {
-        mainEl.insertAdjacentElement('afterbegin', el);
-      } else {
-        h1.parentElement.insertAdjacentElement('beforebegin', el);
-      }
-    });
-
-    placeEmojis('mgp-footer-emojis', (el) => {
-      const mainEl = document.querySelector('main');
-      const gameCard = mainEl && (mainEl.querySelector(':scope > div') || mainEl.querySelector(':scope > article') || mainEl);
-      if (gameCard) {
-        const disclaimer = gameCard.querySelector('[style*="background:#FEF3C7"], .bg-amber-50');
-        if (disclaimer) disclaimer.insertAdjacentElement('beforebegin', el);
-        else gameCard.appendChild(el);
-      }
-    });
-  }
+  window._mgpBannerEmojis = bannerEmojis;
 
   let style = document.getElementById('mgp-game-decor-style');
   if (!style) {
@@ -418,24 +389,13 @@ function applyGamePageDecor(game) {
       50% { transform: translateY(-14px) rotate(var(--mgp-r, 0deg)) scale(1.08); }
     }
 
-    /* ── Animated emojis ── */
-    #mgp-header-emojis,
-    #mgp-footer-emojis {
-      display: flex;
+    /* ── Animated emojis beside player name ── */
+    .mgp-name-emojis {
+      display: inline-flex;
       align-items: center;
-      gap: clamp(5px, 1.2vw, 10px);
-      justify-content: center;
-      overflow: visible;
-      padding: 6px 0;
+      gap: clamp(3px, 0.8vw, 6px);
       pointer-events: none;
-    }
-    #mgp-header-emojis {
-      position: static;
-      width: 100%;
-      justify-content: center;
-    }
-    #mgp-footer-emojis {
-      margin: 12px auto 4px;
+      vertical-align: middle;
     }
     .mgp-banner-e {
       font-size: clamp(1.2rem, 2.8vw, 1.8rem);
@@ -958,6 +918,10 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page #footer-container footer button {
       color: rgba(255,255,255,0.7) !important;
     }
+    body.mgp-themed-page #footer-container footer img {
+      filter: brightness(1.5) contrast(1.1) !important;
+      opacity: 0.9 !important;
+    }
 
     /* ── Wrapper divs around main should be transparent, not cards ── */
     body.mgp-themed-page > div:not(#nav-container):not(#footer-container):not(#related-games):not(#mgp-game-bg):not(#mgp-emoji-scatter) {
@@ -1114,7 +1078,8 @@ function applyGamePageDecor(game) {
     /* ── Related games ── */
     body.mgp-themed-page #related-games {
       background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important;
-      max-width: min(100vw, 1280px) !important;
+      max-width: min(100vw, 1100px) !important;
+      margin-left: auto !important; margin-right: auto !important;
       overflow-x: hidden !important;
     }
     body.mgp-themed-page #related-games > section {
@@ -1219,6 +1184,7 @@ function renderNav(gameName) {
         <img src="/images/logo.png" alt="Mini Game Planet" style="height:36px;width:auto;">
       </a>
       <div style="display:flex;align-items:center;gap:18px;">
+        <a href="/leaderboard" style="font-size:14px;font-weight:700;color:#D97706;text-decoration:none;transition:color 0.15s;display:flex;align-items:center;gap:4px;" onmouseover="this.style.color='#B45309'" onmouseout="this.style.color='#D97706'">👑 Leaderboards 👑</a>
         <a href="/blog" style="font-size:14px;font-weight:500;color:#94A3B8;text-decoration:none;transition:color 0.15s;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">Blog</a>
         <a href="/about" style="font-size:14px;font-weight:500;color:#94A3B8;text-decoration:none;transition:color 0.15s;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">About</a>
         <a href="/privacy" style="font-size:14px;font-weight:500;color:#94A3B8;text-decoration:none;transition:color 0.15s;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">Privacy</a>
@@ -1272,8 +1238,8 @@ function renderFooter() {
 
   const footerHTML = `
     <footer style="border-top:2px solid #0F172A;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;max-width:100%;">
-      <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:#64748B;">
-        <img src="/images/logo.png" alt="" style="height:20px;width:auto;">
+      <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:#64748B;">
+        <img src="/images/logo.png" alt="MiniGamePlanet" style="height:32px;width:auto;filter:brightness(1.1);flex-shrink:0;">
         <span>&copy; 2026 Jagan Worldwide Games. All rights reserved.</span>
       </div>
       <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
@@ -1344,7 +1310,7 @@ function renderRelatedGames(currentSlug, category) {
   if (related.length === 0) return;
 
   el.innerHTML = `
-    <section class="max-w-5xl mx-auto px-4 py-8">
+    <section style="max-width:min(100vw,1100px);margin:0 auto;padding:16px;">
       <h3 style="font-size:18px;font-weight:700;color:#0F172A;margin-bottom:16px;">More Games You'll Love</h3>
       <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;" class="sm:grid-cols-2 md:grid-cols-4">
         ${related.map(g => buildGameCard(g)).join('')}

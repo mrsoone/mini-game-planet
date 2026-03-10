@@ -445,11 +445,11 @@
     return list;
   }
 
-  // Hot rotation: pick 12 "hot" games, rotate every 5 days
+  // Hot rotation: pick 12 "hot" games, rotate weekly
   function getRotationPeriod() {
     const now = new Date();
     const start = new Date(now.getFullYear(), 0, 1);
-    return Math.floor((now - start) / (5 * 86400000));
+    return Math.floor((now - start) / (7 * 86400000));
   }
   function seededShuffle(arr, seed) {
     const result = [...arr];
@@ -466,6 +466,20 @@
     seededShuffle(allDisplayGames.map(g => g.slug), rotationPeriod * 7919).slice(0, 12)
   );
 
+  const BADGE_TYPES = [
+    { label: 'TOP PICK 🏆', bg: 'linear-gradient(135deg,#6366F1,#4F46E5)', color: '#fff' },
+    { label: 'STAFF PICK 💎', bg: 'linear-gradient(135deg,#0EA5E9,#0284C7)', color: '#fff' },
+    { label: 'TRENDING 📈', bg: 'linear-gradient(135deg,#F43F5E,#E11D48)', color: '#fff' },
+    { label: 'POPULAR 🌟', bg: 'linear-gradient(135deg,#8B5CF6,#7C3AED)', color: '#fff' },
+    { label: 'FAN FAVORITE ❤️', bg: 'linear-gradient(135deg,#EC4899,#DB2777)', color: '#fff' },
+    { label: 'MUST PLAY 🎯', bg: 'linear-gradient(135deg,#10B981,#059669)', color: '#fff' },
+  ];
+  const badgedSlugsArr = seededShuffle(allDisplayGames.filter(g => !hotSlugs.has(g.slug)).map(g => g.slug), rotationPeriod * 3571).slice(0, 18);
+  const badgeMap = {};
+  badgedSlugsArr.forEach((slug, i) => {
+    badgeMap[slug] = BADGE_TYPES[i % BADGE_TYPES.length];
+  });
+
   const hotGridEl = document.getElementById('hot-grid');
   const hotSection = document.getElementById('hot-section');
   const hotHeading = document.getElementById('hot-heading');
@@ -473,11 +487,19 @@
   function renderGameCard(g, showHotBadge) {
     const href = g.built ? `/games/${g.slug}` : '#';
     const opacity = g.built ? '1' : '0.65';
+    const extraBadge = badgeMap[g.slug];
+    let badgeHTML = '';
+    if (g.featured) {
+      badgeHTML = `<div style="position:absolute;top:10px;right:10px;z-index:2;background:linear-gradient(135deg,#F59E0B,#D97706);color:#fff;font-size:11px;font-weight:900;padding:4px 10px;border-radius:20px;letter-spacing:0.3px;">⭐ FEATURED</div>`;
+    } else if (showHotBadge) {
+      badgeHTML = `<div style="position:absolute;top:10px;left:10px;z-index:2;background:#fff;color:${g.accent};font-size:11px;font-weight:900;padding:4px 10px;border-radius:20px;letter-spacing:0.3px;">HOT 🔥</div>`;
+    } else if (extraBadge) {
+      badgeHTML = `<div style="position:absolute;top:10px;left:10px;z-index:2;background:${extraBadge.bg};color:${extraBadge.color};font-size:11px;font-weight:900;padding:4px 10px;border-radius:20px;letter-spacing:0.3px;">${extraBadge.label}</div>`;
+    }
     return `
     <a href="${href}" style="text-decoration:none;display:block;opacity:${opacity};" ${!g.built ? 'title="Coming soon"' : ''}>
       <div class="game-tile" style="position:relative;overflow:hidden;border-radius:14px;height:200px;background:${g.accent};cursor:pointer;" onmouseover="this.style.boxShadow='0 8px 28px ${g.accent}55'" onmouseout="this.style.boxShadow=''">
-        ${g.featured ? `<div style="position:absolute;top:10px;right:10px;z-index:2;background:linear-gradient(135deg,#F59E0B,#D97706);color:#fff;font-size:11px;font-weight:900;padding:4px 10px;border-radius:20px;letter-spacing:0.3px;">⭐ FEATURED</div>` : ''}
-        ${showHotBadge ? `<div style="position:absolute;top:10px;left:10px;z-index:2;background:#fff;color:${g.accent};font-size:11px;font-weight:900;padding:4px 10px;border-radius:20px;letter-spacing:0.3px;">HOT 🔥</div>` : ''}
+        ${badgeHTML}
         <div class="tile-bg-emoji" style="position:absolute;bottom:-10px;right:-10px;font-size:140px;opacity:0.1;transform:rotate(-12deg);line-height:1;transition:opacity 0.2s,transform 0.2s;pointer-events:none;">${g.icon}</div>
         <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,0.35) 0%, transparent 100%);pointer-events:none;"></div>
         <div style="position:absolute;bottom:14px;left:14px;right:14px;z-index:1;">
