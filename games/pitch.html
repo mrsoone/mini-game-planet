@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Pitch (Setback) Online — Play Card Game | MiniGamePlanet</title>
+  <meta name="description" content="Play Pitch (Setback) online free. Bid for trump, score High-Low-Jack-Game. Fast 4-player partnership card game — no download, no sign-up.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/pitch">
+  <link rel="icon" href="/images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <meta property="og:type" content="website"><meta property="og:title" content="Free Pitch Online | MiniGamePlanet"><meta property="og:description" content="Play Pitch (Setback) free — bid, trump, score HLJG."><meta property="og:url" content="https://minigameplanet.com/games/pitch"><meta property="og:image" content="https://minigameplanet.com/images/logo.png"><meta property="og:site_name" content="MiniGamePlanet">
+  <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Free Pitch Online | MiniGamePlanet"><meta name="twitter:description" content="Play Pitch free online."><meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Pitch","url":"https://minigameplanet.com/games/pitch","description":"Play Pitch (Setback) online free — bid-based partnership trick-taking.","genre":"Card","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://minigameplanet.com"},{"@type":"ListItem","position":2,"name":"Card Games","item":"https://minigameplanet.com/#category"},{"@type":"ListItem","position":3,"name":"Pitch","item":"https://minigameplanet.com/games/pitch"}]}</script>
+  <style>
+    .hero-grad{background:linear-gradient(135deg,#7C3AED 0%,#9333EA 20%,#C026D3 40%,#E11D48 60%,#EA580C 80%,#F59E0B 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:heroShift 8s ease-in-out infinite}@keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+    @keyframes mgpBtnPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
+    #pt-table{background:#1a1a2e;border-radius:16px;padding:16px;position:relative;min-height:420px}
+    .pt-seat{position:absolute;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:rgba(255,255,255,0.8)}
+    .pt-seat .pt-name{font-weight:600;font-size:13px;padding:2px 10px;border-radius:6px}
+    .pt-seat.active .pt-name{box-shadow:0 0 0 2px #DC2626;animation:mgpBtnPulse 1s ease infinite}
+    .pt-card{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:clamp(48px,8vw,68px);height:clamp(68px,11.5vw,96px);border-radius:7px;font-family:'DM Mono',monospace;font-weight:700;font-size:clamp(12px,2vw,16px);box-shadow:0 2px 6px rgba(0,0,0,0.15);position:relative;cursor:pointer;transition:transform 0.15s;flex-shrink:0;user-select:none}
+    .pt-card.face-up{background:#fff;border:1.5px solid #E5E7EB}.pt-card.face-down{background:#DC2626;background-image:repeating-linear-gradient(45deg,transparent,transparent 3px,rgba(255,255,255,0.07) 3px,rgba(255,255,255,0.07) 6px);border:1.5px solid rgba(255,255,255,0.2)}
+    .pt-card.red{color:#DC2626}.pt-card.black{color:#0F172A}
+    .pt-card.playable:hover{transform:translateY(-6px)}
+    .pt-trick-area{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:grid;grid-template-areas:"t t t" "l c r" "b b b";grid-template-columns:1fr auto 1fr;gap:4px;justify-items:center;align-items:center;min-width:180px;min-height:140px}
+    #pt-hand{display:flex;justify-content:center;padding:8px}#pt-hand .pt-card{margin:0 -4px}
+    .pt-scoreboard{font-family:'DM Mono',monospace;font-size:12px;background:#0f172a;color:#fff;border-radius:8px;padding:8px 12px;display:flex;gap:20px;justify-content:center}
+    .pt-btn{padding:8px 20px;border-radius:8px;font-size:13px;font-weight:700;border:2px solid;cursor:pointer;font-family:inherit;transition:all 0.1s}.pt-btn:hover{transform:translateY(-1px)}.pt-btn:disabled{opacity:0.4;cursor:not-allowed}
+    @media(max-width:480px){#pt-table{min-height:360px}#pt-hand .pt-card{width:44px;height:62px;font-size:11px}}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;" id="game-wrap">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <div><h1 style="font-size:22px;font-weight:700;margin:0;">🎯 Pitch</h1><p style="font-size:12px;color:#94A3B8;margin:2px 0 0;">Bid for trump — High, Low, Jack, Game</p></div>
+        <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊 Sound</button>
+      </div>
+      <div id="mp-mode-container"></div>
+      <div id="game-area" style="display:none;">
+        <div class="pt-scoreboard" style="margin-bottom:10px;">
+          <span style="color:#60A5FA;">Team 1: <strong id="score-t1">0</strong></span>
+          <span style="color:#94A3B8;">|</span>
+          <span style="color:#F87171;">Team 2: <strong id="score-t2">0</strong></span>
+          <span style="color:#94A3B8;">|</span>
+          <span style="color:#FDE68A;">Trump: <span id="trump-display">—</span></span>
+        </div>
+        <div id="pt-table">
+          <div class="pt-seat" id="seat-north" style="top:8px;left:50%;transform:translateX(-50%);"><span class="pt-name" style="background:rgba(96,165,250,0.2);color:#93C5FD;">North</span><div id="hand-north" style="display:flex;margin-top:4px;"></div></div>
+          <div class="pt-seat" id="seat-east" style="top:50%;right:8px;transform:translateY(-50%);"><span class="pt-name" style="background:rgba(248,113,113,0.2);color:#FCA5A5;">East</span><div id="hand-east" style="display:flex;flex-direction:column;margin-top:4px;"></div></div>
+          <div class="pt-seat" id="seat-west" style="top:50%;left:8px;transform:translateY(-50%);"><span class="pt-name" style="background:rgba(248,113,113,0.2);color:#FCA5A5;">West</span><div id="hand-west" style="display:flex;flex-direction:column;margin-top:4px;"></div></div>
+          <div class="pt-trick-area" id="trick-area"></div>
+          <div class="pt-seat" id="seat-south" style="bottom:8px;left:50%;transform:translateX(-50%);width:90%;"><span class="pt-name" style="background:rgba(96,165,250,0.2);color:#93C5FD;">You</span></div>
+        </div>
+        <div id="pt-hand" style="margin-top:4px;min-height:80px;"></div>
+        <div id="bid-panel" style="display:none;text-align:center;padding:16px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;margin-top:10px;">
+          <p id="bid-prompt" style="font-size:15px;font-weight:700;margin:0 0 8px;">Your Bid</p>
+          <div id="bid-buttons" style="display:flex;gap:8px;justify-content:center;"></div>
+        </div>
+        <div id="round-summary" style="display:none;text-align:center;padding:16px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;margin-top:10px;">
+          <h3 id="round-title" style="font-size:16px;font-weight:700;margin:0 0 8px;"></h3>
+          <div id="round-detail" style="font-family:'DM Mono',monospace;font-size:12px;margin:0 0 12px;"></div>
+          <button id="next-round-btn" class="pt-btn" style="background:#2563EB;color:#fff;border-color:#1D4ED8;">Next Round</button>
+        </div>
+        <div id="game-over-panel" style="display:none;text-align:center;padding:20px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;margin-top:10px;">
+          <h3 id="winner-text" style="font-size:22px;font-weight:700;margin:0 0 4px;"></h3>
+          <p id="final-score" style="font-family:'DM Mono',monospace;font-size:14px;color:#64748B;margin:0 0 16px;"></p>
+          <button id="play-again-btn" class="pt-btn" style="background:#2563EB;color:#fff;border-color:#1D4ED8;padding:10px 28px;">Play Again</button>
+        </div>
+      </div>
+    </div>
+  </main>
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play Pitch (Setback)</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>Pitch (also called Setback or High-Low-Jack) is a fast, competitive 4-player partnership trick-taking game. Each round, players bid for the right to name trump, then play 6 tricks. Up to 4 points are awarded each round: <strong>High</strong> (highest trump played), <strong>Low</strong> (lowest trump played), <strong>Jack</strong> (who captures the Jack of trump), and <strong>Game</strong> (most game points from face cards). First to 21 wins.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Rules</h3>
+      <p>Deal 6 cards to each player. Starting left of dealer, bid 2-4 (or pass). Highest bidder names trump and leads. Must follow led suit if possible. Trump beats non-trump. After all tricks, award High, Low, Jack, Game points. If the bidding team doesn't make their bid, they're "set back" by the bid amount.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Strategy</h3>
+      <ul class="list-disc pl-5 space-y-1">
+        <li><strong>Bid conservatively.</strong> Getting set costs you your bid as negative points.</li>
+        <li><strong>Lead trump early</strong> to flush out opponents' trump and protect your Jack.</li>
+        <li><strong>Count game points.</strong> Face cards (A=4, K=3, Q=2, J=1, 10=10) determine who wins Game.</li>
+      </ul>
+    </div>
+  </article>
+  <div id="related-games"></div><div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playDeal, playDrop, playPerfect, playCollect } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+  import { renderModeSelector } from '/js/multiplayer.js';
+
+  document.addEventListener('click',()=>initAudio(),{once:true});
+  initToolPage('pitch');initConsent();trackGameView('pitch','Card');
+  let playerProfile=null;
+  getPlayer().then(p=>{playerProfile=p;if(p){const m=document.querySelector('main');renderIdentityBar(m,p);renderLeaderboard(m,'pitch');}});
+  document.getElementById('sound-btn').addEventListener('click',()=>{initAudio();const m=muteAll();document.getElementById('sound-btn').textContent=m?'🔇 Sound':'🔊 Sound';});
+
+  const SUITS=['clubs','diamonds','hearts','spades'];
+  const RANKS=['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+  const SYM={spades:'♠',hearts:'♥',diamonds:'♦',clubs:'♣'};
+  const RED={hearts:true,diamonds:true};
+  const SEATS=['south','west','north','east'];
+  const TEAM={south:0,north:0,east:1,west:1};
+  const GAME_PTS={A:4,K:3,Q:2,J:1,'10':10};
+  const TARGET=21;
+
+  let hands={south:[],west:[],north:[],east:[]};
+  let scores=[0,0],trump=null,highBid=0,bidder=null,bidTeam=-1;
+  let currentTrick=[],leadSeat=null,currentSeat=null,dealer=0,phase='idle';
+  let tricksTaken={0:[],1:[]};
+  let gameStartTime=null,isOnline=false;
+
+  function rv(c){return RANKS.indexOf(c.rank);}
+  function cardKey(c){return `${c.rank}-${c.suit}`;}
+
+  function makeDeck(){const d=[];for(const s of SUITS)for(const r of RANKS)d.push({suit:s,rank:r});for(let i=d.length-1;i>0;i--){const a=new Uint32Array(1);crypto.getRandomValues(a);const j=a[0]%(i+1);[d[i],d[j]]=[d[j],d[i]];}return d;}
+  function sortHand(h){const so={clubs:0,diamonds:1,hearts:2,spades:3};h.sort((a,b)=>{const sd=so[a.suit]-so[b.suit];return sd!==0?sd:rv(a)-rv(b);});}
+
+  function deal(){const deck=makeDeck();for(const s of SEATS)hands[s]=[];for(let i=0;i<24;i++)hands[SEATS[i%4]].push(deck[i]);for(const s of SEATS)sortHand(hands[s]);trump=null;highBid=0;bidder=null;bidTeam=-1;tricksTaken={0:[],1:[]};currentTrick=[];}
+
+  function makeCardHTML(c,faceUp=true,playable=false){
+    if(!faceUp)return `<div class="pt-card face-down" style="width:28px;height:40px;margin:-8px 0;"></div>`;
+    const color=RED[c.suit]?'red':'black';
+    return `<div class="pt-card face-up ${color}${playable?' playable':''}" data-key="${cardKey(c)}"><span style="position:absolute;top:3px;left:5px;font-size:clamp(10px,1.6vw,12px);line-height:1;">${c.rank}<br>${SYM[c.suit]}</span><span style="font-size:clamp(16px,2.8vw,22px);">${SYM[c.suit]}</span></div>`;
+  }
+
+  function getValid(){const hand=hands.south;if(currentTrick.length===0)return hand;const ledSuit=currentTrick[0].card.suit;const f=hand.filter(c=>c.suit===ledSuit);return f.length>0?f:hand;}
+
+  function renderAll(){
+    const valid=getValid();
+    document.getElementById('pt-hand').innerHTML=hands.south.map(c=>makeCardHTML(c,true,phase==='play'&&currentSeat==='south'&&valid.some(v=>cardKey(v)===cardKey(c)))).join('');
+    for(const s of ['north','east','west'])document.getElementById(`hand-${s}`).innerHTML=Array(hands[s].length).fill('<div class="pt-card face-down" style="width:28px;height:40px;margin:-8px 0;"></div>').join('');
+    const pos={south:'b',west:'l',north:'t',east:'r'};const areas={t:'grid-area:t;',l:'grid-area:l;',r:'grid-area:r;',b:'grid-area:b;'};
+    document.getElementById('trick-area').innerHTML=currentTrick.map(e=>`<div style="${areas[pos[e.seat]]}">${makeCardHTML(e.card,true)}</div>`).join('');
+    for(const s of SEATS)document.getElementById(`seat-${s}`).classList.toggle('active',s===currentSeat);
+    document.getElementById('score-t1').textContent=scores[0];document.getElementById('score-t2').textContent=scores[1];
+    document.getElementById('trump-display').textContent=trump?SYM[trump]:'—';
+    document.getElementById('pt-hand').querySelectorAll('.pt-card.playable').forEach(el=>{
+      el.addEventListener('click',()=>{const card=hands.south.find(c=>cardKey(c)===el.dataset.key);if(card)playCard('south',card);});
+    });
+  }
+
+  function startBidding(){phase='bid';bidIndex(0);}
+  function bidIndex(idx){
+    const si=(dealer+1+idx)%4;currentSeat=SEATS[si];renderAll();
+    if(currentSeat==='south'){showBidPanel(idx);}
+    else{setTimeout(()=>{
+      const hand=hands[currentSeat];let best=0;
+      for(const s of SUITS){const cnt=hand.filter(c=>c.suit===s).length;const hasA=hand.some(c=>c.suit===s&&c.rank==='A');if(cnt>=3||(cnt>=2&&hasA))best=Math.max(best,Math.min(cnt,4));}
+      if(best>highBid){highBid=best;bidder=currentSeat;bidTeam=TEAM[currentSeat];playClick();}
+      if(idx<3)bidIndex(idx+1);else finishBid();
+    },400);}
+  }
+
+  function showBidPanel(idx){
+    const panel=document.getElementById('bid-panel');panel.style.display='block';
+    document.getElementById('bid-prompt').textContent=`Current high bid: ${highBid||'none'}. Your bid?`;
+    const btns=document.getElementById('bid-buttons');btns.innerHTML='';
+    for(let b=2;b<=4;b++){
+      const btn=document.createElement('button');btn.className='pt-btn';btn.style.cssText='background:#059669;color:#fff;border-color:#047857;';btn.textContent=b;
+      if(b<=highBid)btn.disabled=true;
+      btn.addEventListener('click',()=>{panel.style.display='none';highBid=b;bidder='south';bidTeam=0;playClick();if(idx<3)bidIndex(idx+1);else finishBid();});
+      btns.appendChild(btn);
+    }
+    const pass=document.createElement('button');pass.className='pt-btn';pass.style.cssText='background:#64748B;color:#fff;border-color:#475569;';pass.textContent='Pass';
+    pass.addEventListener('click',()=>{panel.style.display='none';playClick();if(idx<3)bidIndex(idx+1);else finishBid();});
+    btns.appendChild(pass);
+  }
+
+  function finishBid(){
+    if(!bidder){bidder=SEATS[(dealer+1)%4];bidTeam=TEAM[bidder];highBid=2;}
+    trump=chooseTrump(bidder);document.getElementById('bid-panel').style.display='none';startPlaying();
+  }
+
+  function chooseTrump(seat){
+    const hand=hands[seat];let bestSuit=null,bestCount=0;
+    for(const s of SUITS){const cnt=hand.filter(c=>c.suit===s).length;if(cnt>bestCount){bestCount=cnt;bestSuit=s;}}
+    return bestSuit||'spades';
+  }
+
+  function startPlaying(){phase='play';leadSeat=bidder;currentSeat=leadSeat;renderAll();if(currentSeat!=='south')setTimeout(aiPlay,500);}
+
+  function playCard(seat,card){
+    hands[seat]=hands[seat].filter(c=>cardKey(c)!==cardKey(card));
+    currentTrick.push({seat,card});playDrop();renderAll();
+    if(currentTrick.length===4){setTimeout(resolveTrick,700);}
+    else{currentSeat=SEATS[(SEATS.indexOf(seat)+1)%4];renderAll();if(currentSeat!=='south')setTimeout(aiPlay,500);}
+  }
+
+  function aiPlay(){
+    if(phase!=='play')return;
+    const hand=hands[currentSeat];if(!hand.length)return;
+    const leading=currentTrick.length===0;
+    let card;
+    if(leading){const trumpCards=hand.filter(c=>c.suit===trump);card=trumpCards.length>0?trumpCards[trumpCards.length-1]:hand[hand.length-1];}
+    else{const ledSuit=currentTrick[0].card.suit;const f=hand.filter(c=>c.suit===ledSuit);if(f.length>0)card=f[f.length-1];else{const t=hand.filter(c=>c.suit===trump);card=t.length>0?t[0]:hand[0];}}
+    playCard(currentSeat,card);
+  }
+
+  function trickWinner(){
+    const ledSuit=currentTrick[0].card.suit;let w=currentTrick[0];
+    for(let i=1;i<currentTrick.length;i++){const e=currentTrick[i];if(e.card.suit===trump&&w.card.suit!==trump){w=e;continue;}if(w.card.suit===trump&&e.card.suit!==trump)continue;if(e.card.suit===w.card.suit&&rv(e.card)>rv(w.card))w=e;}
+    return w.seat;
+  }
+
+  function resolveTrick(){
+    const winner=trickWinner();const team=TEAM[winner];
+    for(const e of currentTrick)tricksTaken[team].push(e.card);
+    playCollect();currentTrick=[];renderAll();
+    const totalPlayed=tricksTaken[0].length+tricksTaken[1].length;
+    if(totalPlayed>=24){endRound();return;}
+    leadSeat=winner;currentSeat=winner;renderAll();
+    if(currentSeat!=='south')setTimeout(aiPlay,500);
+  }
+
+  function endRound(){
+    phase='scoring';
+    const allTrump=[];for(let t=0;t<2;t++)for(const c of tricksTaken[t])if(c.suit===trump)allTrump.push({card:c,team:t});
+    allTrump.sort((a,b)=>rv(a.card)-rv(b.card));
+
+    const pts=[0,0];let details=[];
+    if(allTrump.length>0){const hi=allTrump[allTrump.length-1];pts[hi.team]++;details.push(`High (${hi.card.rank}${SYM[trump]}): Team ${hi.team+1}`);}
+    if(allTrump.length>0){const lo=allTrump[0];pts[lo.team]++;details.push(`Low (${lo.card.rank}${SYM[trump]}): Team ${lo.team+1}`);}
+    const jack=allTrump.find(e=>e.card.rank==='J');if(jack){pts[jack.team]++;details.push(`Jack: Team ${jack.team+1}`);}
+
+    const gamePts=[0,0];
+    for(let t=0;t<2;t++)for(const c of tricksTaken[t])gamePts[t]+=(GAME_PTS[c.rank]||0);
+    if(gamePts[0]!==gamePts[1]){const gw=gamePts[0]>gamePts[1]?0:1;pts[gw]++;details.push(`Game (${gamePts[gw]}): Team ${gw+1}`);}
+
+    if(pts[bidTeam]>=highBid)scores[bidTeam]+=pts[bidTeam];
+    else{scores[bidTeam]-=highBid;details.push(`Set! Team ${bidTeam+1} -${highBid}`);}
+    const defTeam=1-bidTeam;scores[defTeam]+=pts[defTeam];
+
+    renderAll();
+    if(scores[0]>=TARGET||scores[1]>=TARGET){endGame();return;}
+    document.getElementById('round-summary').style.display='block';
+    document.getElementById('round-title').textContent=`Points: T1 +${pts[0]} / T2 +${pts[1]}`;
+    document.getElementById('round-detail').innerHTML=details.join('<br>');
+    document.getElementById('next-round-btn').onclick=()=>{document.getElementById('round-summary').style.display='none';startRound();};
+  }
+
+  function endGame(){
+    phase='over';const won=scores[0]>=TARGET&&scores[0]>=scores[1];
+    document.getElementById('game-over-panel').style.display='block';
+    document.getElementById('winner-text').textContent=won?'🎉 Your Team Wins!':'😞 Opponent Team Wins';
+    document.getElementById('final-score').textContent=`Final: ${scores[0]} — ${scores[1]}`;
+    if(won)playPerfect();else playGameOver();
+    const dur=Math.round((Date.now()-gameStartTime)/1000);
+    trackGameOver('pitch','Card',won?1:0,scores[0]);
+    submitStats('pitch',{score:scores[0],duration:dur,win:won,loss:!won,online:isOnline});
+    document.getElementById('play-again-btn').focus();
+    document.getElementById('play-again-btn').onclick=()=>{document.getElementById('game-over-panel').style.display='none';startNewGame();};
+  }
+
+  function startRound(){dealer=(dealer+1)%4;deal();renderAll();playDeal();startBidding();}
+  function startNewGame(){scores=[0,0];dealer=0;gameStartTime=Date.now();trackGameStart('pitch','Card');startRound();}
+
+  renderModeSelector(document.getElementById('mp-mode-container'),'pitch',playerProfile?.name||'Player',{
+    onAI:()=>{isOnline=false;document.getElementById('game-area').style.display='block';startNewGame();},
+    onPrivate:()=>{isOnline=true;document.getElementById('game-area').style.display='block';startNewGame();},
+    onFind:()=>{isOnline=true;document.getElementById('game-area').style.display='block';startNewGame();},
+  },{maxPlayers:4,teams:true});
+  </script>
+</body>
+</html>

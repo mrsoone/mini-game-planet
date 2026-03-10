@@ -1115,7 +1115,7 @@ export const games = [
     icon: '🂫',
     accent: '#DC2626',
     keywords: ['euchre online', 'play euchre free', 'euchre card game', 'trick taking'],
-    built: false,
+    built: true,
     multiplayer: true,
     maxPlayers: 4,
     ranked: true
@@ -1141,7 +1141,7 @@ export const games = [
     icon: '🔥',
     accent: '#DC2626',
     keywords: ['oh hell online', 'oh hell card game', 'bid whist', 'trick taking game'],
-    built: false,
+    built: true,
     multiplayer: true,
     maxPlayers: 6
   },
@@ -1153,7 +1153,7 @@ export const games = [
     icon: '🎯',
     accent: '#DC2626',
     keywords: ['pitch card game', 'setback online', 'play pitch free', 'high low jack'],
-    built: false,
+    built: true,
     multiplayer: true,
     maxPlayers: 4
   },
@@ -1165,7 +1165,7 @@ export const games = [
     icon: '👑',
     accent: '#DC2626',
     keywords: ['presidents card game', 'play presidents online', 'a-hole card game', 'shedding game'],
-    built: false,
+    built: true,
     multiplayer: true,
     maxPlayers: 6
   },

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Euchre Online — Play With Friends or AI | MiniGamePlanet</title>
+  <meta name="description" content="Play Euchre online free — fast 4-player partnership trick-taking with trump. Call trump, go alone, and race to 10 points. No download, no sign-up.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/euchre">
+  <link rel="icon" href="/images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500});gtag('config','G-XXXXXXXXXX');</script>
+  <meta property="og:type" content="website"><meta property="og:title" content="Free Euchre Online | MiniGamePlanet"><meta property="og:description" content="Play Euchre free — call trump, go alone, race to 10."><meta property="og:url" content="https://minigameplanet.com/games/euchre"><meta property="og:image" content="https://minigameplanet.com/images/logo.png"><meta property="og:site_name" content="MiniGamePlanet">
+  <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Free Euchre Online | MiniGamePlanet"><meta name="twitter:description" content="Play Euchre free online."><meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Euchre","url":"https://minigameplanet.com/games/euchre","description":"Play Euchre online free — 4-player partnership trick-taking.","genre":"Card","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://minigameplanet.com"},{"@type":"ListItem","position":2,"name":"Card Games","item":"https://minigameplanet.com/#category"},{"@type":"ListItem","position":3,"name":"Euchre","item":"https://minigameplanet.com/games/euchre"}]}</script>
+  <style>
+    .hero-grad{background:linear-gradient(135deg,#7C3AED 0%,#9333EA 20%,#C026D3 40%,#E11D48 60%,#EA580C 80%,#F59E0B 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:heroShift 8s ease-in-out infinite}@keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+    @keyframes mgpBtnPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
+    #eu-table{background:#1a1a2e;border-radius:16px;padding:16px;position:relative;min-height:440px;overflow:hidden}
+    .eu-seat{position:absolute;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:rgba(255,255,255,0.8);font-family:'Space Grotesk',sans-serif}
+    .eu-seat .eu-name{font-weight:600;font-size:13px;padding:2px 10px;border-radius:6px;white-space:nowrap}
+    .eu-seat.active .eu-name{box-shadow:0 0 0 2px #DC2626;animation:mgpBtnPulse 1s ease infinite}
+    .eu-card{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:clamp(48px,8vw,68px);height:clamp(68px,11.5vw,96px);border-radius:7px;font-family:'DM Mono',monospace;font-weight:700;font-size:clamp(12px,2vw,16px);box-shadow:0 2px 6px rgba(0,0,0,0.15);position:relative;cursor:pointer;transition:transform 0.15s;flex-shrink:0;user-select:none}
+    .eu-card.face-up{background:#fff;border:1.5px solid #E5E7EB}.eu-card.face-down{background:#DC2626;background-image:repeating-linear-gradient(45deg,transparent,transparent 3px,rgba(255,255,255,0.07) 3px,rgba(255,255,255,0.07) 6px);border:1.5px solid rgba(255,255,255,0.2)}
+    .eu-card.red{color:#DC2626}.eu-card.black{color:#0F172A}
+    .eu-card.playable:hover{transform:translateY(-6px);box-shadow:0 6px 16px rgba(0,0,0,0.25)}
+    .eu-trick-area{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:grid;grid-template-areas:"t t t" "l c r" "b b b";grid-template-columns:1fr auto 1fr;gap:4px;justify-items:center;align-items:center;min-width:180px;min-height:140px}
+    #eu-hand{display:flex;justify-content:center;padding:8px;overflow-x:auto}#eu-hand .eu-card{margin:0 -4px}
+    .eu-scoreboard{font-family:'DM Mono',monospace;font-size:12px;background:#0f172a;color:#fff;border-radius:8px;padding:8px 12px;display:grid;grid-template-columns:1fr auto auto;gap:4px 16px}
+    .eu-btn{padding:8px 20px;border-radius:8px;font-size:13px;font-weight:700;border:2px solid;cursor:pointer;font-family:inherit;transition:all 0.1s}.eu-btn:hover{transform:translateY(-1px)}.eu-btn:active{transform:scale(0.97)}.eu-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none}
+    @media(max-width:480px){#eu-table{min-height:380px;padding:10px}#eu-hand .eu-card{width:44px;height:62px;font-size:11px}}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;" id="game-wrap">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <div><h1 style="font-size:22px;font-weight:700;margin:0;">🂫 Euchre</h1><p style="font-size:12px;color:#94A3B8;margin:2px 0 0;">Fast 4-player partnership trump game</p></div>
+        <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊 Sound</button>
+      </div>
+      <div id="mp-mode-container"></div>
+      <div id="game-area" style="display:none;">
+        <div class="eu-scoreboard" id="scoreboard" style="margin-bottom:10px;">
+          <span></span><span style="color:#94A3B8;font-size:10px;">SCORE</span><span style="color:#94A3B8;font-size:10px;">TRICKS</span>
+          <span style="font-weight:700;color:#60A5FA;">Team 1 (You+North)</span><span id="score-t1">0</span><span id="tricks-t1">0</span>
+          <span style="font-weight:700;color:#F87171;">Team 2 (East+West)</span><span id="score-t2">0</span><span id="tricks-t2">0</span>
+        </div>
+        <div id="eu-table">
+          <div class="eu-seat" id="seat-north" style="top:8px;left:50%;transform:translateX(-50%);"><span class="eu-name" style="background:rgba(96,165,250,0.2);color:#93C5FD;">North</span><div id="hand-north" style="display:flex;margin-top:4px;"></div></div>
+          <div class="eu-seat" id="seat-east" style="top:50%;right:8px;transform:translateY(-50%);"><span class="eu-name" style="background:rgba(248,113,113,0.2);color:#FCA5A5;">East</span><div id="hand-east" style="display:flex;flex-direction:column;margin-top:4px;"></div></div>
+          <div class="eu-seat" id="seat-west" style="top:50%;left:8px;transform:translateY(-50%);"><span class="eu-name" style="background:rgba(248,113,113,0.2);color:#FCA5A5;">West</span><div id="hand-west" style="display:flex;flex-direction:column;margin-top:4px;"></div></div>
+          <div class="eu-trick-area" id="trick-area"></div>
+          <div class="eu-seat" id="seat-south" style="bottom:8px;left:50%;transform:translateX(-50%);width:90%;"><span class="eu-name" style="background:rgba(96,165,250,0.2);color:#93C5FD;">You</span></div>
+          <div id="trump-display" style="position:absolute;top:8px;right:12px;text-align:center;"><span style="color:#FDE68A;font-size:10px;">TRUMP</span><div id="trump-card" style="margin-top:2px;"></div></div>
+        </div>
+        <div id="eu-hand" style="margin-top:4px;min-height:80px;"></div>
+        <div id="bid-panel" style="display:none;text-align:center;padding:16px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;margin-top:10px;">
+          <p id="bid-prompt" style="font-size:15px;font-weight:700;margin:0 0 8px;"></p>
+          <div id="bid-buttons" style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;"></div>
+        </div>
+        <div id="round-summary" style="display:none;text-align:center;padding:16px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;margin-top:10px;">
+          <h3 id="round-title" style="font-size:16px;font-weight:700;margin:0 0 8px;"></h3>
+          <p id="round-detail" style="font-size:13px;color:#64748B;margin:0 0 12px;"></p>
+          <button id="next-round-btn" class="eu-btn" style="background:#2563EB;color:#fff;border-color:#1D4ED8;">Next Round</button>
+        </div>
+        <div id="game-over-panel" style="display:none;text-align:center;padding:20px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;margin-top:10px;">
+          <h3 id="winner-text" style="font-size:22px;font-weight:700;margin:0 0 4px;"></h3>
+          <p id="final-score" style="font-family:'DM Mono',monospace;font-size:14px;color:#64748B;margin:0 0 16px;"></p>
+          <button id="play-again-btn" class="eu-btn" style="background:#2563EB;color:#fff;border-color:#1D4ED8;padding:10px 28px;">Play Again</button>
+        </div>
+      </div>
+    </div>
+  </main>
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play Euchre Online</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>Euchre is a fast-paced trick-taking card game for four players in partnerships. Using only 24 cards (9 through Ace), each round is just 5 tricks — making games quick, exciting, and perfect for competitive play. Euchre is the most popular card game in the American Midwest and parts of Canada.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">The Rules</h3>
+      <p>Deal 5 cards to each player. Flip one card face-up — this proposes the trump suit. Going clockwise from the dealer's left, each player can "order up" (accept) or "pass." If ordered up, the dealer picks up the face-up card and discards one. If all pass, a second round lets players name any other suit as trump.</p>
+      <p><strong>Bowers:</strong> The Jack of trump (Right Bower) is the highest card. The Jack of the same-color suit (Left Bower) is the second highest. Card rank in trump: Right Bower > Left Bower > A > K > Q > 10 > 9.</p>
+      <p>Play 5 tricks. Follow suit if possible. Highest trump wins, otherwise highest of the led suit. The team that called trump must take 3+ tricks to score.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Scoring</h3>
+      <ul class="list-disc pl-5 space-y-1">
+        <li>Making team takes 3-4 tricks: <strong>1 point</strong></li>
+        <li>Making team takes all 5 tricks (march): <strong>2 points</strong></li>
+        <li>Defending team takes 3+ tricks (euchre): <strong>2 points</strong> to defenders</li>
+        <li>Going alone and taking all 5: <strong>4 points</strong></li>
+      </ul>
+      <p>First team to <strong>10 points</strong> wins.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Strategy</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Count bowers.</strong> If you hold both bowers, consider going alone.</li>
+        <li><strong>Lead trump</strong> to pull out opponents' trump cards early.</li>
+        <li><strong>Don't call trump on weak hands.</strong> Getting euchred gives opponents 2 free points.</li>
+      </ul>
+    </div>
+  </article>
+  <div id="related-games"></div><div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playDeal, playDrop, playPerfect, playCollect } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+  import { renderModeSelector } from '/js/multiplayer.js';
+
+  document.addEventListener('click',()=>initAudio(),{once:true});
+  initToolPage('euchre');initConsent();trackGameView('euchre','Card');
+  let playerProfile=null;
+  getPlayer().then(p=>{playerProfile=p;if(p){const m=document.querySelector('main');renderIdentityBar(m,p);renderLeaderboard(m,'euchre');}});
+  document.getElementById('sound-btn').addEventListener('click',()=>{initAudio();const m=muteAll();document.getElementById('sound-btn').textContent=m?'🔇 Sound':'🔊 Sound';});
+
+  const SUITS=['hearts','diamonds','clubs','spades'];
+  const EUCHRE_RANKS=['9','10','J','Q','K','A'];
+  const SYM={spades:'♠',hearts:'♥',diamonds:'♦',clubs:'♣'};
+  const RED={hearts:true,diamonds:true};
+  const SEATS=['south','west','north','east'];
+  const TEAM={south:0,north:0,east:1,west:1};
+  const SAME_COLOR={hearts:'diamonds',diamonds:'hearts',clubs:'spades',spades:'clubs'};
+  const TARGET=10;
+
+  let hands={south:[],west:[],north:[],east:[]};
+  let scores=[0,0],trickCount=[0,0];
+  let trump=null,turnedCard=null,callingTeam=-1,goingAlone=false,aloneSeat=null;
+  let currentTrick=[],leadSeat=null,currentSeat=null,dealer=0,phase='idle';
+  let gameStartTime=null,isOnline=false,streak=0;
+
+  function rv(c){return EUCHRE_RANKS.indexOf(c.rank);}
+  function cardKey(c){return `${c.rank}-${c.suit}`;}
+  function isRightBower(c){return c.rank==='J'&&c.suit===trump;}
+  function isLeftBower(c){return c.rank==='J'&&c.suit===SAME_COLOR[trump];}
+  function effectiveSuit(c){return isLeftBower(c)?trump:c.suit;}
+  function cardStrength(c){
+    if(isRightBower(c))return 100;
+    if(isLeftBower(c))return 99;
+    if(effectiveSuit(c)===trump)return 50+rv(c);
+    return rv(c);
+  }
+
+  function makeDeck(){
+    const d=[];for(const s of SUITS)for(const r of EUCHRE_RANKS)d.push({suit:s,rank:r});
+    for(let i=d.length-1;i>0;i--){const a=new Uint32Array(1);crypto.getRandomValues(a);const j=a[0]%(i+1);[d[i],d[j]]=[d[j],d[i]];}
+    return d;
+  }
+
+  function deal(){
+    const deck=makeDeck();
+    for(const s of SEATS)hands[s]=[];
+    for(let i=0;i<20;i++)hands[SEATS[i%4]].push(deck[i]);
+    turnedCard=deck[20];
+    for(const s of SEATS)hands[s].sort((a,b)=>rv(a)-rv(b));
+    trickCount=[0,0];currentTrick=[];trump=null;callingTeam=-1;goingAlone=false;aloneSeat=null;
+  }
+
+  function makeCardHTML(c,faceUp=true,playable=false){
+    if(!faceUp)return `<div class="eu-card face-down" style="width:28px;height:40px;margin:-8px 0;"></div>`;
+    const color=RED[c.suit]?'red':'black';
+    return `<div class="eu-card face-up ${color}${playable?' playable':''}" data-key="${cardKey(c)}"><span style="position:absolute;top:3px;left:5px;font-size:clamp(10px,1.6vw,12px);line-height:1;">${c.rank}<br>${SYM[c.suit]}</span><span style="font-size:clamp(16px,2.8vw,22px);">${SYM[c.suit]}</span></div>`;
+  }
+
+  function getValid(){
+    const hand=hands.south;
+    if(currentTrick.length===0)return hand;
+    const ledSuit=effectiveSuit(currentTrick[0].card);
+    const following=hand.filter(c=>effectiveSuit(c)===ledSuit);
+    return following.length>0?following:hand;
+  }
+
+  function renderAll(){
+    const valid=getValid();
+    document.getElementById('eu-hand').innerHTML=hands.south.map(c=>makeCardHTML(c,true,phase==='play'&&currentSeat==='south'&&valid.some(v=>cardKey(v)===cardKey(c)))).join('');
+    for(const s of ['north','east','west'])document.getElementById(`hand-${s}`).innerHTML=Array(hands[s].length).fill('<div class="eu-card face-down" style="width:28px;height:40px;margin:-8px 0;"></div>').join('');
+    const pos={south:'b',west:'l',north:'t',east:'r'};
+    const areas={t:'grid-area:t;',l:'grid-area:l;',r:'grid-area:r;',b:'grid-area:b;'};
+    document.getElementById('trick-area').innerHTML=currentTrick.map(e=>`<div style="${areas[pos[e.seat]]}">${makeCardHTML(e.card,true)}</div>`).join('');
+    document.getElementById('trump-card').innerHTML=trump?`<div style="font-size:24px;color:${RED[trump]?'#DC2626':'#fff'};">${SYM[trump]}</div>`:(turnedCard?makeCardHTML(turnedCard,true):'');
+    for(const s of SEATS)document.getElementById(`seat-${s}`).classList.toggle('active',s===currentSeat);
+    document.getElementById('score-t1').textContent=scores[0];document.getElementById('score-t2').textContent=scores[1];
+    document.getElementById('tricks-t1').textContent=trickCount[0];document.getElementById('tricks-t2').textContent=trickCount[1];
+    document.getElementById('eu-hand').querySelectorAll('.eu-card.playable').forEach(el=>{
+      el.addEventListener('click',()=>{const card=hands.south.find(c=>cardKey(c)===el.dataset.key);if(card)playCard('south',card);});
+    });
+  }
+
+  // --- Bidding ---
+  function startBidding(){phase='bid';showBidRound1(0);}
+
+  function showBidRound1(idx){
+    const seatIdx=(dealer+1+idx)%4;
+    currentSeat=SEATS[seatIdx];renderAll();
+    if(currentSeat==='south'){
+      const panel=document.getElementById('bid-panel');panel.style.display='block';
+      document.getElementById('bid-prompt').textContent=`Turn-up: ${turnedCard.rank}${SYM[turnedCard.suit]}. Order up or pass?`;
+      document.getElementById('bid-buttons').innerHTML=`<button class="eu-btn" style="background:#059669;color:#fff;border-color:#047857;" id="b-order">Order Up</button><button class="eu-btn" style="background:#64748B;color:#fff;border-color:#475569;" id="b-pass">Pass</button><button class="eu-btn" style="background:#7C3AED;color:#fff;border-color:#6D28D9;" id="b-alone">Order Up (Alone)</button>`;
+      document.getElementById('b-order').onclick=()=>{panel.style.display='none';callTrump(turnedCard.suit,'south',false);};
+      document.getElementById('b-pass').onclick=()=>{panel.style.display='none';playClick();if(idx<3)showBidRound1(idx+1);else showBidRound2(0);};
+      document.getElementById('b-alone').onclick=()=>{panel.style.display='none';callTrump(turnedCard.suit,'south',true);};
+    } else {
+      setTimeout(()=>{
+        const hand=hands[currentSeat];const trumpSuit=turnedCard.suit;
+        const trumpCards=hand.filter(c=>c.suit===trumpSuit||isLeftBower(c)&&SAME_COLOR[trump]===trumpSuit);
+        if(trumpCards.length>=2||hand.some(c=>c.rank==='J'&&c.suit===trumpSuit)){
+          callTrump(trumpSuit,currentSeat,false);
+        } else {playClick();if(idx<3)showBidRound1(idx+1);else showBidRound2(0);}
+      },500);
+    }
+  }
+
+  function showBidRound2(idx){
+    const seatIdx=(dealer+1+idx)%4;
+    currentSeat=SEATS[seatIdx];renderAll();
+    if(currentSeat==='south'){
+      const panel=document.getElementById('bid-panel');panel.style.display='block';
+      document.getElementById('bid-prompt').textContent='Name trump suit (or pass):';
+      const otherSuits=SUITS.filter(s=>s!==turnedCard.suit);
+      document.getElementById('bid-buttons').innerHTML=otherSuits.map(s=>`<button class="eu-btn" style="background:#059669;color:#fff;border-color:#047857;" data-suit="${s}">${SYM[s]} ${s}</button>`).join('')+`<button class="eu-btn" style="background:#64748B;color:#fff;border-color:#475569;" id="b2-pass">Pass</button>`;
+      document.getElementById('bid-buttons').querySelectorAll('[data-suit]').forEach(b=>{b.onclick=()=>{panel.style.display='none';callTrump(b.dataset.suit,'south',false);};});
+      document.getElementById('b2-pass').onclick=()=>{panel.style.display='none';playClick();if(idx<3)showBidRound2(idx+1);else{callTrump(SUITS.filter(s=>s!==turnedCard.suit)[0],SEATS[(dealer+1)%4],false);}};
+    } else {
+      setTimeout(()=>{
+        const hand=hands[currentSeat];
+        let bestSuit=null,bestCount=0;
+        for(const s of SUITS.filter(s=>s!==turnedCard.suit)){
+          const cnt=hand.filter(c=>c.suit===s||(c.rank==='J'&&SAME_COLOR[s]===c.suit)).length;
+          if(cnt>bestCount){bestCount=cnt;bestSuit=s;}
+        }
+        if(bestCount>=2){callTrump(bestSuit,currentSeat,false);}
+        else{playClick();if(idx<3)showBidRound2(idx+1);else{callTrump(SUITS.filter(s=>s!==turnedCard.suit)[0],SEATS[(dealer+1)%4],false);}}
+      },500);
+    }
+  }
+
+  function callTrump(suit,seat,alone){
+    trump=suit;callingTeam=TEAM[seat];goingAlone=alone;aloneSeat=alone?seat:null;
+    if(turnedCard&&turnedCard.suit===trump){
+      const dealerSeat=SEATS[dealer];
+      hands[dealerSeat].push(turnedCard);
+      const worst=hands[dealerSeat].sort((a,b)=>cardStrength(a)-cardStrength(b))[0];
+      hands[dealerSeat]=hands[dealerSeat].filter(c=>cardKey(c)!==cardKey(worst));
+    }
+    turnedCard=null;playClick();startPlaying();
+  }
+
+  // --- Playing ---
+  function startPlaying(){
+    phase='play';leadSeat=SEATS[(dealer+1)%4];currentSeat=leadSeat;currentTrick=[];renderAll();
+    if(currentSeat!=='south')setTimeout(aiPlay,500);
+  }
+
+  function playCard(seat,card){
+    hands[seat]=hands[seat].filter(c=>cardKey(c)!==cardKey(card));
+    currentTrick.push({seat,card});playDrop();renderAll();
+    if(currentTrick.length===4||(goingAlone&&currentTrick.length===3)){
+      setTimeout(resolveTrick,700);
+    } else {
+      let next=(SEATS.indexOf(seat)+1)%4;
+      if(goingAlone){const partnerIdx=(SEATS.indexOf(aloneSeat)+2)%4;if(next===partnerIdx)next=(next+1)%4;}
+      currentSeat=SEATS[next];renderAll();
+      if(currentSeat!=='south')setTimeout(aiPlay,500);
+    }
+  }
+
+  function aiPlay(){
+    if(phase!=='play')return;
+    const hand=hands[currentSeat];if(hand.length===0)return;
+    const leading=currentTrick.length===0;
+    let card;
+    if(leading){card=hand.sort((a,b)=>cardStrength(b)-cardStrength(a))[0];}
+    else{
+      const ledSuit=effectiveSuit(currentTrick[0].card);
+      const following=hand.filter(c=>effectiveSuit(c)===ledSuit);
+      if(following.length>0){card=following.sort((a,b)=>cardStrength(b)-cardStrength(a))[0];}
+      else{const trumps=hand.filter(c=>effectiveSuit(c)===trump);card=trumps.length>0?trumps.sort((a,b)=>cardStrength(a)-cardStrength(b))[0]:hand.sort((a,b)=>cardStrength(a)-cardStrength(b))[0];}
+    }
+    playCard(currentSeat,card);
+  }
+
+  function trickWinner(){
+    const ledSuit=effectiveSuit(currentTrick[0].card);
+    let winner=currentTrick[0];
+    for(let i=1;i<currentTrick.length;i++){
+      const e=currentTrick[i];
+      const ws=effectiveSuit(winner.card),es=effectiveSuit(e.card);
+      if(es===trump&&ws!==trump){winner=e;continue;}
+      if(ws===trump&&es!==trump)continue;
+      if(es===ws&&cardStrength(e.card)>cardStrength(winner.card))winner=e;
+    }
+    return winner.seat;
+  }
+
+  function resolveTrick(){
+    const winner=trickWinner();
+    trickCount[TEAM[winner]]++;playCollect();
+    currentTrick=[];renderAll();
+    const total=trickCount[0]+trickCount[1];
+    if(total>=5){endRound();return;}
+    leadSeat=winner;currentSeat=winner;renderAll();
+    if(currentSeat!=='south')setTimeout(aiPlay,500);
+  }
+
+  function endRound(){
+    phase='scoring';
+    const makingTeam=callingTeam;const made=trickCount[makingTeam];
+    let pts=0,msg='';
+    if(made>=3){
+      if(goingAlone&&made===5){pts=4;msg='Going alone — all 5! +4 pts';}
+      else if(made===5){pts=2;msg='March! +2 pts';}
+      else{pts=1;msg='Made it. +1 pt';}
+      scores[makingTeam]+=pts;playSuccess();
+    } else {
+      const defTeam=1-makingTeam;
+      scores[defTeam]+=2;msg='Euchre! Defenders +2 pts';playError();
+    }
+    renderAll();
+    if(scores[0]>=TARGET||scores[1]>=TARGET){endGame();return;}
+    document.getElementById('round-summary').style.display='block';
+    document.getElementById('round-title').textContent=msg;
+    document.getElementById('round-detail').textContent=`Team 1: ${scores[0]} | Team 2: ${scores[1]}`;
+    document.getElementById('next-round-btn').onclick=()=>{document.getElementById('round-summary').style.display='none';startRound();};
+  }
+
+  function endGame(){
+    phase='over';const won=scores[0]>scores[1];
+    document.getElementById('game-over-panel').style.display='block';
+    document.getElementById('winner-text').textContent=won?'🎉 Your Team Wins!':'😞 Opponent Team Wins';
+    document.getElementById('final-score').textContent=`Final: ${scores[0]} — ${scores[1]}`;
+    if(won){streak++;playPerfect();}else{streak=0;playGameOver();}
+    const dur=Math.round((Date.now()-gameStartTime)/1000);
+    trackGameOver('euchre','Card',won?1:0,scores[0]);
+    submitStats('euchre',{score:scores[0],duration:dur,win:won,loss:!won,online:isOnline});
+    document.getElementById('play-again-btn').focus();
+    document.getElementById('play-again-btn').onclick=()=>{document.getElementById('game-over-panel').style.display='none';startNewGame();};
+  }
+
+  function startRound(){dealer=(dealer+1)%4;deal();renderAll();playDeal();startBidding();}
+  function startNewGame(){scores=[0,0];dealer=0;gameStartTime=Date.now();trackGameStart('euchre','Card');startRound();}
+
+  renderModeSelector(document.getElementById('mp-mode-container'),'euchre',playerProfile?.name||'Player',{
+    onAI:()=>{isOnline=false;document.getElementById('game-area').style.display='block';startNewGame();},
+    onPrivate:()=>{isOnline=true;document.getElementById('game-area').style.display='block';startNewGame();},
+    onFind:()=>{isOnline=true;document.getElementById('game-area').style.display='block';startNewGame();},
+  },{maxPlayers:4,teams:true});
+  </script>
+</body>
+</html>

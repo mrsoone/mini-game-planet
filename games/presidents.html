@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Presidents Online — Play Card Game Instantly | MiniGamePlanet</title>
+  <meta name="description" content="Play Presidents online free. Shed your cards first to become President. Social hierarchy, card swapping — addictive 4-player party game. No download needed.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://minigameplanet.com/games/presidents">
+  <link rel="icon" href="/images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{'sans':['"Space Grotesk"','system-ui','sans-serif'],'mono':['"DM Mono"','monospace']}}}}</script>
+  <meta property="og:type" content="website"><meta property="og:title" content="Free Presidents Online | MiniGamePlanet"><meta property="og:description" content="Play Presidents free — shed cards, become President."><meta property="og:url" content="https://minigameplanet.com/games/presidents"><meta property="og:image" content="https://minigameplanet.com/images/logo.png"><meta property="og:site_name" content="MiniGamePlanet">
+  <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Free Presidents Online | MiniGamePlanet"><meta name="twitter:description" content="Play Presidents free."><meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Presidents","url":"https://minigameplanet.com/games/presidents","description":"Play Presidents online free — shedding card game for 4 players.","genre":"Card","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://minigameplanet.com"},{"@type":"ListItem","position":2,"name":"Card Games","item":"https://minigameplanet.com/#category"},{"@type":"ListItem","position":3,"name":"Presidents","item":"https://minigameplanet.com/games/presidents"}]}</script>
+  <style>
+    .hero-grad{background:linear-gradient(135deg,#7C3AED 0%,#9333EA 20%,#C026D3 40%,#E11D48 60%,#EA580C 80%,#F59E0B 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:heroShift 8s ease-in-out infinite}@keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+    #pr-table{background:#1a1a2e;border-radius:16px;padding:16px;min-height:300px}
+    .pr-card{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:clamp(48px,8vw,68px);height:clamp(68px,11.5vw,96px);border-radius:7px;font-family:'DM Mono',monospace;font-weight:700;font-size:clamp(12px,2vw,16px);box-shadow:0 2px 6px rgba(0,0,0,0.15);position:relative;cursor:pointer;transition:transform 0.15s;flex-shrink:0;user-select:none}
+    .pr-card.face-up{background:#fff;border:1.5px solid #E5E7EB}.pr-card.face-down{background:#DC2626;background-image:repeating-linear-gradient(45deg,transparent,transparent 3px,rgba(255,255,255,0.07) 3px,rgba(255,255,255,0.07) 6px);border:1.5px solid rgba(255,255,255,0.2)}
+    .pr-card.red{color:#DC2626}.pr-card.black{color:#0F172A}
+    .pr-card.playable:hover{transform:translateY(-6px)}
+    .pr-card.selected{transform:translateY(-10px);box-shadow:0 0 0 2px #2563EB,0 6px 16px rgba(37,99,235,0.3)}
+    #pr-hand{display:flex;justify-content:center;padding:8px;overflow-x:auto;flex-wrap:nowrap}#pr-hand .pr-card{margin:0 -4px}
+    .pr-btn{padding:8px 20px;border-radius:8px;font-size:13px;font-weight:700;border:2px solid;cursor:pointer;font-family:inherit;transition:all 0.1s}.pr-btn:hover{transform:translateY(-1px)}.pr-btn:disabled{opacity:0.4;cursor:not-allowed}
+    @media(max-width:480px){#pr-hand .pr-card{width:44px;height:62px;font-size:11px}}
+  </style>
+</head>
+<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+  <div id="nav-container"></div>
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;" id="game-wrap">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <div><h1 style="font-size:22px;font-weight:700;margin:0;">👑 Presidents</h1><p style="font-size:12px;color:#94A3B8;margin:2px 0 0;">Shed your cards first to rule</p></div>
+        <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊 Sound</button>
+      </div>
+      <div id="mp-mode-container"></div>
+      <div id="game-area" style="display:none;">
+        <div style="display:flex;gap:12px;justify-content:center;margin-bottom:10px;font-family:'DM Mono',monospace;font-size:12px;color:#94A3B8;flex-wrap:wrap;">
+          <span>Round <strong id="round-num" style="color:#fff;">1</strong></span>
+          <span id="rank-display"></span>
+        </div>
+        <div id="pr-table">
+          <div style="display:flex;justify-content:space-around;margin-bottom:12px;">
+            <div style="text-align:center;color:rgba(255,255,255,0.7);font-size:12px;"><span style="font-weight:600;">West</span> <span id="count-west" style="color:#94A3B8;">(13)</span><div id="hand-west" style="display:flex;justify-content:center;margin-top:4px;"></div></div>
+            <div style="text-align:center;color:rgba(255,255,255,0.7);font-size:12px;"><span style="font-weight:600;">North</span> <span id="count-north" style="color:#94A3B8;">(13)</span><div id="hand-north" style="display:flex;justify-content:center;margin-top:4px;"></div></div>
+            <div style="text-align:center;color:rgba(255,255,255,0.7);font-size:12px;"><span style="font-weight:600;">East</span> <span id="count-east" style="color:#94A3B8;">(13)</span><div id="hand-east" style="display:flex;justify-content:center;margin-top:4px;"></div></div>
+          </div>
+          <div style="text-align:center;margin:16px 0;">
+            <div id="pile-display" style="display:flex;gap:4px;justify-content:center;min-height:70px;align-items:center;flex-wrap:wrap;"></div>
+            <div id="pile-info" style="font-size:12px;color:#FDE68A;font-family:'DM Mono',monospace;margin-top:4px;"></div>
+          </div>
+          <div id="turn-indicator" style="text-align:center;font-size:13px;color:#fff;font-weight:600;margin:8px 0;"></div>
+        </div>
+        <div id="pr-hand" style="margin-top:4px;min-height:80px;"></div>
+        <div style="display:flex;gap:8px;justify-content:center;margin-top:8px;">
+          <button id="btn-play" class="pr-btn" style="background:#059669;color:#fff;border-color:#047857;display:none;">Play</button>
+          <button id="btn-pass" class="pr-btn" style="background:#D97706;color:#fff;border-color:#B45309;display:none;">Pass</button>
+        </div>
+        <div id="game-over-panel" style="display:none;text-align:center;padding:20px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;margin-top:10px;">
+          <h3 id="winner-text" style="font-size:22px;font-weight:700;margin:0 0 8px;"></h3>
+          <div id="rankings" style="font-family:'DM Mono',monospace;font-size:13px;margin:0 0 16px;"></div>
+          <button id="play-again-btn" class="pr-btn" style="background:#2563EB;color:#fff;border-color:#1D4ED8;padding:10px 28px;">Play Again</button>
+        </div>
+      </div>
+    </div>
+  </main>
+  <article class="max-w-3xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold mb-6">How to Play Presidents</h2>
+    <div class="space-y-4 text-slate-600 leading-relaxed" style="font-size:15px;">
+      <p>Presidents (also known as Scum) is an addictive shedding card game for 4-6 players. The goal is to get rid of all your cards before anyone else. The first player out becomes <strong>President</strong>, the last becomes <strong>Scum</strong>. In subsequent rounds, the Scum gives their 2 best cards to the President, who gives back 2 of their worst — creating a social hierarchy that's hard to escape but thrilling to upset.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Rules</h3>
+      <p>Deal all cards evenly. The player with the 3 of Clubs leads. On your turn, play one or more cards of the same rank that beats the current pile (higher rank). If you can't or don't want to beat it, pass. When all players pass, the pile is cleared and the last person who played starts a new round.</p>
+      <p><strong>2s are the highest rank</strong> (beats Aces). Card hierarchy: 3 (lowest) → 4 → 5 → ... → K → A → 2 (highest). You can play singles, pairs, triples, or quads — but you must match the count of the previous play.</p>
+      <h3 class="text-lg font-bold text-slate-900 mt-6">Strategy</h3>
+      <ul class="list-disc pl-5 space-y-1">
+        <li><strong>Save your 2s.</strong> They beat anything and give you control of the pile.</li>
+        <li><strong>Dump low cards early</strong> when you can lead. Don't get stuck with 3s and 4s at the end.</li>
+        <li><strong>Watch card counts.</strong> When an opponent has 1-2 cards left, try to maintain control.</li>
+      </ul>
+    </div>
+  </article>
+  <div id="related-games"></div><div id="footer-container"></div>
+
+  <script type="module">
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playDeal, playDrop, playPerfect, playCollect } from '/js/audio.js';
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
+  import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+  import { renderModeSelector } from '/js/multiplayer.js';
+
+  document.addEventListener('click',()=>initAudio(),{once:true});
+  initToolPage('presidents');initConsent();trackGameView('presidents','Card');
+  let playerProfile=null;
+  getPlayer().then(p=>{playerProfile=p;if(p){const m=document.querySelector('main');renderIdentityBar(m,p);renderLeaderboard(m,'presidents');}});
+  document.getElementById('sound-btn').addEventListener('click',()=>{initAudio();const m=muteAll();document.getElementById('sound-btn').textContent=m?'🔇 Sound':'🔊 Sound';});
+
+  const SUITS=['clubs','diamonds','hearts','spades'];
+  const RANKS=['3','4','5','6','7','8','9','10','J','Q','K','A','2'];
+  const SYM={spades:'♠',hearts:'♥',diamonds:'♦',clubs:'♣'};
+  const RED={hearts:true,diamonds:true};
+  const SEATS=['south','west','north','east'];
+  const TITLES=['👑 President','🎩 Vice President','🧹 Vice Scum','💩 Scum'];
+
+  let hands={south:[],west:[],north:[],east:[]};
+  let pile=[],pileCount=0,pileRank=-1;
+  let currentSeat=null,passCount=0,lastPlayer=null;
+  let finishOrder=[],phase='idle',roundNum=0,selectedCards=[];
+  let gameStartTime=null,isOnline=false;
+
+  function rv(c){return RANKS.indexOf(c.rank);}
+  function cardKey(c){return `${c.rank}-${c.suit}`;}
+
+  function makeDeck(){const d=[];for(const s of SUITS)for(const r of RANKS)d.push({suit:s,rank:r});for(let i=d.length-1;i>0;i--){const a=new Uint32Array(1);crypto.getRandomValues(a);const j=a[0]%(i+1);[d[i],d[j]]=[d[j],d[i]];}return d;}
+  function sortHand(h){h.sort((a,b)=>rv(a)-rv(b));}
+
+  function deal(){
+    const deck=makeDeck();for(const s of SEATS)hands[s]=[];
+    for(let i=0;i<52;i++)hands[SEATS[i%4]].push(deck[i]);
+    for(const s of SEATS)sortHand(hands[s]);
+    pile=[];pileCount=0;pileRank=-1;passCount=0;lastPlayer=null;finishOrder=[];selectedCards=[];
+  }
+
+  function makeCardHTML(c,faceUp=true,playable=false,sel=false){
+    if(!faceUp)return `<div class="pr-card face-down" style="width:24px;height:34px;margin:0 -6px;"></div>`;
+    const color=RED[c.suit]?'red':'black';
+    const cls=`pr-card face-up ${color}${playable?' playable':''}${sel?' selected':''}`;
+    return `<div class="${cls}" data-key="${cardKey(c)}"><span style="position:absolute;top:3px;left:5px;font-size:clamp(10px,1.6vw,12px);line-height:1;">${c.rank}<br>${SYM[c.suit]}</span><span style="font-size:clamp(16px,2.8vw,22px);">${SYM[c.suit]}</span></div>`;
+  }
+
+  function getActivePlayers(){return SEATS.filter(s=>hands[s].length>0&&!finishOrder.includes(s));}
+
+  function render(){
+    const active=getActivePlayers();
+    const isMyTurn=currentSeat==='south'&&active.includes('south');
+
+    document.getElementById('pr-hand').innerHTML=hands.south.map(c=>{
+      const playable=isMyTurn;
+      const sel=selectedCards.some(s=>cardKey(s)===cardKey(c));
+      return makeCardHTML(c,true,playable,sel);
+    }).join('');
+
+    if(isMyTurn){
+      document.getElementById('pr-hand').querySelectorAll('.pr-card.playable').forEach(el=>{
+        el.addEventListener('click',()=>{
+          const card=hands.south.find(c=>cardKey(c)===el.dataset.key);if(!card)return;
+          const idx=selectedCards.findIndex(s=>cardKey(s)===cardKey(card));
+          if(idx>=0)selectedCards.splice(idx,1);
+          else{
+            if(selectedCards.length>0&&selectedCards[0].rank!==card.rank)selectedCards=[];
+            selectedCards.push(card);
+          }
+          render();
+        });
+      });
+    }
+
+    for(const s of ['west','north','east']){
+      document.getElementById(`hand-${s}`).innerHTML=Array(Math.min(hands[s].length,8)).fill('<div class="pr-card face-down" style="width:20px;height:28px;margin:0 -8px;"></div>').join('');
+      document.getElementById(`count-${s}`).textContent=`(${hands[s].length})`;
+    }
+
+    document.getElementById('pile-display').innerHTML=pile.length>0?pile.slice(-4).map(c=>makeCardHTML(c,true)).join(''):'<span style="color:#475569;font-size:13px;">Empty — lead anything</span>';
+    document.getElementById('pile-info').textContent=pileCount>0?`${pileCount}× rank ${RANKS[pileRank]||'?'}`:'';
+
+    const canPlay=selectedCards.length>0&&isValidPlay(selectedCards);
+    document.getElementById('btn-play').style.display=isMyTurn&&canPlay?'':'none';
+    document.getElementById('btn-pass').style.display=isMyTurn&&pileCount>0?'':'none';
+    document.getElementById('turn-indicator').textContent=currentSeat?`${currentSeat==='south'?'Your':currentSeat.charAt(0).toUpperCase()+currentSeat.slice(1)+"'s"} turn`:'';
+
+    const rankHtml=finishOrder.map((s,i)=>`<span style="color:${s==='south'?'#60A5FA':'#94A3B8'};">${TITLES[i]}: ${s==='south'?'You':s}</span>`).join(' | ');
+    document.getElementById('rank-display').innerHTML=rankHtml;
+    document.getElementById('round-num').textContent=roundNum;
+  }
+
+  function isValidPlay(cards){
+    if(cards.length===0)return false;
+    if(!cards.every(c=>c.rank===cards[0].rank))return false;
+    const rank=rv(cards[0]);
+    if(pileCount===0)return true;
+    if(cards.length!==pileCount)return false;
+    return rank>pileRank;
+  }
+
+  document.getElementById('btn-play').addEventListener('click',()=>{
+    if(!isValidPlay(selectedCards))return;
+    doPlay('south',selectedCards);
+  });
+
+  document.getElementById('btn-pass').addEventListener('click',()=>{
+    doPass('south');
+  });
+
+  function doPlay(seat,cards){
+    for(const c of cards)hands[seat]=hands[seat].filter(h=>cardKey(h)!==cardKey(c));
+    pile.push(...cards);pileRank=rv(cards[0]);pileCount=cards.length;
+    passCount=0;lastPlayer=seat;selectedCards=[];playDrop();
+
+    if(hands[seat].length===0&&!finishOrder.includes(seat)){
+      finishOrder.push(seat);
+      if(seat==='south')playSuccess();
+    }
+
+    const active=getActivePlayers();
+    if(active.length<=1){
+      if(active.length===1&&!finishOrder.includes(active[0]))finishOrder.push(active[0]);
+      endRound();return;
+    }
+
+    advanceTurn(seat);render();
+    if(currentSeat!=='south')setTimeout(aiTurn,500);
+  }
+
+  function doPass(seat){
+    passCount++;playClick();
+    const active=getActivePlayers();
+    if(passCount>=active.length-1){
+      pile=[];pileCount=0;pileRank=-1;passCount=0;
+      currentSeat=lastPlayer;
+      if(!active.includes(currentSeat))advanceTurn(currentSeat);
+      render();
+      if(currentSeat!=='south')setTimeout(aiTurn,500);
+      return;
+    }
+    advanceTurn(seat);render();
+    if(currentSeat!=='south')setTimeout(aiTurn,500);
+  }
+
+  function advanceTurn(from){
+    const active=getActivePlayers();
+    let idx=SEATS.indexOf(from);
+    for(let i=0;i<4;i++){
+      idx=(idx+1)%4;
+      if(active.includes(SEATS[idx])){currentSeat=SEATS[idx];return;}
+    }
+  }
+
+  function aiTurn(){
+    if(phase!=='play')return;
+    const hand=hands[currentSeat];
+    const active=getActivePlayers();
+    if(!active.includes(currentSeat)){advanceTurn(currentSeat);render();if(currentSeat!=='south')setTimeout(aiTurn,500);return;}
+
+    if(pileCount===0){
+      const groups={};for(const c of hand){if(!groups[c.rank])groups[c.rank]=[];groups[c.rank].push(c);}
+      const lowest=Object.entries(groups).sort((a,b)=>rv({rank:a[0]})-rv({rank:b[0]}))[0];
+      doPlay(currentSeat,lowest[1]);return;
+    }
+
+    const groups={};for(const c of hand){if(!groups[c.rank])groups[c.rank]=[];groups[c.rank].push(c);}
+    const options=Object.entries(groups).filter(([rank,cards])=>cards.length>=pileCount&&rv({rank})>pileRank).sort((a,b)=>rv({rank:a[0]})-rv({rank:b[0]}));
+
+    if(options.length>0){
+      const chosen=options[0][1].slice(0,pileCount);
+      doPlay(currentSeat,chosen);
+    } else {
+      doPass(currentSeat);
+    }
+  }
+
+  function findThreeOfClubs(){
+    for(const s of SEATS){if(hands[s].some(c=>c.rank==='3'&&c.suit==='clubs'))return s;}
+    return 'south';
+  }
+
+  function endRound(){
+    phase='scoring';
+    SEATS.forEach(s=>{if(!finishOrder.includes(s))finishOrder.push(s);});
+    const won=finishOrder[0]==='south';
+
+    document.getElementById('game-over-panel').style.display='block';
+    document.getElementById('winner-text').textContent=won?'👑 You are President!':'😞 '+finishOrder[0]+' is President';
+    document.getElementById('rankings').innerHTML=finishOrder.map((s,i)=>`${TITLES[i]}: ${s==='south'?'<strong>You</strong>':s}`).join('<br>');
+
+    if(won)playPerfect();else playGameOver();
+    const dur=Math.round((Date.now()-gameStartTime)/1000);
+    trackGameOver('presidents','Card',won?1:0,0);
+    submitStats('presidents',{score:won?1:0,duration:dur,win:won,loss:!won,online:isOnline});
+
+    document.getElementById('play-again-btn').focus();
+    document.getElementById('play-again-btn').onclick=()=>{document.getElementById('game-over-panel').style.display='none';startNewGame();};
+  }
+
+  function startNewGame(){
+    roundNum++;deal();phase='play';
+    currentSeat=findThreeOfClubs();
+    gameStartTime=Date.now();trackGameStart('presidents','Card');
+    render();
+    if(currentSeat!=='south')setTimeout(aiTurn,500);
+  }
+
+  renderModeSelector(document.getElementById('mp-mode-container'),'presidents',playerProfile?.name||'Player',{
+    onAI:()=>{isOnline=false;document.getElementById('game-area').style.display='block';roundNum=0;startNewGame();},
+    onPrivate:()=>{isOnline=true;document.getElementById('game-area').style.display='block';roundNum=0;startNewGame();},
+    onFind:()=>{isOnline=true;document.getElementById('game-area').style.display='block';roundNum=0;startNewGame();},
+  },{maxPlayers:6});
+  </script>
+</body>
+</html>
