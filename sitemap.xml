@@ -48,10 +48,10 @@
 
   <!-- Games: Arcade (12) -->
   <url><loc>https://minigameplanet.com/games/snake</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
-  <url><loc>https://minigameplanet.com/games/pong</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
+  <url><loc>https://minigameplanet.com/games/paddle-ball</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/breakout</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
-  <url><loc>https://minigameplanet.com/games/asteroids</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
-  <url><loc>https://minigameplanet.com/games/space-invaders</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
+  <url><loc>https://minigameplanet.com/games/space-rocks</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
+  <url><loc>https://minigameplanet.com/games/star-defenders</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/flappy-jump</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/fruit-slicer</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/endless-runner</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
@@ -102,7 +102,7 @@
   <url><loc>https://minigameplanet.com/games/reversi</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/checkers</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/chess</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
-  <url><loc>https://minigameplanet.com/games/battleship</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
+  <url><loc>https://minigameplanet.com/games/naval-strike</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/dots-and-boxes</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/four-in-a-row</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/mancala</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
@@ -114,7 +114,7 @@
   <url><loc>https://minigameplanet.com/games/reaction-time</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/aim-trainer</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/color-match</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
-  <url><loc>https://minigameplanet.com/games/simon-says</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
+  <url><loc>https://minigameplanet.com/games/color-recall</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/trivia-quiz</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/number-memory</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/sequence-memory</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
@@ -139,7 +139,7 @@
   <!-- Games: Board (6) -->
   <url><loc>https://minigameplanet.com/games/snakes-and-ladders</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/ludo</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
-  <url><loc>https://minigameplanet.com/games/yahtzee</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
+  <url><loc>https://minigameplanet.com/games/dice-frenzy</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/backgammon</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/chinese-checkers</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/dominoes</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>

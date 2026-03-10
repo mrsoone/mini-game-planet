@@ -134,13 +134,13 @@ export const games = [
     built: true
   },
   {
-    name: 'Pong',
-    slug: 'pong',
+    name: 'Paddle Ball',
+    slug: 'paddle-ball',
     category: 'Arcade',
-    description: 'Free online Pong with AI opponents and 2-player mode. The original arcade classic — paddle, ball, and pure competitive fun.',
+    description: 'Free online Paddle Ball with AI opponents and 2-player mode. The ultimate paddle-and-ball arcade classic — pure competitive fun.',
     icon: '🏓',
     accent: '#0891B2',
-    keywords: ['pong', 'table tennis', 'arcade classic', 'two player'],
+    keywords: ['paddle ball', 'table tennis', 'arcade classic', 'two player'],
     built: true
   },
   {
@@ -154,23 +154,23 @@ export const games = [
     built: true
   },
   {
-    name: 'Asteroids',
-    slug: 'asteroids',
+    name: 'Space Rocks',
+    slug: 'space-rocks',
     category: 'Arcade',
     description: 'Pilot your ship through asteroid fields. Rotate, thrust, and shoot to survive in this faithful recreation of the arcade legend.',
     icon: '☄',
     accent: '#0891B2',
-    keywords: ['asteroids', 'space shooter', 'arcade classic', 'retro'],
+    keywords: ['space rocks', 'space shooter', 'arcade classic', 'retro'],
     built: true
   },
   {
-    name: 'Space Invaders',
-    slug: 'space-invaders',
+    name: 'Star Defenders',
+    slug: 'star-defenders',
     category: 'Arcade',
     description: 'Defend Earth from descending alien waves. Shoot invaders, protect your shields, and face bosses in this iconic arcade shooter.',
     icon: '👾',
     accent: '#0891B2',
-    keywords: ['space invaders', 'alien shooter', 'arcade shooter', 'retro'],
+    keywords: ['star defenders', 'alien shooter', 'arcade shooter', 'retro'],
     built: true
   },
   {
@@ -606,13 +606,13 @@ export const games = [
     built: true
   },
   {
-    name: 'Battleship',
-    slug: 'battleship',
+    name: 'Naval Strike',
+    slug: 'naval-strike',
     category: 'Strategy',
-    description: 'Place your fleet and hunt the enemy ships in this classic Battleship game. Smart AI uses hunt-and-target strategy to find your ships.',
+    description: 'Place your fleet and hunt the enemy ships in this classic naval strategy game. Smart AI uses hunt-and-target strategy to find your ships.',
     icon: '🚢',
     accent: '#0D9488',
-    keywords: ['battleship', 'naval game', 'ship hunt', 'grid strategy'],
+    keywords: ['naval strike', 'naval game', 'ship hunt', 'grid strategy'],
     built: true
   },
   {
@@ -709,13 +709,13 @@ export const games = [
     built: true
   },
   {
-    name: 'Simon Says',
-    slug: 'simon-says',
+    name: 'Color Recall',
+    slug: 'color-recall',
     category: 'Casual',
     description: 'Watch the color sequence, then repeat it. Each round adds one more step. How long can you remember? Satisfying tones with each color.',
     icon: '🔴',
     accent: '#E11D48',
-    keywords: ['simon says', 'memory game', 'sequence game', 'pattern game'],
+    keywords: ['color recall', 'memory game', 'sequence game', 'pattern game'],
     built: true
   },
   {
@@ -908,13 +908,13 @@ export const games = [
     built: true
   },
   {
-    name: 'Yahtzee',
-    slug: 'yahtzee',
+    name: 'Dice Frenzy',
+    slug: 'dice-frenzy',
     category: 'Board',
     description: 'Roll five dice up to three times per turn and fill your scorecard categories. Strategic choices make every roll matter in this classic.',
     icon: '🎲',
     accent: '#4F46E5',
-    keywords: ['yahtzee', 'dice game', 'score game', 'category dice'],
+    keywords: ['dice frenzy', 'dice game', 'score game', 'category dice'],
     built: true
   },
   {

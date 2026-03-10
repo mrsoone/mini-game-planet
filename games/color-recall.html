@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simon Says - Memory Game | Mini Game Planet</title>
-  <meta name="description" content="Play Simon Says online. Test your memory with this classic pattern-matching game. Red, green, blue, yellow—can you repeat the sequence?">
-  <link rel="canonical" href="https://minigameplanet.com/games/simon-says.html">
+  <title>Color Recall - Memory Game | Mini Game Planet</title>
+  <meta name="description" content="Play Color Recall online. Test your memory with this classic pattern-matching game. Red, green, blue, yellow—can you repeat the sequence?">
+  <link rel="canonical" href="https://minigameplanet.com/games/color-recall.html">
   <!-- Open Graph -->
-  <meta property="og:title" content="Simon Says - Memory Game | Mini Game Planet">
-  <meta property="og:description" content="Play Simon Says online. Test your memory with this classic pattern-matching game.">
+  <meta property="og:title" content="Color Recall - Memory Game | Mini Game Planet">
+  <meta property="og:description" content="Play Color Recall online. Test your memory with this classic pattern-matching game.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://minigameplanet.com/games/simon-says.html">
+  <meta property="og:url" content="https://minigameplanet.com/games/color-recall.html">
   <meta property="og:image" content="https://minigameplanet.com/images/logo.png">
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -32,26 +32,26 @@
   <style>
     body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
     .font-mono { font-family: 'DM Mono', monospace; }
-    .simon-quadrant {
+    .cr-quadrant {
       aspect-ratio: 1;
       border-radius: 1rem;
       transition: filter 0.15s ease, transform 0.1s ease, box-shadow 0.2s ease;
       cursor: pointer;
     }
-    .simon-quadrant:hover:not(.disabled) { transform: scale(1.02); }
-    .simon-quadrant.lit {
+    .cr-quadrant:hover:not(.disabled) { transform: scale(1.02); }
+    .cr-quadrant.lit {
       filter: brightness(1.4);
       box-shadow: 0 0 2rem rgba(255,255,255,0.6);
     }
-    .simon-quadrant.disabled { cursor: not-allowed; opacity: 0.7; }
+    .cr-quadrant.disabled { cursor: not-allowed; opacity: 0.7; }
   </style>
   <!-- JSON-LD -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    "name": "Simon Says",
-    "description": "Classic Simon Says memory game. Repeat the color sequence to advance.",
+    "name": "Color Recall",
+    "description": "Classic Color Recall memory game. Repeat the color sequence to advance.",
     "applicationCategory": "Game",
     "operatingSystem": "Any"
   }
@@ -60,11 +60,11 @@
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXX" crossorigin="anonymous"></script>
   -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Simon Says - Memory Game | Mini Game Planet">
-  <meta name="twitter:description" content="Play Simon Says online. Test your memory with this classic pattern-matching game.">
+  <meta name="twitter:title" content="Color Recall - Memory Game | Mini Game Planet">
+  <meta name="twitter:description" content="Play Color Recall online. Test your memory with this classic pattern-matching game.">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
 
-  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Casual", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Color Match", "item": "https://minigameplanet.com/games/simon-says"}]}</script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Casual", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Color Match", "item": "https://minigameplanet.com/games/color-recall"}]}</script>
 </head>
 <body class="min-h-screen text-gray-800 antialiased">
   <nav id="nav-container" class="bg-white/80 backdrop-blur border-b border-gray-200 sticky top-0 z-50">
@@ -80,7 +80,7 @@
   <main class="max-w-4xl mx-auto px-4 py-8">
     <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 md:p-8 mb-8">
       <header class="text-center mb-6">
-        <h1 class="text-3xl md:text-4xl font-bold mb-2">Simon Says</h1>
+        <h1 class="text-3xl md:text-4xl font-bold mb-2">Color Recall</h1>
         <p class="text-gray-600">Repeat the sequence. How far can you go?</p>
       </header>
 
@@ -95,10 +95,10 @@
       <!-- Game board -->
       <div class="max-w-sm mx-auto mb-6">
         <div class="grid grid-cols-2 gap-3">
-          <button id="quad-red" class="simon-quadrant bg-red-500" data-color="red" aria-label="Red"></button>
-          <button id="quad-green" class="simon-quadrant bg-green-500" data-color="green" aria-label="Green"></button>
-          <button id="quad-blue" class="simon-quadrant bg-blue-500" data-color="blue" aria-label="Blue"></button>
-          <button id="quad-yellow" class="simon-quadrant bg-yellow-400" data-color="yellow" aria-label="Yellow"></button>
+          <button id="quad-red" class="cr-quadrant bg-red-500" data-color="red" aria-label="Red"></button>
+          <button id="quad-green" class="cr-quadrant bg-green-500" data-color="green" aria-label="Green"></button>
+          <button id="quad-blue" class="cr-quadrant bg-blue-500" data-color="blue" aria-label="Blue"></button>
+          <button id="quad-yellow" class="cr-quadrant bg-yellow-400" data-color="yellow" aria-label="Yellow"></button>
         </div>
       </div>
 
@@ -113,17 +113,17 @@
 
     <!-- SEO Article -->
     <article class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 md:p-8 mb-8">
-      <h2 class="text-2xl font-bold mb-4">Simon Says: The Classic Memory Game</h2>
+      <h2 class="text-2xl font-bold mb-4">Color Recall: The Classic Memory Game</h2>
       <div class="prose prose-gray max-w-none font-sans">
-        <p>Simon Says is one of the most beloved memory games of all time. Originally released as an electronic toy in 1978, it has captivated generations with its simple yet challenging gameplay. The concept is straightforward: watch the sequence of lights and sounds, then repeat it back. Each successful round adds one more step to the pattern, testing your short-term memory and focus.</p>
+        <p>Color Recall is one of the most beloved memory games of all time, inspired by classic color sequence memory games that have captivated generations with their simple yet challenging gameplay. The concept is straightforward: watch the sequence of lights and sounds, then repeat it back. Each successful round adds one more step to the pattern, testing your short-term memory and focus.</p>
 
-        <p>In this online version, you'll find four colored quadrants—red, green, blue, and yellow—arranged in a 2×2 grid. When the game begins, Simon will light up one color and play a tone. Your job is to click that same color. If you're correct, the sequence grows: Simon adds another color, plays the full sequence, and waits for you to repeat it from the beginning. One wrong click ends the game, so concentration is key.</p>
+        <p>In this online version, you'll find four colored quadrants—red, green, blue, and yellow—arranged in a 2×2 grid. When the game begins, the game will light up one color and play a tone. Your job is to click that same color. If you're correct, the sequence grows: the game adds another color, plays the full sequence, and waits for you to repeat it from the beginning. One wrong click ends the game, so concentration is key.</p>
 
-        <p>Why does Simon Says remain so popular? For starters, it's easy to learn but hard to master. Anyone can understand the rules in seconds, yet reaching high scores requires genuine mental effort. The game exercises your working memory—the part of your brain that holds information temporarily while you use it. Studies suggest that regularly challenging your working memory can help maintain cognitive function as you age.</p>
+        <p>Why does Color Recall remain so popular? For starters, it's easy to learn but hard to master. Anyone can understand the rules in seconds, yet reaching high scores requires genuine mental effort. The game exercises your working memory—the part of your brain that holds information temporarily while you use it. Studies suggest that regularly challenging your working memory can help maintain cognitive function as you age.</p>
 
-        <p>Each color in our Simon Says game has its own distinct tone, making it easier to associate sound with color. This multisensory approach can improve recall, especially for players who learn better through auditory cues. The satisfying light-up animation adds visual feedback, so you always know which color was triggered.</p>
+        <p>Each color in our Color Recall game has its own distinct tone, making it easier to associate sound with color. This multisensory approach can improve recall, especially for players who learn better through auditory cues. The satisfying light-up animation adds visual feedback, so you always know which color was triggered.</p>
 
-        <p>Whether you're playing to sharpen your mind, pass the time, or compete for a personal best, Simon Says offers a timeless challenge. Track your streak, beat your high score, and see how many rounds you can complete. No account required—just click Start and play. Good luck, and remember: Simon says, follow the pattern!</p>
+        <p>Whether you're playing to sharpen your mind, pass the time, or compete for a personal best, Color Recall offers a timeless challenge. Track your streak, beat your high score, and see how many rounds you can complete. No account required—just click Start and play. Good luck, and remember: follow the pattern!</p>
       </div>
     
         <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-games-for-work-breaks" style="color:#2563EB;text-decoration:underline;">12 Quick Games for Work Breaks</a>.</p>
@@ -154,15 +154,15 @@
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
   import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
-    initToolPage('simon-says');
+    initToolPage('color-recall');
     initConsent();
-    trackGameView('simon-says', 'Casual');
+    trackGameView('color-recall', 'Casual');
 
   getPlayer().then(p => {
     if (p) {
       const main = document.querySelector('main');
       renderIdentityBar(main, p);
-      renderLeaderboard(main, 'simon-says');
+      renderLeaderboard(main, 'color-recall');
     }
   });
 
@@ -188,7 +188,7 @@
     const btnRestart = document.getElementById('btn-restart');
     const soundToggle = document.getElementById('sound-toggle');
 
-    const bestKey = 'simon-says-best';
+    const bestKey = 'color-recall-best';
 
     function getBest() {
       try {
@@ -313,7 +313,7 @@
       streakEl.textContent = '0';
       try { playGameOver(); } catch {}
       try { playError(); } catch {}
-      trackGameOver('simon-says', score);
+      trackGameOver('color-recall', score);
       statusEl.textContent = `Game over! Score: ${score}`;
       btnStart.classList.add('hidden');
       btnRestart.classList.remove('hidden');
@@ -321,7 +321,7 @@
 
     function startGame() {
       try { initAudio(); } catch {}
-      trackGameStart('simon-says');
+      trackGameStart('color-recall');
       sequence = [];
       isPlaying = true;
       streak = 0;

@@ -1,1 +1,13 @@
 https://www.minigameplanet.com/* https://minigameplanet.com/:splat 301
+/games/space-invaders /games/star-defenders 301
+/games/space-invaders.html /games/star-defenders 301
+/games/asteroids /games/space-rocks 301
+/games/asteroids.html /games/space-rocks 301
+/games/pong /games/paddle-ball 301
+/games/pong.html /games/paddle-ball 301
+/games/battleship /games/naval-strike 301
+/games/battleship.html /games/naval-strike 301
+/games/yahtzee /games/dice-frenzy 301
+/games/yahtzee.html /games/dice-frenzy 301
+/games/simon-says /games/color-recall 301
+/games/simon-says.html /games/color-recall 301
