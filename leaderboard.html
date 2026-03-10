@@ -201,56 +201,56 @@
     return 'color:rgba(255,255,255,0.8);font-weight:600;font-size:14px;';
   }
 
+  let cachedData = null;
+
   async function loadLeaderboard() {
     lbList.innerHTML = '<div style="text-align:center;padding:40px 20px;color:rgba(255,255,255,0.3);">Loading...</div>';
 
     try {
-      const data = await getGlobalLeaderboard();
-      const entries = data.entries || [];
-
-      if (entries.length === 0) {
-        lbList.innerHTML = '<div style="text-align:center;padding:60px 20px;"><div style="font-size:48px;margin-bottom:12px;">🏜️</div><div style="color:rgba(255,255,255,0.4);font-size:15px;">No players yet. Be the first!</div></div>';
-        return;
-      }
-
-      let sorted = [...entries];
-      let statKey = 'totalPlayed';
-      let statSuffix = ' games';
+      if (!cachedData) cachedData = await getGlobalLeaderboard();
+      const data = cachedData;
+      let rows = [];
+      let statSuffix = '';
 
       if (currentTab === 'rated') {
-        sorted.sort((a, b) => (b.eloRating || 1000) - (a.eloRating || 1000));
-        statKey = 'eloRating';
+        rows = (data.eloRanks || []).map(r => ({ name: r.name, val: Math.round(r.eloRating), detail: r.game }));
         statSuffix = ' Elo';
         statLabel.textContent = 'Rating';
       } else if (currentTab === 'online') {
-        sorted.sort((a, b) => (b.onlineWins || 0) - (a.onlineWins || 0));
-        statKey = 'onlineWins';
+        rows = (data.onlineWins || []).map(r => ({ name: r.name, val: r.onlineWins, detail: null }));
         statSuffix = ' wins';
         statLabel.textContent = 'Online Wins';
       } else if (currentTab === 'poker') {
-        sorted.sort((a, b) => (b.chipBalance || 0) - (a.chipBalance || 0));
-        statKey = 'chipBalance';
-        statSuffix = ' chips';
-        statLabel.textContent = 'Bankroll';
+        const pokerEntries = (data.entries || []).filter(e => e.totalWins > 0).sort((a, b) => b.totalWins - a.totalWins);
+        rows = pokerEntries.map(r => ({ name: r.name, val: r.totalWins, detail: r.favoriteGame }));
+        statSuffix = ' wins';
+        statLabel.textContent = 'Total Wins';
       } else {
-        sorted.sort((a, b) => (b.totalPlayed || 0) - (a.totalPlayed || 0));
+        rows = (data.entries || []).sort((a, b) => (b.totalPlayed || 0) - (a.totalPlayed || 0)).map(r => ({
+          name: r.name, val: r.totalPlayed || 0, detail: r.favoriteGame
+        }));
+        statSuffix = ' games';
         statLabel.textContent = 'Games Played';
       }
 
-      sorted = sorted.slice(0, 50);
-
-      // Update podium
-      for (let i = 0; i < 3; i++) {
-        const el = document.getElementById(`pod-${i + 1}-name`);
-        if (el) el.textContent = sorted[i] ? sorted[i].name : '—';
+      if (rows.length === 0) {
+        lbList.innerHTML = '<div style="text-align:center;padding:60px 20px;"><div style="font-size:48px;margin-bottom:12px;">🏜️</div><div style="color:rgba(255,255,255,0.4);font-size:15px;">No players yet. Play some games to get on the board!</div></div>';
+        document.getElementById('pod-1-name').textContent = '—';
+        document.getElementById('pod-2-name').textContent = '—';
+        document.getElementById('pod-3-name').textContent = '—';
+        return;
       }
 
-      lbList.innerHTML = sorted.map((p, i) => {
-        const val = p[statKey] || (statKey === 'eloRating' ? 1000 : 0);
-        const displayVal = statKey === 'chipBalance' ? val.toLocaleString() : val;
+      for (let i = 0; i < 3; i++) {
+        const el = document.getElementById(`pod-${i + 1}-name`);
+        if (el) el.textContent = rows[i] ? rows[i].name : '—';
+      }
+
+      lbList.innerHTML = rows.slice(0, 50).map((p, i) => {
+        const displayVal = typeof p.val === 'number' && p.val >= 1000 ? p.val.toLocaleString() : p.val;
         return `<div class="lb-row" style="animation:podiumRise 0.4s ease-out ${i * 0.03}s forwards;opacity:0;">
           <div>${rankIcon(i)}</div>
-          <div style="${nameStyle(i)}">${p.name}${p.favoriteGame ? ` <span style="font-size:11px;color:rgba(255,255,255,0.3);font-weight:400;">• ${p.favoriteGame}</span>` : ''}</div>
+          <div style="${nameStyle(i)}">${p.name}${p.detail ? ` <span style="font-size:11px;color:rgba(255,255,255,0.3);font-weight:400;">• ${p.detail}</span>` : ''}</div>
           <div class="stat-val" style="color:${i < 3 ? '#FBBF24' : 'rgba(255,255,255,0.5)'};">${displayVal}${statSuffix}</div>
         </div>`;
       }).join('');

@@ -59,10 +59,10 @@ export async function handleGetGlobalLeaderboard(request, env) {
 
   try {
     const { results } = await env.DB.prepare(`
-      SELECT player_name, total_played, total_wins, favorite_game, ip_hash
+      SELECT player_name, total_played, total_wins, total_time, favorite_game, ip_hash
       FROM global_stats
       ORDER BY total_played DESC
-      LIMIT 10
+      LIMIT 50
     `).all();
 
     const entries = results.map((r, i) => ({
@@ -70,14 +70,51 @@ export async function handleGetGlobalLeaderboard(request, env) {
       name: r.player_name,
       totalPlayed: r.total_played,
       totalWins: r.total_wins,
+      totalTime: r.total_time || 0,
       favoriteGame: r.favorite_game,
       isYou: r.ip_hash === ipHash,
     }));
 
+    let onlineWins = [];
+    try {
+      const { results: owResults } = await env.DB.prepare(`
+        SELECT player_name, SUM(score_value) as total_online_wins
+        FROM leaderboard
+        WHERE score_type = 'online_wins'
+        GROUP BY ip_hash
+        ORDER BY total_online_wins DESC
+        LIMIT 50
+      `).all();
+      onlineWins = owResults.map((r, i) => ({
+        rank: i + 1,
+        name: r.player_name,
+        onlineWins: r.total_online_wins,
+      }));
+    } catch {}
+
+    let eloRanks = [];
+    try {
+      const { results: eloResults } = await env.DB.prepare(`
+        SELECT player_name, game_slug, score_value as elo
+        FROM leaderboard
+        WHERE score_type = 'elo'
+        ORDER BY score_value DESC
+        LIMIT 50
+      `).all();
+      eloRanks = eloResults.map((r, i) => ({
+        rank: i + 1,
+        name: r.player_name,
+        eloRating: r.elo,
+        game: r.game_slug,
+      }));
+    } catch {}
+
     return jsonResponse({
       entries: entries.map(({ isYou, ...e }) => e),
+      onlineWins,
+      eloRanks,
     }, 200, origin);
   } catch (e) {
-    return jsonResponse({ entries: [] }, 200, origin);
+    return jsonResponse({ entries: [], onlineWins: [], eloRanks: [] }, 200, origin);
   }
 }

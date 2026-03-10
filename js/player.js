@@ -1,4 +1,4 @@
-const API_BASE = '/api';
+const API_BASE = 'https://minigameplanet-api.clockedoutlockedin.workers.dev/api';
 let cachedPlayer = null;
 
 export async function getPlayer() {

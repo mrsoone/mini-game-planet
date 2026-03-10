@@ -2,7 +2,7 @@
  * multiplayer.js — Room management, matchmaking, WebSocket communication
  * Supports partner teams, spectators, room settings, system chat
  */
-const API_BASE = '/api';
+const API_BASE = 'https://minigameplanet-api.clockedoutlockedin.workers.dev/api';
 const WS_BASE = location.protocol === 'https:' ? 'wss:' : 'ws:';
 const WS_HOST = location.host;
 

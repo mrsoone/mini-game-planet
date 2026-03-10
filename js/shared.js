@@ -436,10 +436,10 @@ function applyGamePageDecor(game) {
 
     /* ── Make game areas THE MAIN EVENT ── */
     body.mgp-themed-page main {
-      max-width: min(100vw, 1400px) !important;
+      max-width: min(100vw, 1100px) !important;
       width: 100% !important;
-      padding: 8px !important;
-      margin-top: 0 !important;
+      padding: 12px !important;
+      margin: 0 auto !important;
     }
     body.mgp-themed-page main > div:first-child,
     body.mgp-themed-page main > .card:first-child,
@@ -448,6 +448,34 @@ function applyGamePageDecor(game) {
       width: 100% !important;
       overflow-x: auto !important;
     }
+
+    /* ── FORCE STACKED LAYOUT: Never side-by-side game + article ── */
+    body.mgp-themed-page .flex-row,
+    body.mgp-themed-page .md\\:flex-row,
+    body.mgp-themed-page [class*="md:flex-row"],
+    body.mgp-themed-page main .flex.flex-col.md\\:flex-row,
+    body.mgp-themed-page main > div > div.flex {
+      flex-direction: column !important;
+      align-items: center !important;
+    }
+    body.mgp-themed-page main .flex-shrink-0,
+    body.mgp-themed-page main .flex-1 {
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+    body.mgp-themed-page main canvas {
+      display: block !important;
+      margin: 0 auto !important;
+      width: min(92vw, 560px) !important;
+      height: auto !important;
+      aspect-ratio: attr(width) / attr(height);
+    }
+    body.mgp-themed-page main canvas[width="420"][height="420"],
+    body.mgp-themed-page main canvas[width="400"][height="400"] {
+      width: min(92vw, 560px) !important;
+      height: min(92vw, 560px) !important;
+    }
+
     /* Compact disclaimers - push below the game */
     body.mgp-themed-page .bg-amber-50,
     body.mgp-themed-page [style*="background:#FEF3C7"],
@@ -458,18 +486,26 @@ function applyGamePageDecor(game) {
       margin-top: 12px !important;
       margin-bottom: 0 !important;
     }
-    /* How-to-Play articles: compact, below fold */
+    /* How-to-Play articles: own container below the game */
     body.mgp-themed-page > article,
     body.mgp-themed-page main ~ article,
-    body.mgp-themed-page main + article {
-      margin-top: 8px !important;
-      padding: 16px !important;
+    body.mgp-themed-page main + article,
+    body.mgp-themed-page main .flex-1 article,
+    body.mgp-themed-page main article {
+      margin-top: 16px !important;
+      padding: 20px !important;
       font-size: 14px !important;
+      background: #fff !important;
+      border-radius: 16px !important;
+      border: 2px solid rgba(${C}, 0.2) !important;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08) !important;
     }
     body.mgp-themed-page > article h2,
-    body.mgp-themed-page main ~ article h2 {
+    body.mgp-themed-page main ~ article h2,
+    body.mgp-themed-page main article h2 {
       font-size: 18px !important;
       margin-bottom: 8px !important;
+      color: #0F172A !important;
     }
 
     /* ── CARD GAMES: Centering + wrapping for card hands ── */
@@ -720,10 +756,7 @@ function applyGamePageDecor(game) {
       font-size: clamp(18px, 3vw, 26px) !important;
     }
 
-    /* ── SNAKE & square canvases ── */
-    body.mgp-themed-page canvas[width="400"][height="400"] {
-      width: min(88vw, 520px) !important; height: min(88vw, 520px) !important;
-    }
+    /* ── SNAKE & square canvases — handled by main canvas rules above ── */
 
     /* ── ALL GAMES: Bigger action buttons (not sound toggles or small toggles) ── */
     body.mgp-themed-page main button:not(#sound-toggle):not(#soundToggle):not(#sound-btn):not(.mode-btn) {
@@ -910,17 +943,13 @@ function applyGamePageDecor(game) {
       border-bottom: 3px solid rgba(${C},0.5) !important;
     }
     body.mgp-themed-page #footer-container footer {
-      background: rgba(0,0,0,0.5) !important;
-      border-color: rgba(${C},0.3) !important;
+      background: #fff !important;
+      border-color: #E5E7EB !important;
     }
     body.mgp-themed-page #footer-container footer span,
     body.mgp-themed-page #footer-container footer a,
     body.mgp-themed-page #footer-container footer button {
-      color: rgba(255,255,255,0.7) !important;
-    }
-    body.mgp-themed-page #footer-container footer img {
-      filter: brightness(1.5) contrast(1.1) !important;
-      opacity: 0.9 !important;
+      color: #64748B !important;
     }
 
     /* ── Wrapper divs around main should be transparent, not cards ── */
@@ -1179,19 +1208,14 @@ function renderNav(gameName) {
   if (!el) return;
 
   const navHTML = `
-    <nav style="position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:2px solid #0F172A;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;max-width:100%;">
+    <nav style="position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:2px solid #0F172A;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;max-width:100%;">
       <a href="/" style="display:flex;align-items:center;text-decoration:none;">
         <img src="/images/logo.png" alt="Mini Game Planet" style="height:36px;width:auto;">
       </a>
-      <div style="display:flex;align-items:center;gap:18px;">
-        <a href="/leaderboard" style="font-size:14px;font-weight:700;color:#D97706;text-decoration:none;transition:color 0.15s;display:flex;align-items:center;gap:4px;" onmouseover="this.style.color='#B45309'" onmouseout="this.style.color='#D97706'">👑 Leaderboards 👑</a>
-        <a href="/blog" style="font-size:14px;font-weight:500;color:#94A3B8;text-decoration:none;transition:color 0.15s;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">Blog</a>
-        <a href="/about" style="font-size:14px;font-weight:500;color:#94A3B8;text-decoration:none;transition:color 0.15s;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">About</a>
-        <a href="/privacy" style="font-size:14px;font-weight:500;color:#94A3B8;text-decoration:none;transition:color 0.15s;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">Privacy</a>
-        <button id="sound-toggle-nav" style="background:#0F172A;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:4px;">
-          <span id="sound-icon-nav">🔊</span> Sound
-        </button>
-      </div>
+      <a href="/leaderboard" style="position:absolute;left:50%;transform:translateX(-50%);font-size:15px;font-weight:700;color:#D97706;text-decoration:none;transition:all 0.15s;display:flex;align-items:center;gap:4px;" onmouseover="this.style.color='#B45309';this.style.transform='translateX(-50%) scale(1.05)'" onmouseout="this.style.color='#D97706';this.style.transform='translateX(-50%)'">👑 Leaderboards 👑</a>
+      <button id="sound-toggle-nav" style="background:#0F172A;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:4px;">
+        <span id="sound-icon-nav">🔊</span> Sound
+      </button>
     </nav>
   `;
 
@@ -1237,19 +1261,20 @@ function renderFooter() {
   if (!el) return;
 
   const footerHTML = `
-    <footer style="border-top:2px solid #0F172A;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;max-width:100%;">
+    <footer style="background:#fff;border-top:2px solid #E5E7EB;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;max-width:100%;">
       <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:#64748B;">
-        <img src="/images/logo.png" alt="MiniGamePlanet" style="height:32px;width:auto;filter:brightness(1.1);flex-shrink:0;">
+        <img src="/images/logo.png" alt="MiniGamePlanet" style="height:34px;width:auto;flex-shrink:0;">
         <span>&copy; 2026 Jagan Worldwide Games. All rights reserved.</span>
       </div>
       <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
-        <a href="/blog" style="font-size:13px;color:#94A3B8;text-decoration:none;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">Blog</a>
-        <a href="/about" style="font-size:13px;color:#94A3B8;text-decoration:none;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">About</a>
-        <a href="/privacy" style="font-size:13px;color:#94A3B8;text-decoration:none;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">Privacy</a>
-        <a href="/terms" style="font-size:13px;color:#94A3B8;text-decoration:none;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">Terms</a>
-        <a href="/cookies" style="font-size:13px;color:#94A3B8;text-decoration:none;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">Cookies</a>
-        <a href="/licenses" style="font-size:13px;color:#94A3B8;text-decoration:none;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">Licenses</a>
-        <button id="footer-cookie-settings" style="font-size:13px;color:#94A3B8;background:none;border:none;cursor:pointer;padding:0;font-family:inherit;text-decoration:underline;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#94A3B8'">Cookie Settings</button>
+        <a href="/leaderboard" style="font-size:13px;color:#D97706;font-weight:600;text-decoration:none;" onmouseover="this.style.color='#B45309'" onmouseout="this.style.color='#D97706'">👑 Leaderboards</a>
+        <a href="/blog" style="font-size:13px;color:#64748B;text-decoration:none;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#64748B'">Blog</a>
+        <a href="/about" style="font-size:13px;color:#64748B;text-decoration:none;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#64748B'">About</a>
+        <a href="/privacy" style="font-size:13px;color:#64748B;text-decoration:none;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#64748B'">Privacy</a>
+        <a href="/terms" style="font-size:13px;color:#64748B;text-decoration:none;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#64748B'">Terms</a>
+        <a href="/cookies" style="font-size:13px;color:#64748B;text-decoration:none;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#64748B'">Cookies</a>
+        <a href="/licenses" style="font-size:13px;color:#64748B;text-decoration:none;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#64748B'">Licenses</a>
+        <button id="footer-cookie-settings" style="font-size:13px;color:#64748B;background:none;border:none;cursor:pointer;padding:0;font-family:inherit;text-decoration:underline;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#64748B'">Cookie Settings</button>
       </div>
     </footer>
   `;
