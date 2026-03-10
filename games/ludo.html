@@ -22,11 +22,7 @@
   <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- Standard imports -->
-  <script src="/js/audio.js"></script>
-  <script src="/js/shared.js"></script>
-  <script src="/js/consent.js"></script>
-  <script src="/js/analytics.js"></script>
+  <!-- Standard imports loaded as modules in the game script below -->
   
   <script>
     tailwind.config = {
@@ -147,11 +143,17 @@
     <div id="footer-container"></div>
   </main>
 
-  <script>
-    (function() {
-      if (typeof initToolPage === 'function') initToolPage('ludo');
-      if (typeof initConsent === 'function') initConsent();
-      if (typeof trackGameView === 'function') trackGameView('ludo', 'Board');
+  <script type="module">
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { initAudio, playClick, playSuccess, playError } from '/js/audio.js';
+  import { trackGameView } from '/js/analytics.js';
+  import { getPlayer, renderIdentityBar, renderLeaderboard, submitStats } from '/js/player.js';
+
+  initToolPage('ludo');
+  initConsent();
+  trackGameView('ludo', 'Board');
+  document.addEventListener('click', () => initAudio(), { once: true });
 
   getPlayer().then(p => {
     if (p) {
@@ -160,21 +162,6 @@
       renderLeaderboard(main, 'ludo');
     }
   });
-
-  // Multiplayer mode selector
-  const mpContainer = document.querySelector('main');
-  if (mpContainer) {
-    getPlayer().then(p => {
-      const pName = p ? p.name : 'Player';
-      renderModeSelector(mpContainer, 'ludo', pName, {
-        onAI: () => { /* default single-player, already running */ },
-        onPrivate: () => { /* room joined, wire moves */ },
-        onFind: () => { /* match found, wire moves */ },
-      });
-    });
-    onChat(data => showChatToast(data.messageId, data.from));
-  }
-    })();
 
     const COLORS = ['#DC2626', '#2563EB', '#16A34A', '#EAB308'];
     const COLOR_NAMES = ['Red', 'Blue', 'Green', 'Yellow'];
@@ -397,7 +384,7 @@
           token.pathIndex = BOARD_LAYOUT.startPositions[player];
           state.hasRolled = false;
           state.selectedToken = null;
-          if (state.soundOn && typeof playSound === 'function') playSound('move');
+          if (state.soundOn) playClick();
         }
       } else if (token.homeStretchIndex >= 0) {
         const needed = 5 - token.homeStretchIndex;
@@ -405,14 +392,14 @@
           token.homeStretchIndex = 5;
           state.hasRolled = false;
           state.selectedToken = null;
-          if (state.soundOn && typeof playSound === 'function') playSound('win');
+          if (state.soundOn) playSuccess();
           checkWin();
           nextTurn();
         } else if (dice < needed) {
           token.homeStretchIndex += dice;
           state.hasRolled = false;
           state.selectedToken = null;
-          if (state.soundOn && typeof playSound === 'function') playSound('move');
+          if (state.soundOn) playClick();
           nextTurn();
         }
       } else {
@@ -438,7 +425,7 @@
               other.home = true;
               other.pathIndex = -1;
               other.homeStretchIndex = -1;
-              if (state.soundOn && typeof playSound === 'function') playSound('capture');
+              if (state.soundOn) playError();
             }
           }
         }
@@ -446,7 +433,7 @@
         if (dice === 6) state.hasRolled = false;
         else nextTurn();
         state.selectedToken = null;
-        if (state.soundOn && typeof playSound === 'function') playSound('move');
+        if (state.soundOn) playClick();
       }
 
       updateStatus();

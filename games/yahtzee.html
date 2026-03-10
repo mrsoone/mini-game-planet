@@ -22,11 +22,7 @@
   <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Standard imports -->
-  <script src="/js/audio.js"></script>
-  <script src="/js/shared.js"></script>
-  <script src="/js/consent.js"></script>
-  <script src="/js/analytics.js"></script>
+  <!-- Standard imports loaded as modules in the game script below -->
 
   <script>
     tailwind.config = {
@@ -187,11 +183,17 @@
     <div id="footer-container"></div>
   </main>
 
-  <script>
-    (function() {
-      if (typeof initToolPage === 'function') initToolPage('yahtzee');
-      if (typeof initConsent === 'function') initConsent();
-      if (typeof trackGameView === 'function') trackGameView('yahtzee', 'Board');
+  <script type="module">
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { initAudio, playClick, playSuccess, playError } from '/js/audio.js';
+  import { trackGameView } from '/js/analytics.js';
+  import { getPlayer, renderIdentityBar, renderLeaderboard, submitStats } from '/js/player.js';
+
+  initToolPage('yahtzee');
+  initConsent();
+  trackGameView('yahtzee', 'Board');
+  document.addEventListener('click', () => initAudio(), { once: true });
 
   getPlayer().then(p => {
     if (p) {
@@ -200,21 +202,6 @@
       renderLeaderboard(main, 'yahtzee');
     }
   });
-
-  // Multiplayer mode selector
-  const mpContainer = document.querySelector('main');
-  if (mpContainer) {
-    getPlayer().then(p => {
-      const pName = p ? p.name : 'Player';
-      renderModeSelector(mpContainer, 'yahtzee', pName, {
-        onAI: () => { /* default single-player, already running */ },
-        onPrivate: () => { /* room joined, wire moves */ },
-        onFind: () => { /* match found, wire moves */ },
-      });
-    });
-    onChat(data => showChatToast(data.messageId, data.from));
-  }
-    })();
 
     const CATEGORIES = {
       upper: [
@@ -332,7 +319,7 @@
       if (state.rollsLeft === 0) return;
       state.held[idx] = !state.held[idx];
       renderDice();
-      if (state.soundOn && typeof playSound === 'function') playSound('click');
+      if (state.soundOn) playClick();
     }
 
     function doRoll() {
@@ -346,7 +333,7 @@
         renderDice();
       }, 400);
       state.rollsLeft--;
-      if (state.soundOn && typeof playSound === 'function') playSound('move');
+      if (state.soundOn) playClick();
     }
 
     function buildScorecard() {
@@ -411,7 +398,7 @@
       updateScorecard();
       renderDice();
       document.querySelectorAll('.score-row').forEach(r => r.classList.remove('selectable'));
-      if (state.soundOn && typeof playSound === 'function') playSound('score');
+      if (state.soundOn) playSuccess();
       const grand = document.getElementById('grandTotal').textContent;
       if (state.round >= 13) endGame(parseInt(grand, 10));
       else {

@@ -359,12 +359,6 @@
   <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Math", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Logic Grid Puzzle", "item": "https://minigameplanet.com/games/flag-quiz"}]}</script>
 </head>
 <body class="min-h-screen text-gray-800">
-  <!-- Standard imports -->
-  <script src="/js/audio.js"></script>
-  <script src="/js/shared.js"></script>
-  <script src="/js/consent.js"></script>
-  <script src="/js/analytics.js"></script>
-
   <nav id="nav-container" class="bg-white/80 backdrop-blur border-b border-gray-200 sticky top-0 z-50">
     <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
       <a href="/" class="font-semibold text-lg">Mini Game Planet</a>
@@ -460,7 +454,13 @@
     </div>
   </footer>
 
-  <script>
+  <script type="module">
+  import { initToolPage } from '/js/shared.js';
+  import { initConsent } from '/js/consent.js';
+  import { initAudio, playClick, playSuccess, playError } from '/js/audio.js';
+  import { trackGameView } from '/js/analytics.js';
+  import { getPlayer, renderIdentityBar, renderLeaderboard, submitStats } from '/js/player.js';
+
     (function() {
       'use strict';
 
@@ -800,17 +800,18 @@
 
       updatePBDisplay();
 
-      if (typeof initToolPage === 'function') initToolPage('flag-quiz');
-      if (typeof initConsent === 'function') initConsent();
-      if (typeof trackGameView === 'function') trackGameView('flag-quiz', 'Trivia');
+      initToolPage('flag-quiz');
+      initConsent();
+      trackGameView('flag-quiz', 'Trivia');
+      document.addEventListener('click', () => initAudio(), { once: true });
 
-  getPlayer().then(p => {
-    if (p) {
-      const main = document.querySelector('main');
-      renderIdentityBar(main, p);
-      renderLeaderboard(main, 'flag-quiz');
-    }
-  });
+      getPlayer().then(p => {
+        if (p) {
+          const main = document.querySelector('main');
+          renderIdentityBar(main, p);
+          renderLeaderboard(main, 'flag-quiz');
+        }
+      });
     })();
   </script>
 </body>
