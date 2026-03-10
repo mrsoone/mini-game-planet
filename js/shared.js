@@ -28,6 +28,7 @@ function applyPlanetFavicon() {
   upsertLink({ rel: 'shortcut icon', href: FAVICON_PATHS.ico, type: 'image/x-icon' });
   upsertLink({ rel: 'apple-touch-icon', href: FAVICON_PATHS.apple, type: 'image/png', sizes: '180x180' });
   upsertLink({ rel: 'icon', href: FAVICON_PATHS.png32, type: 'image/png', sizes: '32x32' });
+  upsertLink({ rel: 'manifest', href: '/manifest.json' });
 }
 
 function updateViewportHeightVar() {
