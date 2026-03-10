@@ -174,13 +174,13 @@ export const games = [
     built: true
   },
   {
-    name: 'Flappy Jump',
-    slug: 'flappy-jump',
+    name: 'Sky Bounce',
+    slug: 'sky-bounce',
     category: 'Arcade',
-    description: 'Tap to flap through pipes in this addictive one-button arcade game. Simple to learn, fiendishly hard to master. How far can you go?',
+    description: 'Tap to fly through gaps in this addictive one-button arcade game. Simple to learn, fiendishly hard to master. How far can you go?',
     icon: '🐦',
     accent: '#0891B2',
-    keywords: ['flappy game', 'one tap game', 'pipe game', 'arcade'],
+    keywords: ['sky bounce', 'one tap game', 'flying game', 'arcade'],
     built: true
   },
   {
@@ -204,13 +204,13 @@ export const games = [
     built: true
   },
   {
-    name: 'Whack-a-Mole',
-    slug: 'whack-a-mole',
+    name: 'Critter Bonk',
+    slug: 'critter-bonk',
     category: 'Arcade',
-    description: 'Whack moles as they pop up from their holes. Hit golden moles for bonus points, but watch out for bombs in this frantic tapping game.',
+    description: 'Bonk critters as they pop up from their holes. Hit golden critters for bonus points, but watch out for bombs in this frantic tapping game.',
     icon: '🔨',
     accent: '#0891B2',
-    keywords: ['whack a mole', 'tapping game', 'reaction game', 'arcade'],
+    keywords: ['critter bonk', 'tapping game', 'reaction game', 'arcade'],
     built: true
   },
   {
@@ -280,10 +280,10 @@ export const games = [
     name: 'Nonogram',
     slug: 'nonogram',
     category: 'Puzzle',
-    description: 'Reveal hidden pictures by filling cells according to number clues. Also known as Picross — a satisfying logic-art puzzle.',
+    description: 'Reveal hidden pictures by filling cells according to number clues. A satisfying logic-art puzzle with endless grids to solve.',
     icon: '🖼',
     accent: '#2563EB',
-    keywords: ['nonogram', 'picross', 'griddler', 'picture logic'],
+    keywords: ['nonogram', 'griddler', 'picture logic', 'grid puzzle'],
     built: true
   },
   {
@@ -307,13 +307,13 @@ export const games = [
     built: true
   },
   {
-    name: 'Lights Out',
-    slug: 'lights-out',
+    name: 'Grid Glow',
+    slug: 'grid-glow',
     category: 'Puzzle',
-    description: 'Click a light to toggle it and its neighbors. Turn all lights off to solve the puzzle. Simple rules, surprisingly deep challenge.',
+    description: 'Click a cell to toggle it and its neighbors. Turn all cells off to solve the puzzle. Simple rules, surprisingly deep challenge.',
     icon: '💡',
     accent: '#2563EB',
-    keywords: ['lights out', 'toggle puzzle', 'grid puzzle', 'logic game'],
+    keywords: ['grid glow', 'toggle puzzle', 'grid puzzle', 'logic game'],
     built: true
   },
   {
@@ -347,23 +347,23 @@ export const games = [
     built: true
   },
   {
-    name: 'Maze Runner',
-    slug: 'maze-runner',
+    name: 'Maze Escape',
+    slug: 'maze-escape',
     category: 'Puzzle',
     description: 'Navigate procedurally generated mazes from start to exit. Choose your size, enable fog-of-war, and race the clock.',
     icon: '🌀',
     accent: '#2563EB',
-    keywords: ['maze game', 'maze runner', 'labyrinth', 'maze puzzle'],
+    keywords: ['maze game', 'maze escape', 'labyrinth', 'maze puzzle'],
     built: true
   },
   {
     name: 'Box Pusher',
-    slug: 'sokoban',
+    slug: 'box-pusher',
     category: 'Puzzle',
     description: 'Push boxes onto target squares in this strategic puzzle. Plan your moves carefully — one wrong push and you may need to undo.',
     icon: '📦',
     accent: '#2563EB',
-    keywords: ['sokoban', 'box pusher', 'push puzzle', 'warehouse game'],
+    keywords: ['box pusher', 'push puzzle', 'warehouse game', 'crate puzzle'],
     built: true
   },
   {
@@ -566,13 +566,13 @@ export const games = [
     built: true
   },
   {
-    name: 'Connect Four',
-    slug: 'connect-four',
+    name: 'Disc Drop',
+    slug: 'disc-drop',
     category: 'Strategy',
-    description: 'Drop colored discs to connect four in a row before your opponent. Play against smart AI or a friend with smooth falling animations.',
+    description: 'Drop colored discs to get four in a row before your opponent. Play against smart AI or a friend with smooth falling animations.',
     icon: '🔴',
     accent: '#0D9488',
-    keywords: ['connect four', 'four in a row', 'drop game', 'strategy game'],
+    keywords: ['disc drop', 'four in a row', 'drop game', 'strategy game'],
     built: true
   },
   {
@@ -802,13 +802,13 @@ export const games = [
     built: true
   },
   {
-    name: 'Color Switch',
-    slug: 'color-switch',
+    name: 'Color Gate',
+    slug: 'color-gate',
     category: 'Action',
     description: 'Guide your ball through rotating color barriers. You can only pass through the segment matching your color. One tap to jump.',
     icon: '🔵',
     accent: '#EA580C',
-    keywords: ['color switch', 'color game', 'timing game', 'one tap action'],
+    keywords: ['color gate', 'color game', 'timing game', 'one tap action'],
     built: true
   },
   {

@@ -11,3 +11,17 @@ https://www.minigameplanet.com/* https://minigameplanet.com/:splat 301
 /games/yahtzee.html /games/dice-frenzy 301
 /games/simon-says /games/color-recall 301
 /games/simon-says.html /games/color-recall 301
+/games/connect-four /games/disc-drop 301
+/games/connect-four.html /games/disc-drop 301
+/games/whack-a-mole /games/critter-bonk 301
+/games/whack-a-mole.html /games/critter-bonk 301
+/games/color-switch /games/color-gate 301
+/games/color-switch.html /games/color-gate 301
+/games/maze-runner /games/maze-escape 301
+/games/maze-runner.html /games/maze-escape 301
+/games/flappy-jump /games/sky-bounce 301
+/games/flappy-jump.html /games/sky-bounce 301
+/games/lights-out /games/grid-glow 301
+/games/lights-out.html /games/grid-glow 301
+/games/sokoban /games/box-pusher 301
+/games/sokoban.html /games/box-pusher 301

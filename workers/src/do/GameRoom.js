@@ -127,7 +127,7 @@ export class GameRoom {
 
   async computeElo(result) {
     if (!result || !result.winner === undefined) return;
-    const ranked = ['chess', 'checkers', 'connect-four', 'reversi', 'spades', 'hearts',
+    const ranked = ['chess', 'checkers', 'disc-drop', 'reversi', 'spades', 'hearts',
       'backgammon', 'gin-rummy', 'euchre', 'cribbage'];
     if (!ranked.includes(this.gameSlug)) return;
 

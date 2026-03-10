@@ -52,10 +52,10 @@
   <url><loc>https://minigameplanet.com/games/breakout</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/space-rocks</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/star-defenders</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
-  <url><loc>https://minigameplanet.com/games/flappy-jump</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
+  <url><loc>https://minigameplanet.com/games/sky-bounce</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/fruit-slicer</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/endless-runner</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
-  <url><loc>https://minigameplanet.com/games/whack-a-mole</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
+  <url><loc>https://minigameplanet.com/games/critter-bonk</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/helicopter-game</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/duck-hunt</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/dodge-ball</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
@@ -67,12 +67,12 @@
   <url><loc>https://minigameplanet.com/games/nonogram</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/sliding-puzzle</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/tower-of-hanoi</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
-  <url><loc>https://minigameplanet.com/games/lights-out</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
+  <url><loc>https://minigameplanet.com/games/grid-glow</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/pipe-connect</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/color-flood</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/jigsaw</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
-  <url><loc>https://minigameplanet.com/games/maze-runner</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
-  <url><loc>https://minigameplanet.com/games/sokoban</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
+  <url><loc>https://minigameplanet.com/games/maze-escape</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
+  <url><loc>https://minigameplanet.com/games/box-pusher</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/block-puzzle</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/match-three</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
 
@@ -98,7 +98,7 @@
 
   <!-- Games: Strategy (10) -->
   <url><loc>https://minigameplanet.com/games/tic-tac-toe</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
-  <url><loc>https://minigameplanet.com/games/connect-four</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
+  <url><loc>https://minigameplanet.com/games/disc-drop</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/reversi</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/checkers</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/chess</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
@@ -125,7 +125,7 @@
   <url><loc>https://minigameplanet.com/games/jumping-rabbit</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/tower-stack</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/rhythm-tap</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
-  <url><loc>https://minigameplanet.com/games/color-switch</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
+  <url><loc>https://minigameplanet.com/games/color-gate</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/knife-throw</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/ball-bounce</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>
   <url><loc>https://minigameplanet.com/games/gravity-flip</loc><priority>0.8</priority><lastmod>2026-03-07</lastmod></url>

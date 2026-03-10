@@ -9,7 +9,7 @@ const rateLimitMap = new Map();
 
 const K_FACTOR = 32;
 const RANKED_GAMES = [
-  'chess', 'checkers', 'connect-four', 'reversi', 'spades', 'hearts',
+  'chess', 'checkers', 'disc-drop', 'reversi', 'spades', 'hearts',
   'backgammon', 'gin-rummy', 'euchre', 'cribbage',
 ];
 

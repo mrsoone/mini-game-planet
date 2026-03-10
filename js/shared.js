@@ -743,7 +743,7 @@ function applyGamePageDecor(game) {
       min-width: 0 !important;
     }
 
-    /* ── BLOCK PUZZLE (Tetris): Responsive ── */
+    /* ── BLOCK PUZZLE: Responsive ── */
     body.mgp-themed-page #gameCanvas[width="300"],
     body.mgp-themed-page canvas[width="300"][height="480"] {
       width: min(65vw, 360px) !important; height: min(104vw, 576px) !important;
