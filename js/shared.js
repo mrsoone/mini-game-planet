@@ -771,12 +771,12 @@ function applyGamePageDecor(game) {
       font-weight: 700 !important;
     }
 
-    /* ── Canvas: HERO size with neon glow ── */
+    /* ── Canvas: glow only — no width/border forcing (preserves game coordinates) ── */
     body.mgp-themed-page canvas {
       max-width: 94vw !important;
-      width: 100% !important;
-      border: 3px solid rgba(${C}, 0.7) !important;
+      border: none !important;
       box-shadow:
+        0 0 0 3px rgba(${C}, 0.7),
         0 0 20px rgba(${C}, 0.6),
         0 0 60px rgba(${C}, 0.3),
         0 0 120px rgba(${C}, 0.15),
@@ -786,20 +786,13 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page #game-canvas {
       max-width: min(94vw, 1000px) !important;
     }
-    body.mgp-themed-page canvas[width="320"],
-    body.mgp-themed-page canvas[width="300"],
-    body.mgp-themed-page canvas[width="400"] {
-      min-width: min(94vw, 500px) !important;
-      min-height: min(60vh, 500px) !important;
-    }
 
     /* ── SLOT MACHINE: handled by inline styles in slot-machine.html ── */
 
-    /* ── ROULETTE WHEEL: bigger ── */
+    /* ── ROULETTE WHEEL ── */
     body.mgp-themed-page #roulette-wheel,
     body.mgp-themed-page canvas[id*="roulette"] {
-      min-width: min(90vw, 500px) !important;
-      min-height: min(90vw, 500px) !important;
+      max-width: min(90vw, 500px) !important;
     }
 
     /* ── Game area centering + styling ── */
@@ -1065,14 +1058,7 @@ function applyGamePageDecor(game) {
       text-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
     }
 
-    /* Overlay elements (game-over screens etc.) keep white text */
-    body.mgp-themed-page [class*="bg-black"] p,
-    body.mgp-themed-page [class*="bg-black"] span,
-    body.mgp-themed-page [class*="bg-black"] button,
-    body.mgp-themed-page .absolute.inset-0 p,
-    body.mgp-themed-page .absolute.inset-0 span {
-      color: inherit !important;
-    }
+    /* Overlay elements — handled by [class*="bg-black"] rules above (white text) */
 
     /* ── LAYER 2.5: Preserve playing card colors ── */
     body.mgp-themed-page .card.red,
@@ -1149,14 +1135,16 @@ function applyGamePageDecor(game) {
       min-height: 44px !important;
       transition: transform 0.15s, box-shadow 0.15s, background-color 0.15s !important;
     }
-    body.mgp-themed-page main button:hover,
-    body.mgp-themed-page main [role="button"]:hover {
-      transform: translateY(-3px) scale(1.05) !important;
-      box-shadow: 0 8px 24px -4px rgba(${C},0.5) !important;
+    @media (hover: hover) {
+      body.mgp-themed-page main button:hover,
+      body.mgp-themed-page main [role="button"]:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 4px 16px -4px rgba(${C},0.4) !important;
+      }
     }
     body.mgp-themed-page main button:active,
     body.mgp-themed-page main [role="button"]:active {
-      transform: scale(0.95) !important;
+      transform: scale(0.97) !important;
     }
 
     /* ── Scoped Tailwind button overrides (buttons only) ── */
@@ -1241,6 +1229,9 @@ function renderNav(gameName) {
     </nav>
   `;
 
+  const _navSavedIds = [];
+  el.querySelectorAll('[id]').forEach(c => _navSavedIds.push(c.id));
+
   if (el.tagName === 'NAV') {
     const wrapper = document.createElement('div');
     wrapper.id = 'nav-container';
@@ -1250,6 +1241,15 @@ function renderNav(gameName) {
     el.id = 'nav-container';
     el.innerHTML = navHTML;
   }
+
+  _navSavedIds.forEach(oldId => {
+    if (!document.getElementById(oldId)) {
+      const d = document.createElement('button');
+      d.id = oldId;
+      d.style.cssText = 'display:none;position:absolute;pointer-events:none;';
+      document.body.appendChild(d);
+    }
+  });
 
   const btn = document.getElementById('sound-toggle-nav');
   const icon = document.getElementById('sound-icon-nav');
@@ -1288,6 +1288,9 @@ function renderFooter() {
     </footer>
   `;
 
+  const _footSavedIds = [];
+  el.querySelectorAll('[id]').forEach(c => _footSavedIds.push(c.id));
+
   if (el.tagName === 'FOOTER') {
     const wrapper = document.createElement('div');
     wrapper.id = 'footer-container';
@@ -1296,6 +1299,15 @@ function renderFooter() {
   } else {
     el.innerHTML = footerHTML;
   }
+
+  _footSavedIds.forEach(oldId => {
+    if (!document.getElementById(oldId)) {
+      const d = document.createElement('button');
+      d.id = oldId;
+      d.style.cssText = 'display:none;position:absolute;pointer-events:none;';
+      document.body.appendChild(d);
+    }
+  });
 
   const cookieBtn = document.getElementById('footer-cookie-settings');
   if (cookieBtn) {
