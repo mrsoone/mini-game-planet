@@ -330,13 +330,36 @@ function applyGamePageDecor(game) {
   });
   scatter.innerHTML = scatterHTML;
 
-  let banner = document.getElementById('mgp-emoji-banner');
+  const oldBanner = document.getElementById('mgp-emoji-banner');
+  if (oldBanner) oldBanner.remove();
+
+  let banner = document.getElementById('mgp-header-emojis');
   if (!banner) {
     banner = document.createElement('div');
-    banner.id = 'mgp-emoji-banner';
+    banner.id = 'mgp-header-emojis';
     banner.setAttribute('aria-hidden', 'true');
     const mainEl = document.querySelector('main');
-    if (mainEl) mainEl.insertAdjacentElement('afterbegin', banner);
+    const gameCard = mainEl && mainEl.querySelector(':scope > div, :scope > article');
+    if (gameCard) {
+      const h1 = gameCard.querySelector('h1');
+      let headerRow = null;
+      if (h1) {
+        let el = h1.parentElement;
+        while (el && el !== gameCard) {
+          if (el.parentElement === gameCard) { headerRow = el; break; }
+          el = el.parentElement;
+        }
+      }
+      if (headerRow) {
+        const lastChild = headerRow.lastElementChild;
+        if (lastChild && lastChild !== banner) headerRow.insertBefore(banner, lastChild);
+        else if (!lastChild) headerRow.appendChild(banner);
+      } else {
+        const firstChild = gameCard.firstElementChild;
+        if (firstChild) gameCard.insertBefore(banner, firstChild.nextElementSibling);
+        else gameCard.appendChild(banner);
+      }
+    }
   }
   if (banner) {
     const bannerEmojis = [gameEmoji, ...vibeEmojis.slice(0,5), gameEmoji];
@@ -386,20 +409,22 @@ function applyGamePageDecor(game) {
       50% { transform: translateY(-14px) rotate(var(--mgp-r, 0deg)) scale(1.08); }
     }
 
-    /* ── Emoji banner above game ── */
-    #mgp-emoji-banner {
+    /* ── Animated emojis inside header row ── */
+    #mgp-header-emojis {
       display: flex;
+      align-items: center;
+      gap: 6px;
+      flex: 1 1 auto;
       justify-content: center;
-      gap: 12px;
-      padding: 10px 0 6px;
-      position: relative;
-      z-index: 2;
+      min-width: 0;
+      overflow: hidden;
     }
     .mgp-banner-e {
-      font-size: 2rem;
+      font-size: clamp(1.1rem, 2.5vw, 1.6rem);
       animation: mgpPop 2s ease-in-out infinite;
       display: inline-block;
-      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));
+      filter: drop-shadow(0 1px 3px rgba(0,0,0,0.25));
+      line-height: 1;
     }
     .mgp-banner-e:nth-child(1) { animation-delay: 0s; }
     .mgp-banner-e:nth-child(2) { animation-delay: 0.15s; }
@@ -410,7 +435,7 @@ function applyGamePageDecor(game) {
     .mgp-banner-e:nth-child(7) { animation-delay: 0.9s; }
     @keyframes mgpPop {
       0%, 100% { transform: scale(1) translateY(0); }
-      50% { transform: scale(1.2) translateY(-6px); }
+      50% { transform: scale(1.15) translateY(-4px); }
     }
 
     /* ── Z-index layering ── */
@@ -839,7 +864,7 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page > article,
     body.mgp-themed-page main ~ article,
     body.mgp-themed-page main ~ section,
-    body.mgp-themed-page main ~ div:not(#related-games):not(#footer-container):not(#nav-container):not(#mgp-game-bg):not(#mgp-emoji-scatter):not(#mgp-emoji-banner) {
+    body.mgp-themed-page main ~ div:not(#related-games):not(#footer-container):not(#nav-container):not(#mgp-game-bg):not(#mgp-emoji-scatter) {
       color: #0F172A !important;
     }
     body.mgp-themed-page main > div p,
@@ -1014,7 +1039,8 @@ function applyGamePageDecor(game) {
     /* ── Mobile: tablet ── */
     @media (max-width: 768px) {
       .mgp-scatter-emoji { opacity: 0.15; }
-      .mgp-banner-e { font-size: 1.6rem; }
+      .mgp-banner-e { font-size: 1.1rem; }
+      #mgp-header-emojis { gap: 4px !important; }
       body.mgp-themed-page main {
         padding-left: 8px !important;
         padding-right: 8px !important;
@@ -1027,8 +1053,8 @@ function applyGamePageDecor(game) {
     /* ── Mobile: phone ── */
     @media (max-width: 480px) {
       .mgp-scatter-emoji { opacity: 0.10; font-size: 80% !important; }
-      .mgp-banner-e { font-size: 1.3rem; gap: 6px; }
-      #mgp-emoji-banner { gap: 6px !important; }
+      .mgp-banner-e { font-size: 0.95rem; }
+      #mgp-header-emojis { gap: 3px !important; }
       body.mgp-themed-page main {
         padding-left: 4px !important;
         padding-right: 4px !important;
