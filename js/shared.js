@@ -1397,6 +1397,158 @@ function shuffleArray(arr) {
 
 // ─── MASTER INIT ────────────────────────────────────────────────
 
+// ── Section 6: Controls Hint Bar ──
+
+function injectControlsHint(game) {
+  if (!game || document.getElementById('mgp-controls-hint')) return;
+  const isCanvas = !!document.querySelector('main canvas');
+  const isTouch = window.matchMedia('(pointer: coarse)').matches;
+
+  let hints = [];
+  if (isCanvas) {
+    hints = isTouch
+      ? ['Swipe to move', 'Tap to act', 'Double-tap to pause']
+      : ['Arrow keys to move', 'Space to act', 'M to mute'];
+  } else if (['Card', 'Casino'].includes(game.category)) {
+    hints = isTouch
+      ? ['Tap cards to play', 'Long-press for options']
+      : ['Click cards to play', 'Enter to deal'];
+  } else if (['Puzzle', 'Math', 'Board', 'Strategy'].includes(game.category)) {
+    hints = isTouch
+      ? ['Tap cells to select', 'Swipe to navigate']
+      : ['Click to select', 'Arrow keys to navigate', 'Enter to confirm'];
+  } else if (game.category === 'Word') {
+    hints = isTouch
+      ? ['Tap letters to type']
+      : ['Type letters on keyboard', 'Enter to submit'];
+  } else {
+    hints = isTouch
+      ? ['Tap to interact']
+      : ['Click to interact', 'M to mute'];
+  }
+
+  const bar = document.createElement('div');
+  bar.id = 'mgp-controls-hint';
+  bar.style.cssText = `
+    text-align:center;padding:6px 12px;font-size:12px;color:#94A3B8;
+    font-family:'Space Grotesk',system-ui,sans-serif;
+    border-top:1px solid rgba(148,163,184,0.2);margin-top:8px;
+  `;
+  bar.textContent = hints.join(' · ');
+
+  const main = document.querySelector('main');
+  const gameCard = main?.querySelector('.card, [style*="background:#fff"], [style*="background: #fff"], .bg-white, [class*="rounded-2xl"]');
+  if (gameCard) {
+    gameCard.appendChild(bar);
+  } else if (main) {
+    main.appendChild(bar);
+  }
+}
+
+// ── Section 7: Category-Specific Atmosphere ──
+
+function injectCategoryAtmosphere(game) {
+  if (!game || document.getElementById('mgp-atmosphere-style')) return;
+  const cat = game.category;
+  const style = document.createElement('style');
+  style.id = 'mgp-atmosphere-style';
+
+  const atmospheres = {
+    Card: `
+      body.mgp-themed-page [style*="background:#0F"],
+      body.mgp-themed-page [style*="background:#0f"],
+      body.mgp-themed-page #game-area {
+        background: linear-gradient(160deg, #1a5c35 0%, #0d4025 100%) !important;
+      }
+      body.mgp-themed-page #game-area::before,
+      body.mgp-themed-page [style*="background:#0F"]::before {
+        content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+        background:repeating-conic-gradient(rgba(255,255,255,0.015) 0% 25%, transparent 0% 50%) 0 0 / 4px 4px;
+      }
+    `,
+    Casino: `
+      body.mgp-themed-page [style*="background:#0F"],
+      body.mgp-themed-page [style*="background:#0f"],
+      body.mgp-themed-page #game-area {
+        background: linear-gradient(160deg, #0d3320 0%, #072015 100%) !important;
+      }
+    `,
+    Arcade: `
+      body.mgp-themed-page canvas {
+        box-shadow: 0 0 0 3px rgba(0,255,255,0.4), 0 0 20px rgba(0,255,255,0.3), 0 0 60px rgba(0,255,255,0.15), 0 16px 40px -12px rgba(0,0,0,0.6) !important;
+      }
+    `,
+    Action: `
+      body.mgp-themed-page canvas {
+        box-shadow: 0 0 0 3px rgba(255,100,0,0.4), 0 0 20px rgba(255,100,0,0.3), 0 0 60px rgba(255,100,0,0.15), 0 16px 40px -12px rgba(0,0,0,0.6) !important;
+      }
+    `,
+    Puzzle: `
+      body.mgp-themed-page main > div:first-child,
+      body.mgp-themed-page main > .card:first-child {
+        background: #FAFBFC !important;
+      }
+    `,
+    Math: `
+      body.mgp-themed-page main > div:first-child,
+      body.mgp-themed-page main > .card:first-child {
+        background: #F8FAFF !important;
+      }
+    `,
+    Word: `
+      body.mgp-themed-page main > div:first-child,
+      body.mgp-themed-page main > .card:first-child {
+        background: #FAF8F5 !important;
+      }
+    `,
+    Board: `
+      body.mgp-themed-page #chess-board,
+      body.mgp-themed-page #board,
+      body.mgp-themed-page [id*="board"] {
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3) !important;
+      }
+    `,
+    Strategy: `
+      body.mgp-themed-page #chess-board,
+      body.mgp-themed-page #board {
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3) !important;
+      }
+    `,
+    Casual: `
+      body.mgp-themed-page main > div:first-child {
+        background: #FFFBF5 !important;
+      }
+    `,
+    Builder: `
+      body.mgp-themed-page main > div:first-child {
+        background: #F5F7FA !important;
+      }
+    `
+  };
+
+  style.textContent = atmospheres[cat] || '';
+  document.head.appendChild(style);
+}
+
+// ── Section 8: Auto-wire sound on all buttons ──
+
+function wireButtonSounds() {
+  let hoverDebounce = 0;
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('button, [role="button"], a.game-tile, .speed-btn, .num-btn, .kb-letter');
+    if (btn) {
+      try { initAudio(); } catch (_) {}
+    }
+  }, true);
+
+  document.addEventListener('pointerenter', (e) => {
+    const btn = e.target.closest?.('button, [role="button"]');
+    if (btn && Date.now() - hoverDebounce > 100) {
+      hoverDebounce = Date.now();
+    }
+  }, true);
+}
+
 export function initToolPage(slug) {
   window._mgpGameSlug = slug;
   window._mgpGameStart = Date.now();
@@ -1421,7 +1573,10 @@ export function initToolPage(slug) {
 
   if (game) {
     applyGamePageDecor(game);
+    injectCategoryAtmosphere(game);
+    injectControlsHint(game);
   }
+  wireButtonSounds();
 }
 
 export { renderNav, renderFooter, renderRelatedGames, buildGameCard, games, categories, getCategoryAccent, getCategoryIcon, shuffleArray };
