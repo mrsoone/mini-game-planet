@@ -689,3 +689,317 @@ export function showGameOver({
     }, 300);
   }
 }
+
+// ── Canvas Visual Helpers ──
+
+export function drawStarfield(ctx, w, h, stars) {
+  if (!stars || stars.length === 0) return;
+  for (const s of stars) {
+    ctx.globalAlpha = s.a;
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(s.x, s.y, s.s, s.s);
+  }
+  ctx.globalAlpha = 1;
+}
+
+export function generateStarfield(w, h, count = 80) {
+  const stars = [];
+  for (let i = 0; i < count; i++) {
+    stars.push({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      s: Math.random() * 1.5 + 0.5,
+      a: Math.random() * 0.3 + 0.1,
+      speed: Math.random() * 0.3 + 0.1
+    });
+  }
+  return stars;
+}
+
+export function scrollStarfield(stars, h) {
+  for (const s of stars) {
+    s.y += s.speed;
+    if (s.y > h) { s.y = 0; s.x = Math.random() * 1000; }
+  }
+}
+
+export function drawGradientBg(ctx, w, h, c1 = '#0a0a1a', c2 = '#0f0f2d') {
+  const grad = ctx.createLinearGradient(0, 0, 0, h);
+  grad.addColorStop(0, c1);
+  grad.addColorStop(1, c2);
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, w, h);
+}
+
+export function drawGridBg(ctx, w, h, gridSize = 40, color = 'rgba(255,255,255,0.04)') {
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1;
+  for (let x = 0; x <= w; x += gridSize) {
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+  }
+  for (let y = 0; y <= h; y += gridSize) {
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+  }
+}
+
+export function drawMotionTrail(ctx, positions, size, color, maxTrail = 5) {
+  for (let i = 0; i < Math.min(positions.length, maxTrail); i++) {
+    const alpha = (1 - i / maxTrail) * 0.3;
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = color;
+    const p = positions[positions.length - 1 - i];
+    if (p) {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, size * (1 - i * 0.1), 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+  ctx.globalAlpha = 1;
+}
+
+export function drawGlowCircle(ctx, x, y, r, color) {
+  const grad = ctx.createRadialGradient(x, y, 0, x, y, r * 2);
+  grad.addColorStop(0, color);
+  grad.addColorStop(0.5, color + '40');
+  grad.addColorStop(1, 'transparent');
+  ctx.fillStyle = grad;
+  ctx.fillRect(x - r * 2, y - r * 2, r * 4, r * 4);
+
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+export function drawRoundedRect(ctx, x, y, w, h, r = 4) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+export function drawSnakeSegment(ctx, x, y, size, index, total, dir) {
+  const isHead = index === 0;
+  const progress = index / Math.max(total - 1, 1);
+  const r = Math.max(2, (size - 2) / 2);
+
+  const green = Math.round(200 - progress * 60);
+  ctx.fillStyle = `rgb(34, ${green}, 94)`;
+  drawRoundedRect(ctx, x + 1, y + 1, size - 2, size - 2, r);
+  ctx.fill();
+
+  if (isHead) {
+    ctx.fillStyle = '#fff';
+    const eyeSize = Math.max(2, size * 0.15);
+    const eyeOffset = size * 0.25;
+    if (dir.x === 1) {
+      ctx.beginPath(); ctx.arc(x + size - 4, y + eyeOffset, eyeSize, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(x + size - 4, y + size - eyeOffset, eyeSize, 0, Math.PI * 2); ctx.fill();
+    } else if (dir.x === -1) {
+      ctx.beginPath(); ctx.arc(x + 4, y + eyeOffset, eyeSize, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(x + 4, y + size - eyeOffset, eyeSize, 0, Math.PI * 2); ctx.fill();
+    } else if (dir.y === -1) {
+      ctx.beginPath(); ctx.arc(x + eyeOffset, y + 4, eyeSize, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(x + size - eyeOffset, y + 4, eyeSize, 0, Math.PI * 2); ctx.fill();
+    } else {
+      ctx.beginPath(); ctx.arc(x + eyeOffset, y + size - 4, eyeSize, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(x + size - eyeOffset, y + size - 4, eyeSize, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.fillStyle = '#111';
+    const pupilSize = eyeSize * 0.5;
+    if (dir.x === 1) {
+      ctx.beginPath(); ctx.arc(x + size - 3, y + eyeOffset, pupilSize, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(x + size - 3, y + size - eyeOffset, pupilSize, 0, Math.PI * 2); ctx.fill();
+    } else if (dir.x === -1) {
+      ctx.beginPath(); ctx.arc(x + 3, y + eyeOffset, pupilSize, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(x + 3, y + size - eyeOffset, pupilSize, 0, Math.PI * 2); ctx.fill();
+    } else if (dir.y === -1) {
+      ctx.beginPath(); ctx.arc(x + eyeOffset, y + 3, pupilSize, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(x + size - eyeOffset, y + 3, pupilSize, 0, Math.PI * 2); ctx.fill();
+    } else {
+      ctx.beginPath(); ctx.arc(x + eyeOffset, y + size - 3, pupilSize, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(x + size - eyeOffset, y + size - 3, pupilSize, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+}
+
+export function drawPulsingFood(ctx, x, y, baseSize, time) {
+  const pulse = 1 + Math.sin(time * 0.005) * 0.15;
+  const size = baseSize * pulse;
+
+  const glow = ctx.createRadialGradient(x, y, 0, x, y, size * 2);
+  glow.addColorStop(0, 'rgba(239, 68, 68, 0.3)');
+  glow.addColorStop(1, 'transparent');
+  ctx.fillStyle = glow;
+  ctx.fillRect(x - size * 2, y - size * 2, size * 4, size * 4);
+
+  ctx.fillStyle = '#ef4444';
+  ctx.beginPath();
+  ctx.arc(x, y, size, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx.beginPath();
+  ctx.arc(x - size * 0.25, y - size * 0.25, size * 0.3, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+export function drawShipTriangle(ctx, x, y, w, h, color = '#22c55e') {
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.moveTo(x + w / 2, y);
+  ctx.lineTo(x + w, y + h);
+  ctx.lineTo(x, y + h);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle = '#f97316';
+  ctx.beginPath();
+  ctx.arc(x + w / 2, y + h + 2, 3, 0, Math.PI * 2);
+  ctx.fill();
+  const engineGlow = ctx.createRadialGradient(x + w / 2, y + h, 0, x + w / 2, y + h, 8);
+  engineGlow.addColorStop(0, 'rgba(249, 115, 22, 0.4)');
+  engineGlow.addColorStop(1, 'transparent');
+  ctx.fillStyle = engineGlow;
+  ctx.fillRect(x + w / 2 - 8, y + h - 4, 16, 16);
+}
+
+export function drawAlien(ctx, x, y, w, h, type = 0, time = 0) {
+  const types = ['circle', 'triangle', 'diamond'];
+  const shape = types[type % types.length];
+  const cx = x + w / 2;
+  const cy = y + h / 2;
+  const wobble = Math.sin(time * 0.003 + x * 0.1) * 2;
+
+  ctx.fillStyle = '#ef4444';
+  if (shape === 'circle') {
+    ctx.beginPath();
+    ctx.arc(cx, cy + wobble, Math.min(w, h) / 2 - 2, 0, Math.PI * 2);
+    ctx.fill();
+  } else if (shape === 'triangle') {
+    ctx.beginPath();
+    ctx.moveTo(cx, y + 2 + wobble);
+    ctx.lineTo(x + w - 2, y + h - 2 + wobble);
+    ctx.lineTo(x + 2, y + h - 2 + wobble);
+    ctx.closePath();
+    ctx.fill();
+  } else {
+    ctx.beginPath();
+    ctx.moveTo(cx, y + 2 + wobble);
+    ctx.lineTo(x + w - 2, cy + wobble);
+    ctx.lineTo(cx, y + h - 2 + wobble);
+    ctx.lineTo(x + 2, cy + wobble);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  ctx.fillStyle = '#fff';
+  ctx.beginPath();
+  ctx.arc(cx - 4, cy - 2 + wobble, 2, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(cx + 4, cy - 2 + wobble, 2, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+export function drawBulletTrail(ctx, x, y, w, h, color = '#eab308') {
+  ctx.fillStyle = color;
+  drawRoundedRect(ctx, x, y, w, h, 2);
+  ctx.fill();
+
+  const glow = ctx.createRadialGradient(x + w / 2, y + h / 2, 0, x + w / 2, y + h / 2, w * 3);
+  glow.addColorStop(0, color + '60');
+  glow.addColorStop(1, 'transparent');
+  ctx.fillStyle = glow;
+  ctx.fillRect(x - w * 2, y - w * 2, w * 5, h + w * 4);
+}
+
+export function canvasDeathEffect(ctx, x, y, w, h, particles, color = '#22c55e') {
+  for (let i = 0; i < 20; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 1 + Math.random() * 4;
+    particles.emit(x + w / 2, y + h / 2, {
+      count: 1,
+      colors: [color, '#fff', '#f59e0b'],
+      speed: { min: speed, max: speed + 1 },
+      size: { min: 2, max: 4 },
+      lifetime: 500,
+      gravity: 0.2,
+      spread: 360
+    });
+  }
+}
+
+export function drawBrickWithHP(ctx, x, y, w, h, hp, maxHP = 3) {
+  const colors = {
+    3: '#2563EB',
+    2: '#0D9488',
+    1: '#F59E0B'
+  };
+  const color = colors[hp] || '#F59E0B';
+
+  drawRoundedRect(ctx, x, y, w, h, 4);
+  const grad = ctx.createLinearGradient(x, y, x, y + h);
+  grad.addColorStop(0, color);
+  grad.addColorStop(1, color + 'CC');
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+  ctx.lineWidth = 1;
+  drawRoundedRect(ctx, x + 0.5, y + 0.5, w - 1, h - 1, 4);
+  ctx.stroke();
+
+  if (hp < maxHP) {
+    ctx.strokeStyle = 'rgba(0,0,0,0.2)';
+    ctx.lineWidth = 1;
+    const cracks = maxHP - hp;
+    for (let c = 0; c < cracks; c++) {
+      ctx.beginPath();
+      ctx.moveTo(x + w * (0.3 + c * 0.2), y);
+      ctx.lineTo(x + w * (0.4 + c * 0.15), y + h * 0.5);
+      ctx.lineTo(x + w * (0.3 + c * 0.2), y + h);
+      ctx.stroke();
+    }
+  }
+}
+
+export function drawPaddleGlow(ctx, x, y, w, h, color = '#3B82F6') {
+  const grad = ctx.createLinearGradient(x, y, x, y + h);
+  grad.addColorStop(0, color);
+  grad.addColorStop(1, color + 'AA');
+  drawRoundedRect(ctx, x, y, w, h, h / 2);
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  const glow = ctx.createRadialGradient(x + w / 2, y + h / 2, 0, x + w / 2, y + h / 2, w / 2);
+  glow.addColorStop(0, color + '20');
+  glow.addColorStop(1, 'transparent');
+  ctx.fillStyle = glow;
+  ctx.fillRect(x - 10, y - 10, w + 20, h + 20);
+}
+
+export function drawBallGlow(ctx, x, y, r, color = '#fff') {
+  const glow = ctx.createRadialGradient(x, y, 0, x, y, r * 3);
+  glow.addColorStop(0, color + '40');
+  glow.addColorStop(1, 'transparent');
+  ctx.fillStyle = glow;
+  ctx.fillRect(x - r * 3, y - r * 3, r * 6, r * 6);
+
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  ctx.beginPath();
+  ctx.arc(x - r * 0.2, y - r * 0.2, r * 0.3, 0, Math.PI * 2);
+  ctx.fill();
+}
