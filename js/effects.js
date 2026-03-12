@@ -986,6 +986,137 @@ export function drawPaddleGlow(ctx, x, y, w, h, color = '#3B82F6') {
   ctx.fillRect(x - 10, y - 10, w + 20, h + 20);
 }
 
+// ── Puzzle & Board Game Helpers ──
+
+const TILE_2048_COLORS = {
+  0:    { bg: '#CDC1B4', text: '#CDC1B4' },
+  2:    { bg: '#EEE4DA', text: '#776E65' },
+  4:    { bg: '#EDE0C8', text: '#776E65' },
+  8:    { bg: '#F2B179', text: '#F9F6F2' },
+  16:   { bg: '#F59563', text: '#F9F6F2' },
+  32:   { bg: '#F67C5F', text: '#F9F6F2' },
+  64:   { bg: '#F65E3B', text: '#F9F6F2' },
+  128:  { bg: '#EDCF72', text: '#F9F6F2' },
+  256:  { bg: '#EDCC61', text: '#F9F6F2' },
+  512:  { bg: '#EDC850', text: '#F9F6F2' },
+  1024: { bg: '#EDC53F', text: '#F9F6F2' },
+  2048: { bg: '#EDC22E', text: '#F9F6F2' },
+};
+
+export function get2048TileStyle(value) {
+  const c = TILE_2048_COLORS[value] || { bg: '#3C3A32', text: '#F9F6F2' };
+  const size = value >= 1024 ? '24px' : value >= 128 ? '28px' : '32px';
+  const glow = value >= 2048 ? `0 0 15px ${c.bg}80` : value >= 512 ? `0 0 8px ${c.bg}40` : 'none';
+  return { bg: c.bg, text: c.text, fontSize: size, glow };
+}
+
+const MS_NUMBER_COLORS = {
+  1: '#2563EB', 2: '#16A34A', 3: '#DC2626', 4: '#7C3AED',
+  5: '#991B1B', 6: '#0D9488', 7: '#0F172A', 8: '#6B7280'
+};
+
+export function getMinesweeperNumberColor(n) {
+  return MS_NUMBER_COLORS[n] || '#0F172A';
+}
+
+export function injectMinesweeperStyles() {
+  if (document.getElementById('mgp-ms-styles')) return;
+  const s = document.createElement('style');
+  s.id = 'mgp-ms-styles';
+  s.textContent = `
+    .mgp-ms-cell {
+      width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700; cursor: pointer; user-select: none;
+      font-family: 'DM Mono', monospace; transition: all 0.1s ease;
+      border-radius: 2px;
+    }
+    .mgp-ms-cell.hidden {
+      background: #D1D5DB;
+      box-shadow: inset -2px -2px 0 #9CA3AF, inset 2px 2px 0 #F3F4F6;
+    }
+    .mgp-ms-cell.hidden:hover {
+      background: #C4C9CF;
+      box-shadow: inset -2px -2px 0 #9CA3AF, inset 2px 2px 0 #E5E7EB;
+    }
+    .mgp-ms-cell.revealed { background: #F9FAFB; box-shadow: inset 0 0 0 1px #E5E7EB; }
+    .mgp-ms-cell.flagged { background: #D1D5DB; box-shadow: inset -2px -2px 0 #9CA3AF, inset 2px 2px 0 #F3F4F6; }
+    .mgp-ms-cell.mine-hit { background: #FEE2E2; }
+    .mgp-ms-cell.mine-show { background: #FEF2F2; }
+    .mgp-ms-cascade { animation: mgp-ms-reveal 0.15s ease-out backwards; }
+    @keyframes mgp-ms-reveal { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  `;
+  document.head.appendChild(s);
+}
+
+export function cascadeReveal(cells, startIdx, cols, stagger = 30) {
+  const startRow = Math.floor(startIdx / cols);
+  const startCol = startIdx % cols;
+  cells.forEach((cell, i) => {
+    const row = Math.floor(i / cols);
+    const col = i % cols;
+    const dist = Math.abs(row - startRow) + Math.abs(col - startCol);
+    cell.style.animationDelay = `${dist * stagger}ms`;
+    cell.classList.add('mgp-ms-cascade');
+  });
+}
+
+export function injectSudokuStyles() {
+  if (document.getElementById('mgp-su-styles')) return;
+  const s = document.createElement('style');
+  s.id = 'mgp-su-styles';
+  s.textContent = `
+    .mgp-su-cell.selected { background: #DBEAFE !important; border-color: #3B82F6 !important; }
+    .mgp-su-cell.same-num { background: #EFF6FF !important; box-shadow: inset 0 0 0 1px #93C5FD; }
+    .mgp-su-cell.same-row, .mgp-su-cell.same-col, .mgp-su-cell.same-box { background: #F0F9FF !important; }
+    .mgp-su-cell.correct-flash { animation: mgp-su-correct 0.4s ease; }
+    .mgp-su-cell.error-flash { animation: mgp-su-error 0.4s ease; }
+    @keyframes mgp-su-correct { 0% { background: #DCFCE7; } 100% { background: inherit; } }
+    @keyframes mgp-su-error { 0%, 25%, 75% { transform: translateX(-2px); background: #FEE2E2; } 50%, 100% { transform: translateX(2px); background: #FEE2E2; } }
+    .mgp-su-notes { display: grid; grid-template-columns: repeat(3,1fr); grid-template-rows: repeat(3,1fr); width: 100%; height: 100%; position: absolute; inset: 0; pointer-events: none; }
+    .mgp-su-note { font-size: 9px; font-weight: 500; color: #94A3B8; display: flex; align-items: center; justify-content: center; }
+    .mgp-su-complete { animation: mgp-su-win 0.6s ease backwards; }
+    @keyframes mgp-su-win { from { transform: scale(0.95); background: #FEF9C3; } to { transform: scale(1); } }
+  `;
+  document.head.appendChild(s);
+}
+
+export function injectBoardGameStyles() {
+  if (document.getElementById('mgp-board-styles')) return;
+  const s = document.createElement('style');
+  s.id = 'mgp-board-styles';
+  s.textContent = `
+    .mgp-board {
+      display: grid; border-radius: 8px; overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    }
+    .mgp-board-cell {
+      display: flex; align-items: center; justify-content: center;
+      position: relative; transition: all 0.15s ease;
+    }
+    .mgp-board-cell.light { background: #F1DFC0; }
+    .mgp-board-cell.dark { background: #B58863; }
+    .mgp-board-cell.legal-move::after {
+      content: ''; position: absolute; width: 30%; height: 30%; border-radius: 50%;
+      background: rgba(0,0,0,0.15); pointer-events: none;
+    }
+    .mgp-board-cell.highlight { box-shadow: inset 0 0 0 2px rgba(59,130,246,0.5); }
+    .mgp-board-cell.check { animation: mgp-check-pulse 1s ease infinite; }
+    @keyframes mgp-check-pulse { 0%, 100% { background: #B58863; } 50% { background: #EF4444; } }
+    .mgp-board-piece {
+      width: 80%; height: 80%; border-radius: 50%;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.25);
+      transition: transform 0.2s ease-out;
+      position: relative;
+    }
+    .mgp-board-piece.capturing { animation: mgp-capture 0.3s ease forwards; }
+    @keyframes mgp-capture { to { transform: scale(0); opacity: 0; } }
+    .mgp-piece-slide {
+      transition: transform 0.2s ease-out;
+    }
+  `;
+  document.head.appendChild(s);
+}
+
 export function drawBallGlow(ctx, x, y, r, color = '#fff') {
   const glow = ctx.createRadialGradient(x, y, 0, x, y, r * 3);
   glow.addColorStop(0, color + '40');
