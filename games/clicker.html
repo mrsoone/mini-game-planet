@@ -195,8 +195,7 @@
   </footer>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playCollect, playLevelUp, playVictoryFanfare, playDrop } from '/js/audio.js';
-    import { confetti, screenShake, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
+    import { initAudio, muteAll, playClick, playSuccess, playCollect, playLevelUp } from '/js/audio.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart } from '/js/analytics.js';
@@ -308,7 +307,6 @@
       const gain = getPerClick();
       addPoints(gain);
       playClick();
-      showScorePopup(gain);
       const btn = document.getElementById('clicker-btn');
       btn.classList.add('pulse');
       setTimeout(() => btn.classList.remove('pulse'), 150);
@@ -335,10 +333,7 @@
 
     function prestige() {
       if (state.points < PRESTIGE_THRESHOLD) return;
-      playVictoryFanfare?.();
-      confetti();
-      celebrateWin();
-      showToast(`Prestige ${state.prestigeLevel + 1}! 🌟`, 'success');
+      playLevelUp();
       state.prestigeLevel++;
       state.points = 0;
       state.clickPower = 1;

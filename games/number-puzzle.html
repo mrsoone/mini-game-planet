@@ -75,11 +75,11 @@
 
       <div id="board-wrap" style="display:flex;justify-content:center;overflow-x:auto;padding:8px 0;"></div>
 
-      <div id="game-over" style="display:none;text-align:center;padding:24px;margin-top:16px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;">
-        <div id="go-title" style="font-size:22px;font-weight:700;margin-bottom:8px;color:#059669;">✅ Solved!</div>
-        <div id="go-sub" style="font-size:14px;color:#64748B;margin-bottom:12px;"></div>
-        <div id="session-stats" style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;text-align:left;max-width:240px;margin:0 auto 16px;padding:12px;background:#fff;border-radius:8px;"></div>
-        <button id="play-again" style="padding:10px 28px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">▶ Play Again</button>
+      <div id="game-over" style="display:none;text-align:center;padding:24px;margin-top:16px;background:rgba(15,23,42,0.95);border-radius:12px;color:#fff;">
+        <div id="go-title" style="font-size:22px;font-weight:700;margin-bottom:8px;color:#F59E0B;">✅ Solved!</div>
+        <div id="go-sub" style="font-size:14px;color:#F59E0B;margin-bottom:12px;"></div>
+        <div id="session-stats" style="font-family:'DM Mono',monospace;font-size:12px;color:rgba(255,255,255,0.7);text-align:left;max-width:240px;margin:0 auto 16px;padding:12px;background:rgba(255,255,255,0.08);border-radius:8px;"></div>
+        <button id="play-again" style="background:#3B82F6;color:#fff;border:none;border-radius:10px;padding:12px 32px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">▶ Play Again</button>
       </div>
     </div>
   </main>
@@ -345,11 +345,11 @@
     const goSub = document.getElementById('go-sub');
     if (isNewBest) {
       goTitle.textContent = '🏆 New Best!';
-      goTitle.style.color = '#D97706';
+      goTitle.style.color = '#F59E0B';
       playVictoryFanfare();
     } else {
       goTitle.textContent = '✅ Solved!';
-      goTitle.style.color = '#059669';
+      goTitle.style.color = '#34D399';
       playVictoryFanfare();
     }
     const wr = boardWrap.getBoundingClientRect();

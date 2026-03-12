@@ -122,13 +122,13 @@
         </div>
       </div>
 
-      <div id="game-over-overlay" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50" aria-modal="true">
-        <div class="bg-white rounded-xl p-6 shadow-xl max-w-sm mx-4 text-center">
-          <h3 id="go-title" class="text-xl font-bold mb-2"></h3>
-          <p id="go-subtitle" class="text-stone-600 text-sm mb-4"></p>
-          <div id="go-stats" class="font-mono text-xs text-stone-500 mb-4 p-3 bg-stone-50 rounded-lg text-left"></div>
-          <button id="play-again-btn" class="px-6 py-2.5 bg-stone-800 text-white rounded-lg font-semibold hover:bg-stone-700">Play Again</button>
-          <p class="text-xs text-stone-400 mt-2">Press Enter or Space to restart</p>
+      <div id="game-over-overlay" class="hidden fixed inset-0 flex items-center justify-center z-50" aria-modal="true" style="background:rgba(15,23,42,0.92);backdrop-filter:blur(6px)">
+        <div class="rounded-2xl p-8 max-w-sm mx-4 text-center" style="background:rgba(30,41,59,0.95);border:1px solid rgba(255,255,255,0.1)">
+          <h3 id="go-title" class="text-xl font-bold mb-2 text-white"></h3>
+          <p id="go-subtitle" class="text-sm mb-4 text-gray-300"></p>
+          <div id="go-stats" class="font-mono text-xs mb-4 p-3 rounded-lg text-left text-gray-300" style="background:rgba(15,23,42,0.5)"></div>
+          <button id="play-again-btn" class="px-6 py-2.5 rounded-lg font-semibold text-white hover:brightness-110 transition" style="background:#3B82F6">Play Again</button>
+          <p class="text-xs text-gray-400 mt-2">Press Enter or Space to restart</p>
         </div>
       </div>
     </div>
@@ -601,6 +601,7 @@
         confetti();
         celebrateWin();
         goTitle.textContent = 'You Win!';
+        goTitle.style.color = '#F59E0B';
         goSub.textContent = 'You sank all enemy ships.';
       } else {
         state.sessionLosses++;
@@ -608,6 +609,7 @@
         playGameOver();
         screenShake();
         goTitle.textContent = 'You Lose';
+        goTitle.style.color = '#EF4444';
         goSub.textContent = 'The enemy sank your fleet.';
       }
 

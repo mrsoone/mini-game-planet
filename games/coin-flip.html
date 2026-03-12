@@ -42,7 +42,7 @@
   </script>
   
   <style>
-    body { font-family: 'Space Grotesk', sans-serif; background-color: #F5F5F4; }
+    body { font-family: 'Space Grotesk', sans-serif; background-color: #1a3a2a; }
     .font-mono { font-family: 'DM Mono', monospace; }
     
     /* 3D Coin */
@@ -116,12 +116,12 @@
 
   <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Casino", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Dice Roller", "item": "https://minigameplanet.com/games/coin-flip"}]}</script>
 </head>
-<body class="min-h-screen text-gray-800">
-  <div id="nav-container" class="bg-white/80 backdrop-blur border-b border-gray-200 sticky top-0 z-50">
+<body class="min-h-screen" style="color:#E2E8F0;">
+  <div id="nav-container" class="backdrop-blur border-b sticky top-0 z-50" style="background:rgba(13,51,32,0.9);border-color:rgba(255,255,255,0.1);">
     <nav class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
-      <a href="/" class="font-semibold text-lg text-amber-600 hover:text-amber-700">Mini Game Planet</a>
+      <a href="/" class="font-semibold text-lg" style="color:#D4AF37;">Mini Game Planet</a>
       <div class="flex items-center gap-4">
-        <button id="sound-toggle" class="text-sm text-gray-600 hover:text-gray-800 flex items-center gap-1" title="Toggle sound">
+        <button id="sound-toggle" class="text-sm flex items-center gap-1" style="color:#86EFAC;" title="Toggle sound">
           <svg id="sound-on-icon" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.076L4.926 12H2a1 1 0 01-1-1V9a1 1 0 011-1h2.926l3.457-4.924zM14.657 5.343a1 1 0 011.414 0A9 9 0 0117 12a9 9 0 01-.929 4.343 1 1 0 11-1.828-.686A7 7 0 0015 12a7 7 0 00-.586-2.657 1 1 0 010-1.414z"/></svg>
           <svg id="sound-off-icon" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.076L4.926 12H2a1 1 0 01-1-1V9a1 1 0 011-1h2.926l3.457-4.924a1 1 0 011.617.076zM14.657 5.343a1 1 0 011.414 0A9 9 0 0117 12a9 9 0 01-.929 4.343 1 1 0 11-1.828-.686A7 7 0 0015 12a7 7 0 00-.586-2.657 1 1 0 010-1.414z" clip-rule="evenodd"/><path d="M12.293 7.293a1 1 0 011.414 0L15 8.586l1.293-1.293a1 1 0 111.414 1.414L16.414 10l1.293 1.293a1 1 0 01-1.414 1.414L15 11.414l-1.293 1.293a1 1 0 01-1.414-1.414L13.586 10l-1.293-1.293a1 1 0 010-1.414z"/></svg>
           <span id="sound-label">Sound On</span>
@@ -131,9 +131,9 @@
   </div>
 
   <main class="max-w-4xl mx-auto px-4 py-8">
-    <article class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 mb-8">
-      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Coin Flip</h1>
-      <p class="text-gray-600 mb-6">A classic 50/50 chance game with realistic 3D flip animation. Choose heads or tails, then flip the coin!</p>
+    <article class="rounded-2xl shadow-sm p-6 md:p-8 mb-8" style="background:linear-gradient(160deg,#0d3320 0%,#072015 100%);border-radius:16px;box-shadow:inset 0 2px 12px rgba(0,0,0,0.3);color:#fff;">
+      <h1 class="text-3xl md:text-4xl font-bold text-white mb-2">Coin Flip</h1>
+      <p class="text-gray-300 mb-6">A classic 50/50 chance game with realistic 3D flip animation. Choose heads or tails, then flip the coin!</p>
 
       <!-- Game Area -->
       <div class="flex flex-col items-center gap-6 mb-8">
@@ -153,48 +153,48 @@
           </button>
         </div>
 
-        <p id="result-text" class="text-lg font-mono font-medium text-gray-700 min-h-[2rem]"></p>
+        <p id="result-text" class="text-lg font-mono font-medium min-h-[2rem]" style="color:#86EFAC;"></p>
 
         <!-- Stats -->
         <div class="w-full max-w-md grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div class="bg-gray-50 rounded-xl p-4 text-center">
-            <div class="text-2xl font-mono font-bold text-amber-600" id="stat-total">0</div>
-            <div class="text-sm text-gray-500">Total Flips</div>
+          <div class="rounded-xl p-4 text-center" style="background:rgba(0,0,0,0.3);">
+            <div class="text-2xl font-mono font-bold" style="color:#F59E0B;" id="stat-total">0</div>
+            <div class="text-sm" style="color:#94A3B8;">Total Flips</div>
           </div>
-          <div class="bg-gray-50 rounded-xl p-4 text-center">
-            <div class="text-2xl font-mono font-bold text-amber-600" id="stat-heads">0</div>
-            <div class="text-sm text-gray-500">Heads</div>
+          <div class="rounded-xl p-4 text-center" style="background:rgba(0,0,0,0.3);">
+            <div class="text-2xl font-mono font-bold" style="color:#F59E0B;" id="stat-heads">0</div>
+            <div class="text-sm" style="color:#94A3B8;">Heads</div>
           </div>
-          <div class="bg-gray-50 rounded-xl p-4 text-center">
-            <div class="text-2xl font-mono font-bold text-gray-600" id="stat-tails">0</div>
-            <div class="text-sm text-gray-500">Tails</div>
+          <div class="rounded-xl p-4 text-center" style="background:rgba(0,0,0,0.3);">
+            <div class="text-2xl font-mono font-bold" style="color:#94A3B8;" id="stat-tails">0</div>
+            <div class="text-sm" style="color:#94A3B8;">Tails</div>
           </div>
-          <div class="bg-gray-50 rounded-xl p-4 text-center">
-            <div class="text-2xl font-mono font-bold text-indigo-600" id="stat-streak">0</div>
-            <div class="text-sm text-gray-500">Current Streak</div>
+          <div class="rounded-xl p-4 text-center" style="background:rgba(0,0,0,0.3);">
+            <div class="text-2xl font-mono font-bold" style="color:#818CF8;" id="stat-streak">0</div>
+            <div class="text-sm" style="color:#94A3B8;">Current Streak</div>
           </div>
         </div>
 
         <div class="w-full max-w-md flex flex-col sm:flex-row gap-4 items-center justify-center">
-          <div class="bg-gray-50 rounded-xl px-4 py-2 text-center flex-1">
-            <span class="text-sm text-gray-500">Heads %</span>
-            <span id="stat-heads-pct" class="font-mono font-bold ml-2">0%</span>
+          <div class="rounded-xl px-4 py-2 text-center flex-1" style="background:rgba(0,0,0,0.3);">
+            <span class="text-sm" style="color:#94A3B8;">Heads %</span>
+            <span id="stat-heads-pct" class="font-mono font-bold ml-2" style="color:#D4AF37;">0%</span>
           </div>
-          <div class="bg-gray-50 rounded-xl px-4 py-2 text-center flex-1">
-            <span class="text-sm text-gray-500">Tails %</span>
-            <span id="stat-tails-pct" class="font-mono font-bold ml-2">0%</span>
+          <div class="rounded-xl px-4 py-2 text-center flex-1" style="background:rgba(0,0,0,0.3);">
+            <span class="text-sm" style="color:#94A3B8;">Tails %</span>
+            <span id="stat-tails-pct" class="font-mono font-bold ml-2" style="color:#D4AF37;">0%</span>
           </div>
-          <div class="bg-gray-50 rounded-xl px-4 py-2 text-center flex-1">
-            <span class="text-sm text-gray-500">Longest Streak</span>
-            <span id="stat-longest" class="font-mono font-bold ml-2">0</span>
+          <div class="rounded-xl px-4 py-2 text-center flex-1" style="background:rgba(0,0,0,0.3);">
+            <span class="text-sm" style="color:#94A3B8;">Longest Streak</span>
+            <span id="stat-longest" class="font-mono font-bold ml-2" style="color:#D4AF37;">0</span>
           </div>
         </div>
 
-        <button id="btn-reset" class="text-sm text-gray-500 hover:text-gray-700 underline">Reset Stats</button>
+        <button id="btn-reset" class="text-sm underline" style="color:#94A3B8;">Reset Stats</button>
       </div>
 
       <!-- SEO Article -->
-      <div class="prose prose-gray max-w-none">
+      <div class="prose prose-gray max-w-none bg-white rounded-xl p-6" style="color:#374151;">
         <h2 class="text-xl font-bold text-gray-900 mt-8 mb-4">How to Play Coin Flip</h2>
         <p>Coin Flip is one of the simplest and most universally understood games of chance. Whether you're deciding who goes first, settling a bet, or just passing the time, flipping a coin has been a trusted method for centuries. Our free online coin flip game brings this classic experience to your browser with a stunning 3D animation that mimics the physics of a real coin toss.</p>
 
@@ -217,18 +217,18 @@
         <p class="text-gray-600 leading-relaxed">Looking for more? Check out our guide: <a href="/blog/best-free-browser-games" style="color:#2563EB;text-decoration:underline;">10 Best Free Browser Games</a>.</p>
       </article>
 
-    <div id="related-games" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
-      <h2 class="text-lg font-bold text-gray-900 mb-4">Related Games</h2>
+    <div id="related-games" class="rounded-2xl shadow-sm p-6 mb-8" style="background:rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.1);">
+      <h2 class="text-lg font-bold mb-4" style="color:#86EFAC;">Related Games</h2>
       <div class="flex flex-wrap gap-3">
-        <a href="/games/dice-roller.html" class="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 text-gray-700 text-sm font-medium">Dice Roller</a>
-        <a href="/games/rock-paper-scissors.html" class="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 text-gray-700 text-sm font-medium">Rock Paper Scissors</a>
-        <a href="/games/slot-machine.html" class="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 text-gray-700 text-sm font-medium">Slot Machine</a>
+        <a href="/games/dice-roller.html" class="px-4 py-2 rounded-lg text-sm font-medium" style="background:rgba(255,255,255,0.1);color:#E2E8F0;">Dice Roller</a>
+        <a href="/games/rock-paper-scissors.html" class="px-4 py-2 rounded-lg text-sm font-medium" style="background:rgba(255,255,255,0.1);color:#E2E8F0;">Rock Paper Scissors</a>
+        <a href="/games/slot-machine.html" class="px-4 py-2 rounded-lg text-sm font-medium" style="background:rgba(255,255,255,0.1);color:#E2E8F0;">Slot Machine</a>
       </div>
     </div>
   </main>
 
-  <footer id="footer-container" class="border-t border-gray-200 bg-white/50 py-6 mt-8">
-    <div class="max-w-4xl mx-auto px-4 text-center text-sm text-gray-500">
+  <footer id="footer-container" class="py-6 mt-8" style="border-top:1px solid rgba(255,255,255,0.1);">
+    <div class="max-w-4xl mx-auto px-4 text-center text-sm" style="color:#94A3B8;">
       <p>&copy; Mini Game Planet. Free games for entertainment only.</p>
     </div>
   </footer>

@@ -93,14 +93,14 @@
             <p class="text-white/90 mb-4 text-center px-4">Tap, click, or press SPACE to throw. Stick knives in the log without hitting another!</p>
             <button id="start-btn" class="px-8 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 shadow-lg">Play</button>
           </div>
-          <div id="game-over-overlay" class="hidden absolute inset-0 flex flex-col items-center justify-center bg-black/60">
+          <div id="game-over-overlay" class="hidden absolute inset-0 flex flex-col items-center justify-center" style="background:rgba(15,23,42,0.92);backdrop-filter:blur(6px);">
             <h2 class="text-2xl font-bold text-white mb-2">Game Over</h2>
-            <p id="final-score" class="text-white/90 mb-4">Score: 0</p>
-            <button id="restart-btn" class="px-8 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 shadow-lg">Play Again</button>
+            <p id="final-score" class="font-mono mb-4" style="color:#F59E0B;">Score: 0</p>
+            <button id="restart-btn" class="px-8 py-3 text-white font-semibold rounded-lg shadow-lg hover:brightness-110" style="background:#3B82F6;">Play Again</button>
           </div>
-          <div id="level-complete-overlay" class="hidden absolute inset-0 flex flex-col items-center justify-center bg-black/50 gap-4">
+          <div id="level-complete-overlay" class="hidden absolute inset-0 flex flex-col items-center justify-center gap-4" style="background:rgba(15,23,42,0.92);backdrop-filter:blur(6px);">
             <h2 class="text-2xl font-bold text-white mb-2">Level Complete!</h2>
-            <button id="next-level-btn" class="px-8 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 shadow-lg">Next Level</button>
+            <button id="next-level-btn" class="px-8 py-3 text-white font-semibold rounded-lg shadow-lg hover:brightness-110" style="background:#3B82F6;">Next Level</button>
           </div>
         </div>
 

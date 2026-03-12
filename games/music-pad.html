@@ -383,11 +383,18 @@
       sequencerInterval = setInterval(runStep, intervalMs);
     }
 
+    let scheduledTimeouts = [];
+
+    function clearScheduledTimeouts() {
+      scheduledTimeouts.forEach(id => clearTimeout(id));
+      scheduledTimeouts = [];
+    }
+
     document.getElementById('play-btn').addEventListener('click', () => {
       trackGameStart('music-pad');
+      clearScheduledTimeouts();
       sequencerRunning = true;
       restartSequencer();
-      // Replay recorded events (loop every bar)
       if (recordedEvents.length > 0) {
         const barMs = (60 / bpm) * 4 * 1000;
         const maxTime = Math.max(...recordedEvents.map(e => e.time), 1);
@@ -395,7 +402,7 @@
         for (let loop = 0; loop < loops; loop++) {
           recordedEvents.forEach(ev => {
             const t = loop * barMs + (ev.time % barMs);
-            setTimeout(() => {
+            const tid = setTimeout(() => {
               if (sequencerRunning) {
                 playPadSound(ev.pad);
                 const padBtn = padGrid.querySelector(`[data-pad="${ev.pad}"]`);
@@ -405,6 +412,7 @@
                 }
               }
             }, t);
+            scheduledTimeouts.push(tid);
           });
         }
       }
@@ -414,8 +422,10 @@
 
     document.getElementById('stop-btn').addEventListener('click', () => {
       sequencerRunning = false;
+      clearScheduledTimeouts();
       if (sequencerInterval) clearInterval(sequencerInterval);
       sequencerInterval = null;
+      currentStep = 0;
       seqCells.forEach(c => c.classList.remove('step-current'));
       document.getElementById('play-btn').classList.remove('opacity-70');
       document.getElementById('stop-btn').classList.add('opacity-70');
@@ -436,6 +446,7 @@
     });
 
     document.getElementById('clear-btn').addEventListener('click', () => {
+      clearScheduledTimeouts();
       sequencerState = Array(16).fill(null).map(() => Array(16).fill(false));
       recordedEvents = [];
       seqCells.forEach(c => c.classList.remove('step-active', 'step-current'));

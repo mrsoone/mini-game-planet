@@ -34,6 +34,7 @@
     .eu-scoreboard{font-family:'DM Mono',monospace;font-size:12px;background:#0f172a;color:#fff;border-radius:8px;padding:8px 12px;display:grid;grid-template-columns:1fr auto auto;gap:4px 16px}
     .eu-btn{padding:8px 20px;border-radius:8px;font-size:13px;font-weight:700;border:2px solid;cursor:pointer;font-family:inherit;transition:all 0.1s}.eu-btn:hover{transform:translateY(-1px)}.eu-btn:active{transform:scale(0.97)}.eu-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none}
     @media(max-width:480px){#eu-table{min-height:380px;padding:10px}#eu-hand .eu-card{width:44px;height:62px;font-size:11px}}
+    .mgp-themed-page .eu-card.face-up{background:linear-gradient(135deg,#FFFFFF 0%,#F3F4F6 100%) !important;box-shadow:0 2px 8px rgba(0,0,0,0.15),0 1px 3px rgba(0,0,0,0.1) !important;border:1px solid rgba(0,0,0,0.08) !important;}
   </style>
 </head>
 <body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
@@ -69,10 +70,10 @@
           <p id="round-detail" style="font-size:13px;color:#64748B;margin:0 0 12px;"></p>
           <button id="next-round-btn" class="eu-btn" style="background:#2563EB;color:#fff;border-color:#1D4ED8;">Next Round</button>
         </div>
-        <div id="game-over-panel" style="display:none;text-align:center;padding:20px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;margin-top:10px;">
-          <h3 id="winner-text" style="font-size:22px;font-weight:700;margin:0 0 4px;"></h3>
-          <p id="final-score" style="font-family:'DM Mono',monospace;font-size:14px;color:#64748B;margin:0 0 16px;"></p>
-          <button id="play-again-btn" class="eu-btn" style="background:#2563EB;color:#fff;border-color:#1D4ED8;padding:10px 28px;">Play Again</button>
+        <div id="game-over-panel" style="display:none;text-align:center;padding:20px;background:rgba(15,23,42,0.95);border-radius:12px;color:#fff;margin-top:10px;">
+          <h3 id="winner-text" style="font-size:22px;font-weight:700;margin:0 0 4px;color:#fff;"></h3>
+          <p id="final-score" style="font-family:'DM Mono',monospace;font-size:14px;color:#F59E0B;margin:0 0 16px;"></p>
+          <button id="play-again-btn" class="eu-btn" style="background:#3B82F6;color:#fff;border:none;border-radius:10px;padding:12px 32px;font-size:15px;font-weight:700;">Play Again</button>
         </div>
       </div>
     </div>

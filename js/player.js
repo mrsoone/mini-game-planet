@@ -130,8 +130,19 @@ export async function renderLeaderboard(container, gameSlug) {
   if (!panel) {
     panel = document.createElement('div');
     panel.id = 'mgp-leaderboard';
-    panel.style.cssText = 'margin:16px 0;font-family:"Space Grotesk",system-ui,sans-serif;';
-    container.appendChild(panel);
+    panel.style.cssText = 'margin:16px auto;font-family:"Space Grotesk",system-ui,sans-serif;max-width:min(100vw,1100px);padding:0 16px;';
+    const main = document.querySelector('main');
+    const related = document.getElementById('related-games');
+    if (main && main.parentNode) {
+      const insertBefore = related || main.nextElementSibling;
+      if (insertBefore) {
+        main.parentNode.insertBefore(panel, insertBefore);
+      } else {
+        main.parentNode.insertBefore(panel, main.nextSibling);
+      }
+    } else {
+      container.appendChild(panel);
+    }
   }
 
   panel.innerHTML = '<p style="color:#64748B;font-size:13px;">Loading leaderboard...</p>';

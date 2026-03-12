@@ -95,10 +95,10 @@
           <p class="text-sm opacity-90 mb-4">Arrow keys, A/D, or drag to move</p>
           <p class="text-xs opacity-75">Click Play or press Space</p>
         </div>
-        <div id="gameOverOverlay" class="absolute inset-0 hidden flex-col items-center justify-center bg-black/70 text-white">
+        <div id="gameOverOverlay" class="absolute inset-0 hidden flex-col items-center justify-center text-white" style="background:rgba(15,23,42,0.92);backdrop-filter:blur(6px)">
           <p class="text-xl font-bold mb-2">Game Over</p>
-          <p class="text-sm mb-4">Score: <span id="finalScore">0</span></p>
-          <button id="restartBtn" class="px-4 py-2 bg-emerald-600 rounded-lg hover:bg-emerald-700">Play Again</button>
+          <p class="text-sm mb-4">Score: <span id="finalScore" style="color:#F59E0B">0</span></p>
+          <button id="restartBtn" class="px-4 py-2 rounded-lg font-semibold text-white" style="background:#3B82F6">Play Again</button>
         </div>
       </div>
 

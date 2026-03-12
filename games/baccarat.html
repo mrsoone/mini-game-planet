@@ -40,6 +40,7 @@
     .card-suit { font-size: 1.25rem; }
     .card-suit.hearts, .card-suit.diamonds { color: #dc2626; }
     .card-suit.clubs, .card-suit.spades { color: #1f2937; }
+    .bac-card{background:linear-gradient(135deg,#FFFFFF 0%,#F3F4F6 100%);box-shadow:0 2px 8px rgba(0,0,0,0.15),0 1px 3px rgba(0,0,0,0.1);border:1px solid rgba(0,0,0,0.08)}
   </style>
   
   <!-- JSON-LD -->
@@ -254,7 +255,7 @@
 
     function renderCard(card, faceDown = false) {
       const div = document.createElement('div');
-      div.className = 'inline-flex flex-col items-center justify-center w-14 h-20 rounded-lg border-2 border-gray-300 bg-white shadow';
+      div.className = 'bac-card inline-flex flex-col items-center justify-center w-14 h-20 rounded-lg';
       if (faceDown) {
         div.innerHTML = '<div class="w-full h-full rounded flex items-center justify-center" style="background:linear-gradient(135deg, #1E3A5F 0%, #2D1B69 50%, #1E3A5F 100%);"><span class="text-white text-xs">?</span></div>';
       } else {

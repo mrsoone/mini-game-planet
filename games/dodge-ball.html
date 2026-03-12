@@ -83,11 +83,11 @@
           <p class="text-sm mb-4 opacity-90">Move with mouse, arrows, or A/D</p>
           <button id="startBtn" class="px-6 py-3 bg-amber-500 hover:bg-amber-600 rounded-lg font-semibold">Play</button>
         </div>
-        <div id="gameOverOverlay" class="absolute inset-0 hidden flex-col items-center justify-center bg-black/70 text-white">
+        <div id="gameOverOverlay" class="absolute inset-0 hidden flex-col items-center justify-center text-white" style="background:rgba(15,23,42,0.92);backdrop-filter:blur(6px)">
           <h2 class="text-xl font-bold mb-2">Game Over</h2>
-          <p class="text-lg mb-1">Survived <span id="finalScore">0</span> seconds</p>
-          <p id="newBestMsg" class="text-amber-400 text-sm mb-4 hidden">New personal best!</p>
-          <button id="restartBtn" class="px-6 py-3 bg-amber-500 hover:bg-amber-600 rounded-lg font-semibold">Play Again</button>
+          <p class="text-lg mb-1">Survived <span id="finalScore" style="color:#F59E0B">0</span> seconds</p>
+          <p id="newBestMsg" class="text-sm mb-4 hidden" style="color:#F59E0B">New personal best!</p>
+          <button id="restartBtn" class="px-6 py-3 rounded-lg font-semibold text-white" style="background:#3B82F6">Play Again</button>
         </div>
       </div>
 

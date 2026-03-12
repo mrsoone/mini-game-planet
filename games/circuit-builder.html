@@ -534,7 +534,10 @@
       };
       const ok = ch.check(state, propagate);
       challengeStatus.classList.remove('hidden');
-      challengeStatus.className = 'mt-4 p-3 rounded-lg ' + (ok ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800');
+      challengeStatus.className = 'mt-4 p-3 rounded-lg';
+      challengeStatus.style.background = ok ? 'rgba(15,23,42,0.95)' : 'rgba(15,23,42,0.85)';
+      challengeStatus.style.color = ok ? '#F59E0B' : '#CBD5E1';
+      challengeStatus.style.borderRadius = '12px';
       challengeStatus.textContent = ok ? '✓ Challenge complete!' : 'Test all input combinations to pass.';
       if (ok) try { playVictoryFanfare(); confetti(); celebrateWin(); showToast('Challenge solved!'); } catch (_) {}
     }

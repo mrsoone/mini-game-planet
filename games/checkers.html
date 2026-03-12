@@ -98,9 +98,18 @@
       </div>
 
       <div class="flex flex-col md:flex-row gap-6 items-start">
-        <div class="flex-shrink-0">
+        <div class="flex-shrink-0 relative">
           <div id="board" class="inline-grid grid-cols-8 gap-0 w-[min(90vw,320px)] aspect-square border-2 border-stone-300 rounded-lg overflow-hidden" style="box-shadow:0 2px 12px rgba(0,0,0,0.15)"></div>
           <p id="status" class="mt-4 font-medium text-center">Red to move</p>
+          <div id="gameover-overlay" class="absolute inset-0 hidden flex-col items-center justify-center rounded-lg text-white p-6" style="background:rgba(15,23,42,0.88);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)">
+            <h2 id="go-title" class="text-3xl font-bold mb-1"></h2>
+            <p id="go-sub" class="text-white/70 text-sm mb-3"></p>
+            <p class="font-mono text-2xl font-bold mb-1" style="color:#F59E0B"><span id="go-result"></span></p>
+            <div class="font-mono text-sm text-white/60 mb-4">
+              Games: <span id="go-games">0</span> · Wins: <span id="go-wins">0</span> · Streak: <span id="go-streak">0</span>
+            </div>
+            <button id="go-restart" class="px-6 py-3 rounded-lg font-bold" style="background:#3B82F6;color:#fff;">Play Again</button>
+          </div>
         </div>
         <div class="flex-1 min-w-0">
           <article class="prose prose-stone max-w-none text-sm">
@@ -401,6 +410,16 @@
         trackGameOver?.('checkers', winner === RED ? 'win' : 'loss');
         statusEl.textContent = winner === RED ? 'Red wins!' : 'Black wins!';
         updateStats();
+
+        const goOverlay = document.getElementById('gameover-overlay');
+        goOverlay.classList.remove('hidden');
+        goOverlay.classList.add('flex');
+        document.getElementById('go-title').textContent = winner === RED ? 'You Win!' : 'Black Wins!';
+        document.getElementById('go-sub').textContent = winner === RED ? 'Great strategy!' : 'Better luck next time.';
+        document.getElementById('go-result').textContent = winner === RED ? 'Victory' : 'Defeat';
+        document.getElementById('go-games').textContent = sessionGames;
+        document.getElementById('go-wins').textContent = sessionWins;
+        document.getElementById('go-streak').textContent = sessionStreak;
       }
     }
 
@@ -495,11 +514,15 @@
     restartEl.addEventListener('click', () => {
       initBoard();
       lastMoveTo = null;
+      document.getElementById('gameover-overlay').classList.add('hidden');
+      document.getElementById('gameover-overlay').classList.remove('flex');
       render();
       statusEl.textContent = 'Red to move';
       trackGameStart?.('checkers');
       if (modeEl.value.startsWith('ai-')) aiTurn();
     });
+
+    document.getElementById('go-restart').addEventListener('click', () => restartEl.click());
 
     soundToggleEl.addEventListener('click', () => {
       soundOn = !soundOn;

@@ -41,7 +41,7 @@
   <style>
     :root { font-family: 'Space Grotesk', sans-serif; }
     .font-mono { font-family: 'DM Mono', monospace; }
-    body { background-color: #F5F5F4; }
+    body { background-color: #1a3a2a; }
   </style>
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Spin the Wheel - Prize Wheel Game">
@@ -50,7 +50,7 @@
 
   <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Casino", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Coin Flip", "item": "https://minigameplanet.com/games/spin-the-wheel"}]}</script>
 </head>
-<body class="min-h-screen bg-[#F5F5F4] text-gray-900 antialiased">
+<body class="min-h-screen text-gray-900 antialiased">
   <!-- GA4 Consent Banner (defaults) -->
   <div id="consent-banner" class="hidden fixed bottom-0 left-0 right-0 z-50 p-4 bg-white shadow-lg border-t border-gray-200">
     <p class="text-sm text-gray-600 mb-3">We use cookies for analytics. By continuing, you accept our use of cookies.</p>
@@ -61,24 +61,24 @@
   </div>
 
   <!-- Nav -->
-  <nav id="nav-container" class="bg-white border-b border-gray-200 px-4 py-3">
+  <nav id="nav-container" class="border-b px-4 py-3" style="background:rgba(13,51,32,0.9);border-color:rgba(255,255,255,0.1);">
     <div class="max-w-4xl mx-auto flex items-center justify-between">
-      <a href="/" class="font-semibold text-lg text-gray-900">Mini Game Planet</a>
+      <a href="/" class="font-semibold text-lg" style="color:#D4AF37;">Mini Game Planet</a>
       <div class="flex items-center gap-2">
-        <button id="sound-toggle" class="p-2 rounded-lg hover:bg-gray-100" title="Toggle sound" aria-label="Toggle sound">
-          <svg id="sound-on" class="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20"><path d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.076l-2.889-3.333A1 1 0 014 12H2a2 2 0 01-2-2V6a2 2 0 012-2h2a1 1 0 01.494-.134l2.889-3.333zM14.657 5.34a1 1 0 011.414 0A8 8 0 0117 10a8 8 0 01-.929 3.657 1 1 0 01-1.414-1.414 6 6 0 00.929-2.243 6 6 0 00-.929-2.243 1 1 0 010-1.414z"/></svg>
-          <svg id="sound-off" class="w-5 h-5 text-gray-400 hidden" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.076l-2.889-3.333A1 1 0 014 12H2a2 2 0 01-2-2V6a2 2 0 012-2h2a1 1 0 01.494-.134l2.889-3.333zM14.657 5.34a1 1 0 011.414 0A8 8 0 0117 10a8 8 0 01-.929 3.657 1 1 0 01-1.414-1.414 6 6 0 00.929-2.243 6 6 0 00-.929-2.243 1 1 0 010-1.414z" clip-rule="evenodd"/><path d="M4 4l12 12"/></svg>
+        <button id="sound-toggle" class="p-2 rounded-lg" title="Toggle sound" aria-label="Toggle sound" style="color:#86EFAC;">
+          <svg id="sound-on" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.076l-2.889-3.333A1 1 0 014 12H2a2 2 0 01-2-2V6a2 2 0 012-2h2a1 1 0 01.494-.134l2.889-3.333zM14.657 5.34a1 1 0 011.414 0A8 8 0 0117 10a8 8 0 01-.929 3.657 1 1 0 01-1.414-1.414 6 6 0 00.929-2.243 6 6 0 00-.929-2.243 1 1 0 010-1.414z"/></svg>
+          <svg id="sound-off" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.076l-2.889-3.333A1 1 0 014 12H2a2 2 0 01-2-2V6a2 2 0 012-2h2a1 1 0 01.494-.134l2.889-3.333zM14.657 5.34a1 1 0 011.414 0A8 8 0 0117 10a8 8 0 01-.929 3.657 1 1 0 01-1.414-1.414 6 6 0 00.929-2.243 6 6 0 00-.929-2.243 1 1 0 010-1.414z" clip-rule="evenodd"/><path d="M4 4l12 12"/></svg>
         </button>
       </div>
     </div>
   </nav>
 
   <main class="max-w-4xl mx-auto px-4 py-8">
-    <!-- White Card -->
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+    <!-- Game Card -->
+    <div class="rounded-2xl shadow-sm overflow-hidden" style="background:linear-gradient(160deg,#0d3320 0%,#072015 100%);border-radius:16px;box-shadow:inset 0 2px 12px rgba(0,0,0,0.3);color:#fff;">
       <div class="p-6 md:p-8">
-        <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Spin the Wheel</h1>
-        <p class="text-gray-600 mb-6">Customize your wheel, spin, and celebrate your win!</p>
+        <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">Spin the Wheel</h1>
+        <p class="mb-6" style="color:#86EFAC;">Customize your wheel, spin, and celebrate your win!</p>
 
         <!-- Wheel Container -->
         <div class="flex flex-col items-center mb-6">
@@ -87,30 +87,30 @@
             <div class="absolute -top-2 left-1/2 -translate-x-1/2 z-10 w-0 h-0 border-l-[16px] border-r-[16px] border-t-[24px] border-l-transparent border-r-transparent border-t-red-500 drop-shadow-md"></div>
             <canvas id="wheel-canvas" width="320" height="320" class="rounded-full shadow-lg"></canvas>
           </div>
-          <button id="spin-btn" class="mt-6 px-8 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl shadow-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+          <button id="spin-btn" class="mt-6 px-8 py-3 font-semibold rounded-xl shadow-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed" style="background:#3B82F6;color:#fff;border:none;border-radius:10px;padding:12px 32px;font-size:15px;font-weight:700;">
             SPIN
           </button>
         </div>
 
         <!-- Result Display -->
-        <div id="result-display" class="hidden text-center py-4 px-4 bg-emerald-50 rounded-xl border border-emerald-200 mb-6">
-          <p class="text-sm text-emerald-700 font-medium">You won:</p>
-          <p id="result-text" class="text-xl font-bold text-emerald-900"></p>
+        <div id="result-display" class="hidden text-center py-4 px-4 rounded-xl mb-6" style="background:rgba(15,23,42,0.95);border:1px solid rgba(255,255,255,0.1);">
+          <p class="text-sm font-medium" style="color:#86EFAC;">You won:</p>
+          <p id="result-text" class="text-xl font-bold" style="color:#F59E0B;"></p>
         </div>
 
         <!-- Confetti Container -->
         <div id="confetti-container" class="fixed inset-0 pointer-events-none overflow-hidden z-40"></div>
 
         <!-- Segment Editor -->
-        <div class="border-t border-gray-200 pt-6">
-          <h2 class="text-lg font-semibold text-gray-900 mb-3">Edit Segments</h2>
+        <div class="pt-6" style="border-top:1px solid rgba(255,255,255,0.1);">
+          <h2 class="text-lg font-semibold text-white mb-3">Edit Segments</h2>
           <div id="segment-editor" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
         </div>
       </div>
     </div>
 
     <!-- SEO Article -->
-    <article class="mt-8 bg-white rounded-2xl shadow-sm border border-gray-200 p-6 md:p-8">
+    <article class="mt-8 bg-white rounded-2xl shadow-sm border border-gray-200 p-6 md:p-8" style="color:#374151;">
       <h2 class="text-xl font-bold text-gray-900 mb-4">Spin the Wheel: The Ultimate Prize Wheel Game</h2>
       <div class="prose prose-gray max-w-none text-gray-600 space-y-4">
         <p>
@@ -138,19 +138,19 @@
 
     <!-- Related Games -->
     <section id="related-games" class="mt-8">
-      <h2 class="text-lg font-semibold text-gray-900 mb-4">Related Games</h2>
+      <h2 class="text-lg font-semibold mb-4" style="color:#86EFAC;">Related Games</h2>
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <a href="/games/coin-flip.html" class="block p-4 bg-white rounded-xl border border-gray-200 hover:border-emerald-300 hover:shadow-md transition-all">Coin Flip</a>
-        <a href="/games/dice-roller.html" class="block p-4 bg-white rounded-xl border border-gray-200 hover:border-emerald-300 hover:shadow-md transition-all">Dice Roller</a>
-        <a href="/games/random-picker.html" class="block p-4 bg-white rounded-xl border border-gray-200 hover:border-emerald-300 hover:shadow-md transition-all">Random Picker</a>
-        <a href="/games/lucky-wheel.html" class="block p-4 bg-white rounded-xl border border-gray-200 hover:border-emerald-300 hover:shadow-md transition-all">Lucky Wheel</a>
+        <a href="/games/coin-flip.html" class="block p-4 rounded-xl transition-all" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);color:#E2E8F0;">Coin Flip</a>
+        <a href="/games/dice-roller.html" class="block p-4 rounded-xl transition-all" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);color:#E2E8F0;">Dice Roller</a>
+        <a href="/games/random-picker.html" class="block p-4 rounded-xl transition-all" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);color:#E2E8F0;">Random Picker</a>
+        <a href="/games/lucky-wheel.html" class="block p-4 rounded-xl transition-all" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);color:#E2E8F0;">Lucky Wheel</a>
       </div>
     </section>
   </main>
 
   <!-- Footer -->
-  <footer id="footer-container" class="mt-12 py-6 border-t border-gray-200 bg-white">
-    <div class="max-w-4xl mx-auto px-4 text-center text-sm text-gray-500">
+  <footer id="footer-container" class="mt-12 py-6" style="border-top:1px solid rgba(255,255,255,0.1);">
+    <div class="max-w-4xl mx-auto px-4 text-center text-sm" style="color:#94A3B8;">
       <p>&copy; Mini Game Planet. All games are for entertainment only.</p>
     </div>
   </footer>
@@ -356,8 +356,8 @@
     function renderSegmentEditor() {
       segmentEditor.innerHTML = segments.map((seg, i) => `
         <div class="flex flex-col gap-1">
-          <input type="color" value="${seg.color}" data-idx="${i}" class="segment-color w-full h-8 rounded cursor-pointer border border-gray-200">
-          <input type="text" value="${seg.label}" data-idx="${i}" class="segment-label px-2 py-1.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" maxlength="20">
+          <input type="color" value="${seg.color}" data-idx="${i}" class="segment-color w-full h-8 rounded cursor-pointer" style="border:1px solid rgba(255,255,255,0.2);background:rgba(0,0,0,0.2);">
+          <input type="text" value="${seg.label}" data-idx="${i}" class="segment-label px-2 py-1.5 text-sm rounded-lg focus:ring-2 focus:ring-emerald-500" style="border:1px solid rgba(255,255,255,0.2);background:rgba(0,0,0,0.3);color:#fff;" maxlength="20">
         </div>
       `).join('');
 

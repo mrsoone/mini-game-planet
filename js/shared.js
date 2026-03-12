@@ -1195,6 +1195,193 @@ function applyGamePageDecor(game) {
         padding: 10px 20px !important; font-size: 14px !important;
       }
     }
+
+    /* ═══════════════════════════════════════════════════════════════
+       UNIVERSAL CARD FACE UPGRADE — premium look for ALL card games
+       ═══════════════════════════════════════════════════════════════ */
+    body.mgp-themed-page .ce-card:not(.disabled),
+    body.mgp-themed-page .gf-card,
+    body.mgp-themed-page .ht-card.face-up,
+    body.mgp-themed-page .vp-card:not(.facedown),
+    body.mgp-themed-page .hl-card:not(.facedown),
+    body.mgp-themed-page .pile-card,
+    body.mgp-themed-page .wc:not(.facedown),
+    body.mgp-themed-page .card.red,
+    body.mgp-themed-page .card.black,
+    body.mgp-themed-page .card-el.face-up,
+    body.mgp-themed-page .card-f:not(.face-down),
+    body.mgp-themed-page .card-s.up,
+    body.mgp-themed-page .ers-card.face-up {
+      background: linear-gradient(135deg, #FFFFFF 0%, #F3F4F6 100%) !important;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15), 0 1px 3px rgba(0,0,0,0.1) !important;
+      border: 1px solid rgba(0,0,0,0.08) !important;
+    }
+    body.mgp-themed-page .ce-card.playable,
+    body.mgp-themed-page .ht-card.playable,
+    body.mgp-themed-page .card-el.playable {
+      animation: cardPulse 2s ease-in-out infinite !important;
+    }
+    @keyframes cardPulse {
+      0%, 100% { box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+      50% { box-shadow: 0 2px 8px rgba(0,0,0,0.15), 0 0 12px rgba(59,130,246,0.3); }
+    }
+    body.mgp-themed-page .ce-card.selected,
+    body.mgp-themed-page .gf-card.selected,
+    body.mgp-themed-page .ht-card.selected,
+    body.mgp-themed-page .card.selected {
+      transform: translateY(-8px) !important;
+      box-shadow: 0 0 0 3px #3B82F6, 0 8px 20px rgba(0,0,0,0.2) !important;
+    }
+    /* Card backs */
+    body.mgp-themed-page .ce-card.disabled,
+    body.mgp-themed-page .card.facedown,
+    body.mgp-themed-page .card-el.face-down,
+    body.mgp-themed-page .card-s.down,
+    body.mgp-themed-page .card-f.face-down,
+    body.mgp-themed-page .gf-back,
+    body.mgp-themed-page .ht-card.face-down,
+    body.mgp-themed-page .ers-card.face-down {
+      background: linear-gradient(135deg, #1E3A5F 0%, #2D1B69 50%, #1E3A5F 100%) !important;
+      border: 1px solid rgba(255,255,255,0.1) !important;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
+    }
+    /* Preserve red/black card text colors */
+    body.mgp-themed-page .ce-card.red,
+    body.mgp-themed-page .gf-card.red,
+    body.mgp-themed-page .ht-card.red,
+    body.mgp-themed-page .card.red,
+    body.mgp-themed-page .card-el .card-red,
+    body.mgp-themed-page .ers-card.red { color: #DC2626 !important; text-shadow: none !important; }
+    body.mgp-themed-page .ce-card.blk,
+    body.mgp-themed-page .gf-card.blk,
+    body.mgp-themed-page .ht-card.black,
+    body.mgp-themed-page .card.black,
+    body.mgp-themed-page .card-el .card-black,
+    body.mgp-themed-page .ers-card.black { color: #1E293B !important; text-shadow: none !important; }
+
+    /* ═══════════════════════════════════════════════════════════════
+       FELT TABLE SURFACE — universal for card/casino game areas
+       ═══════════════════════════════════════════════════════════════ */
+    body.mgp-themed-page [style*="background:linear-gradient(160deg,#1a5c35"],
+    body.mgp-themed-page [style*="background:linear-gradient(145deg,#1a5c35"],
+    body.mgp-themed-page [style*="background: linear-gradient(160deg, #1a5c35"],
+    body.mgp-themed-page .game-table,
+    body.mgp-themed-page .mgp-table-surface {
+      position: relative !important;
+      overflow: hidden !important;
+    }
+    body.mgp-themed-page [style*="background:linear-gradient(160deg,#1a5c35"]::before,
+    body.mgp-themed-page [style*="background:linear-gradient(145deg,#1a5c35"]::before,
+    body.mgp-themed-page [style*="background: linear-gradient(160deg, #1a5c35"]::before,
+    body.mgp-themed-page .game-table::before,
+    body.mgp-themed-page .mgp-table-surface::before {
+      content: '' !important;
+      position: absolute !important;
+      inset: 0 !important;
+      background: repeating-conic-gradient(rgba(255,255,255,0.03) 0% 25%, transparent 0% 50%) 0 0 / 4px 4px !important;
+      pointer-events: none !important;
+      border-radius: inherit !important;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       GAME-OVER SECTION UPGRADE — dark, polished look
+       ═══════════════════════════════════════════════════════════════ */
+    body.mgp-themed-page #game-over:not([style*="display:none"]):not([style*="display: none"]),
+    body.mgp-themed-page [id$="-gameover"],
+    body.mgp-themed-page .game-over-overlay {
+      background: rgba(15,23,42,0.92) !important;
+      backdrop-filter: blur(6px) !important;
+      -webkit-backdrop-filter: blur(6px) !important;
+      color: #fff !important;
+      border-radius: 16px !important;
+      padding: 24px !important;
+      text-align: center !important;
+      border: 1px solid rgba(255,255,255,0.1) !important;
+    }
+    body.mgp-themed-page #game-over h2,
+    body.mgp-themed-page #game-over h3,
+    body.mgp-themed-page #game-over [id*="title"],
+    body.mgp-themed-page [id$="-gameover"] h2,
+    body.mgp-themed-page .game-over-overlay h2 {
+      font-family: 'Space Grotesk', sans-serif !important;
+      font-size: 28px !important;
+      font-weight: 700 !important;
+      color: #fff !important;
+      margin-bottom: 8px !important;
+    }
+    body.mgp-themed-page #game-over [id*="score"],
+    body.mgp-themed-page [id$="-gameover"] [id*="score"],
+    body.mgp-themed-page .game-over-score {
+      font-family: 'DM Mono', monospace !important;
+      font-size: 42px !important;
+      font-weight: 700 !important;
+      color: #F59E0B !important;
+    }
+    body.mgp-themed-page #game-over button,
+    body.mgp-themed-page [id$="-gameover"] button,
+    body.mgp-themed-page .game-over-overlay button {
+      background: #3B82F6 !important;
+      color: #fff !important;
+      border: none !important;
+      border-radius: 10px !important;
+      padding: 12px 32px !important;
+      font-size: 15px !important;
+      font-weight: 700 !important;
+      font-family: 'Space Grotesk', sans-serif !important;
+      cursor: pointer !important;
+      margin-top: 16px !important;
+      transition: all 0.15s ease !important;
+      box-shadow: 0 4px 12px rgba(59,130,246,0.3) !important;
+    }
+    body.mgp-themed-page #game-over button:hover,
+    body.mgp-themed-page [id$="-gameover"] button:hover,
+    body.mgp-themed-page .game-over-overlay button:hover {
+      background: #2563EB !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 6px 20px rgba(59,130,246,0.4) !important;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       DICE UPGRADE — 3D appearance
+       ═══════════════════════════════════════════════════════════════ */
+    body.mgp-themed-page .dice-face,
+    body.mgp-themed-page .die {
+      background: linear-gradient(145deg, #FFFFFF 0%, #E5E7EB 100%) !important;
+      border-radius: 12px !important;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15), 0 1px 3px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.8) !important;
+    }
+    body.mgp-themed-page .pip,
+    body.mgp-themed-page .die-pip {
+      background: #1E293B !important;
+      border-radius: 50% !important;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.3) !important;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       SCORE DISPLAY — DM Mono, consistent across all games
+       ═══════════════════════════════════════════════════════════════ */
+    body.mgp-themed-page [id*="score"]:not(button):not(a):not(tr):not(td),
+    body.mgp-themed-page [id*="Score"]:not(button):not(a):not(tr):not(td),
+    body.mgp-themed-page [id*="best"]:not(button):not(a),
+    body.mgp-themed-page [id*="Best"]:not(button):not(a),
+    body.mgp-themed-page [id*="timer"]:not(button),
+    body.mgp-themed-page [id*="Timer"]:not(button),
+    body.mgp-themed-page [id*="count"]:not(button):not(select),
+    body.mgp-themed-page [id*="level"]:not(button):not(select):not(div[style*="display"]) {
+      font-family: 'DM Mono', monospace !important;
+      font-weight: 700 !important;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       LEADERBOARD — consistent styling
+       ═══════════════════════════════════════════════════════════════ */
+    body.mgp-themed-page #mgp-leaderboard details {
+      background: rgba(255,255,255,0.97) !important;
+      border: 2px solid #E5E7EB !important;
+      border-radius: 12px !important;
+      padding: 12px 16px !important;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
+    }
   `;
 }
 
@@ -1261,7 +1448,7 @@ function renderFooter() {
   if (!el) return;
 
   const footerHTML = `
-    <footer style="background:#fff;border-top:2px solid #E5E7EB;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;max-width:100%;">
+    <footer style="background:#fff;border-top:1px solid #E2E8F0;padding:32px 24px 16px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;max-width:100%;">
       <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:#64748B;">
         <img src="/images/logo.png" alt="MiniGamePlanet" style="height:34px;width:auto;flex-shrink:0;">
         <span>&copy; 2026 Jagan Worldwide Games. All rights reserved.</span>
@@ -1560,6 +1747,16 @@ export function initToolPage(slug) {
   renderNav(gameName);
   renderFooter();
   renderRelatedGames(slug, category);
+
+  const _main = document.querySelector('main');
+  const _related = document.getElementById('related-games');
+  const _footer = document.getElementById('footer-container');
+  const _article = document.querySelector('main ~ article') || document.querySelector('body > article');
+  if (_main && _related && _article && _footer) {
+    const parent = _footer.parentNode || document.body;
+    parent.insertBefore(_related, _footer);
+    parent.insertBefore(_article, _footer);
+  }
 
   if (!document.getElementById('tile-hover-styles')) {
     const style = document.createElement('style');

@@ -90,11 +90,11 @@
             <p class="text-white text-xl font-semibold mb-2">Tap or Space to Start</p>
             <p class="text-white/80 text-sm">Match the ball color to pass through barriers</p>
           </div>
-          <div id="gameOverOverlay" class="absolute inset-0 hidden flex-col items-center justify-center bg-black/70 rounded-12" style="border-radius: 12px;">
+          <div id="gameOverOverlay" class="absolute inset-0 hidden flex-col items-center justify-center" style="border-radius:12px;background:rgba(15,23,42,0.92);backdrop-filter:blur(6px);">
             <p class="text-white text-2xl font-bold mb-2">Game Over</p>
-            <p class="text-white/90 text-lg mb-4">Score: <span id="finalScore" class="font-mono">0</span></p>
-            <p class="text-white/70 text-sm mb-4">Best: <span id="bestScore" class="font-mono">0</span></p>
-            <button id="restartBtn" class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition">Play Again</button>
+            <p class="text-lg font-mono mb-4" style="color:#F59E0B;">Score: <span id="finalScore">0</span></p>
+            <p class="text-sm font-mono mb-4" style="color:rgba(255,255,255,0.7);">Best: <span id="bestScore">0</span></p>
+            <button id="restartBtn" class="px-6 py-2 text-white font-semibold rounded-lg transition hover:brightness-110" style="background:#3B82F6;">Play Again</button>
           </div>
         </div>
 

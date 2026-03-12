@@ -143,9 +143,9 @@
       </div>
 
       <!-- Game Over (Best of 5) -->
-      <div id="game-over-area" class="hidden text-center py-8">
-        <p id="game-over-message" class="text-2xl font-bold mb-4"></p>
-        <button id="new-round" class="px-6 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 font-medium">New Round</button>
+      <div id="game-over-area" class="hidden" style="background:rgba(15,23,42,0.95);color:#fff;border-radius:12px;padding:24px;text-align:center;">
+        <p id="game-over-message" style="font-size:22px;font-weight:700;margin-bottom:16px;color:#F59E0B;"></p>
+        <button id="new-round" style="background:#3B82F6;color:#fff;border:none;border-radius:10px;padding:12px 32px;font-size:15px;font-weight:700;cursor:pointer;">New Round</button>
       </div>
     </div>
 
@@ -310,7 +310,7 @@
         document.getElementById('game-over-area').classList.remove('hidden');
         document.getElementById('reveal-area').classList.add('hidden');
         document.getElementById('game-over-message').textContent = won ? 'You won the match!' : 'AI won the match!';
-        document.getElementById('game-over-message').className = `text-2xl font-bold mb-4 ${won ? 'text-green-600' : 'text-red-600'}`;
+        document.getElementById('game-over-message').style.color = '#F59E0B';
         if (won) { playVictoryFanfare?.(); confetti(); celebrateWin(); }
         else { playGameOver(); screenShake(); }
         trackGameOver('rock-paper-scissors', won ? 'win' : 'loss');

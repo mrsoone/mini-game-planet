@@ -80,11 +80,11 @@
           <p class="text-white/90 text-sm mb-4">Tap / Click / Space to flip gravity</p>
           <button id="startBtn" class="px-6 py-2 bg-white text-gray-900 rounded-lg font-semibold hover:bg-gray-100">Play</button>
         </div>
-        <div id="gameOverOverlay" class="absolute inset-0 hidden flex-col items-center justify-center bg-black/50 rounded-lg">
+        <div id="gameOverOverlay" class="absolute inset-0 hidden flex-col items-center justify-center rounded-lg" style="background:rgba(15,23,42,0.92);backdrop-filter:blur(6px);">
           <p class="text-white text-xl font-bold mb-1">Game Over</p>
-          <p class="text-white/90 font-mono mb-4">Score: <span id="finalScore">0</span></p>
-          <p class="text-white/80 text-sm mb-4">Best: <span id="bestScore">0</span></p>
-          <button id="restartBtn" class="px-6 py-2 bg-white text-gray-900 rounded-lg font-semibold hover:bg-gray-100">Play Again</button>
+          <p class="font-mono mb-4" style="color:#F59E0B;">Score: <span id="finalScore">0</span></p>
+          <p class="text-sm font-mono mb-4" style="color:rgba(255,255,255,0.7);">Best: <span id="bestScore">0</span></p>
+          <button id="restartBtn" class="px-6 py-2 text-white rounded-lg font-semibold hover:brightness-110" style="background:#3B82F6;">Play Again</button>
         </div>
       </div>
 

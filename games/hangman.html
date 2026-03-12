@@ -61,8 +61,9 @@
       <div id="message" style="text-align:center;min-height:24px;font-size:14px;font-weight:700;margin-bottom:8px;"></div>
       <!-- Keyboard -->
       <div id="keyboard" style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center;max-width:400px;margin:0 auto 12px;"></div>
-      <div id="game-over-area" style="display:none;text-align:center;">
-        <button id="play-again" style="padding:8px 24px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">▶ Play Again</button>
+      <div id="game-over-area" style="display:none;background:rgba(15,23,42,0.95);color:#fff;border-radius:12px;padding:24px;text-align:center;">
+        <div id="go-result" style="font-size:20px;font-weight:700;color:#F59E0B;margin-bottom:12px;"></div>
+        <button id="play-again" style="background:#3B82F6;color:#fff;border:none;border-radius:10px;padding:12px 32px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">▶ Play Again</button>
       </div>
     </div>
   </main>
@@ -165,6 +166,8 @@
         gameActive=false;streak++;
         document.getElementById('message').textContent='🎉 You got it!';
         document.getElementById('message').style.color='#059669';
+        document.getElementById('go-result').textContent='🎉 You got it!';
+        document.getElementById('go-result').style.color='#F59E0B';
         if(wrongCount===0)playPerfect();else playSuccess();
         if(wrongCount<=2)setTimeout(()=>playLevelUp(),300);
         celebrateWin();confetti();playVictoryFanfare();
@@ -186,8 +189,9 @@
         gameActive=false;streak=0;
         document.getElementById('message').innerHTML=`The word was <strong>${word}</strong>`;
         document.getElementById('message').style.color='#DC2626';
+        document.getElementById('go-result').textContent=`The word was ${word}`;
+        document.getElementById('go-result').style.color='#F59E0B';
         playGameOver();screenFlash('red',150);
-        // Reveal all letters
         guessedLetters=new Set(word.split(''));renderWord();
         document.getElementById('game-over-area').style.display='block';
         trackGameOver('hangman','Word',0,0);

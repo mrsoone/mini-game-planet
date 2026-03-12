@@ -112,13 +112,13 @@
         </div>
 
         <!-- Win overlay -->
-        <div id="win-overlay" class="hidden fixed inset-0 bg-black/40 z-40 flex items-center justify-center p-4">
-          <div class="bg-white rounded-2xl p-6 max-w-sm text-center shadow-xl">
-            <h2 class="text-xl font-bold text-green-600 mb-2">Level Complete!</h2>
-            <p class="text-gray-600 mb-4">Moves: <span id="win-moves" class="font-mono font-semibold"></span></p>
+        <div id="win-overlay" class="hidden fixed inset-0 z-40 flex items-center justify-center p-4" style="background:rgba(15,23,42,0.95);">
+          <div style="background:rgba(255,255,255,0.08);border-radius:16px;padding:24px;max-width:360px;text-align:center;color:#fff;">
+            <h2 style="font-size:20px;font-weight:700;color:#F59E0B;margin-bottom:8px;">Level Complete!</h2>
+            <p style="color:#F59E0B;margin-bottom:16px;">Moves: <span id="win-moves" class="font-mono font-semibold"></span></p>
             <div class="flex gap-3 justify-center">
-              <button id="next-level-btn" class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition">Next Level</button>
-              <button id="close-win-btn" class="px-4 py-2 bg-gray-200 rounded-lg font-medium hover:bg-gray-300 transition">Close</button>
+              <button id="next-level-btn" style="background:#3B82F6;color:#fff;border:none;border-radius:10px;padding:12px 32px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">Next Level</button>
+              <button id="close-win-btn" style="background:rgba(255,255,255,0.12);color:#fff;border:none;border-radius:10px;padding:12px 32px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">Close</button>
             </div>
           </div>
         </div>

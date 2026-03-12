@@ -144,21 +144,21 @@
         </div>
       </div>
 
-      <div id="game-over" class="hidden text-center">
-        <h2 class="text-2xl font-bold text-gray-900 mb-2">Round Complete!</h2>
-        <p class="text-4xl font-mono font-bold text-indigo-600 mb-2" id="final-score">0</p>
-        <p class="text-gray-600 mb-6" id="final-message"></p>
-        <div class="flex flex-wrap justify-center gap-4 mb-6">
-          <div class="bg-gray-50 rounded-xl px-4 py-3 text-center">
-            <span class="font-mono text-xl font-bold" id="final-correct">0</span>
-            <p class="text-xs text-gray-500">Correct</p>
+      <div id="game-over" class="hidden" style="background:rgba(15,23,42,0.95);color:#fff;border-radius:12px;padding:24px;text-align:center;">
+        <h2 style="font-size:22px;font-weight:700;margin-bottom:8px;color:#fff;">Round Complete!</h2>
+        <p class="font-mono" style="font-size:2.25rem;font-weight:700;color:#F59E0B;margin-bottom:8px;" id="final-score">0</p>
+        <p style="color:#94A3B8;margin-bottom:20px;" id="final-message"></p>
+        <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:16px;margin-bottom:20px;">
+          <div style="background:rgba(255,255,255,0.08);border-radius:12px;padding:12px 16px;text-align:center;">
+            <span class="font-mono" style="font-size:20px;font-weight:700;color:#F59E0B;" id="final-correct">0</span>
+            <p style="font-size:12px;color:#94A3B8;">Correct</p>
           </div>
-          <div class="bg-gray-50 rounded-xl px-4 py-3 text-center">
-            <span class="font-mono text-xl font-bold" id="final-streak">0</span>
-            <p class="text-xs text-gray-500">Best Streak</p>
+          <div style="background:rgba(255,255,255,0.08);border-radius:12px;padding:12px 16px;text-align:center;">
+            <span class="font-mono" style="font-size:20px;font-weight:700;color:#F59E0B;" id="final-streak">0</span>
+            <p style="font-size:12px;color:#94A3B8;">Best Streak</p>
           </div>
         </div>
-        <button id="btn-replay" class="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition shadow-md hover:shadow-lg">
+        <button id="btn-replay" style="background:#3B82F6;color:#fff;border:none;border-radius:10px;padding:12px 32px;font-size:15px;font-weight:700;cursor:pointer;">
           Play Again
         </button>
       </div>

@@ -22,6 +22,7 @@
     .pr-card{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:clamp(48px,8vw,68px);height:clamp(68px,11.5vw,96px);border-radius:7px;font-family:'DM Mono',monospace;font-weight:700;font-size:clamp(12px,2vw,16px);box-shadow:0 2px 6px rgba(0,0,0,0.15);position:relative;cursor:pointer;transition:transform 0.15s;flex-shrink:0;user-select:none}
     .pr-card.face-up{background:#fff;border:1.5px solid #E5E7EB}.pr-card.face-down{background:linear-gradient(135deg, #1E3A5F 0%, #2D1B69 50%, #1E3A5F 100%);border:1.5px solid rgba(255,255,255,0.2)}
     .pr-card.red{color:#DC2626}.pr-card.black{color:#0F172A}
+    .pr-card.face-up{background:linear-gradient(135deg,#FFFFFF 0%,#F3F4F6 100%);box-shadow:0 2px 8px rgba(0,0,0,0.15),0 1px 3px rgba(0,0,0,0.1);border:1px solid rgba(0,0,0,0.08)}
     .pr-card.playable:hover{transform:translateY(-6px)}
     .pr-card.selected{transform:translateY(-10px);box-shadow:0 0 0 2px #2563EB,0 6px 16px rgba(37,99,235,0.3)}
     #pr-hand{display:flex;justify-content:center;padding:8px;overflow-x:auto;flex-wrap:nowrap}#pr-hand .pr-card{margin:0 -4px}
@@ -60,10 +61,10 @@
           <button id="btn-play" class="pr-btn" style="background:#059669;color:#fff;border-color:#047857;display:none;">Play</button>
           <button id="btn-pass" class="pr-btn" style="background:#D97706;color:#fff;border-color:#B45309;display:none;">Pass</button>
         </div>
-        <div id="game-over-panel" style="display:none;text-align:center;padding:20px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;margin-top:10px;">
-          <h3 id="winner-text" style="font-size:22px;font-weight:700;margin:0 0 8px;"></h3>
-          <div id="rankings" style="font-family:'DM Mono',monospace;font-size:13px;margin:0 0 16px;"></div>
-          <button id="play-again-btn" class="pr-btn" style="background:#2563EB;color:#fff;border-color:#1D4ED8;padding:10px 28px;">Play Again</button>
+        <div id="game-over-panel" style="display:none;text-align:center;padding:20px;background:rgba(15,23,42,0.95);border-radius:12px;color:#fff;margin-top:10px;">
+          <h3 id="winner-text" style="font-size:22px;font-weight:700;margin:0 0 8px;color:#fff;"></h3>
+          <div id="rankings" style="font-family:'DM Mono',monospace;font-size:13px;margin:0 0 16px;color:#F59E0B;"></div>
+          <button id="play-again-btn" style="background:#3B82F6;color:#fff;border:none;border-radius:10px;padding:12px 32px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">Play Again</button>
         </div>
       </div>
     </div>

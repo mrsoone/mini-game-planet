@@ -104,7 +104,7 @@
 
       <div id="game-status" class="text-center font-medium text-stone-700 mb-4">Your turn — click a line to draw</div>
 
-      <div id="game-container" class="flex justify-center overflow-auto py-4"></div>
+      <div id="game-container" class="flex justify-center overflow-auto py-4 rounded-xl" style="box-shadow:0 2px 12px rgba(0,0,0,0.1);border:1px solid #e7e5e4"></div>
 
       <div id="session-stats" class="mt-6 pt-6 border-t border-stone-200 text-center text-sm text-stone-500 font-mono">
         <span>Games: <span id="stat-games">0</span></span>
@@ -447,7 +447,7 @@
       if (gameState.gameOver || gameState.turn !== 'player') return;
       if (gameState.lines.has(edgeKey(edge))) return;
 
-      playClick();
+      playClick();playDrop();
       const completed = playMove(edge, 'player');
       if (completed.length) playScoreUp();
 

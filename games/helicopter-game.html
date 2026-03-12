@@ -215,15 +215,18 @@
       drawGradientBg(ctx, W, H, '#0a0a1e', '#1a1a3e');
 
       if (gameOver) {
-        ctx.fillStyle = 'rgba(0,0,0,0.6)';
+        ctx.fillStyle = 'rgba(15,23,42,0.92)';
         ctx.fillRect(0, 0, W, H);
         ctx.fillStyle = '#fff';
         ctx.font = 'bold 28px "Space Grotesk"';
         ctx.textAlign = 'center';
-        ctx.fillText('Game Over', W / 2, H / 2 - 20);
-        ctx.font = '16px "Space Grotesk"';
-        ctx.fillText(`Distance: ${score}`, W / 2, H / 2 + 10);
-        ctx.fillText('Click or tap to restart', W / 2, H / 2 + 40);
+        ctx.fillText('Game Over', W / 2, H / 2 - 30);
+        ctx.fillStyle = '#F59E0B';
+        ctx.font = 'bold 20px "DM Mono"';
+        ctx.fillText(`Distance: ${score}`, W / 2, H / 2 + 5);
+        ctx.fillStyle = '#94A3B8';
+        ctx.font = '14px "Space Grotesk"';
+        ctx.fillText('Click or tap to restart', W / 2, H / 2 + 35);
         animId = requestAnimationFrame(gameLoop);
         return;
       }

@@ -55,11 +55,11 @@
         <div class="std-panel" id="panel-left"></div>
         <div class="std-panel" id="panel-right"></div>
       </div>
-      <div id="game-over" style="display:none;text-align:center;padding:16px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;">
+      <div id="game-over" style="display:none;text-align:center;padding:24px;background:rgba(15,23,42,0.95);color:#fff;border-radius:12px;">
         <div id="go-title" style="font-size:22px;font-weight:700;margin-bottom:4px;"></div>
-        <div id="go-sub" style="font-size:13px;color:#64748B;margin-bottom:12px;"></div>
-        <div id="session-stats" style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;text-align:left;max-width:220px;margin:0 auto 12px;padding:10px;background:#fff;border-radius:8px;"></div>
-        <button id="play-again" style="padding:8px 24px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">▶ Next Level</button>
+        <div id="go-sub" style="font-size:13px;color:#94A3B8;margin-bottom:12px;"></div>
+        <div id="session-stats" style="font-family:'DM Mono',monospace;font-size:12px;color:#94A3B8;text-align:left;max-width:220px;margin:0 auto 12px;padding:10px;background:rgba(255,255,255,0.08);border-radius:8px;"></div>
+        <button id="play-again" style="padding:12px 32px;background:#3B82F6;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">▶ Next Level</button>
       </div>
     </div>
   </main>
@@ -245,8 +245,8 @@
     clearInterval(timerInterval);
     session.rounds++;session.wins++;session.totalTime+=seconds;streak++;
     const key=`L${level}`;
-    if(!best[key]||seconds<best[key]){best[key]=seconds;document.getElementById('go-title').textContent='🏆 NEW BEST!';document.getElementById('go-title').style.color='#D97706';playVictoryFanfare();setTimeout(()=>playLevelUp(),300);}
-    else{document.getElementById('go-title').textContent='🔍 All Differences Found!';document.getElementById('go-title').style.color='#059669';playVictoryFanfare();}
+    if(!best[key]||seconds<best[key]){best[key]=seconds;document.getElementById('go-title').textContent='🏆 NEW BEST!';document.getElementById('go-title').style.color='#F59E0B';playVictoryFanfare();setTimeout(()=>playLevelUp(),300);}
+    else{document.getElementById('go-title').textContent='🔍 All Differences Found!';document.getElementById('go-title').style.color='#F59E0B';playVictoryFanfare();}
     const wr = document.getElementById('game-wrap').getBoundingClientRect();
     confetti(wr.left + wr.width / 2, wr.top + 40);
     celebrateWin(document.getElementById('game-wrap'));

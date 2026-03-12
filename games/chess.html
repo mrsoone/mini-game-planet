@@ -96,9 +96,18 @@
       </div>
 
       <div class="flex flex-col md:flex-row gap-6 items-start">
-        <div class="flex-shrink-0">
+        <div class="flex-shrink-0 relative">
           <div id="chess-board" class="grid grid-cols-8 w-full max-w-[min(90vw,400px)] border-2 border-stone-300 rounded-lg overflow-hidden" style="box-shadow:0 2px 12px rgba(0,0,0,0.15)"></div>
           <p id="game-status" class="mt-2 text-sm font-medium text-stone-600">Your turn (White)</p>
+          <div id="gameover-overlay" class="absolute inset-0 hidden flex-col items-center justify-center rounded-lg text-white p-6" style="background:rgba(15,23,42,0.88);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)">
+            <h2 id="go-title" class="text-3xl font-bold mb-1"></h2>
+            <p id="go-sub" class="text-white/70 text-sm mb-3"></p>
+            <p class="font-mono text-2xl font-bold mb-1" style="color:#F59E0B"><span id="go-result"></span></p>
+            <div class="font-mono text-sm text-white/60 mb-4">
+              <span id="go-wins">0</span>W / <span id="go-losses">0</span>L · Streak: <span id="go-streak">0</span>
+            </div>
+            <button id="go-restart" class="px-6 py-3 rounded-lg font-bold" style="background:#3B82F6;color:#fff;">Play Again</button>
+          </div>
         </div>
         <div class="flex-1 min-w-0">
           <h3 class="text-sm font-semibold text-stone-700 mb-2">Move History</h3>
@@ -537,6 +546,8 @@
       const move = getAIMove();
       if (!move) return;
       const isCapture = !!getPiece(state.board, move.to.r, move.to.c) || move.to.enPassant;
+      const raw = getMoves(state.board, move.from.r, move.from.c, state.enPassant, state.castling);
+      state.validMoves = filterLegalMoves(state.board, move.from.r, move.from.c, raw, state.enPassant, state.castling);
       makeMove(move.from.r, move.from.c, move.to.r, move.to.c);
       if (isCapture) { playDrop(); } else { playCardSlide(); }
       render();
@@ -585,6 +596,25 @@
             trackGameOver('chess', 'Strategy', { result: 'draw' });
           }
         }
+      }
+
+      if (state.gameOver) {
+        const goOverlay = document.getElementById('gameover-overlay');
+        const s = loadSessionStats();
+        goOverlay.classList.remove('hidden');
+        goOverlay.classList.add('flex');
+        if (state.gameOver === 'checkmate') {
+          document.getElementById('go-title').textContent = state.turn ? 'Checkmate!' : 'You Win!';
+          document.getElementById('go-sub').textContent = state.turn ? 'Black wins this game.' : 'Brilliant victory!';
+          document.getElementById('go-result').textContent = state.turn ? 'Defeat' : 'Victory';
+        } else {
+          document.getElementById('go-title').textContent = 'Stalemate';
+          document.getElementById('go-sub').textContent = 'The game is a draw.';
+          document.getElementById('go-result').textContent = 'Draw';
+        }
+        document.getElementById('go-wins').textContent = s.wins;
+        document.getElementById('go-losses').textContent = s.losses;
+        document.getElementById('go-streak').textContent = s.streak;
       }
     }
 
@@ -701,12 +731,15 @@
         lastMove: null
       };
       document.getElementById('promotion-modal').classList.add('hidden');
+      document.getElementById('gameover-overlay').classList.add('hidden');
+      document.getElementById('gameover-overlay').classList.remove('flex');
       playClick();
       render();
       trackGameStart('chess', 'Strategy');
     }
 
     document.getElementById('restart-btn').addEventListener('click', restart);
+    document.getElementById('go-restart').addEventListener('click', restart);
     document.getElementById('sound-toggle').addEventListener('click', () => {
       muteAll();
       document.getElementById('sound-toggle').textContent = document.getElementById('sound-toggle').textContent.includes('Off') ? '🔊 Sound' : '🔇 Sound Off';

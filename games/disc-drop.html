@@ -112,10 +112,10 @@
       </div>
 
       <!-- Result overlay -->
-      <div id="result-overlay" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-2xl p-8 max-w-sm mx-4 text-center shadow-2xl">
-          <p id="result-text" class="text-xl font-bold mb-4"></p>
-          <button id="play-again-btn" class="px-6 py-3 bg-slate-800 text-white rounded-xl font-medium hover:bg-slate-700">Play Again</button>
+      <div id="result-overlay" class="fixed inset-0 flex items-center justify-center z-50 hidden" style="background:rgba(15,23,42,0.92);backdrop-filter:blur(6px)">
+        <div class="rounded-2xl p-8 max-w-sm mx-4 text-center" style="background:rgba(30,41,59,0.95);border:1px solid rgba(255,255,255,0.1)">
+          <p id="result-text" class="text-xl font-bold mb-4 text-white"></p>
+          <button id="play-again-btn" class="px-6 py-3 rounded-xl font-medium text-white hover:brightness-110 transition" style="background:#3B82F6">Play Again</button>
         </div>
       </div>
     </div>
@@ -306,7 +306,7 @@
         saveStats();
         updateStatsUI();
         trackGameOver('disc-drop', 'draw');
-        showResult("It's a draw!");
+        showResult("It's a draw!", false);
         return;
       }
 
@@ -367,8 +367,9 @@
       turnIndicator.style.color = COLORS[currentPlayer];
     }
 
-    function showResult(text) {
+    function showResult(text, isWin = true) {
       resultText.textContent = text;
+      resultText.style.color = isWin ? '#F59E0B' : '#fff';
       resultOverlay.classList.remove('hidden');
     }
 

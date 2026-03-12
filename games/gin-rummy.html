@@ -36,6 +36,7 @@
     .gr-pile:hover .gr-card{box-shadow:0 0 0 2px #FDE68A,0 4px 12px rgba(0,0,0,0.2)}
     .gr-scoreboard{font-family:'DM Mono',monospace;font-size:12px;background:#0f172a;color:#fff;border-radius:8px;padding:8px 12px;display:flex;gap:20px;justify-content:center;align-items:center}
     @media(max-width:480px){#gr-table{min-height:280px;padding:12px}#gr-hand .gr-card{width:44px;height:62px;font-size:11px}}
+    body.mgp-themed-page .gr-card.face-up{background:linear-gradient(135deg,#FFFFFF 0%,#F3F4F6 100%) !important;box-shadow:0 2px 8px rgba(0,0,0,0.15),0 1px 3px rgba(0,0,0,0.1) !important;border:1px solid rgba(0,0,0,0.08) !important}
   </style>
 </head>
 <body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
@@ -82,15 +83,15 @@
           <button id="btn-gin" class="gr-btn" style="background:#059669;color:#fff;border-color:#047857;display:none;">Gin!</button>
           <button id="btn-discard" class="gr-btn" style="background:#DC2626;color:#fff;border-color:#B91C1C;display:none;">Discard Selected</button>
         </div>
-        <div id="round-result" style="display:none;text-align:center;padding:20px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;margin-top:10px;">
-          <h3 id="result-title" style="font-size:18px;font-weight:700;margin:0 0 8px;"></h3>
-          <div id="result-details" style="font-family:'DM Mono',monospace;font-size:13px;max-width:320px;margin:0 auto 16px;padding:12px;background:#fff;border-radius:8px;"></div>
-          <button id="next-round-btn" class="gr-btn" style="background:#2563EB;color:#fff;border-color:#1D4ED8;padding:10px 28px;">Next Round</button>
+        <div id="round-result" style="display:none;text-align:center;padding:20px;background:rgba(15,23,42,0.95);border-radius:12px;color:#fff;margin-top:10px;">
+          <h3 id="result-title" style="font-size:18px;font-weight:700;margin:0 0 8px;color:#fff;"></h3>
+          <div id="result-details" style="font-family:'DM Mono',monospace;font-size:13px;max-width:320px;margin:0 auto 16px;padding:12px;background:rgba(255,255,255,0.08);border-radius:8px;color:#F59E0B;"></div>
+          <button id="next-round-btn" class="gr-btn" style="background:#3B82F6;color:#fff;border:none;border-radius:10px;padding:12px 32px;font-size:15px;font-weight:700;">Next Round</button>
         </div>
-        <div id="game-over-panel" style="display:none;text-align:center;padding:20px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;margin-top:10px;">
-          <h3 id="winner-text" style="font-size:22px;font-weight:700;margin:0 0 4px;"></h3>
-          <p id="final-score" style="font-family:'DM Mono',monospace;font-size:14px;color:#64748B;margin:0 0 16px;"></p>
-          <button id="play-again-btn" class="gr-btn" style="background:#2563EB;color:#fff;border-color:#1D4ED8;padding:10px 28px;">Play Again</button>
+        <div id="game-over-panel" style="display:none;text-align:center;padding:20px;background:rgba(15,23,42,0.95);border-radius:12px;color:#fff;margin-top:10px;">
+          <h3 id="winner-text" style="font-size:22px;font-weight:700;margin:0 0 4px;color:#fff;"></h3>
+          <p id="final-score" style="font-family:'DM Mono',monospace;font-size:14px;color:#F59E0B;margin:0 0 16px;"></p>
+          <button id="play-again-btn" class="gr-btn" style="background:#3B82F6;color:#fff;border:none;border-radius:10px;padding:12px 32px;font-size:15px;font-weight:700;">Play Again</button>
         </div>
       </div>
     </div>

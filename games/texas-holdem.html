@@ -44,13 +44,13 @@
     /* Mini cards (opponent) */
     .mini-card{width:22px;height:32px;border-radius:3px;display:inline-block;font-size:0}
     .mini-card.down{background:linear-gradient(135deg, #1E3A5F 0%, #2D1B69 50%, #1E3A5F 100%);border:1px solid rgba(255,255,255,0.15)}
-    .mini-card.up{background:#fff;border:1px solid #D1D5DB;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-weight:700;font-size:8px;line-height:1}
+    .mini-card.up{background:linear-gradient(135deg,#FFFFFF 0%,#F3F4F6 100%);box-shadow:0 2px 8px rgba(0,0,0,0.15),0 1px 3px rgba(0,0,0,0.1);border:1px solid rgba(0,0,0,0.08);display:inline-flex;flex-direction:column;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-weight:700;font-size:8px;line-height:1}
     .mini-card.up.red{color:#DC2626}.mini-card.up.black{color:#0F172A}
 
     /* Community cards */
     .community-area{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;gap:6px;align-items:center}
     .comm-card{width:clamp(44px,7vw,60px);height:clamp(62px,10vw,84px);border-radius:6px;font-family:'DM Mono',monospace;font-weight:700;font-size:clamp(12px,1.8vw,16px);box-shadow:0 2px 8px rgba(0,0,0,0.3);display:inline-flex;flex-direction:column;align-items:center;justify-content:center;position:relative;transition:transform 0.3s}
-    .comm-card.face-up{background:#fff;border:1.5px solid #D1D5DB}
+    .comm-card.face-up{background:linear-gradient(135deg,#FFFFFF 0%,#F3F4F6 100%);box-shadow:0 2px 8px rgba(0,0,0,0.15),0 1px 3px rgba(0,0,0,0.1);border:1px solid rgba(0,0,0,0.08)}
     .comm-card.face-down{background:#1E293B;border:1.5px solid #334155}
     .comm-card.red{color:#DC2626}.comm-card.black{color:#0F172A}
 
@@ -61,7 +61,7 @@
 
     /* Your hand */
     .your-hand{display:flex;gap:8px;justify-content:center;align-items:center;padding:10px 0}
-    .hole-card{width:clamp(60px,10vw,80px);height:clamp(84px,14vw,112px);border-radius:8px;font-family:'DM Mono',monospace;font-weight:700;font-size:clamp(16px,2.5vw,22px);box-shadow:0 4px 16px rgba(0,0,0,0.3);display:inline-flex;flex-direction:column;align-items:center;justify-content:center;position:relative;background:#fff;border:2px solid #E5E7EB}
+    .hole-card{width:clamp(60px,10vw,80px);height:clamp(84px,14vw,112px);border-radius:8px;font-family:'DM Mono',monospace;font-weight:700;font-size:clamp(16px,2.5vw,22px);box-shadow:0 2px 8px rgba(0,0,0,0.15),0 1px 3px rgba(0,0,0,0.1);display:inline-flex;flex-direction:column;align-items:center;justify-content:center;position:relative;background:linear-gradient(135deg,#FFFFFF 0%,#F3F4F6 100%);border:1px solid rgba(0,0,0,0.08)}
     .hole-card.red{color:#DC2626}.hole-card.black{color:#0F172A}
     .hole-card .top-corner{position:absolute;top:4px;left:6px;font-size:clamp(10px,1.6vw,13px);line-height:1.1}
     .hole-card .center-suit{font-size:clamp(22px,3.5vw,32px)}

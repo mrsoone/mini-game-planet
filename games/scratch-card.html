@@ -66,7 +66,7 @@
 
   <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How to Play", "acceptedAnswer": {"@type": "Answer", "text": "Select your bet size (1 to 20 credits), pick a card theme (Fruit, Lucky, or Diamond), and click \"Buy New Card.\" A 3×3 grid of symbols will be hidden beneath a silver scratch coating. Use your mouse or touch to scratch away the coating and reveal the symbols. The more you scratch, the more you reveal. Match three or more of the same symbol to win. If you don't want to scratch manually, scratch at least 70% of the card to unlock the \"Reveal All\" button and instantly see your results."}}, {"@type": "Question", "name": "Scratch Card Themes", "acceptedAnswer": {"@type": "Answer", "text": "Our scratch card features three distinct themes. The Fruit theme uses classic symbols like cherries, lemons, oranges, and grapes. The Lucky theme includes clovers, horseshoes, stars, and bells. The Diamond theme offers premium symbols: diamonds, crowns, coins, and gems. Each theme has its own payout structure, with rarer symbols paying higher amounts. Switch themes anytime before buying a new card."}}, {"@type": "Question", "name": "Prize Tiers", "acceptedAnswer": {"@type": "Answer", "text": "Winnings depend on how many matching symbols you reveal. Three of a kind is the minimum to win, with payouts scaling by symbol rarity. Four matches pay more, and five or more of the same symbol (if the grid allowed it) would pay the highest. The exact payout multiplies your bet, so a higher bet means bigger potential wins—and bigger potential losses. Start with smaller bets to learn the game, then increase when you're comfortable."}}, {"@type": "Question", "name": "Entertainment Only", "acceptedAnswer": {"@type": "Answer", "text": "This game is designed purely for entertainment. There is no real gambling, no cash prizes, and no way to deposit or withdraw money. It's a safe way to enjoy the thrill of scratching a card from the comfort of your device. Parents can rest assured that children can play without any financial risk. All credits are virtual and reset when you refresh the page."}}, {"@type": "Question", "name": "Why Play Free Scratch Cards?", "acceptedAnswer": {"@type": "Answer", "text": "Free scratch card games let you experience the excitement of revealing symbols, matching combinations, and watching your credits grow without any of the risks associated with real-money gambling. They're perfect for learning how scratch card mechanics work, passing time, or simply enjoying a bit of casual fun. Our scratch card uses cryptographically secure randomness for fair, unpredictable results on every card."}}]}</script>
 </head>
-<body class="min-h-screen text-gray-800 antialiased">
+<body class="min-h-screen antialiased" style="color:#E2E8F0;">
   <!-- GA4 Consent (defaults) - initConsent() from consent.js -->
   <!-- AdSense placeholder - uncomment when ready
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXX" crossorigin="anonymous"></script>
@@ -75,29 +75,29 @@
   <div id="nav-container"></div>
 
   <main class="max-w-4xl mx-auto px-4 py-8">
-    <article class="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-8">
+    <article class="rounded-2xl shadow-lg p-6 md:p-8 mb-8" style="background:linear-gradient(160deg,#0d3320 0%,#072015 100%);border-radius:16px;box-shadow:inset 0 2px 12px rgba(0,0,0,0.3);color:#fff;">
       <header class="mb-6">
-        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Scratch Card</h1>
-        <p class="text-lg text-gray-600">Scratch the silver coating to reveal symbols. Match 3 of the same to win!</p>
+        <h1 class="text-3xl md:text-4xl font-bold text-white mb-2">Scratch Card</h1>
+        <p class="text-lg text-gray-300">Scratch the silver coating to reveal symbols. Match 3 of the same to win!</p>
       </header>
 
       <!-- Gambling Disclaimer -->
-      <div class="bg-amber-50 border-2 border-amber-200 rounded-xl p-4 mb-6">
-        <p class="font-semibold text-amber-800 text-center text-lg">⚠️ For entertainment only. No real money.</p>
-        <p class="text-amber-700 text-sm text-center mt-1">This is a free game using virtual credits. No gambling, no cash prizes.</p>
+      <div class="rounded-xl p-4 mb-6" style="background:rgba(212,175,55,0.1);border:2px solid rgba(212,175,55,0.3);">
+        <p class="font-semibold text-center text-lg" style="color:#D4AF37;">⚠️ For entertainment only. No real money.</p>
+        <p class="text-sm text-center mt-1" style="color:#D4AF37;opacity:0.8;">This is a free game using virtual credits. No gambling, no cash prizes.</p>
       </div>
 
       <!-- Sound Toggle -->
       <div class="flex justify-end mb-4">
-        <button id="sound-toggle" class="px-3 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 font-mono text-sm" aria-label="Toggle sound">🔊 Sound On</button>
+        <button id="sound-toggle" class="px-3 py-2 rounded-lg font-mono text-sm" style="background:rgba(255,255,255,0.1);color:#fff;" aria-label="Toggle sound">🔊 Sound On</button>
       </div>
 
       <!-- Game Area -->
       <div class="flex flex-col items-center">
         <!-- Credits & Bet -->
-        <div class="flex gap-6 mb-4 font-mono text-lg">
+        <div class="flex gap-6 mb-4 font-mono text-lg" style="color:#D4AF37;">
           <span>Credits: <strong id="credits">100</strong></span>
-          <span>Bet: <select id="bet-select" class="border rounded px-2 py-1 bg-white">
+          <span>Bet: <select id="bet-select" class="rounded px-2 py-1" style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.2);color:#fff;">
             <option value="1">1</option><option value="2">2</option><option value="5">5</option>
             <option value="10">10</option><option value="20">20</option>
           </select></span>
@@ -106,8 +106,8 @@
         <!-- Theme Selector -->
         <div class="flex gap-2 mb-4 flex-wrap justify-center">
           <button class="theme-btn px-4 py-2 rounded-lg font-medium bg-emerald-600 text-white" data-theme="fruit">🍒 Fruit</button>
-          <button class="theme-btn px-4 py-2 rounded-lg font-medium bg-gray-200 text-gray-700 hover:bg-gray-300" data-theme="lucky">🍀 Lucky</button>
-          <button class="theme-btn px-4 py-2 rounded-lg font-medium bg-gray-200 text-gray-700 hover:bg-gray-300" data-theme="diamond">💎 Diamond</button>
+          <button class="theme-btn px-4 py-2 rounded-lg font-medium" style="background:rgba(255,255,255,0.1);color:#94A3B8;" data-theme="lucky">🍀 Lucky</button>
+          <button class="theme-btn px-4 py-2 rounded-lg font-medium" style="background:rgba(255,255,255,0.1);color:#94A3B8;" data-theme="diamond">💎 Diamond</button>
         </div>
 
         <!-- Scratch Card -->
@@ -117,22 +117,22 @@
         </div>
 
         <!-- Auto-Reveal Button -->
-        <button id="reveal-btn" class="px-6 py-2 rounded-lg bg-gray-300 text-gray-600 font-medium mb-2 opacity-50 cursor-not-allowed" disabled>Reveal All (scratch 70% first)</button>
+        <button id="reveal-btn" class="px-6 py-2 rounded-lg font-medium mb-2 opacity-50 cursor-not-allowed" style="background:rgba(255,255,255,0.15);color:#94A3B8;" disabled>Reveal All (scratch 70% first)</button>
 
         <!-- Result -->
         <p id="result-msg" class="mt-4 text-xl font-semibold min-h-[2rem]"></p>
 
         <!-- Buy New Card -->
-        <button id="buy-btn" class="mt-4 px-8 py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-lg shadow-lg transition">Buy New Card</button>
+        <button id="buy-btn" class="mt-4 px-8 py-3 rounded-xl font-bold text-lg shadow-lg transition" style="background:#3B82F6;color:#fff;border:none;border-radius:10px;">Buy New Card</button>
 
         <!-- Session Stats -->
-        <div class="mt-6 p-4 bg-gray-100 rounded-xl font-mono text-sm">
-          <p>Session: Wins <span id="stat-wins">0</span> | Losses <span id="stat-losses">0</span> | Streak <span id="stat-streak">0</span></p>
+        <div class="mt-6 p-4 rounded-xl font-mono text-sm" style="background:rgba(0,0,0,0.3);color:#94A3B8;">
+          <p>Session: Wins <span id="stat-wins" style="color:#4ade80;">0</span> | Losses <span id="stat-losses" style="color:#ef4444;">0</span> | Streak <span id="stat-streak" style="color:#F59E0B;">0</span></p>
         </div>
       </div>
 
       <!-- SEO Article (500+ words) -->
-      <section class="mt-10 prose prose-gray max-w-none">
+      <section class="mt-10 prose prose-gray max-w-none bg-white rounded-xl p-6" style="color:#374151;">
         <h2 class="text-2xl font-bold text-gray-900">Free Scratch Card Game Online</h2>
         <p>Welcome to our free scratch card game. Unlike real lottery scratch cards, this game uses only virtual credits—no real money is ever at risk. Scratch the silver coating with your mouse or finger to reveal the hidden symbols underneath. Match three of the same symbol to win credits. Choose from multiple card themes and prize tiers for a fresh experience every time.</p>
         

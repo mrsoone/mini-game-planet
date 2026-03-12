@@ -49,7 +49,7 @@
   <meta name="twitter:description" content="Bounce your rabbit upward through endless platforms. Avoid falling and reach new heights!">
   <meta name="twitter:image" content="https://minigameplanet.com/images/logo.png">
 
-  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Action", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Card Dodger", "item": "https://minigameplanet.com/games/jumping-rabbit"}]}</script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://minigameplanet.com"}, {"@type": "ListItem", "position": 2, "name": "Action", "item": "https://minigameplanet.com/#category"}, {"@type": "ListItem", "position": 3, "name": "Jumping Rabbit", "item": "https://minigameplanet.com/games/jumping-rabbit"}]}</script>
 </head>
 <body class="min-h-screen text-gray-800 antialiased">
   <!-- AdSense placeholder (uncomment when ready) -->
@@ -309,8 +309,8 @@
       for (const p of platforms) {
         if (p.broken) continue;
         const screenY = p.y - cameraY;
-        if (rabbit.vy > 0 && rabbit.y + RABBIT_H >= p.y && rabbit.y + RABBIT_H <= p.y + p.h + 8 &&
-            rabbit.x + RABBIT_W - 4 > p.x && rabbit.x + 4 < p.x + p.w) {
+        if (rabbit.vy > 0 && rabbit.y + RABBIT_H >= p.y && rabbit.y + RABBIT_H <= p.y + p.h + 12 &&
+            rabbit.x + RABBIT_W > p.x && rabbit.x < p.x + p.w) {
           const landScreenY = p.y - cameraY;
           if (p.type === PLATFORM_TYPES.SPRING) {
             rabbit.vy = SPRING_BOUNCE;
