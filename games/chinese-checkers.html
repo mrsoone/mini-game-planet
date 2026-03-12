@@ -126,7 +126,8 @@
   </div>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playGameOver, playCollect } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playGameOver, playCollect, playVictoryFanfare, playDrop } from '/js/audio.js';
+    import { confetti, screenShake, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -379,7 +380,9 @@
           sessionGames++;
           sessionWins++;
           sessionStreak++;
-          if (soundOn) playSuccess?.();
+          if (soundOn) playVictoryFanfare?.();
+          confetti();
+          celebrateWin();
           trackGameOver?.('chinese-checkers', 'win');
           statusEl.textContent = 'You win!';
           updateStats();
@@ -484,6 +487,7 @@
         sessionGames++;
         sessionStreak = 0;
         if (soundOn) playGameOver?.();
+        screenShake();
         trackGameOver?.('chinese-checkers', 'loss');
         statusEl.textContent = 'AI wins!';
         updateStats();

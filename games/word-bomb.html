@@ -30,7 +30,7 @@
 <body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
   <div id="nav-container"></div>
   <main class="max-w-5xl mx-auto px-4 py-6">
-    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;">
+    <div style="background:#FAF8F5;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
         <div><h1 style="font-size:22px;font-weight:700;margin:0;">💣 Word Bomb</h1><p style="font-size:12px;color:#94A3B8;margin:2px 0 0;">Type fast or BOOM!</p></div>
         <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊 Sound</button>
@@ -75,7 +75,8 @@
   <div id="related-games"></div><div id="footer-container"></div>
 
   <script type="module">
-  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playDeal, playPerfect } from '/js/audio.js';
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playDeal, playPerfect, playVictoryFanfare, playDrop } from '/js/audio.js';
+  import { confetti, screenShake, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -140,7 +141,8 @@
     lives--;renderLives();
     const bombEl=document.getElementById('bomb-emoji');bombEl.className='bomb-explode';bombEl.textContent='💥';
     document.getElementById('msg').textContent=`💥 BOOM! The bomb exploded!`;
-    playError();
+    playError();screenFlash('red',150);
+    screenFlash('red',150);
     if(lives<=0){setTimeout(endGame,800);return;}
     setTimeout(startRound,1200);
   }
@@ -162,7 +164,7 @@
       document.getElementById('score').textContent=score;
       document.getElementById('msg').textContent=`✅ "${word}" +${pts}pts`;
       document.getElementById('used-words').textContent=[...USED].join(', ');
-      playSuccess();clearInterval(timerInterval);
+      playSuccess();playDrop();clearInterval(timerInterval);
       setTimeout(startRound,600);
     } else {
       let reason='Not a valid word.';
@@ -180,7 +182,7 @@
     document.getElementById('game-over-panel').style.display='block';
     document.getElementById('winner-text').textContent=score>=300?'🔥 Word Master!':score>=150?'💣 Not Bad!':'📝 Keep Trying!';
     document.getElementById('final-detail').textContent=`Score: ${score} | Rounds survived: ${roundNum-1} | Words: ${USED.size}`;
-    if(score>=300)playPerfect();else playGameOver();
+    if(score>=300){playPerfect();celebrateWin();confetti();playVictoryFanfare();}else{playGameOver();screenFlash('red',150);}
     const dur=Math.round((Date.now()-gameStartTime)/1000);
     trackGameOver('word-bomb','Word',lives>0?1:0,score);
     submitStats('word-bomb',{score,duration:dur,win:lives>0,loss:lives<=0,online:isOnline});

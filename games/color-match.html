@@ -146,7 +146,8 @@
   <div id="consent-banner"></div>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playPerfect } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playPerfect, playVictoryFanfare, playDrop } from '/js/audio.js';
+    import { confetti, screenShake, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -272,6 +273,7 @@
         }, 150);
       } else {
         playError();
+        screenShake(3, 200);
         streak = 0;
         streakEl.textContent = '0';
       }
@@ -287,7 +289,14 @@
       isPlaying = false;
       if (timerId) clearInterval(timerId);
       timerId = null;
-      playGameOver();
+      const best = getBest();
+      if (score > best) {
+        setBest(score);
+        bestEl.textContent = score;
+        celebrateWin(); confetti(); playVictoryFanfare();
+      } else {
+        playGameOver();
+      }
       gameArea.classList.add('hidden');
       gameOverArea.classList.remove('hidden');
       finalScoreEl.textContent = score;

@@ -116,7 +116,8 @@
   <footer id="footer-container"></footer>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playVictoryFanfare, playDrop } from '/js/audio.js';
+    import { confetti, screenShake, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -294,7 +295,7 @@
       else if (w > b) result = 'loss';
       else result = 'draw';
       sessionGames++;
-      if (result === 'win') { sessionWins++; streak++; } else streak = 0;
+      if (result === 'win') { sessionWins++; streak++; celebrateWin();confetti();playVictoryFanfare(); } else { streak = 0; screenFlash('red',150); }
       playGameOver();
       trackGameOver('reversi', result, { black: b, white: w });
       const msg = document.getElementById('game-message');

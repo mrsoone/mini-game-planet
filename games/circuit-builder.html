@@ -148,7 +148,8 @@
   </footer>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playError } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playError, playVictoryFanfare, playDrop } from '/js/audio.js';
+    import { confetti, screenShake, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart } from '/js/analytics.js';
@@ -535,7 +536,7 @@
       challengeStatus.classList.remove('hidden');
       challengeStatus.className = 'mt-4 p-3 rounded-lg ' + (ok ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800');
       challengeStatus.textContent = ok ? '✓ Challenge complete!' : 'Test all input combinations to pass.';
-      if (ok) try { playSuccess(); } catch (_) {}
+      if (ok) try { playVictoryFanfare(); confetti(); celebrateWin(); showToast('Challenge solved!'); } catch (_) {}
     }
 
     function setupChallenge() {

@@ -29,13 +29,13 @@
     .bet-chip{min-width:36px;height:36px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-weight:700;font-size:12px;cursor:pointer;border:2px solid;transition:transform 0.1s}
     .bet-chip:hover{transform:scale(1.08)}
     .bet-chip.selected{transform:scale(1.15);box-shadow:0 0 0 3px #2563EB}
-    .bet-cell{min-width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:11px;font-weight:600;cursor:pointer;border-radius:4px;border:1px solid #E2E8F0;transition:all 0.1s}
-    .bet-cell:hover{background:#F1F5F9}
-    .bet-cell.red{background:#FEE2E2;color:#DC2626}
-    .bet-cell.black{background:#1E293B;color:#fff}
-    .bet-cell.green{background:#166534;color:#fff}
-    .bet-cell.outside{background:#F8FAFC;color:#475569;min-width:60px}
-    .bet-cell.has-bet{box-shadow:inset 0 0 0 2px #2563EB}
+    .bet-cell{min-width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:11px;font-weight:600;cursor:pointer;border-radius:4px;border:1px solid rgba(255,255,255,0.15);transition:all 0.1s}
+    .bet-cell:hover{background:rgba(255,255,255,0.1)}
+    .bet-cell.red{background:#991B1B;color:#FCA5A5}
+    .bet-cell.black{background:#1E293B;color:#CBD5E1}
+    .bet-cell.green{background:#166534;color:#86EFAC}
+    .bet-cell.outside{background:rgba(255,255,255,0.08);color:#CBD5E1;min-width:60px}
+    .bet-cell.has-bet{box-shadow:inset 0 0 0 2px #D4AF37}
   </style>
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Free Roulette Online | MiniGamePlanet">
@@ -46,19 +46,19 @@
 
   <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How to Play", "acceptedAnswer": {"@type": "Answer", "text": "Start with 500 virtual credits. Select a chip size (1, 5, 10, 25, 50, or 100), then click on the betting board to place your bets. You can bet on individual numbers (straight up), groups of numbers (split, street, corner, line), or outside bets like red/black, odd/even, dozens, and columns. Once your bets are placed, click SPIN to spin the wheel. The ball will bounce and eventually land in one of the 37 pockets. All winning bets are paid according to standard European Roulette odds."}}, {"@type": "Question", "name": "Bet Types and Payouts\n      \n        Straight up (single number): 35:1\n        Split (two adjacent numbers): 17:1\n        Street (three numbers in a row): 11:1\n        Corner (four numbers): 8:1\n        Line (six numbers): 5:1\n        Dozen (1–12, 13–24, 25–36): 2:1\n        Column (1st, 2nd, 3rd column): 2:1\n        Red / Black / Odd / Even / 1–18 / 19–36: 1:1\n      \n      History &amp; Origin", "acceptedAnswer": {"@type": "Answer", "text": "Roulette originated in 18th-century France. The name comes from the French word for \"little wheel.\" Blaise Pascal is often credited with inventing an early form while experimenting with perpetual motion machines. The single-zero European wheel became the standard in Monte Carlo, while American casinos added the double zero to increase the house edge. Today, European Roulette remains the preferred version for players seeking better odds."}}]}</script>
 </head>
-<body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
+<body style="background:#1a3a2a;font-family:'Space Grotesk',system-ui,sans-serif;color:#E2E8F0;" class="min-h-screen">
   <div id="nav-container"></div>
   <main class="max-w-6xl mx-auto px-4 py-6">
-    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;" id="game-wrap">
+    <div style="background:#14532d;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.3);padding:16px;border:2px solid #166534;" id="game-wrap">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
         <div><h1 style="font-size:22px;font-weight:700;margin:0;">🎡 European Roulette</h1>
-        <p style="font-size:12px;color:#94A3B8;margin:2px 0 0;">Single zero, 0–36</p></div>
-        <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊 Sound</button>
+        <p style="font-size:12px;color:#86EFAC;margin:2px 0 0;">Single zero, 0–36</p></div>
+        <button id="sound-btn" style="background:#D4AF37;color:#0F172A;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊 Sound</button>
       </div>
-      <div style="display:flex;align-items:center;gap:16px;margin-bottom:10px;padding:6px 10px;background:#F8FAFC;border-radius:8px;flex-wrap:wrap;">
-        <span style="font-family:'DM Mono',monospace;font-size:13px;font-weight:600;">💰 Credits: <span id="credits">500</span></span>
-        <span style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;">🎯 Total Bet: <span id="total-bet">0</span></span>
-        <span style="font-family:'DM Mono',monospace;font-size:13px;color:#64748B;">📊 W<span id="wins">0</span> / L<span id="losses">0</span></span>
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:10px;padding:6px 10px;background:rgba(0,0,0,0.2);border-radius:8px;flex-wrap:wrap;">
+        <span style="font-family:'DM Mono',monospace;font-size:13px;font-weight:600;color:#D4AF37;">💰 Credits: <span id="credits">500</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:13px;color:#94A3B8;">🎯 Total Bet: <span id="total-bet">0</span></span>
+        <span style="font-family:'DM Mono',monospace;font-size:13px;color:#94A3B8;">📊 W<span id="wins">0</span> / L<span id="losses">0</span></span>
       </div>
 
       <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start;justify-content:center;">
@@ -66,14 +66,14 @@
         <div style="flex-shrink:0;">
           <canvas id="wheel-canvas" width="280" height="280" style="display:block;border-radius:50%;box-shadow:0 4px 20px rgba(0,0,0,0.15);"></canvas>
           <div style="text-align:center;margin-top:8px;">
-            <button id="spin-btn" class="action-btn" style="background:#059669;color:#fff;border-color:#047857;padding:10px 28px;font-size:15px;">SPIN</button>
+            <button id="spin-btn" class="action-btn" style="background:#D4AF37;color:#0F172A;border-color:#B8960C;padding:10px 28px;font-size:15px;">SPIN</button>
           </div>
           <p id="last-result" style="text-align:center;font-family:'DM Mono',monospace;font-size:18px;font-weight:700;margin-top:8px;min-height:28px;"></p>
         </div>
 
         <!-- Betting Board -->
         <div style="flex:1;min-width:280px;">
-          <p style="font-size:12px;font-weight:600;color:#64748B;margin-bottom:6px;">Chip size:</p>
+          <p style="font-size:12px;font-weight:600;color:#86EFAC;margin-bottom:6px;">Chip size:</p>
           <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
             <button class="bet-chip" data-amt="1" style="background:#3B82F6;color:#fff;border-color:#2563EB;">1</button>
             <button class="bet-chip" data-amt="5" style="background:#059669;color:#fff;border-color:#047857;">5</button>
@@ -82,14 +82,14 @@
             <button class="bet-chip" data-amt="50" style="background:#7C3AED;color:#fff;border-color:#6D28D9;">50</button>
             <button class="bet-chip" data-amt="100" style="background:#0F172A;color:#fff;border-color:#020617;">100</button>
           </div>
-          <p style="font-size:11px;color:#94A3B8;margin-bottom:8px;">Click cells to place bets. Click again to remove.</p>
+          <p style="font-size:11px;color:#86EFAC;opacity:0.7;margin-bottom:8px;">Click cells to place bets. Click again to remove.</p>
 
           <!-- Number grid (European layout: 3 columns x 12 rows, 0 separate) -->
           <div style="display:grid;grid-template-columns:auto 1fr 1fr 1fr;gap:2px;font-size:10px;max-width:320px;">
             <div></div>
-            <div style="text-align:center;font-weight:600;color:#64748B;">1st</div>
-            <div style="text-align:center;font-weight:600;color:#64748B;">2nd</div>
-            <div style="text-align:center;font-weight:600;color:#64748B;">3rd</div>
+            <div style="text-align:center;font-weight:600;color:#86EFAC;">1st</div>
+            <div style="text-align:center;font-weight:600;color:#86EFAC;">2nd</div>
+            <div style="text-align:center;font-weight:600;color:#86EFAC;">3rd</div>
             <div class="bet-cell green" data-bet="0" title="0">0</div>
             <div class="bet-cell red" data-bet="1">1</div>
             <div class="bet-cell black" data-bet="2">2</div>
@@ -148,20 +148,20 @@
           </div>
 
           <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
-            <button id="clear-bets" class="action-btn" style="background:#64748B;color:#fff;border-color:#475569;">Clear Bets</button>
+            <button id="clear-bets" class="action-btn" style="background:#475569;color:#D4AF37;border-color:#64748B;">Clear Bets</button>
           </div>
         </div>
       </div>
 
       <!-- Session stats -->
-      <div id="session-panel" style="display:none;text-align:center;padding:20px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;margin-top:12px;">
-        <div style="font-size:20px;font-weight:700;color:#DC2626;margin-bottom:4px;">💸 Out of Credits!</div>
-        <div id="session-stats" style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;text-align:left;max-width:220px;margin:0 auto 16px;padding:12px;background:#fff;border-radius:8px;"></div>
-        <button id="reset-credits" class="action-btn" style="background:#2563EB;color:#fff;border-color:#1D4ED8;padding:10px 28px;">Start Fresh (500 credits)</button>
+      <div id="session-panel" style="display:none;text-align:center;padding:20px;background:rgba(0,0,0,0.3);border-radius:12px;border:2px solid #D4AF37;margin-top:12px;">
+        <div style="font-size:20px;font-weight:700;color:#FCA5A5;margin-bottom:4px;">💸 Out of Credits!</div>
+        <div id="session-stats" style="font-family:'DM Mono',monospace;font-size:12px;color:#94A3B8;text-align:left;max-width:220px;margin:0 auto 16px;padding:12px;background:rgba(0,0,0,0.2);border-radius:8px;"></div>
+        <button id="reset-credits" class="action-btn" style="background:#D4AF37;color:#0F172A;border-color:#B8960C;padding:10px 28px;">Start Fresh (500 credits)</button>
       </div>
 
-      <div style="background:#FEF3C7;border:1px solid #FDE68A;border-radius:8px;padding:8px 12px;margin-top:12px;">
-        <p style="font-size:11px;color:#92400E;margin:0;"><strong>🎲 For entertainment only. No real money.</strong> — This is a free game with virtual credits. No deposits, withdrawals, or real gambling.</p>
+      <div style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:8px;padding:8px 12px;margin-top:12px;">
+        <p style="font-size:11px;color:#D4AF37;margin:0;"><strong>🎲 For entertainment only. No real money.</strong> — This is a free game with virtual credits. No deposits, withdrawals, or real gambling.</p>
       </div>
     </div>
   </main>
@@ -208,7 +208,8 @@
   <div id="footer-container"></div>
 
   <script type="module">
-  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect } from '/js/audio.js';
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playVictoryFanfare, playDrop } from '/js/audio.js';
+  import { confetti, screenShake, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -296,7 +297,7 @@
     }
     ctx.beginPath();
     ctx.arc(cx, cy, wheelRadius + 8, 0, 2 * Math.PI);
-    ctx.strokeStyle = '#0F172A';
+    ctx.strokeStyle = '#D4AF37';
     ctx.lineWidth = 4;
     ctx.stroke();
     ctx.beginPath();
@@ -435,8 +436,14 @@
 
     credits += totalWin;
     const totalBet = getTotalBet();
-    if (totalWin > totalBet) { winCount++; session.wins++; playSuccess(); }
-    else if (totalBet > 0) { lossCount++; playError(); }
+    if (totalWin > totalBet) {
+      winCount++; session.wins++;
+      document.getElementById('last-result').style.color = '#D4AF37';
+      if (totalWin >= totalBet * 10) { playVictoryFanfare?.(); confetti(); celebrateWin(); }
+      else { playSuccess(); }
+      screenFlash();
+      showScorePopup(totalWin);
+    } else if (totalBet > 0) { lossCount++; playError(); screenShake(); }
     session.rounds++;
     session.totalWon += totalWin - totalBet;
     bets = {};

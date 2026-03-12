@@ -179,7 +179,8 @@
   </footer>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playVictoryFanfare, playDrop } from '/js/audio.js';
+    import { confetti, screenShake, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -368,7 +369,7 @@
       showGuessResult(pt.x, pt.y, correct.x, correct.y, pts);
       if (pts >= 80) playSuccess();
       else if (pts >= 40) playClick();
-      else playError();
+      else { playError(); screenShake(3, 200); }
       setTimeout(() => {
         qIndex++;
         hideOverlay();
@@ -408,10 +409,11 @@
       if (score > pb) {
         setPB(score);
         document.getElementById('final-message').textContent = 'New personal best! 🎉';
+        celebrateWin(); confetti(); playVictoryFanfare();
       } else {
         document.getElementById('final-message').textContent = 'Great effort! Try again to beat your best.';
+        playGameOver();
       }
-      playGameOver();
       trackGameOver('geography-quiz', score);
     }
 

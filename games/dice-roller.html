@@ -312,7 +312,8 @@
   <div id="footer-container"></div>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playError, playBounce } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playError, playBounce, playVictoryFanfare, playDrop } from '/js/audio.js';
+    import { confetti, screenShake, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart } from '/js/analytics.js';
@@ -426,6 +427,7 @@
       renderDice(values, config);
 
       if (soundEnabled) playBounce();
+      showScorePopup(total);
       trackGameStart('dice-roller');
     }
 

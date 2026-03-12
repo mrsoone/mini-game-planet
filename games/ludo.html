@@ -146,7 +146,8 @@
   <script type="module">
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
-  import { initAudio, playClick, playSuccess, playError } from '/js/audio.js';
+  import { initAudio, playClick, playSuccess, playError, playGameOver, playVictoryFanfare, playDrop } from '/js/audio.js';
+  import { confetti, screenShake, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
   import { trackGameView, trackGameOver } from '/js/analytics.js';
   import { getPlayer, renderIdentityBar, renderLeaderboard, submitStats } from '/js/player.js';
 
@@ -384,7 +385,7 @@
           token.pathIndex = BOARD_LAYOUT.startPositions[player];
           state.hasRolled = false;
           state.selectedToken = null;
-          if (state.soundOn) playClick();
+          if (state.soundOn) { playClick(); playDrop(); }
         }
       } else if (token.homeStretchIndex >= 0) {
         const needed = 5 - token.homeStretchIndex;
@@ -399,7 +400,7 @@
           token.homeStretchIndex += dice;
           state.hasRolled = false;
           state.selectedToken = null;
-          if (state.soundOn) playClick();
+          if (state.soundOn) { playClick(); playDrop(); }
           nextTurn();
         }
       } else {
@@ -433,7 +434,7 @@
         if (dice === 6) state.hasRolled = false;
         else nextTurn();
         state.selectedToken = null;
-        if (state.soundOn) playClick();
+        if (state.soundOn) { playClick(); playDrop(); }
       }
 
       updateStatus();
@@ -445,6 +446,7 @@
       if (token.every(t => t.homeStretchIndex === 5)) {
         document.getElementById('gameStatus').textContent = 'You win!';
         document.getElementById('rollBtn').disabled = true;
+        celebrateWin();confetti();playVictoryFanfare();
         trackGameOver('ludo', 'Strategy', 1, 0);
       }
     }

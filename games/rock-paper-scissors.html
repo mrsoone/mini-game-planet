@@ -183,7 +183,8 @@
   </footer>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playVictoryFanfare, playDrop } from '/js/audio.js';
+    import { confetti, screenShake, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -310,8 +311,8 @@
         document.getElementById('reveal-area').classList.add('hidden');
         document.getElementById('game-over-message').textContent = won ? 'You won the match!' : 'AI won the match!';
         document.getElementById('game-over-message').className = `text-2xl font-bold mb-4 ${won ? 'text-green-600' : 'text-red-600'}`;
-        if (won) playScoreUp();
-        else playGameOver();
+        if (won) { playVictoryFanfare?.(); confetti(); celebrateWin(); }
+        else { playGameOver(); screenShake(); }
         trackGameOver('rock-paper-scissors', won ? 'win' : 'loss');
       }
     }
@@ -335,8 +336,8 @@
           else if (result === 'loss') state.roundLosses++;
         }
 
-        if (result === 'win') playSuccess();
-        else if (result === 'loss') playError();
+        if (result === 'win') { playSuccess(); confetti(); }
+        else if (result === 'loss') { playError(); screenShake(); }
 
         updateUI();
         showReveal(playerChoice, ai, result);

@@ -207,7 +207,8 @@
   </footer>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playPerfect } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playPerfect, playVictoryFanfare, playDrop } from '/js/audio.js';
+    import { confetti, screenShake, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -647,6 +648,7 @@
           if (correctBtn) correctBtn.classList.add('answer-correct');
         }
         playError();
+        screenShake(3, 200);
       }
 
       document.getElementById('score-display').textContent = score;
@@ -712,6 +714,7 @@
         fb.classList.add('text-red-600');
       }
       playError();
+      screenShake(3, 200);
 
       document.getElementById('streak-display').textContent = '0';
       updateSessionStats();
@@ -734,13 +737,14 @@
       if (score > pb) {
         setPB(score);
         document.getElementById('final-message').textContent = 'New personal best! 🎉';
+        celebrateWin(); confetti(); playVictoryFanfare();
       } else if (roundCorrect === currentRound.length) {
         document.getElementById('final-message').textContent = 'Perfect round! Amazing!';
+        celebrateWin(); confetti(); playVictoryFanfare();
       } else {
         document.getElementById('final-message').textContent = 'Great effort! Try again to beat your best.';
+        playGameOver();
       }
-
-      playGameOver();
       trackGameOver('capital-quiz', score);
     }
 

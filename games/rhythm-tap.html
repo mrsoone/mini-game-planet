@@ -166,7 +166,8 @@
   </footer>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playPerfect, playBounce } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playPerfect, playBounce, playVictoryFanfare, playDrop } from '/js/audio.js';
+    import { confetti, screenShake, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -296,6 +297,7 @@
         showJudgment('MISS', 'miss');
         combo = 0;
         safePlay(playError);
+        screenShake(3, 200);
         return;
       }
       const container = document.getElementById('game-container');
@@ -320,6 +322,7 @@
         points = 0;
         combo = 0;
         safePlay(playError);
+        screenShake(3, 200);
       }
       if (points > 0) {
         combo++;
@@ -386,6 +389,7 @@
           combo = 0;
           showJudgment('MISS', 'miss');
           safePlay(playError);
+          screenShake(3, 200);
         }
       }
       notes = notes.filter((n) => !n.hit);
@@ -418,9 +422,11 @@
       if (score > pb) {
         savePB(score);
         updateUI();
+        celebrateWin(); confetti(); playVictoryFanfare();
+      } else {
+        safePlay(playGameOver);
       }
-      try { trackGameOver('rhythm-tap', score); } catch (_) {}
-      safePlay(playGameOver);
+      try { trackGameOver('rhythm-tap', score); } catch (_) {};
     }
 
     document.getElementById('start-btn').addEventListener('click', startGame);

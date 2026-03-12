@@ -39,7 +39,7 @@
 <body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
   <div id="nav-container"></div>
   <main class="max-w-5xl mx-auto px-4 py-6">
-    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;">
+    <div id="game-wrap" style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
         <h1 style="font-size:22px;font-weight:700;margin:0;">🔍 Spot the Difference</h1>
         <button id="sound-btn" style="background:#0F172A;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🔊</button>
@@ -102,7 +102,8 @@
   <div id="consent-banner"></div>
 
   <script type="module">
-  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect } from '/js/audio.js';
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playDrop, playVictoryFanfare } from '/js/audio.js';
+  import { confetti, screenShake, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -237,15 +238,18 @@
       if(found.size>=differences.length)endLevel();
       return;
     }
-    playError();
+    playError();screenShake(4,200);
   }
 
   function endLevel(){
     clearInterval(timerInterval);
     session.rounds++;session.wins++;session.totalTime+=seconds;streak++;
     const key=`L${level}`;
-    if(!best[key]||seconds<best[key]){best[key]=seconds;document.getElementById('go-title').textContent='🏆 NEW BEST!';document.getElementById('go-title').style.color='#D97706';playPerfect();setTimeout(()=>playLevelUp(),300);}
-    else{document.getElementById('go-title').textContent='🔍 All Differences Found!';document.getElementById('go-title').style.color='#059669';playSuccess();}
+    if(!best[key]||seconds<best[key]){best[key]=seconds;document.getElementById('go-title').textContent='🏆 NEW BEST!';document.getElementById('go-title').style.color='#D97706';playVictoryFanfare();setTimeout(()=>playLevelUp(),300);}
+    else{document.getElementById('go-title').textContent='🔍 All Differences Found!';document.getElementById('go-title').style.color='#059669';playVictoryFanfare();}
+    const wr = document.getElementById('game-wrap').getBoundingClientRect();
+    confetti(wr.left + wr.width / 2, wr.top + 40);
+    celebrateWin(document.getElementById('game-wrap'));
     document.getElementById('go-sub').textContent=`Level ${level} · ${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`;
     document.getElementById('streak').textContent=streak;
     trackGameOver('spot-the-difference','Casual',level,seconds);

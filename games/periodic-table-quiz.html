@@ -192,7 +192,8 @@
   </footer>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playVictoryFanfare, playDrop } from '/js/audio.js';
+    import { confetti, screenShake, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -473,6 +474,7 @@
         const correctCell = document.querySelector(`.pt-cell[data-num="${q.num}"]`);
         if (correctCell) correctCell.classList.add('correct');
         playError();
+        screenShake(3, 200);
         document.getElementById('round-feedback').textContent = `Wrong. Correct: ${q.name} (${q.symbol})`;
       }
       document.getElementById('score-display').textContent = score;
@@ -503,6 +505,7 @@
         const expected = currentMode === 'symbol' ? q.symbol : q.name;
         document.getElementById('round-feedback').textContent = `Wrong. Correct: ${expected}`;
         playError();
+        screenShake(3, 200);
       }
       document.getElementById('score-display').textContent = score;
       document.getElementById('streak-display').textContent = streak;
@@ -568,10 +571,11 @@
       if (score > pb) {
         setPB(score);
         document.getElementById('final-message').textContent = 'New personal best! 🎉';
+        celebrateWin(); confetti(); playVictoryFanfare();
       } else {
         document.getElementById('final-message').textContent = 'Great effort! Try again to beat your best.';
+        playGameOver();
       }
-      playGameOver();
       trackGameOver('periodic-table-quiz', score);
     }
 

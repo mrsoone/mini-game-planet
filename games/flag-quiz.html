@@ -457,7 +457,8 @@
   <script type="module">
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
-  import { initAudio, playClick, playSuccess, playError } from '/js/audio.js';
+  import { initAudio, playClick, playSuccess, playError, playGameOver, playVictoryFanfare, playDrop } from '/js/audio.js';
+  import { confetti, screenShake, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
   import { trackGameView, trackGameOver } from '/js/analytics.js';
   import { getPlayer, renderIdentityBar, renderLeaderboard, submitStats } from '/js/player.js';
 
@@ -727,8 +728,11 @@
           const timeBonus = Math.floor(state.timeLeft) * 5;
           const pts = base + bonus + timeBonus;
           state.score += pts;
+          playSuccess();
         } else {
           state.streak = 0;
+          playError();
+          screenShake(3, 200);
         }
 
         document.getElementById('score').textContent = state.score;
@@ -742,6 +746,8 @@
 
       function handleTimeout() {
         state.streak = 0;
+        playError();
+        screenShake(3, 200);
         document.querySelectorAll('.option-btn').forEach(b => {
           b.disabled = true;
           if (b.dataset.answer === document.getElementById('options-container').dataset.correct) {
@@ -764,8 +770,10 @@
           savePB(state.score);
           document.getElementById('new-pb-msg').classList.remove('hidden');
           updatePBDisplay();
+          celebrateWin(); confetti(); playVictoryFanfare();
         } else {
           document.getElementById('new-pb-msg').classList.add('hidden');
+          playGameOver();
         }
       }
 

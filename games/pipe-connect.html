@@ -99,7 +99,8 @@
   <div id="footer-container"></div>
 
   <script type="module">
-  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playDrop, playLock, playFlip } from '/js/audio.js';
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playDrop, playLock, playFlip, playVictoryFanfare } from '/js/audio.js';
+  import { confetti, screenShake, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -326,11 +327,14 @@
     if(!best[size]||moveCount<best[size]){
       best[size]=moveCount;
       document.getElementById('go-title').textContent='🏆 NEW BEST!';document.getElementById('go-title').style.color='#D97706';
-      playPerfect();setTimeout(()=>playLevelUp(),300);
+      playVictoryFanfare();setTimeout(()=>playLevelUp(),300);
     } else{
       document.getElementById('go-title').textContent='🔧 All Connected!';document.getElementById('go-title').style.color='#059669';
-      playSuccess();
+      playVictoryFanfare();
     }
+    const wr = document.getElementById('game-wrap').getBoundingClientRect();
+    confetti(wr.left + wr.width / 2, wr.top + 40);
+    celebrateWin(document.getElementById('game-wrap'));
     document.getElementById('go-sub').textContent=`Solved in ${moveCount} moves · ${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`;
     document.getElementById('streak').textContent=streak;updateBest();
     trackGameOver('pipe-connect','Puzzle',moveCount,seconds);

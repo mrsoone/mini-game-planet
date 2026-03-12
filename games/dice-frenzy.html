@@ -186,7 +186,8 @@
   <script type="module">
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
-  import { initAudio, playClick, playSuccess, playError } from '/js/audio.js';
+  import { initAudio, playClick, playSuccess, playError, playVictoryFanfare, playDrop } from '/js/audio.js';
+  import { confetti, screenShake, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
   import { trackGameView, trackGameOver } from '/js/analytics.js';
   import { getPlayer, renderIdentityBar, renderLeaderboard, submitStats } from '/js/player.js';
 
@@ -399,6 +400,7 @@
       renderDice();
       document.querySelectorAll('.score-row').forEach(r => r.classList.remove('selectable'));
       if (state.soundOn) playSuccess();
+      if (id === 'dice-frenzy' && score === 50) { confetti(); celebrateWin(); showToast('DICE FRENZY! 🎲', 'success'); }
       const grand = document.getElementById('grandTotal').textContent;
       if (state.round >= 13) endGame(parseInt(grand, 10));
       else {
@@ -411,14 +413,17 @@
 
     function endGame(finalScore) {
       state.sessionGames++;
-      if (state.personalBest === null || finalScore > state.personalBest) {
+      const isNewBest = state.personalBest === null || finalScore > state.personalBest;
+      if (isNewBest) {
         state.personalBest = finalScore;
       }
       saveStats();
       document.getElementById('rollBtn').disabled = true;
-      document.getElementById('gameStatus').textContent = `Game over! Final score: ${finalScore}. ${state.personalBest === finalScore ? 'New personal best!' : ''}`;
+      document.getElementById('gameStatus').textContent = `Game over! Final score: ${finalScore}. ${isNewBest ? 'New personal best!' : ''}`;
       document.getElementById('sessionGames').textContent = state.sessionGames;
       document.getElementById('personalBest').textContent = state.personalBest;
+      if (isNewBest) { playVictoryFanfare?.(); confetti(); celebrateWin(); }
+      showScorePopup(finalScore);
       trackGameOver('dice-frenzy', 'Casino', finalScore, 0);
     }
 

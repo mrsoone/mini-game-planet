@@ -167,7 +167,8 @@
   </main>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playExplosion } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playExplosion, playVictoryFanfare, playDrop } from '/js/audio.js';
+    import { confetti, screenShake, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -492,14 +493,18 @@
       if (isHit) {
         g[row][col] = CELL_STATES.hit;
         playExplosion();
+        screenShake();
         const sunk = isShipSunk(g, ship);
         if (sunk) {
           markSunk(g, state.opponentShips, ship);
           playSuccess();
+          screenFlash();
+          showToast('Ship sunk! 💥', 'success');
         }
       } else {
         g[row][col] = CELL_STATES.miss;
         playClick();
+        playDrop?.();
       }
 
       renderOpponentGrid();
@@ -560,6 +565,7 @@
       if (isHit) {
         g[row][col] = CELL_STATES.hit;
         playExplosion();
+        screenShake();
         state.aiLastHit = [row, col];
         const adj = getAdjacent(row, col).filter(([r, c]) => (g[r][c] === CELL_STATES.water || g[r][c] === CELL_STATES.ship));
         state.aiCandidates.push(...adj);
@@ -591,13 +597,16 @@
       if (playerWon) {
         state.sessionWins++;
         state.streak++;
-        playSuccess();
+        playVictoryFanfare?.();
+        confetti();
+        celebrateWin();
         goTitle.textContent = 'You Win!';
         goSub.textContent = 'You sank all enemy ships.';
       } else {
         state.sessionLosses++;
         state.streak = 0;
         playGameOver();
+        screenShake();
         goTitle.textContent = 'You Lose';
         goSub.textContent = 'The enemy sank your fleet.';
       }

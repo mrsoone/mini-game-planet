@@ -85,7 +85,7 @@
   </div>
 
   <main class="max-w-4xl mx-auto px-4 py-8">
-    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 md:p-8">
+    <div class="bg-[#FAF8F5] rounded-2xl shadow-lg border border-gray-200 p-6 md:p-8">
       <header class="text-center mb-8">
         <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Word Chain</h1>
         <p class="text-gray-600">Transform the start word into the target by changing one letter at a time. Each step must be a valid word.</p>
@@ -211,11 +211,12 @@
   </footer>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playVictoryFanfare, playDrop } from '/js/audio.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
   import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+    import { confetti, screenShake, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
 
     initToolPage('word-chain');
     initConsent();
@@ -372,6 +373,7 @@
         if (!diffByOne(prev, raw)) {
           hintEl.textContent = 'Must change exactly one letter from the previous word.';
           playError();
+          screenFlash('red',150);
           return;
         }
         state.chain.push(raw);
@@ -390,6 +392,7 @@
         state.sessionSteps.push(state.moves);
         state.streak++;
         playSuccess();
+        celebrateWin();confetti();playVictoryFanfare();
         trackGameOver('word-chain', { steps: state.moves, completed: true });
         wordInput.disabled = true;
         submitBtn.disabled = true;
@@ -399,6 +402,7 @@
       if (!isValidWord(raw)) {
         hintEl.textContent = 'Not a valid word.';
         playError();
+        screenFlash('red',150);
         return;
       }
       if (!diffByOne(prev, raw)) {
@@ -407,6 +411,7 @@
         }
         hintEl.textContent = 'Must change exactly one letter from the previous word.';
         playError();
+        screenFlash('red',150);
         return;
       }
       state.chain.push(raw);
@@ -414,6 +419,7 @@
       renderChain();
       updateStats();
       playClick();
+      playDrop();
       wordInput.value = '';
       hintEl.textContent = '';
     }

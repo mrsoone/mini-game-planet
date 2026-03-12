@@ -106,7 +106,8 @@
   <div id="footer-container"></div>
 
   <script type="module">
-  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playDrop, playLock } from '/js/audio.js';
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playDrop, playLock, playVictoryFanfare } from '/js/audio.js';
+  import { confetti, screenShake, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -303,10 +304,13 @@
   function endGame(won){
     gameActive=false;clearInterval(timerInterval);session.rounds++;session.totalTime+=seconds;
     if(won){session.wins++;streak++;
-      if(!best[size]||seconds<best[size]){best[size]=seconds;document.getElementById('go-title').textContent='🏆 NEW PERSONAL BEST!';document.getElementById('go-title').style.color='#D97706';playPerfect();setTimeout(()=>playLevelUp(),300);}
-      else{document.getElementById('go-title').textContent='✅ Puzzle Complete!';document.getElementById('go-title').style.color='#059669';playSuccess();}
+      if(!best[size]||seconds<best[size]){best[size]=seconds;document.getElementById('go-title').textContent='🏆 NEW PERSONAL BEST!';document.getElementById('go-title').style.color='#D97706';playVictoryFanfare();setTimeout(()=>playLevelUp(),300);}
+      else{document.getElementById('go-title').textContent='✅ Puzzle Complete!';document.getElementById('go-title').style.color='#059669';playVictoryFanfare();}
+      const wr = document.getElementById('game-wrap').getBoundingClientRect();
+      confetti(wr.left + wr.width / 2, wr.top + 40);
+      celebrateWin(document.getElementById('game-wrap'));
       const m=Math.floor(seconds/60),s=seconds%60;document.getElementById('go-sub').textContent=`Solved in ${m}:${String(s).padStart(2,'0')}`;
-    } else{streak=0;document.getElementById('go-title').textContent='❌ Not Quite';document.getElementById('go-title').style.color='#DC2626';playGameOver();}
+    } else{streak=0;document.getElementById('go-title').textContent='❌ Not Quite';document.getElementById('go-title').style.color='#DC2626';playGameOver();screenShake(5,300);}
     document.getElementById('streak').textContent=streak;updateBest();
     trackGameOver('nonogram','Puzzle',won?seconds:0,seconds);
     const elapsed=Math.round((Date.now()-session.startTime)/1000);const mins=Math.floor(elapsed/60),secs=elapsed%60;

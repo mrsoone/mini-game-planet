@@ -157,7 +157,8 @@
   </footer>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playError, playPerfect } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playError, playPerfect, playVictoryFanfare, playDrop } from '/js/audio.js';
+    import { confetti, screenShake, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -261,6 +262,7 @@
         zone.classList.add('too-soon');
         zoneText.textContent = 'Too soon!';
         playError();
+        screenShake(3, 200);
         state.phase = 'result';
         setTimeout(showResultOrNext, 1500);
         return;
@@ -294,8 +296,10 @@
         ? Math.round(state.times.reduce((a, b) => a + b, 0) / state.times.length)
         : null;
       const best = getBestAvg();
-      if (avg !== null && (best === null || avg < best)) {
+      const isNewBest = avg !== null && (best === null || avg < best);
+      if (isNewBest) {
         setBestAvg(avg);
+        celebrateWin(); confetti(); playVictoryFanfare();
       }
       updateUI();
       zone.classList.remove('ready', 'too-soon');

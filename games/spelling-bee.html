@@ -45,7 +45,7 @@
 <body style="background:#F5F5F4;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;" class="min-h-screen">
   <div id="nav-container"></div>
   <main class="max-w-2xl mx-auto px-4 py-6">
-    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:20px;">
+    <div style="background:#FAF8F5;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:20px;">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
         <h1 style="font-size:22px;font-weight:700;margin:0;">🐝 Spelling Bee</h1>
       <div style="text-align:center;margin:8px 0;">
@@ -127,11 +127,12 @@
   <div id="footer-container"></div>
 
   <script type="module">
-  import { initAudio, muteAll, playClick, playSuccess, playError, playScoreUp, playLevelUp, playPerfect, playCollect } from '/js/audio.js';
+  import { initAudio, muteAll, playClick, playSuccess, playError, playScoreUp, playLevelUp, playPerfect, playCollect, playVictoryFanfare, playDrop } from '/js/audio.js';
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
   import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
+  import { confetti, screenShake, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
 
   // Daily Challenge: date-seeded random
   function dailySeedRandom(seed) {
@@ -292,7 +293,7 @@
     const letterSet=new Set([puzzle.center,...puzzle.outer]);
     const pts=scoreWord(w,letterSet);
     score+=pts;
-    playSuccess();
+    playSuccess();playDrop();
     if(pts>=12)playCollect();
     showMsg(`+${pts} pts!`,false);
     inp.value='';
@@ -302,7 +303,7 @@
       session.geniusStreak++;
       session.geniusTotal++;
       localStorage.setItem('mgp_sb_session',JSON.stringify({geniusStreak:session.geniusStreak,geniusTotal:session.geniusTotal}));
-      playPerfect();
+      playPerfect();celebrateWin();confetti();playVictoryFanfare();
       trackGameOver('spelling-bee','Word',1,score);
     }
   }
@@ -313,7 +314,7 @@
     m.style.color=err?'#DC2626':'#059669';
     m.className=err?'sb-shake':'sb-pop';
     setTimeout(()=>{m.textContent='';m.className='';},1200);
-    if(err)playError();
+    if(err){playError();screenFlash('red',150);}
   }
 
   function shuffleOuter(){

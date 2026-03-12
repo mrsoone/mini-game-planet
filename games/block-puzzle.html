@@ -145,7 +145,8 @@
   <div id="footer-container"></div>
 
   <script type="module">
-  import { initAudio, muteAll, isMuted, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playDrop, playLock } from '/js/audio.js';
+  import { initAudio, muteAll, isMuted, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playDrop, playLock, playVictoryFanfare } from '/js/audio.js';
+  import { confetti, screenShake, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -295,7 +296,7 @@
         dropInterval = Math.max(100, 1000 - (level - 1) * 80);
         playLevelUp();
       }
-      if (cleared === 4) playPerfect();
+      if (cleared === 4) { playPerfect(); const r = canvas.getBoundingClientRect(); confetti(r.left + r.width / 2, r.top + 40); }
       else if (cleared >= 2) playSuccess();
       else playScoreUp(50);
     }
@@ -356,7 +357,10 @@
   function drawBoard() {
     const ox = (canvas.width - BOARD_W) / 2 + 2;
     const oy = 2;
-    ctx.fillStyle = '#1a1a2e';
+    const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    grad.addColorStop(0, '#0a0a1a');
+    grad.addColorStop(1, '#1a1a2e');
+    ctx.fillStyle = grad;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.strokeStyle = '#334155';
     ctx.lineWidth = 2;
@@ -536,10 +540,13 @@
     session.totalScore += score;
     if (score > session.bestScore) session.bestScore = score;
     playGameOver();
+    screenShake(6, 400);
     trackGameOver('block-puzzle', 'Puzzle', score, lines);
     if (!gameStarted) gameStarted = true;
-    document.getElementById('go-title').textContent = score >= session.bestScore && session.rounds > 1 ? '🏆 NEW PERSONAL BEST!' : '🧱 Game Over';
-    document.getElementById('go-title').style.color = score >= session.bestScore && session.rounds > 1 ? '#D97706' : '#DC2626';
+    const isPB = score >= session.bestScore && session.rounds > 1;
+    document.getElementById('go-title').textContent = isPB ? '🏆 NEW PERSONAL BEST!' : '🧱 Game Over';
+    document.getElementById('go-title').style.color = isPB ? '#D97706' : '#DC2626';
+    if (isPB) { playVictoryFanfare(); celebrateWin(document.getElementById('game-wrap')); }
     document.getElementById('go-sub').textContent = `Score: ${score} · Level ${level} · ${lines} lines`;
     const elapsed = Math.round((Date.now() - session.startTime) / 1000);
     const mins = Math.floor(elapsed / 60), secs = elapsed % 60;

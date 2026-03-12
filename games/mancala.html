@@ -134,7 +134,8 @@
   <div id="footer-container"></div>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playCollect } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playCollect, playVictoryFanfare, playDrop } from '/js/audio.js';
+    import { confetti, screenShake, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -278,6 +279,7 @@
         board[pit]++;
         count--;
         updatePitDisplay(pit, board[pit], true);
+        if (soundEnabled) playDrop();
         await new Promise(r => setTimeout(r, 120));
       }
 
@@ -528,16 +530,19 @@
         streak++;
         msg = `You win! ${p0Score} - ${p1Score}`;
         if (soundEnabled) playSuccess();
+        celebrateWin();confetti();playVictoryFanfare();
         trackGameOver('mancala', true);
       } else if (p1Score > p0Score) {
         streak = 0;
         msg = `AI wins! ${p1Score} - ${p0Score}`;
         if (soundEnabled) playGameOver();
+        screenFlash('red',150);
         trackGameOver('mancala', false);
       } else {
         streak = 0;
         msg = `Tie! ${p0Score} - ${p1Score}`;
         if (soundEnabled) playGameOver();
+        screenFlash('red',150);
         trackGameOver('mancala', null);
       }
       statusEl.textContent = msg;

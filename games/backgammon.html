@@ -131,7 +131,8 @@
   </div>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playGameOver, playCollect } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playGameOver, playCollect, playVictoryFanfare, playDrop } from '/js/audio.js';
+    import { confetti, screenShake, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -512,8 +513,8 @@
       const winner = gameOver();
       if (winner) {
         sessionGames++;
-        if (winner === WHITE) sessionWins++, sessionStreak++;
-        else sessionStreak = 0;
+        if (winner === WHITE) { sessionWins++; sessionStreak++; celebrateWin();confetti();playVictoryFanfare(); }
+        else { sessionStreak = 0; screenFlash('red',150); }
         if (soundOn) playGameOver?.();
         trackGameOver?.('backgammon', winner === WHITE ? 'win' : 'loss');
         statusEl.textContent = winner === WHITE ? 'White wins!' : 'Black wins!';

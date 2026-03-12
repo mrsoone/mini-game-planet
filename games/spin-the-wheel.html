@@ -156,7 +156,8 @@
   </footer>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playPerfect, playCollect } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playPerfect, playCollect, playVictoryFanfare, playDrop } from '/js/audio.js';
+    import { confetti, screenShake, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart } from '/js/analytics.js';
@@ -311,7 +312,8 @@
           resultDisplay.classList.remove('hidden');
 
           try { playSuccess(); playCollect(); } catch (_) {}
-          showConfetti();
+          confetti();
+          celebrateWin();
           return;
         }
 

@@ -138,7 +138,8 @@
   </footer>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playVictoryFanfare, playDrop } from '/js/audio.js';
+    import { confetti, screenShake, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart } from '/js/analytics.js';
@@ -347,7 +348,7 @@
       link.download = 'pixel-art.png';
       link.href = canvas.toDataURL('image/png');
       link.click();
-      try { playSuccess(); } catch (_) {}
+      try { playSuccess(); showToast('Downloaded!', 'success'); } catch (_) {}
     });
 
     function render() {

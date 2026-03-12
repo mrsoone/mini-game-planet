@@ -113,7 +113,8 @@
   <div id="footer-container"></div>
 
   <script type="module">
-  import { initAudio, muteAll, playClick, playSuccess, playError } from '/js/audio.js';
+  import { initAudio, muteAll, playClick, playSuccess, playError, playDrop, playVictoryFanfare } from '/js/audio.js';
+  import { confetti, screenShake, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -268,13 +269,17 @@
           feedbackEl.textContent = 'Not quite. Keep deducing!';
           feedbackEl.style.color = '#DC2626';
           playError();
+          screenShake(4, 250);
           return;
         }
       }
     }
     feedbackEl.textContent = 'Correct!';
     feedbackEl.style.color = '#059669';
-    playSuccess();
+    playVictoryFanfare();
+    const wr = gridWrap.getBoundingClientRect();
+    confetti(wr.left + wr.width / 2, wr.top + 40);
+    celebrateWin(document.querySelector('main > div'));
     goEl.style.display = 'block';
     const elapsed = startTime ? Math.round((Date.now() - startTime) / 1000) : 0;
     document.getElementById('go-sub').textContent = 'Solved in ' + (elapsed ? Math.floor(elapsed / 60) + ':' + String(elapsed % 60).padStart(2, '0') : '—');

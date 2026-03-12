@@ -180,7 +180,8 @@
   </div>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playGameOver } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playGameOver, playVictoryFanfare, playDrop } from '/js/audio.js';
+    import { confetti, screenShake, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -489,6 +490,7 @@
       playerHand.splice(selectedTileIdx, 1);
       selectedTileIdx = null;
       consecutivePasses = 0;
+      if (soundOn) playDrop?.();
 
       const pts = scoreForEnds(leftEnd, rightEnd);
       if (pts > 0) {
@@ -579,6 +581,7 @@
     function endGame(playerWon) {
       gameOver = true;
       if (soundOn) playGameOver?.();
+      if (playerWon) { celebrateWin();confetti();playVictoryFanfare(); } else { screenFlash('red',150); }
       trackGameOver?.('dominoes', playerWon ? 'win' : 'loss');
       statusEl.textContent = playerWon ? 'You win!' : 'AI wins!';
     }
@@ -589,6 +592,7 @@
       const aiPips = aiHand.reduce((s, t) => s + t[0] + t[1], 0);
       const playerWon = playerPips < aiPips;
       if (soundOn) playGameOver?.();
+      if (playerWon) { celebrateWin();confetti();playVictoryFanfare(); } else { screenFlash('red',150); }
       trackGameOver?.('dominoes', playerWon ? 'win' : 'loss');
       statusEl.textContent = playerWon
         ? `Blocked! You win (${playerPips} pips vs ${aiPips}).`

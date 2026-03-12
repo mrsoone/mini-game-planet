@@ -128,7 +128,8 @@
   </main>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playCollect } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playCollect, playVictoryFanfare, playDrop } from '/js/audio.js';
+    import { confetti, screenShake, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -320,10 +321,10 @@
       if (playerWon) {
         stats.wins++;
         stats.streak++;
-        playGameOver();
+        playGameOver();celebrateWin();confetti();playVictoryFanfare();
       } else {
         stats.streak = 0;
-        playError();
+        playError();screenFlash('red',150);
       }
       saveStats(stats);
       updateStatsUI(stats);

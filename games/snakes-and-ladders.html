@@ -132,7 +132,8 @@
   <div id="footer-container"></div>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playVictoryFanfare, playDrop } from '/js/audio.js';
+    import { confetti, screenShake, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -331,6 +332,8 @@
       if (SNAKES[positions[player]]) {
         const tail = SNAKES[positions[player]];
         if (soundEnabled) playError?.();
+        screenShake();
+        showToast('Snake! 🐍', 'error');
         await new Promise(r => setTimeout(r, 300));
         positions[player] = tail;
         updateTokenPositions();
@@ -339,6 +342,7 @@
       } else if (LADDERS[positions[player]]) {
         const top = LADDERS[positions[player]];
         if (soundEnabled) playSuccess?.();
+        showToast('Ladder! 🪜', 'success');
         await new Promise(r => setTimeout(r, 300));
         positions[player] = top;
         updateTokenPositions();
@@ -375,6 +379,7 @@
         updateTokenPositions();
         gameOver = true;
         if (soundEnabled) playGameOver?.();
+        screenShake();
         trackGameOver?.('snakes-and-ladders', { winner: currentPlayer });
         statusEl.textContent = `${PLAYER_NAMES[currentPlayer]} wins!`;
         return;
@@ -405,7 +410,9 @@
         positions[currentPlayer] = 100;
         updateTokenPositions();
         gameOver = true;
-        if (soundEnabled) playGameOver?.();
+        if (soundEnabled) playVictoryFanfare?.();
+        confetti();
+        celebrateWin();
         trackGameOver?.('snakes-and-ladders', { winner: currentPlayer });
         statusEl.textContent = `${PLAYER_NAMES[currentPlayer]} wins!`;
         animating = false;
