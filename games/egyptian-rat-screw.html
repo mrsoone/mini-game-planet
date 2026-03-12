@@ -17,9 +17,9 @@
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://minigameplanet.com"},{"@type":"ListItem","position":2,"name":"Card Games","item":"https://minigameplanet.com/#category"},{"@type":"ListItem","position":3,"name":"Egyptian Rat Screw","item":"https://minigameplanet.com/games/egyptian-rat-screw"}]}</script>
   <style>
     .hero-grad{background:linear-gradient(135deg,#7C3AED 0%,#9333EA 20%,#C026D3 40%,#E11D48 60%,#EA580C 80%,#F59E0B 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:heroShift 8s ease-in-out infinite}@keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
-    #ers-table{background:#1a1a2e;border-radius:16px;padding:20px;min-height:380px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+    #ers-table{background:linear-gradient(160deg, #1a5c35 0%, #0d4025 100%);border-radius:16px;box-shadow:inset 0 2px 12px rgba(0,0,0,0.3);padding:20px;min-height:380px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
     .ers-card{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:80px;height:112px;border-radius:8px;font-family:'DM Mono',monospace;font-weight:700;font-size:20px;box-shadow:0 4px 12px rgba(0,0,0,0.3);position:relative;user-select:none;transition:transform 0.12s}
-    .ers-card.face-up{background:#fff;border:2px solid #E5E7EB}.ers-card.face-down{background:#DC2626;background-image:repeating-linear-gradient(45deg,transparent,transparent 3px,rgba(255,255,255,0.07) 3px,rgba(255,255,255,0.07) 6px);border:2px solid rgba(255,255,255,0.2)}
+    .ers-card.face-up{background:#fff;border:2px solid #E5E7EB}.ers-card.face-down{background:linear-gradient(135deg, #1E3A5F 0%, #2D1B69 50%, #1E3A5F 100%);border:2px solid rgba(255,255,255,0.2)}
     .ers-card.red{color:#DC2626}.ers-card.black{color:#0F172A}
     @keyframes slapFlash{0%{box-shadow:0 0 0 0 rgba(250,204,21,0.8)}100%{box-shadow:0 0 40px 20px transparent}}
     .slap-flash{animation:slapFlash 0.4s ease-out}
@@ -85,7 +85,8 @@
   <div id="related-games"></div><div id="footer-container"></div>
 
   <script type="module">
-  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playDeal, playDrop, playPerfect, playCollect } from '/js/audio.js';
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playDeal, playDrop, playPerfect, playCollect, playVictoryFanfare, playCardSlide, playFlip } from '/js/audio.js';
+  import { confetti, sparkle, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -156,7 +157,7 @@
     if(phase!=='play')return;
     const deck=who==='you'?myDeck:oppDeck;
     if(deck.length===0){collectPile(who==='you'?'opp':'you');return;}
-    const card=deck.shift();pile.push(card);playDrop();updateUI();
+    const card=deck.shift();pile.push(card);playFlip();updateUI();
 
     if(faceChallenge>0&&faceChallenger!==(who==='you'?'you':'opp')){
       if(isFace(card)){faceChallenge=FACE_CHANCES[card.rank];faceChallenger=who==='you'?'you':'opp';}
@@ -209,7 +210,7 @@
     document.getElementById('game-over-panel').style.display='block';
     document.getElementById('winner-text').textContent=won?'🎉 You Win!':'😞 Opponent Wins!';
     document.getElementById('final-detail').textContent=`Slaps: ${slapCount} | Cards collected: ${won?52:0}`;
-    if(won)playPerfect();else playGameOver();
+    if(won){playVictoryFanfare();celebrateWin();confetti();}else playGameOver();
     const dur=Math.round((Date.now()-gameStartTime)/1000);
     trackGameOver('egyptian-rat-screw','Card',won?1:0,myDeck.length);
     submitStats('egyptian-rat-screw',{score:myDeck.length,duration:dur,win:won,loss:!won,online:isOnline});
@@ -221,7 +222,7 @@
     const deck=makeDeck();myDeck=deck.slice(0,26);oppDeck=deck.slice(26);pile=[];
     faceChallenge=0;faceChallenger=null;myTurn=true;phase='play';slapCount=0;
     gameStartTime=Date.now();trackGameStart('egyptian-rat-screw','Card');
-    msg('Your turn — Play a card or Slap!');playDeal();updateUI();
+    msg('Your turn — Play a card or Slap!');playCardSlide();updateUI();
   }
 
   renderModeSelector(document.getElementById('mp-mode-container'),'egyptian-rat-screw',playerProfile?.name||'Player',{

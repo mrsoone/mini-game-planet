@@ -129,20 +129,20 @@
         </button>
 
         <!-- Game Area -->
-        <div id="game-area" class="mt-8 hidden">
+        <div id="game-area" class="mt-8 hidden" style="background:linear-gradient(160deg, #1a5c35 0%, #0d4025 100%);border-radius:16px;box-shadow:inset 0 2px 12px rgba(0,0,0,0.3);padding:20px;">
           <div class="grid grid-cols-2 gap-6 mb-6">
             <div>
-              <h3 class="text-sm font-medium text-gray-500 mb-2">Player</h3>
+              <h3 class="text-sm font-medium mb-2" style="color:#d1fae5;">Player</h3>
               <div id="player-cards" class="flex gap-2 min-h-[80px] flex-wrap"></div>
-              <div id="player-value" class="font-mono text-lg font-bold mt-2"></div>
+              <div id="player-value" class="font-mono text-lg font-bold mt-2" style="color:#d1fae5;"></div>
             </div>
             <div>
-              <h3 class="text-sm font-medium text-gray-500 mb-2">Banker</h3>
+              <h3 class="text-sm font-medium mb-2" style="color:#fde68a;">Banker</h3>
               <div id="banker-cards" class="flex gap-2 min-h-[80px] flex-wrap"></div>
-              <div id="banker-value" class="font-mono text-lg font-bold mt-2"></div>
+              <div id="banker-value" class="font-mono text-lg font-bold mt-2" style="color:#fde68a;"></div>
             </div>
           </div>
-          <div id="result-msg" class="text-center font-semibold text-lg py-4"></div>
+          <div id="result-msg" class="text-center font-semibold text-lg py-4" style="color:#fff;"></div>
           <button id="new-round-btn" class="w-full py-3 rounded-xl font-semibold bg-emerald-600 text-white hover:bg-emerald-700">
             New Round
           </button>
@@ -193,7 +193,8 @@
   </footer>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playCollect } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playCollect, playVictoryFanfare, playCardSlide, playDrop, playFlip } from '/js/audio.js';
+    import { confetti, sparkle, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -255,7 +256,7 @@
       const div = document.createElement('div');
       div.className = 'inline-flex flex-col items-center justify-center w-14 h-20 rounded-lg border-2 border-gray-300 bg-white shadow';
       if (faceDown) {
-        div.innerHTML = '<div class="w-full h-full rounded bg-gradient-to-br from-indigo-600 to-indigo-800 flex items-center justify-center"><span class="text-white text-xs">?</span></div>';
+        div.innerHTML = '<div class="w-full h-full rounded flex items-center justify-center" style="background:linear-gradient(135deg, #1E3A5F 0%, #2D1B69 50%, #1E3A5F 100%);"><span class="text-white text-xs">?</span></div>';
       } else {
         const suitClass = ['hearts', 'diamonds'].includes(card.suit) ? 'hearts' : 'clubs';
         div.innerHTML = `
@@ -368,6 +369,7 @@
       deck = createDeck();
       playerCards = [deck.pop(), deck.pop()];
       bankerCards = [deck.pop(), deck.pop()];
+      playCardSlide();
 
       let playerTotal = handValue(playerCards);
       let bankerTotal = handValue(bankerCards);
@@ -407,12 +409,12 @@
       let payout = 0;
       if (winner === currentBetOn) {
         won = true;
-        if (winner === 'tie') payout = currentBet * 9; // 8:1 + stake
-        else if (winner === 'player') payout = currentBet * 2; // 1:1 + stake
-        else payout = Math.floor(currentBet * 1.95); // 0.95:1 + stake (5% commission)
+        if (winner === 'tie') payout = currentBet * 9;
+        else if (winner === 'player') payout = currentBet * 2;
+        else payout = Math.floor(currentBet * 1.95);
         credits += payout;
         sessionWins++;
-        if (!muted) playSuccess();
+        if (!muted) { playVictoryFanfare(); celebrateWin(); confetti(); }
       } else {
         sessionLosses++;
         if (!muted) playError();
@@ -429,7 +431,7 @@
         ? `You won! +${payout - currentBet} credits`
         : `You lost. ${winner.charAt(0).toUpperCase() + winner.slice(1)} wins.`;
       resultMsgEl.textContent = msg;
-      resultMsgEl.className = 'text-center font-semibold text-lg py-4 ' + (won ? 'text-emerald-600' : 'text-gray-600');
+      resultMsgEl.style.color = won ? '#6ee7b7' : '#fca5a5';
       dealBtn.disabled = true;
       updateUI();
     }

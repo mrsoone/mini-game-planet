@@ -51,7 +51,7 @@
         <span style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;">⏱ <span id="timer">0:00</span></span>
         <span style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;">🔥 <span id="streak">0</span></span>
       </div>
-      <div id="game-area" style="position:relative;width:100%;max-width:660px;margin:0 auto;min-height:480px;background:#0F6B3A;border-radius:12px;padding:10px;overflow:hidden;touch-action:none;"></div>
+      <div id="game-area" style="position:relative;width:100%;max-width:660px;margin:0 auto;min-height:480px;background:linear-gradient(160deg, #1a5c35 0%, #0d4025 100%);border-radius:16px;box-shadow:inset 0 2px 12px rgba(0,0,0,0.3);padding:10px;overflow:hidden;touch-action:none;"></div>
       <div id="win-banner" style="display:none;text-align:center;padding:16px;margin-top:8px;background:#D1FAE5;border-radius:8px;border:2px solid #6EE7B7;">
         <div style="font-size:22px;font-weight:700;color:#065F46;">🎉 You Win!</div>
         <div id="win-sub" style="font-size:13px;color:#047857;margin-top:2px;"></div>
@@ -85,7 +85,8 @@
   <div id="footer-container"></div>
 
   <script type="module">
-  import { initAudio, muteAll, playClick, playSuccess, playDeal, playFlip, playDrop, playPerfect, playLevelUp, playCollect, playError } from '/js/audio.js';
+  import { initAudio, muteAll, playClick, playSuccess, playDeal, playFlip, playDrop, playPerfect, playLevelUp, playCollect, playError, playVictoryFanfare, playCardSlide } from '/js/audio.js';
+  import { confetti, sparkle, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -133,7 +134,7 @@
     document.getElementById('moves').textContent='0';
     document.getElementById('timer').textContent='0:00';
     document.getElementById('win-banner').style.display='none';
-    playDeal();render();
+    playCardSlide();playDeal();render();
   }
 
   function startTimer(){
@@ -309,7 +310,7 @@
       document.getElementById('streak').textContent=streak;
       document.getElementById('win-banner').style.display='block';
       document.getElementById('win-sub').textContent=`${moves} moves · ${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`;
-      playPerfect();setTimeout(()=>playLevelUp(),400);
+      playVictoryFanfare();celebrateWin();confetti();setTimeout(()=>playLevelUp(),400);
       trackGameOver('freecell','Card',1,seconds);
     }
   }

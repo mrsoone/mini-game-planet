@@ -63,11 +63,11 @@
       <div id="result-banner" style="display:none;text-align:center;padding:6px;border-radius:6px;margin-bottom:8px;font-weight:700;font-size:15px;"></div>
       <!-- Cards -->
       <div id="hand" style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;min-height:120px;">
-        <div class="vp-card" style="opacity:0.6;background:linear-gradient(135deg,#1E40AF,#7C3AED);color:transparent;"><span class="rank">&nbsp;</span><span class="suit">🂠</span><span class="rank2">&nbsp;</span></div>
-        <div class="vp-card" style="opacity:0.6;background:linear-gradient(135deg,#1E40AF,#7C3AED);color:transparent;"><span class="rank">&nbsp;</span><span class="suit">🂠</span><span class="rank2">&nbsp;</span></div>
-        <div class="vp-card" style="opacity:0.6;background:linear-gradient(135deg,#1E40AF,#7C3AED);color:transparent;"><span class="rank">&nbsp;</span><span class="suit">🂠</span><span class="rank2">&nbsp;</span></div>
-        <div class="vp-card" style="opacity:0.6;background:linear-gradient(135deg,#1E40AF,#7C3AED);color:transparent;"><span class="rank">&nbsp;</span><span class="suit">🂠</span><span class="rank2">&nbsp;</span></div>
-        <div class="vp-card" style="opacity:0.6;background:linear-gradient(135deg,#1E40AF,#7C3AED);color:transparent;"><span class="rank">&nbsp;</span><span class="suit">🂠</span><span class="rank2">&nbsp;</span></div>
+        <div class="vp-card" style="opacity:0.6;background:linear-gradient(135deg, #1E3A5F 0%, #2D1B69 50%, #1E3A5F 100%);color:transparent;"><span class="rank">&nbsp;</span><span class="suit">🂠</span><span class="rank2">&nbsp;</span></div>
+        <div class="vp-card" style="opacity:0.6;background:linear-gradient(135deg, #1E3A5F 0%, #2D1B69 50%, #1E3A5F 100%);color:transparent;"><span class="rank">&nbsp;</span><span class="suit">🂠</span><span class="rank2">&nbsp;</span></div>
+        <div class="vp-card" style="opacity:0.6;background:linear-gradient(135deg, #1E3A5F 0%, #2D1B69 50%, #1E3A5F 100%);color:transparent;"><span class="rank">&nbsp;</span><span class="suit">🂠</span><span class="rank2">&nbsp;</span></div>
+        <div class="vp-card" style="opacity:0.6;background:linear-gradient(135deg, #1E3A5F 0%, #2D1B69 50%, #1E3A5F 100%);color:transparent;"><span class="rank">&nbsp;</span><span class="suit">🂠</span><span class="rank2">&nbsp;</span></div>
+        <div class="vp-card" style="opacity:0.6;background:linear-gradient(135deg, #1E3A5F 0%, #2D1B69 50%, #1E3A5F 100%);color:transparent;"><span class="rank">&nbsp;</span><span class="suit">🂠</span><span class="rank2">&nbsp;</span></div>
       </div>
       <!-- Actions -->
       <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
@@ -105,7 +105,8 @@
   <div id="footer-container"></div>
 
   <script type="module">
-  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playDeal, playFlip, playCollect } from '/js/audio.js';
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playDeal, playFlip, playCollect, playVictoryFanfare, playCardSlide, playDrop } from '/js/audio.js';
+  import { confetti, sparkle, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -158,10 +159,10 @@
       document.getElementById('btn-deal').textContent='DRAW';
       document.getElementById('result-banner').style.display='none';
       trackGameStart('video-poker','Card');
-      playDeal();
+      playCardSlide();
     } else{
       for(let i=0;i<5;i++){if(!held[i])hand[i]=deck.pop();}
-      phase='result';evaluate();
+      playFlip();phase='result';evaluate();
       document.getElementById('btn-deal').textContent='DEAL';
     }
     renderHand();
@@ -211,8 +212,8 @@
       banner.style.display='block';banner.style.background='#D1FAE5';banner.style.color='#065F46';
       banner.textContent=`${result}! +${payout}`;
       payRows.forEach(r=>{if(r.children[0].textContent===result)r.classList.add('active');});
-      if(result==='Royal Flush')playPerfect();
-      else if(payout>=bet*10)playLevelUp();
+      if(result==='Royal Flush'){playVictoryFanfare();celebrateWin();confetti();}
+      else if(payout>=bet*10){playVictoryFanfare();celebrateWin();confetti();}
       else playSuccess();
     } else{
       streak=0;

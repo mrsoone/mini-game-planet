@@ -18,9 +18,9 @@
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://minigameplanet.com"},{"@type":"ListItem","position":2,"name":"Card Games","item":"https://minigameplanet.com/#category"},{"@type":"ListItem","position":3,"name":"Presidents","item":"https://minigameplanet.com/games/presidents"}]}</script>
   <style>
     .hero-grad{background:linear-gradient(135deg,#7C3AED 0%,#9333EA 20%,#C026D3 40%,#E11D48 60%,#EA580C 80%,#F59E0B 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:heroShift 8s ease-in-out infinite}@keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
-    #pr-table{background:#1a1a2e;border-radius:16px;padding:16px;min-height:300px}
+    #pr-table{background:linear-gradient(160deg, #1a5c35 0%, #0d4025 100%);border-radius:16px;box-shadow:inset 0 2px 12px rgba(0,0,0,0.3);padding:16px;min-height:300px}
     .pr-card{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:clamp(48px,8vw,68px);height:clamp(68px,11.5vw,96px);border-radius:7px;font-family:'DM Mono',monospace;font-weight:700;font-size:clamp(12px,2vw,16px);box-shadow:0 2px 6px rgba(0,0,0,0.15);position:relative;cursor:pointer;transition:transform 0.15s;flex-shrink:0;user-select:none}
-    .pr-card.face-up{background:#fff;border:1.5px solid #E5E7EB}.pr-card.face-down{background:#DC2626;background-image:repeating-linear-gradient(45deg,transparent,transparent 3px,rgba(255,255,255,0.07) 3px,rgba(255,255,255,0.07) 6px);border:1.5px solid rgba(255,255,255,0.2)}
+    .pr-card.face-up{background:#fff;border:1.5px solid #E5E7EB}.pr-card.face-down{background:linear-gradient(135deg, #1E3A5F 0%, #2D1B69 50%, #1E3A5F 100%);border:1.5px solid rgba(255,255,255,0.2)}
     .pr-card.red{color:#DC2626}.pr-card.black{color:#0F172A}
     .pr-card.playable:hover{transform:translateY(-6px)}
     .pr-card.selected{transform:translateY(-10px);box-shadow:0 0 0 2px #2563EB,0 6px 16px rgba(37,99,235,0.3)}
@@ -86,7 +86,8 @@
   <div id="related-games"></div><div id="footer-container"></div>
 
   <script type="module">
-  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playDeal, playDrop, playPerfect, playCollect } from '/js/audio.js';
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playDeal, playDrop, playPerfect, playCollect, playVictoryFanfare, playCardSlide, playFlip } from '/js/audio.js';
+  import { confetti, sparkle, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -276,7 +277,7 @@
     document.getElementById('winner-text').textContent=won?'👑 You are President!':'😞 '+finishOrder[0]+' is President';
     document.getElementById('rankings').innerHTML=finishOrder.map((s,i)=>`${TITLES[i]}: ${s==='south'?'<strong>You</strong>':s}`).join('<br>');
 
-    if(won)playPerfect();else playGameOver();
+    if(won){playVictoryFanfare();celebrateWin();confetti();}else playGameOver();
     const dur=Math.round((Date.now()-gameStartTime)/1000);
     trackGameOver('presidents','Card',won?1:0,0);
     submitStats('presidents',{score:won?1:0,duration:dur,win:won,loss:!won,online:isOnline});
@@ -288,7 +289,7 @@
   function startNewGame(){
     roundNum++;deal();phase='play';
     currentSeat=findThreeOfClubs();
-    gameStartTime=Date.now();trackGameStart('presidents','Card');
+    gameStartTime=Date.now();trackGameStart('presidents','Card');playCardSlide();
     render();
     if(currentSeat!=='south')setTimeout(aiTurn,500);
   }

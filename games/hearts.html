@@ -25,14 +25,14 @@
     .hero-grad{background:linear-gradient(135deg,#7C3AED 0%,#9333EA 20%,#C026D3 40%,#E11D48 60%,#EA580C 80%,#F59E0B 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:heroShift 8s ease-in-out infinite}
     @keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
     @keyframes mgpBtnPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
-    #hearts-table{background:#1a1a2e;border-radius:16px;padding:16px;position:relative;min-height:480px;overflow:hidden}
+    #hearts-table{background:linear-gradient(160deg, #1a5c35 0%, #0d4025 100%);border-radius:16px;box-shadow:inset 0 2px 12px rgba(0,0,0,0.3);padding:16px;position:relative;min-height:480px;overflow:hidden}
     .ht-seat{position:absolute;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:rgba(255,255,255,0.8);font-family:'Space Grotesk',sans-serif}
     .ht-seat .ht-name{font-weight:600;font-size:13px;padding:2px 10px;border-radius:6px;white-space:nowrap}
     .ht-seat .ht-pts{font-family:'DM Mono',monospace;font-size:11px;color:#FCA5A5}
     .ht-seat.active .ht-name{box-shadow:0 0 0 2px #DC2626;animation:mgpBtnPulse 1s ease infinite}
     .ht-card{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:clamp(48px,8vw,68px);height:clamp(68px,11.5vw,96px);border-radius:7px;font-family:'DM Mono',monospace;font-weight:700;font-size:clamp(12px,2vw,16px);box-shadow:0 2px 6px rgba(0,0,0,0.15);position:relative;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;flex-shrink:0;user-select:none}
     .ht-card.face-up{background:#fff;border:1.5px solid #E5E7EB}
-    .ht-card.face-down{background:#DC2626;background-image:repeating-linear-gradient(45deg,transparent,transparent 3px,rgba(255,255,255,0.07) 3px,rgba(255,255,255,0.07) 6px);border:1.5px solid rgba(255,255,255,0.2)}
+    .ht-card.face-down{background:linear-gradient(135deg, #1E3A5F 0%, #2D1B69 50%, #1E3A5F 100%);border:1.5px solid rgba(255,255,255,0.2)}
     .ht-card.red{color:#DC2626}.ht-card.black{color:#0F172A}
     .ht-card.playable:hover{transform:translateY(-6px);box-shadow:0 6px 16px rgba(0,0,0,0.25)}
     .ht-card.selected{transform:translateY(-10px);box-shadow:0 0 0 2px #DC2626,0 6px 16px rgba(220,38,38,0.3)}
@@ -149,7 +149,8 @@
   <div id="footer-container"></div>
 
   <script type="module">
-  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playDeal, playDrop, playFlip, playPerfect, playLevelUp, playAlarm, playCollect } from '/js/audio.js';
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playDeal, playDrop, playFlip, playPerfect, playLevelUp, playAlarm, playCollect, playVictoryFanfare, playCardSlide } from '/js/audio.js';
+  import { confetti, sparkle, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -572,7 +573,7 @@
     document.getElementById('winner-text').textContent=won?'🎉 You Win!':'😞 '+winner.charAt(0).toUpperCase()+winner.slice(1)+' Wins';
     document.getElementById('final-score-text').textContent=SEATS.map(s=>`${s==='south'?'You':s}: ${totalScores[s]}`).join(' | ');
 
-    if(won){playPerfect();streak++;}
+    if(won){playVictoryFanfare();celebrateWin();confetti();streak++;}
     else {playGameOver();streak=0;}
 
     const dur=Math.round((Date.now()-gameStartTime)/1000);
@@ -604,7 +605,7 @@
     renderTrickArea();
     updateScoreboard();
     updateSeatUI();
-    playDeal();
+    playCardSlide(); playDeal();
     startPassPhase();
   }
 

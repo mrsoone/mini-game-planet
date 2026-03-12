@@ -43,7 +43,7 @@
 
     /* Mini cards (opponent) */
     .mini-card{width:22px;height:32px;border-radius:3px;display:inline-block;font-size:0}
-    .mini-card.down{background:#DC2626;background-image:repeating-linear-gradient(45deg,transparent,transparent 2px,rgba(255,255,255,0.07) 2px,rgba(255,255,255,0.07) 4px);border:1px solid rgba(255,255,255,0.15)}
+    .mini-card.down{background:linear-gradient(135deg, #1E3A5F 0%, #2D1B69 50%, #1E3A5F 100%);border:1px solid rgba(255,255,255,0.15)}
     .mini-card.up{background:#fff;border:1px solid #D1D5DB;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-weight:700;font-size:8px;line-height:1}
     .mini-card.up.red{color:#DC2626}.mini-card.up.black{color:#0F172A}
 
@@ -427,7 +427,8 @@
   <div id="related-games"></div><div id="footer-container"></div>
 
   <script type="module">
-  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playDeal, playDrop, playPerfect, playCollect } from '/js/audio.js';
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playDeal, playDrop, playPerfect, playCollect, playVictoryFanfare, playCardSlide, playFlip } from '/js/audio.js';
+  import { confetti, sparkle, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -656,7 +657,7 @@
 
     for(let i=0;i<2;i++)for(const p of G.players)if(!p.folded)p.hole.push(G.deck.pop());
 
-    playDeal();
+    playCardSlide();
     G.activeIdx=nextActive(bbIdx);
     renderTable();
     startTurnTimer();
@@ -756,9 +757,9 @@
     G._lastRaiser=undefined;
     G.lastRaise=G.bb;G.minRaise=G.bb;
 
-    if(G.phase==='preflop'){G.phase='flop';G.deck.pop();G.community.push(G.deck.pop(),G.deck.pop(),G.deck.pop());playDeal();}
-    else if(G.phase==='flop'){G.phase='turn';G.deck.pop();G.community.push(G.deck.pop());playDeal();}
-    else if(G.phase==='turn'){G.phase='river';G.deck.pop();G.community.push(G.deck.pop());playDeal();}
+    if(G.phase==='preflop'){G.phase='flop';G.deck.pop();G.community.push(G.deck.pop(),G.deck.pop(),G.deck.pop());playFlip();}
+    else if(G.phase==='flop'){G.phase='turn';G.deck.pop();G.community.push(G.deck.pop());playFlip();}
+    else if(G.phase==='turn'){G.phase='river';G.deck.pop();G.community.push(G.deck.pop());playFlip();}
     else{goToShowdown();return;}
 
     const betting=getBettingPlayers();
@@ -810,7 +811,7 @@
     G.pots=[{amount:0,eligible:[]}];
     const humanWon=results.some(r=>r.winners.includes(G.players[0].name));
     if(humanWon){
-      playSuccess();if(!G._humanHandsWon)G._humanHandsWon=0;G._humanHandsWon++;
+      playVictoryFanfare();celebrateWin();confetti();if(!G._humanHandsWon)G._humanHandsWon=0;G._humanHandsWon++;
       const winAmount=results.filter(r=>r.winners.includes(G.players[0].name)).reduce((s,r)=>s+Math.floor(r.amount/r.winners.length),0);
       if(!G._totalWinnings)G._totalWinnings=0;G._totalWinnings+=winAmount;
       if(!G._biggestWin)G._biggestWin=0;if(winAmount>G._biggestWin)G._biggestWin=winAmount;

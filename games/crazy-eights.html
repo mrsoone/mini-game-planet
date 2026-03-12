@@ -51,16 +51,17 @@
         <span style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;">🃏 Draw: <span id="draw-count">0</span></span>
         <span style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;">Current suit: <span id="current-suit"></span></span>
       </div>
+      <div style="background:linear-gradient(160deg,#1a5c35 0%,#0d4025 100%);border-radius:16px;box-shadow:inset 0 2px 12px rgba(0,0,0,0.3);padding:16px;margin-bottom:8px;">
       <!-- Discard pile -->
       <div style="text-align:center;margin-bottom:8px;">
         <div style="display:flex;justify-content:center;gap:16px;align-items:center;">
-          <div><p style="font-size:10px;color:#94A3B8;margin-bottom:2px;">Draw</p><div id="draw-pile" style="width:64px;height:90px;border-radius:7px;background:linear-gradient(135deg,#1E40AF,#7C3AED);border:2px solid #312E81;cursor:pointer;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.3);font-size:24px;">🂠</div></div>
-          <div><p style="font-size:10px;color:#94A3B8;margin-bottom:2px;">Discard</p><div id="discard-pile"></div></div>
+          <div><p style="font-size:10px;color:rgba(255,255,255,0.6);margin-bottom:2px;">Draw</p><div id="draw-pile" style="width:64px;height:90px;border-radius:7px;background:linear-gradient(135deg,#1E3A5F 0%,#2D1B69 50%,#1E3A5F 100%);border:2px solid #1E3A5F;cursor:pointer;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.3);font-size:24px;">🂠</div></div>
+          <div><p style="font-size:10px;color:rgba(255,255,255,0.6);margin-bottom:2px;">Discard</p><div id="discard-pile"></div></div>
         </div>
       </div>
       <!-- Suit chooser -->
-      <div id="suit-chooser" style="display:none;text-align:center;padding:12px;background:#F8FAFC;border-radius:8px;margin-bottom:8px;">
-        <p style="font-size:13px;font-weight:600;margin-bottom:8px;">Choose a suit:</p>
+      <div id="suit-chooser" style="display:none;text-align:center;padding:12px;background:rgba(255,255,255,0.1);border-radius:8px;margin-bottom:8px;">
+        <p style="font-size:13px;font-weight:600;margin-bottom:8px;color:#fff;">Choose a suit:</p>
         <div style="display:flex;gap:8px;justify-content:center;">
           <button class="suit-btn" data-s="♠">♠</button>
           <button class="suit-btn" data-s="♥" style="color:#DC2626">♥</button>
@@ -70,12 +71,13 @@
       </div>
       <!-- Player hand -->
       <div style="text-align:center;margin-bottom:8px;">
-        <p style="font-size:11px;color:#94A3B8;margin-bottom:4px;">Your Hand</p>
+        <p style="font-size:11px;color:rgba(255,255,255,0.6);margin-bottom:4px;">Your Hand</p>
         <div id="player-hand" style="display:flex;justify-content:center;flex-wrap:wrap;min-height:84px;"></div>
       </div>
       <!-- Draw button -->
       <div style="text-align:center;margin-bottom:8px;">
         <button id="btn-draw" style="padding:8px 20px;background:#D97706;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:none;">Draw Card</button>
+      </div>
       </div>
       <div id="game-over" style="display:none;text-align:center;padding:16px;background:#F8FAFC;border-radius:12px;border:2px solid #E5E7EB;">
         <div id="go-title" style="font-size:22px;font-weight:700;margin-bottom:4px;"></div>
@@ -100,7 +102,8 @@
   <div id="footer-container"></div>
 
   <script type="module">
-  import { initAudio, muteAll, playClick, playSuccess, playError, playDrop, playCollect, playPerfect, playLevelUp, playGameOver } from '/js/audio.js';
+  import { initAudio, muteAll, playClick, playSuccess, playError, playDrop, playCollect, playPerfect, playLevelUp, playGameOver, playVictoryFanfare, playCardSlide, playFlip } from '/js/audio.js';
+  import { confetti, sparkle, screenFlash, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -154,7 +157,7 @@
     gameActive=true;playerTurn=true;
     document.getElementById('game-over').style.display='none';
     document.getElementById('suit-chooser').style.display='none';
-    trackGameStart('crazy-eights','Card');
+    playCardSlide();trackGameStart('crazy-eights','Card');
     render();
   }
 
@@ -237,7 +240,7 @@
     }
     if(drawPile.length===0)return;
     const card=drawPile.pop();
-    if(who==='player'){playerHand.push(card);playClick();render();
+    if(who==='player'){playerHand.push(card);playFlip();render();
       if(canPlay(card)){/* player can now play */}
       else if(!playerHand.some(c=>canPlay(c))){playerTurn=false;render();setTimeout(()=>cpuTurn(),600);}
       else render();
@@ -276,7 +279,7 @@
     document.getElementById('go-title').style.color=playerWon?'#059669':'#DC2626';
     document.getElementById('go-sub').textContent=playerWon?'You emptied your hand first!':'CPU emptied their hand first.';
     document.getElementById('game-over').style.display='block';
-    if(playerWon){playPerfect();setTimeout(()=>playLevelUp(),300);}else playGameOver();
+    if(playerWon){playVictoryFanfare();celebrateWin();confetti();}else playGameOver();
     trackGameOver('crazy-eights','Card',playerWon?1:0,0);
   }
 
