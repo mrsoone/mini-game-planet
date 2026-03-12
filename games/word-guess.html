@@ -218,7 +218,7 @@
         const msgs=['Genius!','Magnificent!','Impressive!','Splendid!','Great!','Phew!'];
         showMessage(msgs[currentRow]||'Nice!');
         playVictoryFanfare();celebrateWin();
-        confetti({x:window.innerWidth/2,y:window.innerHeight/2});
+        confetti(window.innerWidth/2, window.innerHeight/2);
         if(currentRow<=2)setTimeout(()=>playLevelUp(),300);
         document.getElementById('game-over-area').style.display='block';
         trackGameOver('word-guess','Word',1,0);

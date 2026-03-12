@@ -163,7 +163,7 @@
 
   <script type="module">
   import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playDeal, playFlip, playCollect, playVictoryFanfare, playCardSlide, playDrop } from '/js/audio.js';
-  import { confetti, sparkle, screenFlash, screenPulse, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
+  import { confetti, sparkle, screenFlash, screenShake, screenPulse, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -321,12 +321,12 @@
       result='lose';chips-=bet;
       banner.textContent=`Dealer Blackjack! -${bet}`;banner.style.background='#FEE2E2';banner.style.color='#991B1B';
       playGameOver();lossCount++;streak=0;
-      screenFlash('red',150);
+      screenFlash('red',150);screenShake(4,200);
     } else if(pv>21){
       result='bust';chips-=bet;
       banner.textContent=`Bust! -${bet}`;banner.style.background='#FEE2E2';banner.style.color='#991B1B';
       playError();lossCount++;streak=0;
-      screenFlash('red',150);
+      screenFlash('red',150);screenShake(4,200);
       setTimeout(()=>{const r=bannerRect();showScorePopup({x:r.left+r.width/2,y:r.top-10,text:`-${bet}`,color:'#EF4444',size:'md',style:'shake'});},100);
     } else if(dv>21){
       result='win';chips+=bet;
@@ -342,7 +342,7 @@
       result='lose';chips-=bet;
       banner.textContent=`Dealer Wins. -${bet}`;banner.style.background='#FEE2E2';banner.style.color='#991B1B';
       playGameOver();lossCount++;streak=0;
-      screenFlash('red',150);
+      screenFlash('red',150);screenShake(4,200);
     } else{
       result='push';
       banner.textContent='Push — Bet Returned';banner.style.background='#F1F5F9';banner.style.color='#475569';

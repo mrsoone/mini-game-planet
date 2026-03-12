@@ -136,7 +136,7 @@
   <script type="module">
   import { initAudio, muteAll, isMuted, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playDrop, playCollect, playVictoryFanfare, playComboHit } from '/js/audio.js';
   import { initToolPage } from '/js/shared.js';
-  import { confetti, screenShake, screenPulse, showScorePopup, showToast, celebrateWin, animateNumber } from '/js/effects.js';
+  import { confetti, screenShake, screenFlash, screenPulse, showScorePopup, showToast, celebrateWin, animateNumber } from '/js/effects.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
   import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
@@ -338,6 +338,7 @@
         reached2048 = true;
         playVictoryFanfare();
         confetti();
+        celebrateWin(document.querySelector('#board')?.parentElement);
         showToast('🎉 You reached 2048!');
         break;
       }
@@ -363,6 +364,8 @@
     session.avgScore = Math.round(session.totalScore / session.rounds);
 
     playGameOver();
+    screenShake(5, 300);
+    screenFlash('red', 150);
     trackGameOver('twenty-forty-eight', 'Puzzle', score, moveCount);
 
     const goTitle = document.getElementById('go-title');

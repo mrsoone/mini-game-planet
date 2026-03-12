@@ -105,13 +105,18 @@
           <p class="text-white text-xl font-semibold mb-2">Press any key or tap to start</p>
           <p class="text-white/80 text-sm">Arrow keys, WASD, or swipe</p>
         </div>
-        <div id="gameover-overlay" class="absolute inset-0 hidden flex-col items-center justify-center bg-black/70 rounded-lg text-white p-6">
-          <h2 class="text-2xl font-bold mb-2">Game Over</h2>
-          <p class="text-xl mb-1">Score: <span id="final-score">0</span></p>
+        <div id="gameover-overlay" class="absolute inset-0 hidden flex-col items-center justify-center rounded-lg text-white p-6" style="background:rgba(0,0,0,0.65);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)">
+          <h2 class="text-3xl font-bold mb-1">Game Over</h2>
+          <p class="text-white/70 text-sm mb-3">Nice run!</p>
+          <p id="new-best-msg" class="hidden text-amber-300 font-bold text-lg mb-1 animate-bounce">NEW BEST!</p>
+          <p class="text-4xl font-bold font-mono mb-1"><span id="final-score">0</span></p>
+          <p class="text-sm text-white/60 mb-3">points</p>
           <p class="text-amber-300 mb-1">Best: <span id="best-score">0</span></p>
-          <p class="text-sm text-gray-300 mb-1">Session games: <span id="session-games">0</span></p>
-          <p class="text-sm text-gray-300 mb-4">Streak: <span id="streak">0</span></p>
-          <p class="text-sm text-white/90">Press Enter or Space to restart</p>
+          <div class="flex gap-4 text-sm text-gray-300 mb-4">
+            <span>Games: <span id="session-games">0</span></span>
+            <span>Streak: <span id="streak">0</span></span>
+          </div>
+          <p class="text-sm text-white/80">Press Enter or Space to restart</p>
         </div>
       </div>
     </div>
@@ -142,13 +147,16 @@
   <div id="footer-container"></div>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playCollect, playDrop } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playCollect, playDrop, playVictoryFanfare } from '/js/audio.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { screenShake, screenFlash, showScorePopup, showToast, CanvasParticleSystem, CanvasScorePopups, drawGradientBg, drawGridBg, drawSnakeSegment, drawPulsingFood, confetti, celebrateWin } from '/js/effects.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
   import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
   import { initGamepad, onButtonPress, isGamepadConnected } from '/js/gamepad.js';
+
+    document.addEventListener('click', () => initAudio(), { once: true });
+    document.addEventListener('keydown', () => initAudio(), { once: true });
 
     initToolPage('snake');
     initConsent();
@@ -328,15 +336,22 @@
 
       trackGameOver('snake', score);
 
+      let isNewBest = false;
       if (score > bestScore) {
         bestScore = score;
         localStorage.setItem('snakeBest', String(bestScore));
+        isNewBest = true;
+        try { playVictoryFanfare(); } catch(_) {}
+        try { celebrateWin(document.querySelector('.card')); } catch(_) {}
+        try { confetti(window.innerWidth / 2, 200); } catch(_) {}
       }
       sessionGames++;
       if (score > lastScore) streak++; else streak = 0;
       lastScore = score;
 
       document.getElementById('final-score').textContent = score;
+      const newBestEl = document.getElementById('new-best-msg');
+      newBestEl.classList.toggle('hidden', !isNewBest);
       updateScoreDisplay();
       gameoverOverlay.classList.remove('hidden');
       gameoverOverlay.classList.add('flex');

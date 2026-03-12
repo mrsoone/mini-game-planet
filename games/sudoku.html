@@ -586,6 +586,8 @@
       goTitle.style.color = '#DC2626';
       goSub.textContent = `${errors}/${maxErrors} errors. The puzzle will be revealed.`;
       playGameOver();
+      screenShake(5, 300);
+      screenFlash('red', 150);
       // Reveal solution
       userGrid = [...solution];
       renderGrid();
