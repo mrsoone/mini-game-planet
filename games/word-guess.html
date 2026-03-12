@@ -19,13 +19,15 @@
   <meta property="og:site_name" content="MiniGamePlanet">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Word Guess","url":"https://minigameplanet.com/games/word-guess","description":"Guess the hidden 5-letter word in 6 tries.","genre":"Word","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
   <style>
-    .wg-tile{width:52px;height:52px;border:2px solid #D1D5DB;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:22px;font-weight:800;text-transform:uppercase;transition:all 0.2s;color:#1E293B}
+    .wg-tile{width:52px;height:52px;border:2px solid #D1D5DB;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:22px;font-weight:800;text-transform:uppercase;transition:all 0.2s;color:#1E293B;background:#FAF8F5}
     .wg-tile.correct{background:#22C55E;border-color:#16A34A;color:#fff}
     .wg-tile.present{background:#EAB308;border-color:#CA8A04;color:#fff}
     .wg-tile.absent{background:#6B7280;border-color:#4B5563;color:#fff}
     .wg-tile.active{border-color:#2563EB}
     @keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.1)}100%{transform:scale(1)}}.pop{animation:pop 0.15s}
     @keyframes flip{0%{transform:rotateX(0)}50%{transform:rotateX(90deg)}100%{transform:rotateX(0)}}.flip{animation:flip 0.4s}
+    @keyframes flash-green{0%{box-shadow:0 0 0 0 rgba(34,197,94,0.8)}40%{box-shadow:0 0 18px 6px rgba(34,197,94,0.5)}100%{box-shadow:none}}.flash-correct{animation:flash-green 0.5s ease-out}
+    @keyframes flash-amber{0%{box-shadow:0 0 0 0 rgba(245,158,11,0.8)}40%{box-shadow:0 0 18px 6px rgba(245,158,11,0.5)}100%{box-shadow:none}}.flash-present{animation:flash-amber 0.5s ease-out}
     .kb-key{padding:6px 8px;min-width:28px;border-radius:4px;border:none;font-family:'DM Mono',monospace;font-size:12px;font-weight:700;cursor:pointer;background:#D1D5DB;color:#1E293B;transition:all 0.1s}
     .kb-key:hover{filter:brightness(0.9)}
     .kb-key.correct{background:#22C55E;color:#fff}.kb-key.present{background:#EAB308;color:#fff}.kb-key.absent{background:#6B7280;color:#fff}
@@ -87,7 +89,8 @@
   <div id="footer-container"></div>
 
   <script type="module">
-  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect } from '/js/audio.js';
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playVictoryFanfare, playDrop, playLock } from '/js/audio.js';
+  import { confetti, screenShake, screenFlash, showToast, celebrateWin } from '/js/effects.js';
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -167,8 +170,8 @@
       return;
     }
     if(key==='ENTER'){
-      if(currentGuess.length!==5){showMessage('Not enough letters');playError();return;}
-      if(!VALID_SET.has(currentGuess)){showMessage('Not in word list');playError();return;}
+      if(currentGuess.length!==5){showMessage('Not enough letters');playError();screenShake(3,200);return;}
+      if(!VALID_SET.has(currentGuess)){showMessage('Not in word list');playError();screenShake(3,200);return;}
       submitGuess();return;
     }
     if(currentGuess.length>=5)return;
@@ -195,7 +198,9 @@
         tile.classList.add('flip');
         setTimeout(()=>{
           tile.className='wg-tile '+result[c];
-          // Update keyboard
+          playDrop();
+          if(result[c]==='correct')tile.classList.add('flash-correct');
+          else if(result[c]==='present')tile.classList.add('flash-present');
           const letter=guess[c];
           const prev=keyStates[letter]||'';
           if(result[c]==='correct')keyStates[letter]='correct';
@@ -212,12 +217,14 @@
         gameActive=false;totalPlayed++;totalWon++;streak++;saveStats();
         const msgs=['Genius!','Magnificent!','Impressive!','Splendid!','Great!','Phew!'];
         showMessage(msgs[currentRow]||'Nice!');
-        playPerfect();if(currentRow<=2)setTimeout(()=>playLevelUp(),300);
+        playVictoryFanfare();celebrateWin();
+        confetti({x:window.innerWidth/2,y:window.innerHeight/2});
+        if(currentRow<=2)setTimeout(()=>playLevelUp(),300);
         document.getElementById('game-over-area').style.display='block';
         trackGameOver('word-guess','Word',1,0);
       } else if(currentRow>=5){
         gameActive=false;totalPlayed++;streak=0;saveStats();
-        showMessage(`The word was ${target}`);playGameOver();
+        showMessage(`The word was ${target}`);playGameOver();screenFlash('red',150);
         document.getElementById('game-over-area').style.display='block';
         trackGameOver('word-guess','Word',0,0);
       }

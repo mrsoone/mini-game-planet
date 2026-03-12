@@ -40,7 +40,7 @@
     .su-cell.user{color:#2563EB}
     .su-cell.error{color:#DC2626;background:#FEF2F2}
     .su-cell.selected{background:#DBEAFE !important}
-    .su-cell.same-num{background:#EFF6FF}
+    .su-cell.same-num{background:#EFF6FF;box-shadow:inset 0 0 0 1px #93C5FD,0 0 6px rgba(59,130,246,0.15)}
     .su-cell.same-row,.su-cell.same-col,.su-cell.same-box{background:#F8FAFC}
     .su-cell:nth-child(3n){border-right:2px solid #0F172A}
     .su-cell:nth-child(9n){border-right:2px solid #0F172A}
@@ -65,6 +65,10 @@
     @keyframes floatUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-30px)}}
     @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}75%{transform:translateX(2px)}}
     .shake{animation:shake 0.3s ease}
+    .su-cell.correct-flash{animation:su-correct-flash 0.4s ease}
+    .su-cell.error-flash{animation:su-error-flash 0.4s ease}
+    @keyframes su-correct-flash{0%,30%{background:#DCFCE7;box-shadow:0 0 8px rgba(34,197,94,0.4)}100%{background:transparent;box-shadow:none}}
+    @keyframes su-error-flash{0%,30%{background:#FEE2E2;box-shadow:0 0 8px rgba(239,68,68,0.4)}50%{transform:translateX(-2px)}75%{transform:translateX(2px)}100%{background:transparent;box-shadow:none;transform:translateX(0)}}
   </style>
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Free Sudoku Online | MiniGamePlanet">
@@ -183,7 +187,8 @@
   <div id="footer-container"></div>
 
   <script type="module">
-  import { initAudio, muteAll, isMuted, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playDrop, playLock, playTick } from '/js/audio.js';
+  import { initAudio, muteAll, isMuted, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playDrop, playLock, playTick, playVictoryFanfare } from '/js/audio.js';
+  import { confetti, screenFlash, showScorePopup, showToast, celebrateWin, animateNumber, screenShake } from '/js/effects.js';
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -478,8 +483,13 @@
     undoStack.push({ idx: selectedCell, val: userGrid[selectedCell], notes: new Set(notes[selectedCell]) });
     userGrid[selectedCell] = num;
     notes[selectedCell].clear();
+    playDrop();
+
+    const placedCell = selectedCell;
+    let wasCorrect = false;
 
     if (num === solution[selectedCell]) {
+      wasCorrect = true;
       consecutiveCorrect++;
       if (consecutiveCorrect >= 8) playPerfect();
       else if (consecutiveCorrect >= 5) playSuccess();
@@ -501,10 +511,15 @@
       errors++;
       errorsEl.textContent = errors;
       playError();
+      screenShake(3, 200);
       if (errors >= maxErrors) { endGame(false); return; }
     }
 
     renderGrid();
+
+    const cellEl = gridEl.querySelector(`[data-idx="${placedCell}"]`);
+    if (cellEl) cellEl.classList.add(wasCorrect ? 'correct-flash' : 'error-flash');
+
     if (checkWin()) endGame(true);
   }
 
@@ -543,6 +558,11 @@
     if (won) {
       session.wins++;
       streak++;
+      playVictoryFanfare();
+      celebrateWin(document.getElementById('game-wrap'));
+      const gridRect = gridEl.getBoundingClientRect();
+      confetti(gridRect.left + gridRect.width / 2, gridRect.top + gridRect.height / 2);
+      showToast({ text: '🎉 Puzzle Complete! Amazing work!', type: 'success', duration: 3000 });
       const key = isDaily ? 'daily' : diff;
       if (!bestTimes[key] || seconds < bestTimes[key]) {
         bestTimes[key] = seconds;

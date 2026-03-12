@@ -22,9 +22,11 @@
     .hero-grad{background:linear-gradient(135deg,#7C3AED 0%,#9333EA 20%,#C026D3 40%,#E11D48 60%,#EA580C 80%,#F59E0B 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:heroShift 8s ease-in-out infinite}
     @keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
     *{box-sizing:border-box}
-    .card-s{position:absolute;width:58px;height:82px;border-radius:5px;font-family:'DM Mono',monospace;font-weight:700;user-select:none;cursor:pointer}
-    .card-s.up{background:#fff;border:1.5px solid #D1D5DB}
-    .card-s.down{background:linear-gradient(135deg,#1E40AF,#6D28D9);border:1.5px solid #312E81}
+    .card-s{position:absolute;width:58px;height:82px;border-radius:5px;font-family:'DM Mono',monospace;font-weight:700;user-select:none;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s}
+    .card-s.up{background:linear-gradient(to bottom,#ffffff 0%,#f8f9fa 100%);border:1.5px solid #D1D5DB;box-shadow:0 2px 6px rgba(0,0,0,0.1),0 1px 2px rgba(0,0,0,0.05)}
+    .card-s.up:hover{transform:translateY(-4px);box-shadow:0 6px 14px rgba(0,0,0,0.16),0 2px 4px rgba(0,0,0,0.08)}
+    .card-s.down{background:linear-gradient(135deg,#1E3A5F 0%,#2D1B69 50%,#1E3A5F 100%);border:1.5px solid #1a2e4a;background-size:100% 100%;position:relative;overflow:hidden}
+    .card-s.down::before{content:'';position:absolute;inset:3px;border-radius:3px;border:1px solid rgba(255,255,255,0.07);background:repeating-linear-gradient(45deg,transparent,transparent 3px,rgba(255,255,255,0.025) 3px,rgba(255,255,255,0.025) 6px)}
     .card-s .r{font-size:12px;position:absolute;top:2px;left:3px;line-height:1}
     .card-s .st{font-size:16px;position:absolute;bottom:2px;right:4px}
     .card-red{color:#DC2626}.card-black{color:#1E293B}
@@ -61,7 +63,7 @@
         <span style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;">✅ <span id="completed">0</span>/8</span>
         <span style="font-family:'DM Mono',monospace;font-size:12px;color:#64748B;">📦 Stock: <span id="stock-count">50</span></span>
       </div>
-      <div id="game-area" style="position:relative;width:100%;max-width:660px;margin:0 auto;min-height:460px;background:#0F6B3A;border-radius:12px;padding:10px;overflow:hidden;touch-action:none;"></div>
+      <div id="game-area" style="position:relative;width:100%;max-width:660px;margin:0 auto;min-height:460px;background:linear-gradient(160deg,#1a5c35 0%,#0d4025 100%);border-radius:16px;padding:10px;overflow:hidden;touch-action:none;box-shadow:inset 0 2px 12px rgba(0,0,0,0.3);"></div>
       <div id="win-banner" style="display:none;text-align:center;padding:16px;margin-top:8px;background:#D1FAE5;border-radius:8px;border:2px solid #6EE7B7;">
         <div style="font-size:22px;font-weight:700;color:#065F46;">🎉 You Win!</div>
         <div id="win-sub" style="font-size:13px;color:#047857;margin-top:2px;"></div>
@@ -97,7 +99,8 @@
   <div id="footer-container"></div>
 
   <script type="module">
-  import { initAudio, muteAll, playClick, playSuccess, playDeal, playFlip, playDrop, playPerfect, playLevelUp, playCollect, playError } from '/js/audio.js';
+  import { initAudio, muteAll, playClick, playSuccess, playDeal, playFlip, playDrop, playPerfect, playLevelUp, playCollect, playError, playVictoryFanfare, playCardSlide } from '/js/audio.js';
+  import { confetti, sparkle, screenFlash, screenPulse, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -225,7 +228,7 @@
       tableau[col].push(...cards);
       moves++;document.getElementById('moves').textContent=moves;
       flipTop(selected.col);
-      playDrop();
+      playCardSlide();playDrop();
       checkComplete(col);
     } else{playError();}
     selected=null;render();
@@ -257,13 +260,17 @@
     }
     c.splice(-13);completed++;
     document.getElementById('completed').textContent=completed;
-    playCollect();setTimeout(()=>playSuccess(),200);
+    playVictoryFanfare();setTimeout(()=>playSuccess(),200);
     flipTop(col);
+    const areaRect=area.getBoundingClientRect();
+    const cx=areaRect.left+areaRect.width/2;
+    setTimeout(()=>{confetti(cx,areaRect.top+80);showToast({text:`✅ Suit complete! (${completed}/8)`,type:'success',duration:2000});},250);
     if(completed===8){
       clearInterval(timerInterval);
       document.getElementById('win-banner').style.display='block';
       document.getElementById('win-sub').textContent=`${moves} moves · ${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`;
       playPerfect();setTimeout(()=>playLevelUp(),400);
+      setTimeout(()=>{celebrateWin(area);for(let i=0;i<5;i++)setTimeout(()=>confetti(cx+(Math.random()-0.5)*200,areaRect.top+60),i*150);},500);
       trackGameOver('spider-solitaire','Card',1,seconds);
     }
     render();
@@ -281,7 +288,7 @@
     }
     moves++;document.getElementById('moves').textContent=moves;
     document.getElementById('stock-count').textContent=stock.length;
-    playDeal();
+    playDeal();playCardSlide();
     for(let c=0;c<10;c++)checkComplete(c);
     render();
   }

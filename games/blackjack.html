@@ -21,10 +21,12 @@
   <style>
     .hero-grad{background:linear-gradient(135deg,#7C3AED 0%,#9333EA 20%,#C026D3 40%,#E11D48 60%,#EA580C 80%,#F59E0B 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:heroShift 8s ease-in-out infinite}
     @keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
-    .card{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:64px;height:92px;border-radius:8px;background:#fff;border:2px solid #E2E8F0;font-family:'DM Mono',monospace;font-weight:700;font-size:18px;box-shadow:0 2px 6px rgba(0,0,0,0.08);margin:0 -8px;transition:transform 0.2s;position:relative}
+    .card{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:64px;height:92px;border-radius:8px;background:linear-gradient(to bottom,#ffffff 0%,#f8f9fa 100%);border:2px solid #E2E8F0;font-family:'DM Mono',monospace;font-weight:700;font-size:18px;box-shadow:0 2px 8px rgba(0,0,0,0.12),0 1px 2px rgba(0,0,0,0.06);margin:0 -8px;transition:transform 0.2s,box-shadow 0.2s;position:relative}
+    .card:hover{transform:translateY(-4px);box-shadow:0 6px 16px rgba(0,0,0,0.18),0 2px 4px rgba(0,0,0,0.08)}
     .card.red{color:#DC2626}.card.black{color:#1E293B}
-    .card.facedown{background:linear-gradient(135deg,#1E40AF,#7C3AED);border-color:#1E3A8A;color:transparent}
-    .card.facedown::after{content:'🂠';font-size:28px;position:absolute;color:#fff;opacity:0.3}
+    .card.facedown{background:linear-gradient(135deg,#1E3A5F 0%,#2D1B69 50%,#1E3A5F 100%);border-color:#1a2e4a;color:transparent;background-size:100% 100%}
+    .card.facedown::before{content:'';position:absolute;inset:4px;border-radius:4px;border:1px solid rgba(255,255,255,0.08);background:repeating-linear-gradient(45deg,transparent,transparent 4px,rgba(255,255,255,0.03) 4px,rgba(255,255,255,0.03) 8px)}
+    .card.facedown::after{content:'🂠';font-size:28px;position:absolute;color:#fff;opacity:0.25;z-index:1}
     .card.deal{animation:dealIn 0.3s ease-out}
     @keyframes dealIn{from{transform:translateY(-40px) scale(0.8);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
     .action-btn{padding:8px 20px;border-radius:8px;font-size:13px;font-weight:700;border:2px solid;cursor:pointer;font-family:inherit;transition:all 0.1s}
@@ -60,7 +62,7 @@
 
       <!-- Betting phase -->
       <div id="bet-phase" style="text-align:center;">
-        <div id="bet-preview-felt" style="background:#0F4C3A;border-radius:12px;padding:20px;margin-bottom:16px;">
+        <div id="bet-preview-felt" style="background:linear-gradient(160deg,#1a5c35 0%,#0d4025 100%);border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:inset 0 2px 12px rgba(0,0,0,0.3);">
           <div style="margin-bottom:16px;">
             <p style="color:rgba(255,255,255,0.5);font-size:11px;font-weight:600;margin-bottom:6px;">DEALER</p>
             <div style="display:flex;justify-content:center;gap:8px;min-height:80px;align-items:center;">
@@ -90,7 +92,7 @@
 
       <!-- Play phase -->
       <div id="play-phase" style="display:none;">
-        <div style="background:#0F4C3A;border-radius:12px;padding:20px;margin-bottom:12px;">
+        <div style="background:linear-gradient(160deg,#1a5c35 0%,#0d4025 100%);border-radius:16px;padding:20px;margin-bottom:12px;box-shadow:inset 0 2px 12px rgba(0,0,0,0.3);">
           <div style="margin-bottom:20px;">
             <p style="color:rgba(255,255,255,0.6);font-size:11px;font-weight:600;margin-bottom:4px;">DEALER <span id="dealer-total" style="color:#FDE68A;font-weight:700;font-size:13px;"></span></p>
             <div id="dealer-hand" style="display:flex;padding:4px 0;min-height:96px;"></div>
@@ -160,7 +162,8 @@
   <div id="footer-container"></div>
 
   <script type="module">
-  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playDeal, playFlip, playCollect } from '/js/audio.js';
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playDeal, playFlip, playCollect, playVictoryFanfare, playCardSlide, playDrop } from '/js/audio.js';
+  import { confetti, sparkle, screenFlash, screenPulse, showScorePopup, showToast, celebrateWin } from '/js/effects.js';
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -247,7 +250,7 @@
     document.getElementById('current-bet').textContent=bet;
 
     renderHands(true);
-    playDeal();
+    playDeal();playCardSlide();
 
     if(isBlackjack(playerHand)){
       setTimeout(()=>resolve(),600);
@@ -271,7 +274,7 @@
 
   document.getElementById('btn-hit').addEventListener('click',()=>{
     if(gamePhase!=='play')return;
-    playerHand.push(drawCard());playFlip();renderHands(true);
+    playerHand.push(drawCard());playFlip();playDrop();renderHands(true);
     if(handValue(playerHand)>21)resolve();
   });
 
@@ -283,7 +286,7 @@
   document.getElementById('btn-double').addEventListener('click',()=>{
     if(gamePhase!=='play'||chips<bet*2)return;
     bet*=2;document.getElementById('current-bet').textContent=bet;
-    playerHand.push(drawCard());playFlip();renderHands(true);
+    playerHand.push(drawCard());playFlip();playDrop();renderHands(true);
     setTimeout(()=>resolve(),400);
   });
 
@@ -305,32 +308,41 @@
     banner.style.display='block';
 
     let result;
+    const gameWrap=document.getElementById('game-wrap');
+    const bannerRect=()=>banner.getBoundingClientRect();
     if(isBlackjack(playerHand)&&!isBlackjack(dealerHand)){
       result='blackjack';
       const payout=Math.floor(bet*1.5);
       chips+=payout;
       banner.textContent=`🂡 BLACKJACK! +${payout}`;banner.style.background='#FEF3C7';banner.style.color='#92400E';
-      playPerfect();session.wins++;session.totalChipsWon+=payout;winCount++;streak++;
+      playVictoryFanfare();session.wins++;session.totalChipsWon+=payout;winCount++;streak++;
+      setTimeout(()=>{celebrateWin(gameWrap);const r=bannerRect();confetti(r.left+r.width/2,r.top);showScorePopup({x:r.left+r.width/2,y:r.top-10,text:`+${payout}`,color:'#F59E0B',size:'lg',style:'pop'});},300);
     } else if(isBlackjack(dealerHand)&&!isBlackjack(playerHand)){
       result='lose';chips-=bet;
       banner.textContent=`Dealer Blackjack! -${bet}`;banner.style.background='#FEE2E2';banner.style.color='#991B1B';
       playGameOver();lossCount++;streak=0;
+      screenFlash('red',150);
     } else if(pv>21){
       result='bust';chips-=bet;
       banner.textContent=`Bust! -${bet}`;banner.style.background='#FEE2E2';banner.style.color='#991B1B';
       playError();lossCount++;streak=0;
+      screenFlash('red',150);
+      setTimeout(()=>{const r=bannerRect();showScorePopup({x:r.left+r.width/2,y:r.top-10,text:`-${bet}`,color:'#EF4444',size:'md',style:'shake'});},100);
     } else if(dv>21){
       result='win';chips+=bet;
       banner.textContent=`Dealer Busts! +${bet}`;banner.style.background='#D1FAE5';banner.style.color='#065F46';
       playSuccess();session.wins++;session.totalChipsWon+=bet;winCount++;streak++;
+      setTimeout(()=>{celebrateWin(gameWrap);const r=bannerRect();confetti(r.left+r.width/2,r.top);showScorePopup({x:r.left+r.width/2,y:r.top-10,text:`+${bet}`,color:'#10B981',size:'lg',style:'pop'});},200);
     } else if(pv>dv){
       result='win';chips+=bet;
       banner.textContent=`You Win! +${bet}`;banner.style.background='#D1FAE5';banner.style.color='#065F46';
       playSuccess();session.wins++;session.totalChipsWon+=bet;winCount++;streak++;
+      setTimeout(()=>{celebrateWin(gameWrap);const r=bannerRect();confetti(r.left+r.width/2,r.top);showScorePopup({x:r.left+r.width/2,y:r.top-10,text:`+${bet}`,color:'#10B981',size:'lg',style:'pop'});},200);
     } else if(pv<dv){
       result='lose';chips-=bet;
       banner.textContent=`Dealer Wins. -${bet}`;banner.style.background='#FEE2E2';banner.style.color='#991B1B';
       playGameOver();lossCount++;streak=0;
+      screenFlash('red',150);
     } else{
       result='push';
       banner.textContent='Push — Bet Returned';banner.style.background='#F1F5F9';banner.style.color='#475569';

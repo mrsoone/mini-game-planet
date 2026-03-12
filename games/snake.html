@@ -142,9 +142,10 @@
   <div id="footer-container"></div>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playCollect } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playCollect, playDrop } from '/js/audio.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
+    import { screenShake, screenFlash, showScorePopup, showToast, CanvasParticleSystem, CanvasScorePopups, drawGradientBg, drawGridBg, drawSnakeSegment, drawPulsingFood, confetti, celebrateWin } from '/js/effects.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
   import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
   import { initGamepad, onButtonPress, isGamepadConnected } from '/js/gamepad.js';
@@ -183,6 +184,11 @@
     let gameStarted = false;
     let gameOver = false;
     let nearMissShown = false;
+    let lastFrameTime = 0;
+    let lastDropSound = 0;
+
+    const particles = new CanvasParticleSystem(80);
+    const scorePopups = new CanvasScorePopups();
 
     const startOverlay = document.getElementById('start-overlay');
     const gameoverOverlay = document.getElementById('gameover-overlay');
@@ -228,24 +234,20 @@
       document.getElementById('streak').textContent = streak;
     }
 
-    function draw() {
-      ctx.fillStyle = '#1a1a2e';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      ctx.strokeStyle = '#2d2d44';
-      ctx.lineWidth = 1;
-      for (let x = 0; x <= COLS; x++) ctx.fillRect(x * GRID_SIZE, 0, 1, canvas.height);
-      for (let y = 0; y <= ROWS; y++) ctx.fillRect(0, y * GRID_SIZE, canvas.width, 1);
+    function draw(timestamp = 0) {
+      drawGradientBg(ctx, canvas.width, canvas.height, '#0a0a1a', '#0f0f2d');
+      drawGridBg(ctx, canvas.width, canvas.height, GRID_SIZE, 'rgba(255,255,255,0.04)');
 
       snake.forEach((seg, i) => {
-        ctx.fillStyle = i === 0 ? '#22c55e' : '#16a34a';
-        ctx.fillRect(seg.x * GRID_SIZE + 1, seg.y * GRID_SIZE + 1, GRID_SIZE - 2, GRID_SIZE - 2);
+        drawSnakeSegment(ctx, seg.x * GRID_SIZE, seg.y * GRID_SIZE, GRID_SIZE, i, snake.length, dir);
       });
 
-      ctx.fillStyle = '#ef4444';
-      ctx.beginPath();
-      ctx.arc(food.x * GRID_SIZE + GRID_SIZE / 2, food.y * GRID_SIZE + GRID_SIZE / 2, GRID_SIZE / 2 - 2, 0, Math.PI * 2);
-      ctx.fill();
+      const fx = food.x * GRID_SIZE + GRID_SIZE / 2;
+      const fy = food.y * GRID_SIZE + GRID_SIZE / 2;
+      drawPulsingFood(ctx, fx, fy, GRID_SIZE / 2 - 2, timestamp);
+
+      particles.draw(ctx);
+      scorePopups.draw(ctx);
     }
 
     function checkNearMiss() {
@@ -286,20 +288,44 @@
       snake.unshift(head);
       if (head.x === food.x && head.y === food.y) {
         score++;
+        const eatX = food.x * GRID_SIZE + GRID_SIZE / 2;
+        const eatY = food.y * GRID_SIZE + GRID_SIZE / 2;
+        particles.emit(eatX, eatY, {
+          count: 8,
+          colors: ['#22c55e', '#4ade80', '#86efac'],
+          speed: { min: 1, max: 3 },
+          size: { min: 2, max: 5 },
+          lifetime: 400,
+          gravity: 0.1,
+          spread: 360
+        });
+        scorePopups.add(eatX, eatY - 5, '+1', '#4ade80', 16);
         try { playCollect(); } catch (_) {}
         if (score % 5 === 0 && score > 0) try { playLevelUp(); } catch (_) {}
         spawnFood();
       } else {
         snake.pop();
       }
-
-      draw();
     }
 
     function endGame() {
       gameOver = true;
-      if (gameLoopId) cancelAnimationFrame(gameLoopId);
       try { playGameOver(); } catch (_) {}
+
+      const hx = snake[0].x * GRID_SIZE + GRID_SIZE / 2;
+      const hy = snake[0].y * GRID_SIZE + GRID_SIZE / 2;
+      screenShake(6, 300);
+      screenFlash('red', 150);
+      particles.emit(hx, hy, {
+        count: 25,
+        colors: ['#ef4444', '#f87171', '#fca5a5', '#22c55e'],
+        speed: { min: 2, max: 6 },
+        size: { min: 2, max: 6 },
+        lifetime: 600,
+        gravity: 0.3,
+        spread: 360
+      });
+
       trackGameOver('snake', score);
 
       if (score > bestScore) {
@@ -317,14 +343,27 @@
     }
 
     function gameLoop(timestamp) {
-      if (!gameStarted || gameOver) return;
-      if (gameLoop.last === undefined) gameLoop.last = timestamp;
-      const elapsed = timestamp - gameLoop.last;
-      if (elapsed >= getInterval()) {
-        gameLoop.last = timestamp;
-        tick();
+      if (!gameStarted) return;
+
+      const dt = Math.min(timestamp - (lastFrameTime || timestamp), 50);
+      lastFrameTime = timestamp;
+
+      if (!gameOver) {
+        if (gameLoop.last === undefined) gameLoop.last = timestamp;
+        const elapsed = timestamp - gameLoop.last;
+        if (elapsed >= getInterval()) {
+          gameLoop.last = timestamp;
+          tick();
+        }
       }
-      gameLoopId = requestAnimationFrame(gameLoop);
+
+      particles.update(dt);
+      scorePopups.update(dt);
+      draw(timestamp);
+
+      if (!gameOver || particles.particles.length > 0 || scorePopups.popups.length > 0) {
+        gameLoopId = requestAnimationFrame(gameLoop);
+      }
     }
 
     function startGame() {
@@ -336,6 +375,7 @@
       gameoverOverlay.classList.remove('flex');
       initGame();
       draw();
+      lastFrameTime = 0;
       gameLoop.last = undefined;
       trackGameStart('snake');
       gameLoopId = requestAnimationFrame(gameLoop);
@@ -349,7 +389,13 @@
 
     function setDir(dx, dy) {
       if (dx === -dir.x && dy === -dir.y) return;
+      if (dx === nextDir.x && dy === nextDir.y) return;
       nextDir = { x: dx, y: dy };
+      const now = performance.now();
+      if (now - lastDropSound > 150) {
+        lastDropSound = now;
+        try { playDrop(); } catch (_) {}
+      }
     }
 
     let touchStart = null;

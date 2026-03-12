@@ -33,15 +33,21 @@
   <style>
     body { font-family: 'Space Grotesk', sans-serif; background: #F5F5F4; }
     .font-mono { font-family: 'DM Mono', monospace; }
-    .square-light { background: #E7E5E4; }
-    .square-dark { background: #78716C; }
-    .square-dark:hover { background: #57534E; }
-    .piece-red { background: radial-gradient(circle at 30% 30%, #EF4444, #B91C1C); }
-    .piece-black { background: radial-gradient(circle at 30% 30%, #404040, #171717); }
+    .square-light { background: #F1DFC0; }
+    .square-dark { background: #B58863; }
+    .square-dark:hover { background: #a07750; }
+    .piece-red { background: radial-gradient(circle at 30% 30%, #EF4444, #B91C1C); filter: drop-shadow(0 3px 4px rgba(0,0,0,0.35)); }
+    .piece-black { background: radial-gradient(circle at 30% 30%, #404040, #171717); filter: drop-shadow(0 3px 4px rgba(0,0,0,0.35)); }
     .piece-king::after { content: '♔'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: rgba(255,255,255,0.9); }
-    .valid-move { background: rgba(34, 197, 94, 0.4) !important; }
-    .valid-capture { background: rgba(239, 68, 68, 0.5) !important; }
+    .valid-move { position: relative; }
+    .valid-move::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 30%; height: 30%; border-radius: 50%; background: rgba(34,197,94,0.45); box-shadow: 0 0 8px 2px rgba(34,197,94,0.2); pointer-events: none; }
+    .valid-capture { position: relative; }
+    .valid-capture::after { content: ''; position: absolute; inset: 4px; border-radius: 50%; border: 3px solid rgba(239,68,68,0.5); box-shadow: inset 0 0 10px rgba(239,68,68,0.15); pointer-events: none; }
     .selected { box-shadow: 0 0 0 3px #3B82F6; }
+    .piece-arrive { animation: pieceArrive 200ms ease-out; }
+    .piece-captured { animation: pieceCaptured 180ms ease-in forwards; }
+    @keyframes pieceArrive { from { transform: scale(0.82); opacity: 0.6; } to { transform: scale(1); opacity: 1; } }
+    @keyframes pieceCaptured { from { transform: scale(1); opacity: 1; } to { transform: scale(0); opacity: 0; } }
   </style>
   <script type="application/ld+json">
   {
@@ -93,7 +99,7 @@
 
       <div class="flex flex-col md:flex-row gap-6 items-start">
         <div class="flex-shrink-0">
-          <div id="board" class="inline-grid grid-cols-8 gap-0 w-[min(90vw,320px)] aspect-square border-2 border-stone-300 rounded-lg overflow-hidden shadow-md"></div>
+          <div id="board" class="inline-grid grid-cols-8 gap-0 w-[min(90vw,320px)] aspect-square border-2 border-stone-300 rounded-lg overflow-hidden" style="box-shadow:0 2px 12px rgba(0,0,0,0.15)"></div>
           <p id="status" class="mt-4 font-medium text-center">Red to move</p>
         </div>
         <div class="flex-1 min-w-0">
@@ -130,7 +136,8 @@
   </div>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playCollect } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playCollect, playVictoryFanfare, playDrop, playCardSlide } from '/js/audio.js';
+    import { screenFlash, showToast, celebrateWin, confetti, showScorePopup } from '/js/effects.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -173,6 +180,7 @@
     let validMoves = [];
     let mustCapture = false;
     let captureChain = null;
+    let lastMoveTo = null;
     let sessionGames = 0, sessionWins = 0, sessionStreak = 0;
     let soundOn = true;
 
@@ -275,7 +283,7 @@
 
       if (move.capture) {
         board[move.capture.r][move.capture.c] = 0;
-        if (soundOn) playCollect?.();
+        if (soundOn) playDrop?.();
         if (canContinueCapture(toR, toC)) {
           captureChain = { r: toR, c: toC };
           return 'continue';
@@ -345,6 +353,7 @@
           const moves = getValidMoves(captureChain.r, captureChain.c).filter(m => m.capture);
           if (moves.length) {
             const m = diff === 'easy' ? moves[Math.floor(secureRandom() * moves.length)] : moves[0];
+            lastMoveTo = { r: m.r, c: m.c };
             const result = makeMove(captureChain.r, captureChain.c, m.r, m.c);
             if (result === 'continue') { render(); setTimeout(aiTurn, 300); return; }
             captureChain = null;
@@ -359,7 +368,10 @@
         }
         const move = getAIMove(diff);
         if (move) {
+          const wasCapture = !!move.to.capture;
+          lastMoveTo = { r: move.to.r, c: move.to.c };
           const result = makeMove(move.from.r, move.from.c, move.to.r, move.to.c);
+          if (soundOn && !wasCapture) playCardSlide?.();
           if (result === 'continue') { render(); setTimeout(aiTurn, 300); return; }
           currentPlayer = RED;
         }
@@ -375,9 +387,17 @@
       const winner = gameOver();
       if (winner) {
         sessionGames++;
-        if (winner === RED) sessionWins++, sessionStreak++;
-        else sessionStreak = 0;
-        if (soundOn) playGameOver?.();
+        if (winner === RED) {
+          sessionWins++;
+          sessionStreak++;
+          if (soundOn) playVictoryFanfare?.();
+          celebrateWin?.();
+          confetti?.();
+        } else {
+          sessionStreak = 0;
+          if (soundOn) playGameOver?.();
+          screenFlash?.('red');
+        }
         trackGameOver?.('checkers', winner === RED ? 'win' : 'loss');
         statusEl.textContent = winner === RED ? 'Red wins!' : 'Black wins!';
         updateStats();
@@ -409,6 +429,7 @@
             const p = document.createElement('div');
             p.className = `w-[85%] aspect-square rounded-full ${piece > 0 ? 'piece-red' : 'piece-black'} ${Math.abs(piece) === KING ? 'piece-king' : ''} relative`;
             if (isSelected) p.classList.add('selected');
+            if (lastMoveTo && lastMoveTo.r === r && lastMoveTo.c === c) p.classList.add('piece-arrive');
             cell.appendChild(p);
           }
           boardEl.appendChild(cell);
@@ -428,8 +449,10 @@
       const move = validMoves.find(m => m.r === r && m.c === c);
 
       if (move) {
-        if (soundOn) playClick?.();
+        const wasCapture = !!move.capture;
+        lastMoveTo = { r, c };
         const result = makeMove(selected.r, selected.c, r, c);
+        if (soundOn && !wasCapture) playCardSlide?.();
         if (result === 'continue') {
           selected = { r, c };
           validMoves = getValidMoves(r, c).filter(m => m.capture);
@@ -471,6 +494,7 @@
 
     restartEl.addEventListener('click', () => {
       initBoard();
+      lastMoveTo = null;
       render();
       statusEl.textContent = 'Red to move';
       trackGameStart?.('checkers');

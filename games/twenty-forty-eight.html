@@ -33,12 +33,13 @@
   <style>
     .hero-grad{background:linear-gradient(135deg,#7C3AED 0%,#9333EA 20%,#C026D3 40%,#E11D48 60%,#EA580C 80%,#F59E0B 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:heroShift 8s ease-in-out infinite}
     @keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
-    #board{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:8px;background:#CBD5E1;border-radius:10px;max-width:340px;margin:0 auto;aspect-ratio:1;touch-action:none}
+    #board{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:8px;background:#BBADA0;border-radius:10px;max-width:340px;margin:0 auto;aspect-ratio:1;touch-action:none;box-shadow:0 4px 20px rgba(0,0,0,0.15)}
     .tile{border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-weight:700;transition:all 0.12s ease;user-select:none}
-    @keyframes popIn{0%{transform:scale(0)}60%{transform:scale(1.1)}100%{transform:scale(1)}}
-    @keyframes merge{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
-    .pop{animation:popIn 0.15s ease}
-    .merged{animation:merge 0.15s ease}
+    @keyframes popIn{0%{transform:scale(0)}50%{transform:scale(1.15)}70%{transform:scale(0.95)}100%{transform:scale(1)}}
+    @keyframes merge{0%{transform:scale(1)}50%{transform:scale(1.2)}100%{transform:scale(1)}}
+    @keyframes pulseGlow{0%,100%{box-shadow:0 0 10px rgba(60,58,50,0.4)}50%{box-shadow:0 0 20px rgba(60,58,50,0.7)}}
+    .pop{animation:popIn 0.2s cubic-bezier(0.18,0.89,0.32,1.28)}
+    .merged{animation:merge 0.2s ease}
     @keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-50px) scale(1.2)}}
     .score-pop{position:absolute;pointer-events:none;font-family:'DM Mono',monospace;font-weight:700;animation:floatUp 0.7s ease forwards;z-index:10}
   </style>
@@ -133,8 +134,9 @@
   <div id="footer-container"></div>
 
   <script type="module">
-  import { initAudio, muteAll, isMuted, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playDrop, playCollect } from '/js/audio.js';
+  import { initAudio, muteAll, isMuted, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playDrop, playCollect, playVictoryFanfare, playComboHit } from '/js/audio.js';
   import { initToolPage } from '/js/shared.js';
+  import { confetti, screenShake, screenPulse, showScorePopup, showToast, celebrateWin, animateNumber } from '/js/effects.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
   import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
@@ -172,21 +174,21 @@
   initGamepad();
 
   const TILE_COLORS = {
-    2:    { bg:'#EFF6FF', text:'#1E40AF' },
-    4:    { bg:'#DBEAFE', text:'#1E40AF' },
-    8:    { bg:'#93C5FD', text:'#fff' },
-    16:   { bg:'#60A5FA', text:'#fff' },
-    32:   { bg:'#3B82F6', text:'#fff' },
-    64:   { bg:'#2563EB', text:'#fff' },
-    128:  { bg:'#1D4ED8', text:'#fff' },
-    256:  { bg:'#1E40AF', text:'#fff' },
-    512:  { bg:'#D97706', text:'#fff' },
-    1024: { bg:'#B45309', text:'#fff' },
-    2048: { bg:'#92400E', text:'#fff' },
+    2:    { bg:'#EEE4DA', text:'#776E65' },
+    4:    { bg:'#EDE0C8', text:'#776E65' },
+    8:    { bg:'#F2B179', text:'#F9F6F2' },
+    16:   { bg:'#F59563', text:'#F9F6F2' },
+    32:   { bg:'#F67C5F', text:'#F9F6F2' },
+    64:   { bg:'#F65E3B', text:'#F9F6F2' },
+    128:  { bg:'#EDCF72', text:'#F9F6F2' },
+    256:  { bg:'#EDCC61', text:'#F9F6F2' },
+    512:  { bg:'#EDC850', text:'#F9F6F2' },
+    1024: { bg:'#EDC53F', text:'#F9F6F2' },
+    2048: { bg:'#EDC22E', text:'#F9F6F2', glow:'0 0 15px #EDC22E80' },
   };
-  const DEFAULT_TILE = { bg:'#0F172A', text:'#fff' };
+  const DEFAULT_TILE = { bg:'#3C3A32', text:'#F9F6F2', pulse:true };
 
-  let grid, score, bestScore = 0, moveCount, gameActive, gameStarted = false;
+  let grid, score, bestScore = 0, moveCount, gameActive, gameStarted = false, reached2048 = false;
   let session = { rounds:0, bestScore:0, avgScore:0, totalScore:0, startTime:Date.now(), streak:0, bestStreak:0 };
   let combo = 0;
 
@@ -204,7 +206,7 @@
 
   function init() {
     grid = Array.from({length:4}, () => Array(4).fill(0));
-    score = 0; moveCount = 0; gameActive = true; combo = 0;
+    score = 0; moveCount = 0; gameActive = true; combo = 0; reached2048 = false;
     goEl.style.display = 'none';
     document.getElementById('near-miss').style.display = 'none';
     scoreEl.textContent = '0';
@@ -231,11 +233,13 @@
       const v = grid[r][c];
       const t = document.createElement('div');
       t.className = 'tile';
-      const colors = v > 0 ? (TILE_COLORS[v] || DEFAULT_TILE) : { bg:'#E2E8F0', text:'transparent' };
-      let fontSize = v >= 1024 ? '18px' : v >= 128 ? '22px' : '26px';
+      const colors = v > 0 ? (TILE_COLORS[v] || DEFAULT_TILE) : { bg:'#CDC1B4', text:'transparent' };
+      let fontSize = v >= 1024 ? '24px' : v >= 128 ? '28px' : '32px';
       Object.assign(t.style, {
         background: colors.bg, color: colors.text, fontSize, lineHeight: '1'
       });
+      if(colors.glow) t.style.boxShadow = colors.glow;
+      if(colors.pulse) t.style.animation = 'pulseGlow 2s ease-in-out infinite';
       if(v > 0) t.textContent = v;
       if(newCell && newCell[0]===r && newCell[1]===c) t.classList.add('pop');
       if(mergedCells && mergedCells.some(m => m[0]===r && m[1]===c)) t.classList.add('merged');
@@ -305,11 +309,13 @@
     // Sound feedback based on points
     if (totalPoints > 0) {
       combo++;
+      if (mergedCells.length > 1) { playComboHit(); }
+      else { playCollect(); }
       if (combo >= 10) { playPerfect(); }
       else if (combo >= 5) { playLevelUp(); }
       else if (combo >= 3) { playSuccess(); }
       else { playScoreUp(Math.min(combo * 50, 400)); }
-      showScorePop(totalPoints);
+      showScorePopup(scoreEl, totalPoints);
     } else {
       combo = 0;
       playDrop();
@@ -327,23 +333,17 @@
     render(nc, mergedCells);
 
     // Check 2048 reached
-    for (let r=0;r<4;r++) for(let c=0;c<4;c++) if(grid[r][c]===2048) {
-      showToast('🎉 You reached 2048! Keep going!');
-      playPerfect();
+    if (!reached2048) {
+      for (let r=0;r<4;r++) for(let c=0;c<4;c++) if(grid[r][c]===2048) {
+        reached2048 = true;
+        playVictoryFanfare();
+        confetti();
+        showToast('🎉 You reached 2048!');
+        break;
+      }
     }
 
     if (isGameOver()) endGame();
-  }
-
-  function showScorePop(pts) {
-    const pop = document.createElement('div');
-    pop.className = 'score-pop';
-    pop.textContent = `+${pts}`;
-    const size = pts >= 512 ? 28 : pts >= 64 ? 20 : 14;
-    const color = pts >= 512 ? '#D97706' : pts >= 64 ? '#2563EB' : '#64748B';
-    Object.assign(pop.style, { fontSize: size+'px', color, left:'50%', top:'40%' });
-    document.getElementById('game-wrap').appendChild(pop);
-    setTimeout(() => pop.remove(), 700);
   }
 
   function isGameOver() {
@@ -395,18 +395,6 @@
 
     goEl.style.display = 'block';
     document.getElementById('play-again').focus();
-  }
-
-  function showToast(msg) {
-    const t = document.createElement('div');
-    t.textContent = msg;
-    Object.assign(t.style, {
-      position:'fixed',top:'60px',left:'50%',transform:'translateX(-50%)',background:'#0F172A',color:'#fff',
-      padding:'10px 20px',borderRadius:'8px',fontSize:'13px',fontWeight:'600',zIndex:'9998',
-      fontFamily:'"Space Grotesk",system-ui,sans-serif',boxShadow:'0 4px 16px rgba(0,0,0,0.2)'
-    });
-    document.body.appendChild(t);
-    setTimeout(() => { t.style.opacity='0'; t.style.transition='opacity 0.3s'; setTimeout(()=>t.remove(),300); }, 3000);
   }
 
   // Controls

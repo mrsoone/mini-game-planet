@@ -22,10 +22,13 @@
     .hero-grad{background:linear-gradient(135deg,#7C3AED 0%,#9333EA 20%,#C026D3 40%,#E11D48 60%,#EA580C 80%,#F59E0B 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:heroShift 8s ease-in-out infinite}
     @keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
     *{box-sizing:border-box}
-    #game-canvas{position:relative;width:100%;max-width:700px;margin:0 auto;min-height:500px;background:#0F6B3A;border-radius:12px;padding:12px;overflow:hidden;touch-action:none}
-    .card-el{position:absolute;width:62px;height:88px;border-radius:6px;cursor:pointer;user-select:none;transition:box-shadow 0.1s;font-family:'DM Mono',monospace}
-    .card-el.face-up{background:#fff;border:1.5px solid #D1D5DB}
-    .card-el.face-down{background:linear-gradient(135deg,#1E40AF,#6D28D9);border:1.5px solid #312E81}
+    #game-canvas{position:relative;width:100%;max-width:700px;margin:0 auto;min-height:500px;background:linear-gradient(160deg,#1a5c35 0%,#0d4025 100%);border-radius:16px;padding:12px;overflow:hidden;touch-action:none;box-shadow:inset 0 2px 12px rgba(0,0,0,0.3)}
+    #game-canvas::before{content:'';position:absolute;inset:0;border-radius:16px;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");opacity:0.06;pointer-events:none}
+    .card-el{position:absolute;width:62px;height:88px;border-radius:6px;cursor:pointer;user-select:none;transition:transform 200ms ease-out,box-shadow 200ms ease-out,left 200ms ease-out,top 200ms ease-out;font-family:'DM Mono',monospace}
+    .card-el.face-up{background:linear-gradient(135deg,#FFFFFF 0%,#F8F9FA 100%);border:1.5px solid #D1D5DB;box-shadow:0 2px 8px rgba(0,0,0,0.12)}
+    .card-el.face-up:hover{transform:translateY(-4px);box-shadow:0 6px 16px rgba(0,0,0,0.2)}
+    .card-el.face-down{background:linear-gradient(135deg,#1E3A5F 0%,#2D1B69 50%,#1E3A5F 100%);border:1.5px solid #312E81;background-size:100% 100%}
+    .card-el.face-down::before{content:'';position:absolute;inset:3px;border-radius:4px;background:repeating-linear-gradient(45deg,transparent,transparent 4px,rgba(255,255,255,0.06) 4px,rgba(255,255,255,0.06) 5px),repeating-linear-gradient(-45deg,transparent,transparent 4px,rgba(255,255,255,0.06) 4px,rgba(255,255,255,0.06) 5px);pointer-events:none}
     .card-el:hover{box-shadow:0 2px 8px rgba(0,0,0,0.2)}
     .card-el.dragging{z-index:1000!important;box-shadow:0 8px 24px rgba(0,0,0,0.3);transition:none}
     .card-rank{font-weight:700;font-size:13px;line-height:1}.card-suit{font-size:18px}
@@ -103,7 +106,8 @@
   <div id="footer-container"></div>
 
   <script type="module">
-  import { initAudio, muteAll, playClick, playSuccess, playError, playDeal, playFlip, playDrop, playPerfect, playLevelUp, playCollect } from '/js/audio.js';
+  import { initAudio, muteAll, playClick, playSuccess, playError, playDeal, playFlip, playDrop, playPerfect, playLevelUp, playCollect, playVictoryFanfare, playCardSlide } from '/js/audio.js';
+  import { confetti, sparkle, showScorePopup, showToast, celebrateWin, screenPulse } from '/js/effects.js';
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -344,7 +348,7 @@
     removeCard(info);
     foundations[f].push(card);
     moves++;document.getElementById('moves').textContent=moves;
-    playCollect();flipTopCards();render();checkWin();
+    playDrop();flipTopCards();render();checkWin();
     return true;
   }
 
@@ -366,7 +370,7 @@
     const removed=removeCards(info);
     tableau[targetCol].push(...removed);
     moves++;document.getElementById('moves').textContent=moves;
-    playDrop();flipTopCards();render();
+    playCardSlide();flipTopCards();render();
     return true;
   }
 
@@ -426,7 +430,7 @@
       document.getElementById('streak').textContent=streak;
       document.getElementById('win-banner').style.display='block';
       document.getElementById('win-sub').textContent=`${moves} moves · ${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`;
-      playPerfect();setTimeout(()=>playLevelUp(),400);
+      playVictoryFanfare();celebrateWin(canvas);confetti();
       trackGameOver('solitaire','Card',1,seconds);
     }
   }
