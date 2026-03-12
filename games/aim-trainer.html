@@ -86,7 +86,7 @@
       </div>
 
       <!-- Arena -->
-      <div id="arena" class="w-full rounded-lg bg-gray-100 border-2 border-dashed border-gray-300 mb-4">
+      <div id="arena" class="w-full rounded-lg border-2 border-dashed border-gray-300 mb-4" style="background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 50%, #f0f9ff 100%);"
         <p id="arena-hint" class="absolute inset-0 flex items-center justify-center text-gray-500 font-mono text-sm">Click Start to begin</p>
       </div>
 
@@ -172,7 +172,8 @@
   </div>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playPerfect } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playPerfect, playVictoryFanfare, playDrop, playDamage } from '/js/audio.js';
+    import { screenShake, screenFlash, showScorePopup, confetti, CanvasParticleSystem, CanvasScorePopups, drawGradientBg } from '/js/effects.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -281,11 +282,20 @@
         reactionTimes.push(rt);
         hits++;
         playSuccess();
+
+        const elRect = el.getBoundingClientRect();
+        const popX = elRect.left + elRect.width / 2;
+        const popY = elRect.top;
+        const rtColor = rt < 300 ? '#10B981' : rt < 500 ? '#F59E0B' : '#EF4444';
+        const rtLabel = rt < 300 ? 'FAST!' : rt < 500 ? `${rt}ms` : `${rt}ms`;
+        showScorePopup({ x: popX, y: popY, text: rtLabel, color: rtColor, size: rt < 300 ? 'lg' : 'md', style: 'float' });
+
         if (hits > sessionBest) sessionBest = hits;
         if (hits > personalBest) {
           personalBest = hits;
           localStorage.setItem('aim-trainer-pb', String(personalBest));
           playScoreUp();
+          confetti(popX, popY);
         }
         updateStats();
         spawnTarget();
@@ -320,8 +330,16 @@
       arenaHint.textContent = 'Round over! Click Start to play again.';
       startBtn.disabled = false;
       sizeSelect.disabled = false;
+      screenShake(5, 300);
+      screenFlash('white', 200);
       playGameOver();
-      trackGameOver('aim-trainer', { hits, misses, accuracy: hits + misses > 0 ? Math.round((hits / (hits + misses)) * 100) : 0 });
+      const accuracy = hits + misses > 0 ? Math.round((hits / (hits + misses)) * 100) : 0;
+      if (accuracy >= 80 && hits >= 10) {
+        playVictoryFanfare();
+        const arenaRect = arena.getBoundingClientRect();
+        confetti(arenaRect.left + arenaRect.width / 2, arenaRect.top + arenaRect.height / 3);
+      }
+      trackGameOver('aim-trainer', { hits, misses, accuracy });
     }
 
     function tick() {
@@ -356,6 +374,8 @@
       if (e.target === arena || e.target === arenaHint) {
         misses++;
         playError();
+        screenFlash('#EF444440', 120);
+        showScorePopup({ x: e.clientX, y: e.clientY, text: 'MISS', color: '#EF4444', size: 'sm', style: 'pop' });
         updateStats();
       }
     });

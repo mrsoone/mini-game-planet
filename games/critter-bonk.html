@@ -100,7 +100,7 @@
         </div>
       </div>
 
-      <div id="game-area" class="aspect-square max-w-sm mx-auto grid grid-cols-3 gap-3 p-4 bg-amber-50/50 rounded-2xl border border-amber-100 mb-6 opacity-60 pointer-events-none">
+      <div id="game-area" class="aspect-square max-w-sm mx-auto grid grid-cols-3 gap-3 p-4 rounded-2xl border border-amber-100 mb-6 opacity-60 pointer-events-none" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #fbbf24 100%);">
         <!-- 3x3 holes -->
         <div class="hole aspect-square rounded-full bg-amber-900/80 flex items-center justify-center text-4xl empty" data-index="0"></div>
         <div class="hole aspect-square rounded-full bg-amber-900/80 flex items-center justify-center text-4xl empty" data-index="1"></div>
@@ -168,7 +168,8 @@
   </main>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playCollect, playExplosion } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playCollect, playExplosion, playVictoryFanfare, playDrop, playDamage } from '/js/audio.js';
+    import { screenShake, screenFlash, showScorePopup, confetti, CanvasParticleSystem, CanvasScorePopups, drawGradientBg } from '/js/effects.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -289,17 +290,29 @@
       hole.dataset.type = '';
       setTimeout(() => hole.classList.remove('whacked'), 200);
 
+      const holeRect = hole.getBoundingClientRect();
+      const popX = holeRect.left + holeRect.width / 2;
+      const popY = holeRect.top + holeRect.height / 4;
+
       if (type === 'bomb') {
         state.score = Math.max(0, state.score - 5);
         state.streak = 0;
         if (state.soundOn) playExplosion().catch(() => {});
         if (state.soundOn) playError().catch(() => {});
+        if (state.soundOn) playDamage().catch(() => {});
+        screenShake(6, 250);
+        screenFlash('#EF4444', 200);
+        showScorePopup({ x: popX, y: popY, text: '-5', color: '#EF4444', size: 'lg', style: 'shake' });
       } else {
         const pts = type === 'golden' ? 3 : 1;
         state.score += pts;
         state.streak++;
         if (state.soundOn) playClick().catch(() => {});
         if (state.soundOn) playScoreUp().catch(() => {});
+        const popColor = type === 'golden' ? '#FFD700' : '#10B981';
+        const popSize = type === 'golden' ? 'lg' : 'md';
+        showScorePopup({ x: popX, y: popY, text: `+${pts}`, color: popColor, size: popSize, style: 'float' });
+        if (type === 'golden') confetti(popX, popY);
       }
 
       updateUI();
@@ -347,10 +360,16 @@
         h.dataset.type = '';
       });
 
+      screenShake(5, 300);
+      screenFlash('white', 200);
+
       if (state.score > state.personalBest) {
         state.personalBest = state.score;
         localStorage.setItem('critter-bonk-pb', state.personalBest);
         if (state.soundOn) playLevelUp().catch(() => {});
+        if (state.soundOn) playVictoryFanfare().catch(() => {});
+        const areaRect = gameArea.getBoundingClientRect();
+        confetti(areaRect.left + areaRect.width / 2, areaRect.top + areaRect.height / 3);
       }
       state.sessionGames++;
       state.sessionTotal += state.score;

@@ -182,7 +182,8 @@
   </footer>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playShoot, playExplosion } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playShoot, playExplosion, playVictoryFanfare, playDrop, playDamage } from '/js/audio.js';
+    import { screenShake, screenFlash, showScorePopup, confetti, celebrateWin, CanvasParticleSystem, CanvasScorePopups, drawGradientBg } from '/js/effects.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -240,6 +241,9 @@
     let particles = [];
     let keys = {};
     let animId = null;
+    let _lastFrameTime = 0;
+    const canvasParticles = new CanvasParticleSystem();
+    const scorePopups = new CanvasScorePopups();
 
     const ASTEROID_SIZES = { large: 3, medium: 2, small: 1 };
     const ASTEROID_POINTS = { large: 20, medium: 50, small: 100 };
@@ -296,6 +300,8 @@
       lastDestroyTime = now;
       if (typeof playExplosion === 'function') playExplosion();
       for (let i = 0; i < 3; i++) particles.push({ x: a.x, y: a.y, vx: (secureRandom() - 0.5) * 4, vy: (secureRandom() - 0.5) * 4, life: 20 });
+      canvasParticles.emit(a.x, a.y, { count: 10, colors: ['#aaa', '#fff', '#fbbf24'], speed: { min: 1, max: 4 }, lifetime: 400, spread: 360 });
+      scorePopups.add(a.x, a.y - 10, `+${pts}`, '#fbbf24');
       const off1 = (secureRandom() - 0.5) * 20;
       const off2 = (secureRandom() - 0.5) * 20;
       return [
@@ -305,13 +311,16 @@
     }
 
     function destroyAsteroid(a) {
-      score += ASTEROID_POINTS[a.size];
+      const pts = ASTEROID_POINTS[a.size];
+      score += pts;
       if (typeof playScoreUp === 'function') playScoreUp();
       const now = Date.now();
       if (now - lastDestroyTime < STREAK_WINDOW) streak++; else streak = 1;
       lastDestroyTime = now;
       if (typeof playExplosion === 'function') playExplosion();
       for (let i = 0; i < 5; i++) particles.push({ x: a.x, y: a.y, vx: (secureRandom() - 0.5) * 4, vy: (secureRandom() - 0.5) * 4, life: 20 });
+      canvasParticles.emit(a.x, a.y, { count: 12, colors: ['#aaa', '#fff', '#f97316'], speed: { min: 2, max: 5 }, lifetime: 500, spread: 360 });
+      scorePopups.add(a.x, a.y - 10, `+${pts}`, '#f97316');
     }
 
     function wrap(v, max) {
@@ -328,9 +337,11 @@
       return Math.hypot(b.x - a.x, b.y - a.y) < a.r;
     }
 
-    function gameLoop() {
-      ctx.fillStyle = '#0a0a0f';
-      ctx.fillRect(0, 0, W, H);
+    function gameLoop(now = performance.now()) {
+      const dt = Math.min(now - (_lastFrameTime || now), 50);
+      _lastFrameTime = now;
+
+      drawGradientBg(ctx, W, H, '#0a0a1a', '#0f0f2d');
 
       if (gameState === 'playing') {
         if (keys['ArrowLeft'] || keys['KeyA']) ship.angle -= ship.turnSpeed;
@@ -376,7 +387,10 @@
         for (const a of asteroids) {
           if (collidesCircle(ship.x, ship.y, ship.size, a.x, a.y, a.r)) {
             lives--;
-            if (typeof playError === 'function') playError();
+            playDamage();
+            screenShake(6, 300);
+            screenFlash('red', 150);
+            canvasParticles.emit(ship.x, ship.y, { count: 15, colors: ['#fff', '#f97316', '#ef4444'], speed: { min: 2, max: 5 }, lifetime: 500, spread: 360 });
             ship.x = W / 2; ship.y = H / 2;
             ship.vx = 0; ship.vy = 0;
             streak = 0;
@@ -394,7 +408,7 @@
 
         if (asteroids.length === 0) {
           wave++;
-          if (typeof playLevelUp === 'function') playLevelUp();
+          playVictoryFanfare();
           spawnWave();
         }
       }
@@ -435,6 +449,11 @@
         ctx.fillStyle = '#fff';
         ctx.fillRect(b.x - 1, b.y - 1, 2, 2);
       });
+
+      canvasParticles.update(dt);
+      canvasParticles.draw(ctx);
+      scorePopups.update(dt);
+      scorePopups.draw(ctx);
 
       if (score > bestScore) {
         bestScore = score;

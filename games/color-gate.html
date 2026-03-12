@@ -155,7 +155,8 @@
   </div>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playCollect } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playCollect, playVictoryFanfare, playDrop, playDamage } from '/js/audio.js';
+    import { screenShake, screenFlash, showScorePopup, confetti, CanvasParticleSystem, CanvasScorePopups, drawGradientBg } from '/js/effects.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -181,6 +182,9 @@
       crypto.getRandomValues(arr);
       return arr[0] / (0xFFFFFFFF + 1);
     }
+
+    const cgParticles = new CanvasParticleSystem();
+    const cgPopups = new CanvasScorePopups();
 
     const COLORS = ['#E53935', '#FDD835', '#43A047', '#8E24AA']; // red, yellow, green, purple
 
@@ -335,12 +339,18 @@
 
     function endGame() {
       gameState = 'over';
+      screenShake(8, 400);
+      screenFlash('#EF4444', 250);
+      try { playDamage(); } catch (_) {}
       sessionGames++;
       sessionStorage.setItem('colorGateSession', String(sessionGames));
       if (score > bestScore) {
         bestScore = score;
         localStorage.setItem('colorGateBest', String(bestScore));
         try { playSuccess(); } catch (_) {}
+        try { playVictoryFanfare(); } catch (_) {}
+        const rect = canvas.getBoundingClientRect();
+        confetti(rect.left + rect.width / 2, rect.top + rect.height * 0.3);
       } else {
         try { playGameOver(); } catch (_) {}
       }
@@ -438,6 +448,8 @@
             b.passed = true;
             score++;
             try { playScoreUp(); } catch (_) {}
+            cgPopups.add(canvas.width / 2, ballY - 20, `+1`, '#4ADE80', 16);
+            cgParticles.emit(ballX, ballY, { count: 6, colors: [COLORS[ballColor], '#fff'], spread: 180, lifetime: 400 });
           }
         }
       }
@@ -455,8 +467,7 @@
     }
 
     function draw() {
-      ctx.fillStyle = '#1a1a1a';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      drawGradientBg(ctx, canvas.width, canvas.height, '#0d0d1a', '#1a1a2e');
 
       if (gameState === 'playing' || gameState === 'over') {
         for (const b of barriers) drawBarrier(b);
@@ -472,6 +483,11 @@
         ctx.lineWidth = 2;
         ctx.stroke();
         ctx.restore();
+
+        cgParticles.update(16);
+        cgParticles.draw(ctx);
+        cgPopups.update(16);
+        cgPopups.draw(ctx);
       }
 
       requestAnimationFrame(draw);

@@ -148,7 +148,8 @@
   </footer>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playCollect, playExplosion } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playCollect, playExplosion, playVictoryFanfare, playDrop, playDamage } from '/js/audio.js';
+    import { screenShake, screenFlash, showScorePopup, confetti, celebrateWin, CanvasParticleSystem, CanvasScorePopups, drawGradientBg } from '/js/effects.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -212,6 +213,9 @@
     let objects = [];
     let animId = null;
 
+    const particles = new CanvasParticleSystem(80);
+    const scorePopups = new CanvasScorePopups();
+
     function getBest() { return parseInt(localStorage.getItem('fruit-slicer-best') || '0', 10); }
     function setBest(v) { localStorage.setItem('fruit-slicer-best', String(v)); }
 
@@ -259,9 +263,17 @@
       obj.sliced = true;
       if (obj.isBomb) {
         playExplosion();
+        screenShake(5, 250);
+        screenFlash('red', 150);
+        playDamage();
+        particles.emit(obj.x, obj.y, {
+          count: 20, colors: ['#424242', '#ef4444', '#f97316'],
+          speed: { min: 3, max: 7 }, size: { min: 3, max: 6 },
+          lifetime: 600, gravity: 0.3, spread: 360
+        });
         gameState = 'over';
         trackGameOver('fruit-slicer', score);
-        showGameOver();
+        showGameOverScreen();
         return;
       }
       const now = Date.now();
@@ -274,6 +286,12 @@
       if (score > sessionBest) sessionBest = score;
       playScoreUp();
       if (combo >= 3) playPerfect();
+      particles.emit(obj.x, obj.y, {
+        count: 12, colors: [obj.color, '#fff', '#fbbf24'],
+        speed: { min: 2, max: 5 }, size: { min: 2, max: 5 },
+        lifetime: 450, gravity: 0.2, spread: 360
+      });
+      scorePopups.add(obj.x, obj.y - 20, `+${pts}`, combo >= 3 ? '#fbbf24' : '#fff', combo >= 3 ? 20 : 16);
       obj.halves = [
         { x: obj.x, y: obj.y, vx: -4, vy: -2, rot: 0, drot: 0.15 },
         { x: obj.x, y: obj.y, vx: 4, vy: -2, rot: 0, drot: -0.15 }
@@ -290,9 +308,12 @@
 
     function gameLoop() {
       if (gameState !== 'playing') return;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      drawGradientBg(ctx, canvas.width, canvas.height, '#ff9a56', '#ff6a88');
 
       const dt = 1/60;
+      particles.update(16.67);
+      scorePopups.update(16.67);
       spawnTimer++;
       if (spawnTimer >= SPAWN_INTERVAL) {
         spawnTimer = 0;
@@ -320,11 +341,15 @@
         if (o.y < -50) {
           objects.splice(i, 1);
           lives--;
+          playDrop();
           if (lives <= 0) {
             gameState = 'over';
+            screenShake(5, 250);
+            screenFlash('red', 150);
+            playDamage();
             playGameOver();
             trackGameOver('fruit-slicer', score);
-            showGameOver();
+            showGameOverScreen();
           } else {
             playError();
           }
@@ -357,6 +382,9 @@
         ctx.stroke();
       }
       if (bladeTrail.length > 0) bladeTrail = bladeTrail.slice(-15);
+
+      particles.draw(ctx);
+      scorePopups.draw(ctx);
 
       updateUI();
       if (gameState === 'playing') animId = requestAnimationFrame(gameLoop);
@@ -413,7 +441,7 @@
       gameLoop();
     }
 
-    function showGameOver() {
+    function showGameOverScreen() {
       gameOverOverlay.classList.remove('hidden');
       finalScoreEl.textContent = `Score: ${score} | Best: ${best}`;
       if (score > bestAtStart && score > 0) sessionStreak++;

@@ -133,7 +133,8 @@
   </footer>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playShoot, playExplosion } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playShoot, playExplosion, playVictoryFanfare, playDrop, playDamage, playCollect } from '/js/audio.js';
+    import { screenShake, screenFlash, showScorePopup, confetti, CanvasParticleSystem, CanvasScorePopups, drawGradientBg } from '/js/effects.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -178,6 +179,8 @@
     let gameStartTime = 0;
 
     const bestKey = 'duck-hunt-best';
+    const particles = new CanvasParticleSystem();
+    const scorePopups = new CanvasScorePopups();
 
     function secureRandom() {
       const arr = new Uint32Array(1);
@@ -290,6 +293,8 @@
           if (streak >= 3) score += Math.min(20, streak * 5);
           playExplosion?.();
           playScoreUp?.();
+          particles.emit(t.x, t.y, { count: 12, colors: t.bonus ? ['#F59E0B', '#FDE68A', '#fff'] : ['#EF4444', '#3B82F6', '#22C55E'], spread: 360, speed: { min: 2, max: 5 }, lifetime: 500 });
+          scorePopups.add(t.x, t.y - 10, `+${pts}`, t.bonus ? '#F59E0B' : '#fff');
           if (score > getBestScore()) {
             setBestScore(score);
             playLevelUp?.();
@@ -319,15 +324,20 @@
       }
       targets = targets.filter(t => !t.hit && t.x > -t.r - 50 && t.x < canvas.width + t.r + 50);
 
-      ctx.fillStyle = '#E5E7EB';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      drawGradientBg(ctx, canvas.width, canvas.height, '#87CEEB', '#E0F2FE');
       targets.forEach(drawTarget);
+      particles.update(16.67);
+      particles.draw(ctx);
+      scorePopups.update(16.67);
+      scorePopups.draw(ctx);
 
       updateDisplays();
 
       if (timer <= 0) {
         gameState = 'over';
         playGameOver?.();
+        screenFlash('#000', 300);
+        if (score > 0) confetti(window.innerWidth / 2, window.innerHeight / 3);
         trackGameOver?.('duck-hunt', score, { hits, shotsFired, accuracy: shotsFired > 0 ? (hits / shotsFired * 100) : 0 });
         gameOverOverlay.classList.remove('hidden');
         gameOverOverlay.classList.add('flex');

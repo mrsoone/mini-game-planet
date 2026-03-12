@@ -128,7 +128,8 @@
   </footer>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playCollect } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playCollect, playVictoryFanfare, playDrop, playDamage } from '/js/audio.js';
+    import { screenShake, screenFlash, showScorePopup, confetti, CanvasParticleSystem, CanvasScorePopups, drawGradientBg } from '/js/effects.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -175,6 +176,9 @@
     let magnetEnd = 0;
     let gamesPlayed = 0;
     let streak = 0;
+
+    const cdParticles = new CanvasParticleSystem();
+    const cdPopups = new CanvasScorePopups();
 
     function secureRandom() {
       const arr = new Uint32Array(1);
@@ -350,18 +354,24 @@
         if (circleCollide(playerX + playerW / 2, H - playerH / 2 - 10, playerW / 2, c.x, c.y, c.r)) {
           score += 50;
           playScoreUp();
+          cdPopups.add(c.x, c.y - 10, '+50', '#eab308', 16);
+          cdParticles.emit(c.x, c.y, { count: 8, colors: ['#eab308', '#FFD700', '#FFA500'], spread: 360, lifetime: 400 });
           coins = coins.filter(x => x !== c);
         }
       }
       coins = coins.filter(c => c.y < H + 20);
 
-      ctx.fillStyle = '#1a1a1a';
-      ctx.fillRect(0, 0, W, H);
+      drawGradientBg(ctx, W, H, '#0d0d1a', '#1a1a2e');
 
       obstacles.forEach(drawObstacle);
       powerUps.forEach(drawPowerUp);
       coins.forEach(drawCoin);
       drawPlayer();
+
+      cdParticles.update(16);
+      cdParticles.draw(ctx);
+      cdPopups.update(16);
+      cdPopups.draw(ctx);
 
       updateStats();
       requestAnimationFrame(gameLoop);
@@ -369,12 +379,18 @@
 
     function endGame() {
       gameRunning = false;
+      screenShake(10, 400);
+      screenFlash('#EF4444', 250);
+      playDamage();
       playGameOver();
       trackGameOver('card-dodger', score);
       const best = getBest();
       if (score > best) {
         setBest(score);
         playSuccess();
+        playVictoryFanfare();
+        const rect = canvas.getBoundingClientRect();
+        confetti(rect.left + rect.width / 2, rect.top + rect.height * 0.3);
       }
       streak = getStreak();
       setStreak(0);

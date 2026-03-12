@@ -123,7 +123,8 @@
   </main>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playCollect, playBounce } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playCollect, playBounce, playVictoryFanfare, playDrop, playDamage } from '/js/audio.js';
+    import { screenShake, screenFlash, showScorePopup, confetti, celebrateWin, CanvasParticleSystem, CanvasScorePopups, drawGradientBg } from '/js/effects.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -184,6 +185,9 @@
     let lastObstacleTime = 0;
     let lastCoinTime = 0;
     let animId = null;
+
+    const particles = new CanvasParticleSystem(80);
+    const scorePopups = new CanvasScorePopups();
 
     function secureRandom() {
       const arr = new Uint32Array(1);
@@ -287,16 +291,15 @@
     }
 
     function drawBackground() {
-      ctx.fillStyle = '#87CEEB';
-      ctx.fillRect(0, 0, W, H);
-      ctx.fillStyle = 'rgba(255,255,255,0.8)';
+      drawGradientBg(ctx, W, H, '#1a1a2e', '#16213e');
+      ctx.fillStyle = 'rgba(255,255,255,0.5)';
       clouds.forEach(c => {
         const cx = (c.x - (score * 0.3) % (W + c.w * 2)) % (W + c.w * 2) - c.w;
         ctx.beginPath();
         ctx.ellipse(cx, c.y, c.w / 2, c.h / 2, 0, 0, Math.PI * 2);
         ctx.fill();
       });
-      ctx.fillStyle = 'rgba(72,187,120,0.4)';
+      ctx.fillStyle = 'rgba(72,187,120,0.25)';
       hills.forEach(h => {
         const hx = (h.x - (score * 1.5) % (W + h.w * 2)) % (W + h.w * 2) - h.w;
         ctx.beginPath();
@@ -374,6 +377,12 @@
           score += 50;
           coinsEl.textContent = coinsCollected;
           try { playCollect(); } catch (_) {}
+          particles.emit(c.x, c.y, {
+            count: 10, colors: ['#F6E05E', '#D69E2E', '#F59E0B'],
+            speed: { min: 1, max: 4 }, size: { min: 2, max: 5 },
+            lifetime: 400, gravity: 0.1, spread: 360
+          });
+          scorePopups.add(c.x, c.y - 15, '+50', '#F6E05E', 16);
         }
       });
 
@@ -417,6 +426,14 @@
       coins = coins.filter(c => !c.collected || c.x + c.r > 0);
 
       if (checkCollisions()) {
+        screenShake(5, 250);
+        screenFlash('red', 150);
+        playDamage();
+        particles.emit(player.x + player.w / 2, playerY + player.h / 2, {
+          count: 20, colors: ['#E53E3E', '#F59E0B', '#2D3748'],
+          speed: { min: 2, max: 6 }, size: { min: 2, max: 5 },
+          lifetime: 600, gravity: 0.3, spread: 360
+        });
         gameState = 'over';
         sessionGames++;
         sessionStorage.setItem('endless-runner-session', sessionGames);
@@ -443,6 +460,10 @@
       drawObstacles();
       drawCoins();
       drawPlayer.call(player);
+      particles.update(16.67);
+      particles.draw(ctx);
+      scorePopups.update(16.67);
+      scorePopups.draw(ctx);
     }
 
     function gameLoop() {

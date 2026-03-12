@@ -117,7 +117,8 @@
   </footer>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playBounce } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playBounce, playVictoryFanfare, playDrop, playDamage } from '/js/audio.js';
+    import { screenShake, screenFlash, showScorePopup, confetti, CanvasParticleSystem, CanvasScorePopups, drawGradientBg } from '/js/effects.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -205,6 +206,10 @@
     const MAX_SPEED = 12;
     const SPEED_INCREASE = 0.0008;
 
+    const gfParticles = new CanvasParticleSystem();
+    const gfPopups = new CanvasScorePopups();
+    let lastMilestone = 0;
+
     let gameState = 'idle';
     let playerX = 80;
     let playerY = FLOOR_Y - PLAYER_H;
@@ -290,6 +295,10 @@
         const obRect = { x: ox, y: ob.y, w: ob.w, h: ob.h };
         if (collides(playerRect, obRect)) {
           gameState = 'over';
+          screenShake(10, 400);
+          screenFlash('#EF4444', 250);
+          try { playDamage(); } catch {}
+          gfParticles.emit(playerX + PLAYER_W / 2, playerY + PLAYER_H / 2, { count: 15, colors: ['#e63946', '#ff6b6b', '#fff'], spread: 360, speed: { min: 2, max: 6 }, lifetime: 500 });
           setSessionGames(getSessionGames() + 1);
           sessionGames.textContent = getSessionGames();
           if (score > best) {
@@ -309,6 +318,10 @@
 
       if (inGap(playerX, playerY, PLAYER_H)) {
         gameState = 'over';
+        screenShake(10, 400);
+        screenFlash('#EF4444', 250);
+        try { playDamage(); } catch {}
+        try { playDrop(); } catch {}
         setSessionGames(getSessionGames() + 1);
         sessionGames.textContent = getSessionGames();
         if (score > best) {
@@ -325,14 +338,16 @@
         return;
       }
 
-      if (score > 0 && score % 100 === 0 && Math.floor(scrollX / 10) === score) {
+      if (score > 0 && score % 50 === 0 && score !== lastMilestone) {
+        lastMilestone = score;
         try { playScoreUp(); } catch {}
+        gfPopups.add(playerX + PLAYER_W / 2 + 40, playerY - 10, `${score}`, '#FFD700', 18);
+        gfParticles.emit(playerX + PLAYER_W, playerY + PLAYER_H / 2, { count: 8, colors: ['#FFD700', '#FFA500'], spread: 120, lifetime: 400 });
       }
     }
 
     function draw() {
-      ctx.fillStyle = '#0f0f1a';
-      ctx.fillRect(0, 0, W, H);
+      drawGradientBg(ctx, W, H, '#0a0a18', '#0f0f2d');
 
       for (const layer of parallaxLayers) {
         ctx.fillStyle = layer.color;
@@ -380,6 +395,11 @@
       ctx.lineWidth = 2;
       ctx.strokeRect(playerX, playerY, PLAYER_W, PLAYER_H);
 
+      gfParticles.update(16);
+      gfParticles.draw(ctx);
+      gfPopups.update(16);
+      gfPopups.draw(ctx);
+
       ctx.fillStyle = 'rgba(255,255,255,0.9)';
       ctx.font = '14px "DM Mono"';
       ctx.fillText('Score: ' + score, 10, 25);
@@ -404,6 +424,7 @@
       gravityFlipped = false;
       scrollX = 0;
       score = 0;
+      lastMilestone = 0;
       speed = BASE_SPEED;
       obstacles = [];
       gaps = [];

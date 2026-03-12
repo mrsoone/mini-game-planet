@@ -130,7 +130,8 @@
   </main>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playVictoryFanfare, playDrop, playDamage, playCollect } from '/js/audio.js';
+    import { screenShake, screenFlash, showScorePopup, confetti, celebrateWin, CanvasParticleSystem, CanvasScorePopups, drawGradientBg } from '/js/effects.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -162,6 +163,9 @@
     let muted = false;
     let gameRunning = false;
     let animationId = null;
+
+    const particles = new CanvasParticleSystem(80);
+    const scorePopups = new CanvasScorePopups();
 
     const W = canvas.width;
     const H = canvas.height;
@@ -316,6 +320,12 @@
           state.passedPipes.add(p.id);
           state.score++;
           playScoreUp();
+          particles.emit(BIRD_X, state.bird.y, {
+            count: 8, colors: ['#fbbf24', '#f59e0b', '#22c55e'],
+            speed: { min: 1, max: 3 }, size: { min: 2, max: 5 },
+            lifetime: 400, gravity: 0.1, spread: 360
+          });
+          scorePopups.add(BIRD_X + 30, state.bird.y - 10, `+1`, '#22c55e', 18);
         }
       }
       state.pipes = state.pipes.filter(p => p.x + PIPE_W > 0);
@@ -323,17 +333,27 @@
       state.groundOffset = (state.groundOffset + PIPE_SPEED * dt * 2) % GROUND_TILE_W;
 
       if (checkCollision()) {
+        screenShake(5, 250);
+        screenFlash('red', 150);
+        particles.emit(BIRD_X, state.bird.y, {
+          count: 20, colors: ['#fbbf24', '#ef4444', '#f97316'],
+          speed: { min: 2, max: 6 }, size: { min: 2, max: 5 },
+          lifetime: 600, gravity: 0.3, spread: 360
+        });
+        playDamage();
         endGame();
         return;
       }
 
+      const frameDt = Math.min(now - (state._lastTime || now), 50);
+      particles.update(frameDt);
+      scorePopups.update(frameDt);
       updateUI();
 
-      ctx.fillStyle = '#87CEEB';
-      ctx.fillRect(0, 0, W, H);
+      drawGradientBg(ctx, W, H, '#4facfe', '#00f2fe');
 
       for (let i = 0; i < 5; i++) {
-        ctx.fillStyle = '#e0f2fe';
+        ctx.fillStyle = 'rgba(255,255,255,0.35)';
         ctx.beginPath();
         ctx.arc(50 + i * 120 + (now / 50) % 120, 100 + i * 80, 30, 0, Math.PI * 2);
         ctx.fill();
@@ -375,6 +395,9 @@
       }
       ctx.fillStyle = '#8B4513';
       ctx.fillRect(0, H - 8, W, 8);
+
+      particles.draw(ctx);
+      scorePopups.draw(ctx);
 
       animationId = requestAnimationFrame(gameLoop);
     }

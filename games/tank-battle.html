@@ -77,7 +77,8 @@
   <div id="related-games"></div><div id="footer-container"></div>
 
   <script type="module">
-  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playDeal, playDrop, playPerfect } from '/js/audio.js';
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playDeal, playDrop, playPerfect, playVictoryFanfare, playDamage, playExplosion, playCollect } from '/js/audio.js';
+  import { screenShake, screenFlash, showScorePopup, confetti, CanvasParticleSystem, CanvasScorePopups, drawGradientBg } from '/js/effects.js';
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -103,6 +104,8 @@
   let bullets=[],powerups=[];
   let keys={},phase='idle',gameTimer=120,timerInterval=null,gameStartTime=null,isOnline=false;
   let lastFrame=0;
+  const particles=new CanvasParticleSystem(80);
+  const scorePopups=new CanvasScorePopups();
 
   const DIRS=[[0,-1],[1,0],[0,1],[-1,0]];
   const DIR_NAMES=['up','right','down','left'];
@@ -181,11 +184,13 @@
   }
 
   function draw(){
-    ctx.fillStyle=COLORS.floor;ctx.fillRect(0,0,W,H);
+    drawGradientBg(ctx,W,H,'#0e0e2a','#1e1e3a');
     for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++)if(grid[r][c])drawTile(r,c);
     for(const p of powerups){ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,10,0,Math.PI*2);ctx.fill();ctx.font='14px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(p.icon,p.x,p.y);}
     for(const b of bullets){ctx.fillStyle=COLORS.bullet;ctx.beginPath();ctx.arc(b.x,b.y,3,0,Math.PI*2);ctx.fill();}
     drawTank(player,COLORS.player);drawTank(enemy,COLORS.enemy);
+    particles.update(16.67);particles.draw(ctx);
+    scorePopups.update(16.67);scorePopups.draw(ctx);
   }
 
   function updateBullets(dt){
@@ -193,7 +198,7 @@
       const b=bullets[i];b.x+=b.dx*dt;b.y+=b.dy*dt;b.life-=dt;
       const gc=Math.floor(b.x/TILE),gr=Math.floor(b.y/TILE);
       if(gr<0||gr>=ROWS||gc<0||gc>=COLS||b.life<=0){bullets.splice(i,1);continue;}
-      if(grid[gr][gc]===1){grid[gr][gc]=0;bullets.splice(i,1);continue;}
+      if(grid[gr][gc]===1){grid[gr][gc]=0;particles.emit(gc*TILE+TILE/2,gr*TILE+TILE/2,{count:6,colors:['#92400E','#78350F','#D97706'],spread:360,speed:{min:1,max:3},lifetime:350});bullets.splice(i,1);continue;}
       if(grid[gr][gc]===2){bullets.splice(i,1);continue;}
 
       const hitPlayer=b.owner==='enemy'&&Math.hypot(b.x-player.x,b.y-player.y)<TANK_SIZE/2;
@@ -201,11 +206,11 @@
       if(hitPlayer){
         bullets.splice(i,1);
         if(player.shield){player.shield=false;playClick();}
-        else{enemy.kills++;respawnTank(player,2,2);playError();}
+        else{enemy.kills++;particles.emit(player.x,player.y,{count:15,colors:['#EF4444','#F97316','#FDE68A'],spread:360,speed:{min:2,max:5},lifetime:500});playExplosion();playDamage();screenShake(6,300);screenFlash('#EF4444',200);scorePopups.add(player.x,player.y-20,'DESTROYED','#EF4444');respawnTank(player,2,2);}
       } else if(hitEnemy){
         bullets.splice(i,1);
         if(enemy.shield){enemy.shield=false;playClick();}
-        else{player.kills++;respawnTank(enemy,COLS-3,ROWS-3);playSuccess();}
+        else{player.kills++;particles.emit(enemy.x,enemy.y,{count:15,colors:['#22C55E','#4ADE80','#FDE68A'],spread:360,speed:{min:2,max:5},lifetime:500});playExplosion();playSuccess();scorePopups.add(enemy.x,enemy.y-20,'+1 KILL','#22C55E');respawnTank(enemy,COLS-3,ROWS-3);}
       }
     }
   }
@@ -219,7 +224,7 @@
     for(let i=powerups.length-1;i>=0;i--){
       const p=powerups[i];p.timer--;if(p.timer<=0){powerups.splice(i,1);continue;}
       if(Math.hypot(p.x-player.x,p.y-player.y)<16){
-        applyPowerup(player,p.type);powerups.splice(i,1);playSuccess();
+        applyPowerup(player,p.type);powerups.splice(i,1);playCollect();particles.emit(p.x,p.y,{count:8,colors:[p.color,'#fff'],spread:360,lifetime:400});scorePopups.add(p.x,p.y-12,p.icon,p.color);
       } else if(Math.hypot(p.x-enemy.x,p.y-enemy.y)<16){
         applyPowerup(enemy,p.type);powerups.splice(i,1);
       }
@@ -316,7 +321,7 @@
     document.getElementById('game-over-panel').style.display='block';
     document.getElementById('winner-text').textContent=won?'🎉 Victory!':tied?'🤝 Draw!':'😞 Defeat';
     document.getElementById('final-detail').textContent=`You: ${player.kills} kills | Enemy: ${enemy.kills} kills`;
-    if(won)playPerfect();else playGameOver();
+    if(won){playPerfect();playVictoryFanfare();confetti(window.innerWidth/2,window.innerHeight/3);}else playGameOver();
     const dur=Math.round((Date.now()-gameStartTime)/1000);
     trackGameOver('tank-battle','Arcade',won?1:0,player.kills);
     submitStats('tank-battle',{score:player.kills,duration:dur,win:won,loss:!won&&!tied,online:isOnline});

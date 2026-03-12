@@ -120,7 +120,8 @@
   </main>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playShoot, playExplosion } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playShoot, playExplosion, playVictoryFanfare, playDrop, playDamage } from '/js/audio.js';
+    import { screenShake, screenFlash, showScorePopup, confetti, celebrateWin, CanvasParticleSystem, CanvasScorePopups, drawGradientBg } from '/js/effects.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -192,6 +193,9 @@
       sessionGames: parseInt(sessionStorage.getItem('star-defenders-games') || '0', 10),
       sessionScore: parseInt(sessionStorage.getItem('star-defenders-session-score') || '0', 10),
     };
+
+    const particles = new CanvasParticleSystem();
+    const scorePopups = new CanvasScorePopups();
 
     function spawnAliens() {
       state.aliens = [];
@@ -357,10 +361,15 @@
           }
           const hit = state.aliens.findIndex(a => b.x + b.w > a.x && b.x < a.x + a.w && b.y < a.y + a.h && b.y + b.h > a.y);
           if (hit >= 0) {
-            state.score += state.aliens[hit].points;
+            const killed = state.aliens[hit];
+            state.score += killed.points;
             state.streak++;
             if (state.streak >= 5) playPerfect();
             else playExplosion();
+            particles.emit(killed.x + killed.w / 2, killed.y + killed.h / 2, {
+              count: 8, colors: ['#ef4444', '#f97316', '#fbbf24'], speed: { min: 1, max: 4 }, lifetime: 400
+            });
+            scorePopups.add(killed.x + killed.w / 2, killed.y, `+${killed.points}`, '#fbbf24');
             state.aliens.splice(hit, 1);
             return false;
           }
@@ -375,7 +384,9 @@
         if (b.x + b.w > state.player.x && b.x < state.player.x + PLAYER_W && b.y + b.h > state.player.y && b.y < state.player.y + PLAYER_H) {
           state.lives--;
           state.streak = 0;
-          playError();
+          playDamage();
+          screenShake(6, 300);
+          screenFlash('red', 150);
           if (state.lives <= 0) endGame();
           return false;
         }
@@ -387,7 +398,7 @@
       if (state.aliens.length === 0) {
         state.wave++;
         state.alienSpeed = Math.max(200, state.alienSpeed - 50);
-        playLevelUp();
+        playVictoryFanfare();
         spawnAliens();
         spawnShields();
       }
@@ -397,8 +408,7 @@
 
       updateUI();
 
-      ctx.fillStyle = '#0a0a0f';
-      ctx.fillRect(0, 0, W, H);
+      drawGradientBg(ctx, W, H, '#0a0a1a', '#0f0f2d');
 
       ctx.fillStyle = '#22c55e';
       ctx.fillRect(state.player.x, state.player.y, state.player.w, state.player.h);
@@ -421,6 +431,11 @@
         ctx.fillStyle = '#3b82f6';
         ctx.fillRect(s.x, s.y, s.w, s.h);
       }
+
+      particles.update(dt);
+      particles.draw(ctx);
+      scorePopups.update(dt);
+      scorePopups.draw(ctx);
 
       animationId = requestAnimationFrame(gameLoop);
     }

@@ -110,7 +110,8 @@
   </footer>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playPerfect, playBounce } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playPerfect, playBounce, playVictoryFanfare, playDrop, playDamage } from '/js/audio.js';
+    import { screenShake, screenFlash, showScorePopup, confetti, CanvasParticleSystem, CanvasScorePopups, drawGradientBg } from '/js/effects.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -149,6 +150,9 @@
     const COLORS = ['#10B981', '#3B82F6', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899'];
     const SWING_SPEED = 0.008;
     const SWING_AMP = 0.35;
+
+    const particles = new CanvasParticleSystem();
+    const scorePopups = new CanvasScorePopups();
 
     let blocks = [];
     let swingingBlock = null;
@@ -235,6 +239,9 @@
       if (overlap <= 0) {
         gameOver = true;
         playGameOver();
+        playDamage();
+        screenShake(8, 400);
+        screenFlash('#EF4444', 250);
         trackGameOver('tower-stack', score);
         gameoverOverlay.classList.remove('hidden');
         gameoverOverlay.classList.add('flex');
@@ -251,9 +258,14 @@
         newX = top.x + (top.w - newW) / 2;
         playPerfect();
         perfectEffect = { x: newX, y: top.y - BLOCK_HEIGHT - 20, w: newW, t: 0 };
+        particles.emit(newX + newW / 2, top.y - BLOCK_HEIGHT, { count: 15, colors: ['#FFD700', '#FFA500', '#FBBF24'], spread: 360, speed: { min: 2, max: 6 }, lifetime: 600 });
+        const canvasRect = canvas.getBoundingClientRect();
+        confetti(canvasRect.left + canvasRect.width / 2, canvasRect.top + canvasRect.height * 0.4);
+        scorePopups.add(newX + newW / 2, top.y - BLOCK_HEIGHT - 30, `PERFECT x${streak}!`, '#FFD700', 18);
       } else {
         streak = 0;
         playBounce();
+        playDrop();
       }
 
       const colorIdx = blocks.length % COLORS.length;
@@ -267,6 +279,7 @@
 
       score++;
       playScoreUp();
+      scorePopups.add(newX + newW / 2, blocks[blocks.length - 1].y - 10, `+1`, '#10B981', 14);
       if (score > best) {
         best = score;
         saveBest();
@@ -309,8 +322,7 @@
         cameraY = lastBlock.y - ch * 0.5;
       }
 
-      ctx.fillStyle = '#111827';
-      ctx.fillRect(0, 0, cw, ch);
+      drawGradientBg(ctx, cw, ch, '#0a0a1a', '#111827');
 
       ctx.save();
       ctx.translate(0, -cameraY);
@@ -336,6 +348,11 @@
         ctx.lineWidth = 4;
         ctx.strokeRect(perfectEffect.x - 4, perfectEffect.y - 4, perfectEffect.w + 8, BLOCK_HEIGHT + 8);
       }
+
+      particles.update(dt * 16);
+      particles.draw(ctx);
+      scorePopups.update(dt * 16);
+      scorePopups.draw(ctx);
 
       ctx.restore();
 

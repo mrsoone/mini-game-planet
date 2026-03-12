@@ -150,7 +150,8 @@
   </footer>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playVictoryFanfare, playDrop, playDamage, playExplosion } from '/js/audio.js';
+    import { screenShake, screenFlash, showScorePopup, confetti, CanvasParticleSystem, CanvasScorePopups, drawGradientBg } from '/js/effects.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -229,6 +230,8 @@
     let sessionBest = 0;
     let best = 0;
     let animId = null;
+    const particles = new CanvasParticleSystem();
+    const scorePopups = new CanvasScorePopups();
 
     const cx = canvas.width / 2;
     const cy = canvas.height / 2;
@@ -332,6 +335,10 @@
           if (anglesOverlap(s.angle, stickAngle)) {
             gameState = 'over';
             playGameOver();
+            playExplosion();
+            screenShake(8, 400);
+            screenFlash('#EF4444', 300);
+            particles.emit(cx, cy, { count: 20, colors: ['#EF4444', '#F97316', '#9E9E9E'], spread: 360, speed: { min: 2, max: 5 }, lifetime: 600 });
             trackGameOver('knife-throw', score);
             flyingKnife = null;
             showGameOver();
@@ -339,13 +346,19 @@
           }
         }
         stuckKnives.push({ angle: stickAngle });
+        const kx = cx + Math.cos(impactAngle) * LOG_RADIUS;
+        const ky = cy + Math.sin(impactAngle) * LOG_RADIUS;
         flyingKnife = null;
         playSuccess();
+        playDrop();
+        particles.emit(kx, ky, { count: 6, colors: ['#5D4037', '#8D6E63', '#D7CCC8'], spread: 180, speed: { min: 1, max: 3 }, lifetime: 350 });
         if (knivesThrown >= knivesToThrow) {
           score++;
           if (score > best) { best = score; setBest(best); }
           if (score > sessionBest) sessionBest = score;
           playLevelUp();
+          confetti(window.innerWidth / 2, window.innerHeight / 3);
+          scorePopups.add(cx, cy - LOG_RADIUS - 30, `LEVEL ${level}!`, '#4ade80', 20);
           levelCompleteOverlay.classList.remove('hidden');
         }
       }
@@ -362,7 +375,7 @@
 
     function gameLoop() {
       if (gameState !== 'playing') return;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawGradientBg(ctx, canvas.width, canvas.height, '#1a1a2e', '#2d2d50');
 
       const pattern = getRotationPattern(level);
       if (pattern.type === 'sine') {
@@ -390,6 +403,11 @@
         const angle = Math.atan2(cy - flyingKnife.y, cx - flyingKnife.x) - Math.PI / 2;
         drawKnife(flyingKnife.x, flyingKnife.y, angle, false);
       }
+
+      particles.update(16.67);
+      particles.draw(ctx);
+      scorePopups.update(16.67);
+      scorePopups.draw(ctx);
 
       updateUI();
       if (gameState === 'playing') animId = requestAnimationFrame(gameLoop);

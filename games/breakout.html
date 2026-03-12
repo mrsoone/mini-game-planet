@@ -126,7 +126,8 @@
   </footer>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playBounce, playExplosion, playCollect } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playBounce, playExplosion, playCollect, playVictoryFanfare, playDrop, playDamage } from '/js/audio.js';
+    import { screenShake, screenFlash, showScorePopup, confetti, celebrateWin, CanvasParticleSystem, CanvasScorePopups, drawGradientBg } from '/js/effects.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -173,6 +174,9 @@
     let ballX, ballY, ballDX, ballDY, ballR = 8, ballSpeed = 5;
     let bricks = [], powerups = [], balls = [];
     let animId;
+    let _lastFrameTime = 0;
+    const canvasParticles = new CanvasParticleSystem();
+    const scorePopups = new CanvasScorePopups();
 
     const BRICK_COLORS = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#8b5cf6'];
     const POWERUP_TYPES = ['wide', 'slow', 'multi'];
@@ -293,7 +297,7 @@
 
     function nextLevel() {
       level++;
-      playLevelUp();
+      playVictoryFanfare();
       if (bricks.length === 0) playPerfect();
       initLevel();
       overlay.style.display = 'flex';
@@ -339,11 +343,12 @@
       window.addEventListener('gamepadconnected', () => requestAnimationFrame(pollGamepad));
     }
 
-    function gameLoop() {
+    function gameLoop(now = performance.now()) {
       if (gameState !== 'playing') return;
+      const dt = Math.min(now - (_lastFrameTime || now), 50);
+      _lastFrameTime = now;
 
-      ctx.fillStyle = '#1a1a2e';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      drawGradientBg(ctx, canvas.width, canvas.height, '#0a0a1a', '#12122e');
 
       paddleX = Math.max(0, Math.min(canvas.width - paddleW, paddleX));
       ctx.fillStyle = '#6366f1';
@@ -374,6 +379,7 @@
           const hitPos = (b.x - paddleX) / paddleW - 0.5;
           b.dy = -Math.abs(b.dy);
           b.dx = hitPos * 8;
+          canvasParticles.emit(b.x, paddleY, { count: 5, colors: ['#818cf8', '#a5b4fc', '#fff'], speed: { min: 1, max: 2 }, lifetime: 250, spread: 180 });
           playBounce();
         }
 
@@ -382,7 +388,9 @@
           if (balls.length === 0) {
             lives--;
             streak = 0;
-            playError();
+            playDamage();
+            screenShake(6, 300);
+            screenFlash('red', 150);
             updateUI();
             if (lives <= 0) {
               gameOver();
@@ -409,6 +417,10 @@
             streak++;
             playExplosion();
             playScoreUp();
+            canvasParticles.emit(br.x + br.w / 2, br.y + br.h / 2, {
+              count: 8, colors: [br.color, '#fff', '#fbbf24'], speed: { min: 1, max: 4 }, lifetime: 400
+            });
+            scorePopups.add(br.x + br.w / 2, br.y, `+${br.points}`, br.color, streak > 3 ? 18 : 14);
             if (br.dropPowerup) {
               spawnPowerup(br.x + br.w / 2 - 12, br.y, Math.floor(secureRandom() * 3));
             }
@@ -448,6 +460,11 @@
         nextLevel();
         return;
       }
+
+      canvasParticles.update(dt);
+      canvasParticles.draw(ctx);
+      scorePopups.update(dt);
+      scorePopups.draw(ctx);
 
       updateUI();
       animId = requestAnimationFrame(gameLoop);

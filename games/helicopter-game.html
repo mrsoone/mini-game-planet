@@ -97,7 +97,8 @@
   </footer>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playVictoryFanfare, playDrop, playDamage, playExplosion } from '/js/audio.js';
+    import { screenShake, screenFlash, showScorePopup, confetti, CanvasParticleSystem, CanvasScorePopups, drawGradientBg } from '/js/effects.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -144,6 +145,8 @@
     let speed = BASE_SPEED;
     let wallSpawnTimer = 0;
     let isHolding = false;
+    const particles = new CanvasParticleSystem();
+    const scorePopups = new CanvasScorePopups();
 
     const STORAGE_KEY = 'helicopter-best';
     const STREAK_KEY = 'helicopter-streak';
@@ -209,8 +212,7 @@
     function gameLoop() {
       if (!playing) return;
 
-      ctx.fillStyle = '#1a1a2e';
-      ctx.fillRect(0, 0, W, H);
+      drawGradientBg(ctx, W, H, '#0a0a1e', '#1a1a3e');
 
       if (gameOver) {
         ctx.fillStyle = 'rgba(0,0,0,0.6)';
@@ -247,11 +249,16 @@
           w.scored = true;
           score++;
           playScoreUp();
+          scorePopups.add(HELI_X + HELI_W, heliY, `+1`, '#4ade80');
           if (score % 100 === 0 && score > 0) playLevelUp();
         }
         if (collides(w)) {
           gameOver = true;
           playGameOver();
+          playExplosion();
+          screenShake(8, 400);
+          screenFlash('#EF4444', 300);
+          particles.emit(HELI_X + HELI_W / 2, heliY + HELI_H / 2, { count: 20, colors: ['#EF4444', '#F97316', '#FDE68A'], spread: 360, speed: { min: 2, max: 5 }, lifetime: 600 });
           trackGameOver('helicopter-game', score);
           if (score > best) {
             best = score;
@@ -282,6 +289,11 @@
       ctx.strokeStyle = '#22c55e';
       ctx.lineWidth = 2;
       ctx.stroke();
+
+      particles.update(16.67);
+      particles.draw(ctx);
+      scorePopups.update(16.67);
+      scorePopups.draw(ctx);
 
       scoreEl.textContent = score;
 

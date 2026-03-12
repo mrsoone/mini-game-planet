@@ -82,7 +82,8 @@
   <div id="related-games"></div><div id="footer-container"></div>
 
   <script type="module">
-  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playDeal, playDrop, playPerfect } from '/js/audio.js';
+  import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playDeal, playDrop, playPerfect, playVictoryFanfare, playDamage, playExplosion, playCollect } from '/js/audio.js';
+  import { screenShake, screenFlash, showScorePopup, confetti, CanvasParticleSystem, CanvasScorePopups, drawGradientBg } from '/js/effects.js';
   import { initToolPage } from '/js/shared.js';
   import { initConsent } from '/js/consent.js';
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -108,6 +109,8 @@
   let playerGhost=false,enemyGhost=false,playerMagnet=false;
   let phase='idle',gameInterval=null,baseSpeed=140,speedLevel=1;
   let gameStartTime=null,isOnline=false;
+  const particles=new CanvasParticleSystem(80);
+  const scorePopups=new CanvasScorePopups();
 
   function spawnFood(){
     let x,y;
@@ -138,7 +141,7 @@
   }
 
   function draw(){
-    ctx.fillStyle=COLORS.bg;ctx.fillRect(0,0,canvas.width,canvas.height);
+    drawGradientBg(ctx,canvas.width,canvas.height,'#050d1a','#0f172a');
     for(let r=0;r<GRID;r++)for(let c=0;c<GRID;c++){if((r+c)%2===0){ctx.fillStyle=COLORS.grid;ctx.fillRect(c*CELL,r*CELL,CELL,CELL);}}
 
     ctx.fillStyle=COLORS.food;ctx.beginPath();ctx.arc(food.x*CELL+CELL/2,food.y*CELL+CELL/2,CELL/2-2,0,Math.PI*2);ctx.fill();
@@ -152,6 +155,8 @@
 
     drawSnake(playerSnake,COLORS.player,COLORS.playerHead,playerGhost);
     drawSnake(enemySnake,COLORS.enemy,COLORS.enemyHead,enemyGhost);
+    particles.update(16.67);particles.draw(ctx);
+    scorePopups.update(16.67);scorePopups.draw(ctx);
   }
 
   function drawSnake(snake,bodyColor,headColor,ghost){
@@ -185,12 +190,19 @@
     snake.unshift(head);
 
     if(head.x===food.x&&head.y===food.y){
-      spawnFood();playDrop();
+      const fx=food.x*CELL+CELL/2,fy=food.y*CELL+CELL/2;
+      particles.emit(fx,fy,{count:8,colors:['#F59E0B','#FDE68A','#fff'],spread:360,speed:{min:1,max:3},lifetime:400});
+      scorePopups.add(fx,fy-8,'+1',isPlayer?'#22C55E':'#DC2626');
+      spawnFood();playCollect();
       return 'ate';
     }
 
     if(powerup&&head.x===powerup.x&&head.y===powerup.y){
-      applyPowerup(isPlayer,powerup.type);powerup=null;playSuccess();
+      const px=powerup.x*CELL+CELL/2,py=powerup.y*CELL+CELL/2;
+      particles.emit(px,py,{count:10,colors:[COLORS.powerup,'#fff'],spread:360,lifetime:400});
+      const icon=powerup.type==='speed'?'SPEED':powerup.type==='ghost'?'GHOST':'MAGNET';
+      scorePopups.add(px,py-10,icon,COLORS.powerup,14);
+      applyPowerup(isPlayer,powerup.type);powerup=null;playCollect();
     }
 
     snake.pop();
@@ -276,7 +288,8 @@
     document.getElementById('game-over-panel').style.display='block';
     document.getElementById('winner-text').textContent=won?'🎉 You Win!':tied?'💀 Both Crashed!':'😞 You Crashed!';
     document.getElementById('final-detail').textContent=`Your length: ${playerSnake.length} | Enemy: ${enemySnake.length}`;
-    if(won)playPerfect();else playGameOver();
+    if(won){playPerfect();playVictoryFanfare();confetti(window.innerWidth/2,window.innerHeight/3);}
+    else{playGameOver();playDamage();screenShake(6,350);screenFlash('#EF4444',250);}
     const dur=Math.round((Date.now()-gameStartTime)/1000);
     trackGameOver('battle-snake','Arcade',won?1:0,playerSnake.length);
     submitStats('battle-snake',{score:playerSnake.length,duration:dur,win:won,loss:!won&&!tied,online:isOnline});

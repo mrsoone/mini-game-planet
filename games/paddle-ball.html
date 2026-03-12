@@ -181,7 +181,8 @@
   </div>
 
   <script type="module">
-    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playBounce } from '/js/audio.js';
+    import { initAudio, muteAll, playClick, playSuccess, playError, playGameOver, playScoreUp, playLevelUp, playPerfect, playBounce, playVictoryFanfare, playDrop, playExplosion, playDamage } from '/js/audio.js';
+    import { screenShake, screenFlash, showScorePopup, confetti, celebrateWin, CanvasParticleSystem, CanvasScorePopups, drawGradientBg } from '/js/effects.js';
     import { initToolPage } from '/js/shared.js';
     import { initConsent } from '/js/consent.js';
     import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
@@ -268,7 +269,10 @@
     let lastWinner = null;
     let rallyCount = 0;
     let animId = null;
+    let _lastFrameTime = 0;
     const keys = {};
+    const canvasParticles = new CanvasParticleSystem();
+    const scorePopups = new CanvasScorePopups();
 
     document.addEventListener('keydown', e => {
       keys[e.key] = true;
@@ -333,8 +337,12 @@
       if (winner === 1) {
         sessionWins++;
         sessionStreak = lastWinner === 1 ? sessionStreak + 1 : 1;
+        try { playVictoryFanfare(); } catch (_) {}
+        screenFlash('gold', 200);
       } else {
         sessionStreak = 0;
+        screenShake(6, 300);
+        screenFlash('red', 150);
       }
       lastWinner = winner;
       sessionStats.classList.remove('hidden');
@@ -398,6 +406,7 @@
         ballVy = (ballVy / spd) * ballSpeed;
         ballX = p1Right + BALL_R;
         rallyCount++;
+        canvasParticles.emit(ballX, ballY, { count: 6, colors: ['#60a5fa', '#93c5fd', '#fff'], speed: { min: 1, max: 3 }, lifetime: 300, spread: 180 });
         try { playBounce(); } catch (_) {}
       }
       if (ballVx > 0 && ballX + BALL_R >= p2Left && ballX - BALL_R <= p2Right &&
@@ -411,6 +420,7 @@
         ballVy = (ballVy / spd) * ballSpeed;
         ballX = p2Left - BALL_R;
         rallyCount++;
+        canvasParticles.emit(ballX, ballY, { count: 6, colors: ['#f87171', '#fca5a5', '#fff'], speed: { min: 1, max: 3 }, lifetime: 300, spread: 180 });
         try { playBounce(); } catch (_) {}
       }
 
@@ -424,6 +434,8 @@
       if (ballX - BALL_R <= 0) {
         score2++;
         try { playScoreUp(); } catch (_) {}
+        screenShake(4, 200);
+        scorePopups.add(canvas.width / 2, canvas.height / 2, `P2 +1`, '#f87171');
         updateScoreDisplay();
         if (score2 >= WIN_SCORE) endGame(2);
         else {
@@ -438,6 +450,8 @@
       if (ballX + BALL_R >= canvas.width) {
         score1++;
         try { playScoreUp(); } catch (_) {}
+        screenShake(4, 200);
+        scorePopups.add(canvas.width / 2, canvas.height / 2, `P1 +1`, '#60a5fa');
         updateScoreDisplay();
         if (score1 >= WIN_SCORE) endGame(1);
         else {
@@ -455,12 +469,12 @@
       if (state === 'serving') serve();
     });
 
-    function gameLoop() {
+    function gameLoop(now = performance.now()) {
+      const dt = Math.min(now - (_lastFrameTime || now), 50);
+      _lastFrameTime = now;
       update();
 
-      // Draw
-      ctx.fillStyle = '#1a1a1a';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      drawGradientBg(ctx, canvas.width, canvas.height, '#0a0a1a', '#0f0f2d');
 
       // Trail
       trail.forEach((t, i) => {
@@ -492,6 +506,11 @@
       ctx.fill();
       ctx.strokeStyle = 'rgba(255,255,255,0.5)';
       ctx.stroke();
+
+      canvasParticles.update(dt);
+      canvasParticles.draw(ctx);
+      scorePopups.update(dt);
+      scorePopups.draw(ctx);
 
       animId = requestAnimationFrame(gameLoop);
     }
