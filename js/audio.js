@@ -1,10 +1,21 @@
 // MiniGamePlanet — Shared Web Audio Sound Engine
 // Layered procedural synthesis. No external audio files.
 
+const SOUND_STORAGE_KEY = 'mgp-sound-enabled';
+
+function readStoredEnabled() {
+  try {
+    const stored = localStorage.getItem(SOUND_STORAGE_KEY);
+    return stored == null ? true : stored === 'true';
+  } catch {
+    return true;
+  }
+}
+
 let ctx = null;
 let masterGain = null;
-let muted = false;
-let volume = 1;
+let muted = !readStoredEnabled();
+let volume = 0.3;
 let bgOsc = null;
 let bgInterval = null;
 let lastScoreUpTime = 0;
@@ -12,17 +23,35 @@ let scoreUpCombo = 0;
 let tensionOsc = null;
 let tensionGain = null;
 
+function persistEnabled() {
+  try {
+    localStorage.setItem(SOUND_STORAGE_KEY, String(!muted));
+  } catch {}
+}
+
+function syncMasterGain() {
+  if (masterGain && ctx) {
+    masterGain.gain.setValueAtTime(muted ? 0 : volume, ctx.currentTime);
+  }
+}
+
 // ── Init / State ──
 
 export function initAudio() {
-  if (ctx) return;
+  if (ctx) {
+    syncMasterGain();
+    if (ctx.state === 'suspended') ctx.resume();
+    return Promise.resolve(ctx);
+  }
   try {
     ctx = new (window.AudioContext || window.webkitAudioContext)();
     masterGain = ctx.createGain();
-    masterGain.gain.value = volume;
+    masterGain.gain.value = muted ? 0 : volume;
     masterGain.connect(ctx.destination);
+    return Promise.resolve(ctx);
   } catch (e) {
     ctx = null;
+    return Promise.reject(e);
   }
 }
 
@@ -32,12 +61,14 @@ export function hasAudio() {
 
 export function setVolume(v) {
   volume = Math.max(0, Math.min(1, v));
-  if (masterGain) masterGain.gain.setValueAtTime(volume, ctx.currentTime);
+  syncMasterGain();
 }
 
-export function muteAll() {
-  muted = !muted;
-  if (masterGain) masterGain.gain.setValueAtTime(muted ? 0 : volume, ctx.currentTime);
+export function muteAll(forceMuted) {
+  muted = typeof forceMuted === 'boolean' ? forceMuted : !muted;
+  persistEnabled();
+  if (!muted && !ctx) initAudio().catch(() => {});
+  syncMasterGain();
   return muted;
 }
 
@@ -45,10 +76,24 @@ export function isMuted() {
   return muted;
 }
 
+export function toggle(on) {
+  const enabled = typeof on === 'boolean' ? on : muted;
+  muteAll(!enabled);
+  return !muted;
+}
+
+export function isEnabled() {
+  return !muted;
+}
+
 // ── Internals ──
 
 function ensureCtx() {
-  if (!ctx) return false;
+  if (muted) return false;
+  if (!ctx) {
+    initAudio().catch(() => {});
+    if (!ctx) return false;
+  }
   if (ctx.state === 'suspended') ctx.resume();
   return true;
 }
@@ -853,3 +898,119 @@ export function stopBGLoop() {
     bgInterval = null;
   }
 }
+
+export function hit() {
+  playDamage();
+}
+
+export function score() {
+  playScoreUp();
+}
+
+export function bigScore() {
+  playLevelUp();
+}
+
+export function miss() {
+  playError();
+}
+
+export function win() {
+  playVictoryFanfare();
+}
+
+export function lose() {
+  playGameOver();
+}
+
+export function click() {
+  playClick();
+}
+
+export function place() {
+  playDrop();
+}
+
+export function flip() {
+  playFlip();
+}
+
+export function move() {
+  playHover();
+}
+
+export function combo(n = 1) {
+  playComboHit(n);
+}
+
+export function tick() {
+  playTick();
+}
+
+export function countdown() {
+  playAlarm();
+}
+
+export function unlock() {
+  playPerfect();
+}
+
+const MGPAudio = {
+  initAudio,
+  hasAudio,
+  setVolume,
+  muteAll,
+  isMuted,
+  toggle,
+  isEnabled,
+  playClick,
+  playHover,
+  playSuccess,
+  playScoreUp,
+  playLevelUp,
+  playPerfect,
+  playError,
+  playGameOver,
+  playDamage,
+  playBounce,
+  playCollect,
+  playExplosion,
+  playDeal,
+  playFlip,
+  playDrop,
+  playLock,
+  playAlarm,
+  playShoot,
+  playTick,
+  playSpin,
+  playComboHit,
+  playCardSlide,
+  playCritical,
+  playWhoosh,
+  playChime,
+  playVictoryFanfare,
+  playTension,
+  playRelease,
+  playBGLoop,
+  stopBGLoop,
+  hit,
+  score,
+  bigScore,
+  miss,
+  win,
+  lose,
+  click,
+  place,
+  flip,
+  move,
+  combo,
+  tick,
+  countdown,
+  unlock,
+};
+
+if (typeof window !== 'undefined') {
+  window.MGPAudio = MGPAudio;
+}
+
+export default MGPAudio;

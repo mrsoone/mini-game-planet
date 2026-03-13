@@ -6,6 +6,157 @@ const MAX_PARTICLES = 50;
 let activeParticles = [];
 let particlePool = [];
 
+const MGPEffects = (() => {
+  let canvas = null;
+  let ctx = null;
+  let particles = [];
+  let shakeAmount = 0;
+  let animFrame = null;
+  let gameWrapper = null;
+  let resizeObserver = null;
+
+  function resizeCanvas() {
+    if (!canvas || !gameWrapper) return;
+    canvas.width = gameWrapper.offsetWidth;
+    canvas.height = gameWrapper.offsetHeight;
+  }
+
+  function init(wrapperEl) {
+    if (!wrapperEl) return;
+    destroy();
+    gameWrapper = wrapperEl;
+    canvas = document.createElement('canvas');
+    canvas.style.cssText = 'position:absolute;inset:0;pointer-events:none;z-index:25;';
+    resizeCanvas();
+    wrapperEl.appendChild(canvas);
+    ctx = canvas.getContext('2d');
+
+    resizeObserver = new ResizeObserver(() => resizeCanvas());
+    resizeObserver.observe(wrapperEl);
+
+    if (!animFrame) tick();
+  }
+
+  function tick() {
+    if (!ctx || !canvas) {
+      animFrame = null;
+      return;
+    }
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      p.life -= 0.016;
+      if (p.life <= 0) {
+        particles.splice(i, 1);
+        continue;
+      }
+
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += p.gravity || 0;
+      p.vx *= 0.99;
+      p.vy *= 0.99;
+
+      const alpha = Math.min(1, (p.life / p.maxLife) * 2);
+      const size = p.size * (0.5 + 0.5 * (p.life / p.maxLife));
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.globalAlpha = 1;
+
+    if (shakeAmount > 0 && gameWrapper) {
+      const dx = (Math.random() - 0.5) * shakeAmount;
+      const dy = (Math.random() - 0.5) * shakeAmount;
+      gameWrapper.style.transform = `translate(${dx}px, ${dy}px)`;
+      shakeAmount *= 0.85;
+      if (shakeAmount < 0.5) {
+        shakeAmount = 0;
+        gameWrapper.style.transform = '';
+      }
+    }
+
+    animFrame = requestAnimationFrame(tick);
+  }
+
+  function burst(x, y, color, count = 12) {
+    for (let i = 0; i < count; i++) {
+      const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.5;
+      const speed = 2 + Math.random() * 4;
+      const life = 0.4 + Math.random() * 0.5;
+      particles.push({
+        x,
+        y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        gravity: 0.15,
+        size: 3 + Math.random() * 3,
+        color: color || '#FFFFFF',
+        life,
+        maxLife: life
+      });
+    }
+  }
+
+  function confetti(x, y, colors, count = 30) {
+    const palette = colors || ['#DC2626', '#2563EB', '#059669', '#D97706', '#6D28D9', '#E11D48'];
+    for (let i = 0; i < count; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 3 + Math.random() * 6;
+      const life = 0.8 + Math.random() * 0.8;
+      particles.push({
+        x,
+        y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 3,
+        gravity: 0.2,
+        size: 2 + Math.random() * 4,
+        color: palette[Math.floor(Math.random() * palette.length)],
+        life,
+        maxLife: life
+      });
+    }
+  }
+
+  function shake(intensity = 8) {
+    shakeAmount = intensity;
+  }
+
+  function scorePopup(x, y, text, color) {
+    if (!gameWrapper) return;
+    const el = document.createElement('div');
+    el.className = 'mgp-score-popup';
+    el.textContent = text;
+    el.style.left = x + 'px';
+    el.style.top = y + 'px';
+    el.style.color = color || '#FFFFFF';
+    el.style.textShadow = '0 1px 4px rgba(0,0,0,0.4)';
+    gameWrapper.appendChild(el);
+    el.addEventListener('animationend', () => el.remove(), { once: true });
+  }
+
+  function destroy() {
+    if (animFrame) cancelAnimationFrame(animFrame);
+    if (resizeObserver) resizeObserver.disconnect();
+    if (canvas && canvas.parentNode) canvas.parentNode.removeChild(canvas);
+    if (gameWrapper) gameWrapper.style.transform = '';
+    particles = [];
+    shakeAmount = 0;
+    animFrame = null;
+    canvas = null;
+    ctx = null;
+    gameWrapper = null;
+    resizeObserver = null;
+  }
+
+  return { init, burst, confetti, shake, scorePopup, destroy };
+})();
+
 // ── Particle System ──
 
 function getParticleEl() {
@@ -1134,3 +1285,9 @@ export function drawBallGlow(ctx, x, y, r, color = '#fff') {
   ctx.arc(x - r * 0.2, y - r * 0.2, r * 0.3, 0, Math.PI * 2);
   ctx.fill();
 }
+
+if (typeof window !== 'undefined') {
+  window.MGPEffects = MGPEffects;
+}
+
+export default MGPEffects;

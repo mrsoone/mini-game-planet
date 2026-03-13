@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MGP Framework Test | MiniGamePlanet</title>
+  <meta name="description" content="Framework test page for mgp-core.js.">
+  <link rel="icon" href="/images/logo.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/mgp-core.css">
+</head>
+<body>
+  <div id="nav-container"></div>
+  <div class="mgp-page">
+    <div class="mgp-page-content">
+      <div id="mgp-seo-source" style="display:none;">
+        <h2>Framework Test Page</h2>
+        <p>This page exists only to verify the shared MiniGamePlanet framework during Phase 1.</p>
+        <p>It exercises the shared score bar, overlays, sound hooks, effects hooks, leaderboard panel, related games section, SEO relocation, and footer rendering in one place.</p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { renderNav } from '/js/shared.js';
+    import { initConsent } from '/js/consent.js';
+    import MGP from '/js/mgp-core.js';
+
+    renderNav();
+    initConsent();
+
+    const themeConfigs = [
+      { category: 'Arcade', title: 'Framework Test — Dark' },
+      { category: 'Puzzle', title: 'Framework Test — Light' },
+      { category: 'Card', title: 'Framework Test — Felt' },
+      { category: 'Board', title: 'Framework Test — Wood' }
+    ];
+
+    let themeIndex = 0;
+
+    function centerPoint() {
+      const rect = MGP.elements.gameArea.getBoundingClientRect();
+      return { x: rect.width / 2, y: rect.height / 2 };
+    }
+
+    function renderDemoArea() {
+      const area = MGP.elements.gameArea;
+      area.innerHTML = '';
+      area.style.flexDirection = 'column';
+      area.style.gap = '12px';
+
+      const text = document.createElement('div');
+      text.style.textAlign = 'center';
+      text.innerHTML = `<div style="font-size:20px;font-weight:700;margin-bottom:6px;">Testing ${themeConfigs[themeIndex].category} theme</div><div style="opacity:0.75;">Use the buttons below to validate score updates, overlays, effects, and sound.</div>`;
+      area.appendChild(text);
+
+      const grid = document.createElement('div');
+      grid.style.display = 'grid';
+      grid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(180px, 1fr))';
+      grid.style.gap = '10px';
+      grid.style.width = '100%';
+      grid.style.maxWidth = '820px';
+
+      const actions = [
+        ['Add 10 Points', () => MGP.addScore(10)],
+        ['Game Over', () => MGP.gameOver({ subtitle: 'Framework overlay test.' })],
+        ['Burst', () => { const p = centerPoint(); MGP.burst(p.x, p.y, MGP.accentColor, 18); }],
+        ['Confetti', () => { const p = centerPoint(); MGP.confetti(p.x, p.y); }],
+        ['Shake', () => MGP.shake(10)],
+        ['Score Popup', () => { const p = centerPoint(); MGP.scorePopup(p.x, p.y, '+100', MGP.accentColor); }],
+        ['Play Sound: Hit', () => MGP.sound.hit()],
+        ['Play Sound: Score', () => MGP.sound.score()],
+        ['Play Sound: Win', () => MGP.sound.win()],
+        ['Play Sound: Lose', () => MGP.sound.lose()],
+        ['Toggle Pause', () => MGP.isPaused() ? MGP.resume() : MGP.pause()],
+        ['Cycle Theme', () => { themeIndex = (themeIndex + 1) % themeConfigs.length; boot(); }]
+      ];
+
+      actions.forEach(([label, handler]) => {
+        const button = document.createElement('button');
+        button.className = 'mgp-btn mgp-btn-secondary';
+        button.textContent = label;
+        button.addEventListener('click', handler);
+        grid.appendChild(button);
+      });
+
+      area.appendChild(grid);
+    }
+
+    function startDemo() {
+      MGP.setScore(0);
+      MGP.setTime(0);
+      MGP.startTimer();
+      renderDemoArea();
+    }
+
+    function boot() {
+      const current = themeConfigs[themeIndex];
+      MGP.init({
+        slug: 'test-game',
+        category: current.category,
+        title: current.title,
+        scoreMode: 'high',
+        hasTimer: true,
+        timerMode: 'up',
+        canPause: true,
+        onRestart: startDemo
+      });
+      startDemo();
+    }
+
+    boot();
+  </script>
+</body>
+</html>
