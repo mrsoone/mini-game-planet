@@ -27,7 +27,7 @@
     .cb-card{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:clamp(48px,8vw,68px);height:clamp(68px,11.5vw,96px);border-radius:7px;font-family:'DM Mono',monospace;font-weight:700;font-size:clamp(12px,2vw,16px);box-shadow:0 2px 6px rgba(0,0,0,0.15);position:relative;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;flex-shrink:0;user-select:none}
     .cb-card.face-up{background:#fff;border:1.5px solid #E5E7EB}.cb-card.face-down{background:linear-gradient(135deg, #1E3A5F 0%, #2D1B69 50%, #1E3A5F 100%);border:1.5px solid rgba(255,255,255,0.2)}
     .cb-card.red{color:#DC2626}.cb-card.black{color:#0F172A}
-    .cb-card.playable:hover{transform:translateY(-6px);box-shadow:0 6px 16px rgba(0,0,0,0.25)}
+    .cb-card.playable:hover{box-shadow:0 6px 16px rgba(0,0,0,0.25)}
     .cb-card.selected{transform:translateY(-10px);box-shadow:0 0 0 2px #2563EB,0 6px 16px rgba(37,99,235,0.3)}
     #cb-hand{display:flex;justify-content:center;padding:8px;overflow-x:auto}#cb-hand .cb-card{margin:0 -4px}
     .cb-btn{padding:8px 20px;border-radius:8px;font-size:13px;font-weight:700;border:2px solid;cursor:pointer;font-family:inherit;transition:all 0.1s}.cb-btn:hover{transform:translateY(-1px)}.cb-btn:active{transform:scale(0.97)}.cb-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none}
@@ -136,8 +136,16 @@
   import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
   import { renderModeSelector } from '/js/multiplayer.js';
 
+  window.__mgpCardConfig = {
+    scoreMode: 'high',
+    scoreLabel: 'You',
+    showBest: false,
+    canPause: false,
+  };
+
   document.addEventListener('click',()=>initAudio(),{once:true});
   initToolPage('cribbage'); initConsent(); trackGameView('cribbage','Card');
+  const MGP = window.MGP;
   let playerProfile=null;
   getPlayer().then(p=>{playerProfile=p;if(p){const m=document.querySelector('main');renderIdentityBar(m,p);renderLeaderboard(m,'cribbage');}});
   document.getElementById('sound-btn').addEventListener('click',()=>{initAudio();const m=muteAll();document.getElementById('sound-btn').textContent=m?'🔇 Sound':'🔊 Sound';});
@@ -179,6 +187,7 @@
     document.getElementById('peg-opp').style.width=oPct+'%';
     document.getElementById('score-you').textContent=myScore;
     document.getElementById('score-opp').textContent=oppScore;
+    MGP.setScore(myScore);
   }
 
   function addScore(who,pts,reason){
@@ -344,6 +353,7 @@
   // --- Game Flow ---
   function startNewGame(){
     myScore=0;oppScore=0;roundNum=0;isDealer=false;gameStartTime=Date.now();
+    window.__mgpCardRestart = startNewGame;
     trackGameStart('cribbage','Card');
     document.getElementById('game-over-panel').style.display='none';
     startRound();
@@ -495,15 +505,18 @@
   function endGame(){
     phase='over';
     const won=myScore>=WIN;
-    document.getElementById('game-over-panel').style.display='block';
     document.getElementById('winner-text').textContent=won?'🎉 You Win!':'😞 Opponent Wins';
     document.getElementById('final-score').textContent=`Final: ${myScore} — ${oppScore}`;
     if(won){streak++;playVictoryFanfare();celebrateWin();confetti();}else{streak=0;playGameOver();}
     const dur=Math.round((Date.now()-gameStartTime)/1000);
     trackGameOver('cribbage','Card',won?1:0,myScore);
     submitStats('cribbage',{score:myScore,duration:dur,win:won,loss:!won,online:isOnline});
-    document.getElementById('play-again-btn').focus();
-    document.getElementById('play-again-btn').onclick=()=>{document.getElementById('game-over-panel').style.display='none';startNewGame();};
+    MGP.gameOver({
+      title: won ? 'You Win!' : 'Opponent Wins',
+      subtitle: `Final: ${myScore} — ${oppScore}`,
+      score: myScore,
+      sound: won ? 'win' : 'lose',
+    });
   }
 
   renderModeSelector(document.getElementById('mp-mode-container'),'cribbage',playerProfile?.name||'Player',{

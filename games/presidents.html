@@ -23,7 +23,7 @@
     .pr-card.face-up{background:#fff;border:1.5px solid #E5E7EB}.pr-card.face-down{background:linear-gradient(135deg, #1E3A5F 0%, #2D1B69 50%, #1E3A5F 100%);border:1.5px solid rgba(255,255,255,0.2)}
     .pr-card.red{color:#DC2626}.pr-card.black{color:#0F172A}
     .pr-card.face-up{background:linear-gradient(135deg,#FFFFFF 0%,#F3F4F6 100%);box-shadow:0 2px 8px rgba(0,0,0,0.15),0 1px 3px rgba(0,0,0,0.1);border:1px solid rgba(0,0,0,0.08)}
-    .pr-card.playable:hover{transform:translateY(-6px)}
+    .pr-card.playable:hover{box-shadow:0 6px 16px rgba(0,0,0,0.25)}
     .pr-card.selected{transform:translateY(-10px);box-shadow:0 0 0 2px #2563EB,0 6px 16px rgba(37,99,235,0.3)}
     #pr-hand{display:flex;justify-content:center;padding:8px;overflow-x:auto;flex-wrap:nowrap}#pr-hand .pr-card{margin:0 -4px}
     .pr-btn{padding:8px 20px;border-radius:8px;font-size:13px;font-weight:700;border:2px solid;cursor:pointer;font-family:inherit;transition:all 0.1s}.pr-btn:hover{transform:translateY(-1px)}.pr-btn:disabled{opacity:0.4;cursor:not-allowed}
@@ -95,8 +95,16 @@
   import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
   import { renderModeSelector } from '/js/multiplayer.js';
 
+  window.__mgpCardConfig = {
+    scoreMode: 'high',
+    scoreLabel: 'Round',
+    showBest: false,
+    canPause: false,
+  };
+
   document.addEventListener('click',()=>initAudio(),{once:true});
   initToolPage('presidents');initConsent();trackGameView('presidents','Card');
+  const MGP = window.MGP;
   let playerProfile=null;
   getPlayer().then(p=>{playerProfile=p;if(p){const m=document.querySelector('main');renderIdentityBar(m,p);renderLeaderboard(m,'presidents');}});
   document.getElementById('sound-btn').addEventListener('click',()=>{initAudio();const m=muteAll();document.getElementById('sound-btn').textContent=m?'🔇 Sound':'🔊 Sound';});
@@ -273,8 +281,8 @@
     phase='scoring';
     SEATS.forEach(s=>{if(!finishOrder.includes(s))finishOrder.push(s);});
     const won=finishOrder[0]==='south';
+    MGP.setScore(won ? 1 : 0);
 
-    document.getElementById('game-over-panel').style.display='block';
     document.getElementById('winner-text').textContent=won?'👑 You are President!':'😞 '+finishOrder[0]+' is President';
     document.getElementById('rankings').innerHTML=finishOrder.map((s,i)=>`${TITLES[i]}: ${s==='south'?'<strong>You</strong>':s}`).join('<br>');
 
@@ -282,15 +290,18 @@
     const dur=Math.round((Date.now()-gameStartTime)/1000);
     trackGameOver('presidents','Card',won?1:0,0);
     submitStats('presidents',{score:won?1:0,duration:dur,win:won,loss:!won,online:isOnline});
-
-    document.getElementById('play-again-btn').focus();
-    document.getElementById('play-again-btn').onclick=()=>{document.getElementById('game-over-panel').style.display='none';startNewGame();};
+    MGP.gameOver({
+      title: won ? 'You are President!' : `${finishOrder[0]} is President`,
+      subtitle: finishOrder.map((s,i)=>`${TITLES[i]}: ${s==='south'?'You':s}`).join(' | '),
+      score: won ? 1 : 0,
+      sound: won ? 'win' : 'lose',
+    });
   }
 
   function startNewGame(){
     roundNum++;deal();phase='play';
     currentSeat=findThreeOfClubs();
-    gameStartTime=Date.now();trackGameStart('presidents','Card');playCardSlide();
+    gameStartTime=Date.now();window.__mgpCardRestart=startNewGame;trackGameStart('presidents','Card');playCardSlide();
     render();
     if(currentSeat!=='south')setTimeout(aiTurn,500);
   }

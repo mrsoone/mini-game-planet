@@ -20,7 +20,7 @@
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Go Fish","url":"https://minigameplanet.com/games/go-fish","description":"Play Go Fish free online against AI.","genre":"Card","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
   <style>
     .gf-card{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:52px;height:74px;border-radius:6px;background:#fff;border:2px solid #E2E8F0;font-family:'DM Mono',monospace;font-weight:700;cursor:pointer;margin:2px;transition:all 0.15s;user-select:none;font-size:12px}
-    .gf-card:hover{transform:translateY(-4px);box-shadow:0 4px 8px rgba(0,0,0,0.1)}
+    .gf-card:hover{box-shadow:0 4px 8px rgba(0,0,0,0.1)}
     .gf-card.selected{border-color:#2563EB;box-shadow:0 0 0 2px #2563EB;transform:translateY(-6px)}
     .gf-card.red{color:#DC2626}.gf-card.blk{color:#1E293B}
     .gf-back{display:inline-flex;width:40px;height:56px;border-radius:5px;background:linear-gradient(135deg,#1E3A5F 0%,#2D1B69 50%,#1E3A5F 100%);border:1.5px solid #1E3A5F;margin:1px}
@@ -95,8 +95,16 @@
   import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
   import { renderModeSelector, onMove, onChat, onStart, onTurn, onPlayerLeave, sendMove, sendChat, sendRematch, sendGameOver, renderQuickChat, showChatToast, leaveRoom, isConnected } from '/js/multiplayer.js';
 
+  window.__mgpCardConfig = {
+    scoreMode: 'high',
+    scoreLabel: 'Your Sets',
+    showBest: false,
+    canPause: false,
+  };
+
   document.addEventListener('click',()=>initAudio(),{once:true});
   initToolPage('go-fish'); initConsent(); trackGameView('go-fish','Card');
+  const MGP = window.MGP;
 
   getPlayer().then(p => {
     if (p) {
@@ -138,6 +146,7 @@
     shuffle(pool);
     playerHand=pool.splice(0,7);cpuHand=pool.splice(0,7);
     playerSets=0;cpuSets=0;gameActive=true;playerTurn=true;cpuMemory=new Set();
+    window.__mgpCardRestart = newGame;
     document.getElementById('game-over').style.display='none';
     document.getElementById('log').innerHTML='';
     addLog('info','Game started! Click a card to ask for that rank.');
@@ -162,6 +171,7 @@
     document.getElementById('p-sets').textContent=playerSets;
     document.getElementById('c-sets').textContent=cpuSets;
     document.getElementById('pool-count').textContent=pool.length;
+    MGP.setScore(playerSets);
   }
 
   function addLog(type,msg){
@@ -242,9 +252,14 @@
       document.getElementById('go-title').textContent=won?'🎉 You Win!':tie?'🤝 Tie!':'😞 CPU Wins';
       document.getElementById('go-title').style.color=won?'#059669':tie?'#D97706':'#DC2626';
       document.getElementById('go-sub').textContent=`You: ${playerSets} sets — CPU: ${cpuSets} sets`;
-      document.getElementById('game-over').style.display='block';
       if(won){playVictoryFanfare();celebrateWin();confetti();}else if(!tie)playGameOver();
       trackGameOver('go-fish','Card',won?1:0,0);
+      MGP.gameOver({
+        title: won ? 'You Win!' : tie ? 'Tie Game!' : 'CPU Wins',
+        subtitle: `You: ${playerSets} sets — CPU: ${cpuSets} sets`,
+        score: playerSets,
+        sound: won ? 'win' : tie ? 'none' : 'lose',
+      });
       return true;
     }
     // Auto-draw if hand empty

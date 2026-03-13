@@ -335,21 +335,23 @@ export function playError() {
   const t = now();
   const g1 = gain(0);
 
-  const o1 = osc('sawtooth', 180, randDetune());
-  const o2 = osc('sawtooth', 170, randDetune());
+  const o1 = osc('triangle', 420, randDetune());
+  const o2 = osc('sine', 315, randDetune());
   o1.connect(g1); o2.connect(g1);
 
-  g1.gain.setValueAtTime(VOL_FEEDBACK * 0.7, t);
-  g1.gain.exponentialRampToValueAtTime(VOL_FEEDBACK * 0.4, t + 0.08);
-  g1.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+  g1.gain.setValueAtTime(0.001, t);
+  g1.gain.linearRampToValueAtTime(VOL_FEEDBACK * 0.32, t + 0.01);
+  g1.gain.exponentialRampToValueAtTime(VOL_FEEDBACK * 0.18, t + 0.07);
+  g1.gain.exponentialRampToValueAtTime(0.001, t + 0.16);
 
-  o1.frequency.setValueAtTime(180, t);
-  o1.frequency.exponentialRampToValueAtTime(160, t + 0.15);
-  o2.frequency.setValueAtTime(170, t);
-  o2.frequency.exponentialRampToValueAtTime(150, t + 0.15);
+  o1.frequency.setValueAtTime(420, t);
+  o1.frequency.exponentialRampToValueAtTime(320, t + 0.14);
+  o2.frequency.setValueAtTime(315, t);
+  o2.frequency.exponentialRampToValueAtTime(250, t + 0.14);
 
   o1.start(t); o2.start(t);
-  o1.stop(t + 0.22); o2.stop(t + 0.22);
+  o1.stop(t + 0.19); o2.stop(t + 0.19);
+  playNoiseBurst(0.025, VOL_UI * 0.04, 2200, 'lowpass');
 }
 
 export function playGameOver() {

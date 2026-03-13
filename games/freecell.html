@@ -92,8 +92,18 @@
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
   import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
+  window.__mgpCardConfig = {
+    scoreMode: 'low',
+    scoreLabel: 'Moves',
+    showBest: false,
+    hasTimer: true,
+    timerLabel: 'Time',
+    canPause: false,
+  };
+
   document.addEventListener('click',()=>initAudio(),{once:true});
   initToolPage('freecell'); initConsent(); trackGameView('freecell','Card');
+  const MGP = window.MGP;
 
   getPlayer().then(p => {
     if (p) {
@@ -130,17 +140,20 @@
     for(const card of deck){tableau[ci%8].push(card);ci++;}
     freeCells=[null,null,null,null];foundations=[[],[],[],[]];
     moves=0;seconds=0;started=false;selected=null;undoStack=[];
+    window.__mgpCardRestart = newGame;
     clearInterval(timerInterval);
     document.getElementById('moves').textContent='0';
     document.getElementById('timer').textContent='0:00';
     document.getElementById('win-banner').style.display='none';
+    MGP.setScore(0);
+    MGP.setTime(0);
     playCardSlide();playDeal();render();
   }
 
   function startTimer(){
     if(started)return;started=true;
     trackGameStart('freecell','Card');
-    timerInterval=setInterval(()=>{seconds++;document.getElementById('timer').textContent=`${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`;},1000);
+    timerInterval=setInterval(()=>{seconds++;document.getElementById('timer').textContent=`${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`;MGP.setTime(seconds);},1000);
   }
 
   function render(){
@@ -213,6 +226,7 @@
         saveUndo();
         freeCells[i]=removeSelected();
         moves++;document.getElementById('moves').textContent=moves;
+        MGP.setScore(moves);
         selected=null;playDrop();autoFoundation();render();return;
       }
     }
@@ -227,8 +241,8 @@
     const card=getSelectedCard();
     if(!card){selected=null;render();return;}
     const pile=foundations[f];
-    if(pile.length===0&&card.rank==='A'){saveUndo();removeSelected();pile.push(card);moves++;document.getElementById('moves').textContent=moves;selected=null;playCollect();autoFoundation();render();checkWin();return;}
-    if(pile.length>0&&card.suit===pile[pile.length-1].suit&&RV[card.rank]===RV[pile[pile.length-1].rank]+1){saveUndo();removeSelected();pile.push(card);moves++;document.getElementById('moves').textContent=moves;selected=null;playCollect();autoFoundation();render();checkWin();return;}
+    if(pile.length===0&&card.rank==='A'){saveUndo();removeSelected();pile.push(card);moves++;document.getElementById('moves').textContent=moves;MGP.setScore(moves);selected=null;playCollect();autoFoundation();render();checkWin();return;}
+    if(pile.length>0&&card.suit===pile[pile.length-1].suit&&RV[card.rank]===RV[pile[pile.length-1].rank]+1){saveUndo();removeSelected();pile.push(card);moves++;document.getElementById('moves').textContent=moves;MGP.setScore(moves);selected=null;playCollect();autoFoundation();render();checkWin();return;}
     playError();selected=null;render();
   }
 
@@ -240,13 +254,13 @@
       const targetCol=tableau[col];
       const top=targetCol[targetCol.length-1];
       if(row===targetCol.length-1&&isRed(card.suit)!==isRed(top.suit)&&RV[card.rank]===RV[top.rank]-1){
-        saveUndo();removeSelected();targetCol.push(card);moves++;document.getElementById('moves').textContent=moves;selected=null;playDrop();autoFoundation();render();return;
+        saveUndo();removeSelected();targetCol.push(card);moves++;document.getElementById('moves').textContent=moves;MGP.setScore(moves);selected=null;playDrop();autoFoundation();render();return;
       }
       // Try foundation
       for(let f=0;f<4;f++){
         const pile=foundations[f];
-        if(pile.length===0&&card.rank==='A'){saveUndo();removeSelected();pile.push(card);moves++;document.getElementById('moves').textContent=moves;selected=null;playCollect();autoFoundation();render();checkWin();return;}
-        if(pile.length>0&&card.suit===pile[pile.length-1].suit&&RV[card.rank]===RV[pile[pile.length-1].rank]+1){saveUndo();removeSelected();pile.push(card);moves++;document.getElementById('moves').textContent=moves;selected=null;playCollect();autoFoundation();render();checkWin();return;}
+        if(pile.length===0&&card.rank==='A'){saveUndo();removeSelected();pile.push(card);moves++;document.getElementById('moves').textContent=moves;MGP.setScore(moves);selected=null;playCollect();autoFoundation();render();checkWin();return;}
+        if(pile.length>0&&card.suit===pile[pile.length-1].suit&&RV[card.rank]===RV[pile[pile.length-1].rank]+1){saveUndo();removeSelected();pile.push(card);moves++;document.getElementById('moves').textContent=moves;MGP.setScore(moves);selected=null;playCollect();autoFoundation();render();checkWin();return;}
       }
       selected=null;playError();render();return;
     }
@@ -262,6 +276,7 @@
     if(!card){selected=null;render();return;}
     saveUndo();removeSelected();tableau[col].push(card);
     moves++;document.getElementById('moves').textContent=moves;
+    MGP.setScore(moves);
     selected=null;playDrop();autoFoundation();render();
   }
 
@@ -308,10 +323,14 @@
     if(foundations.every(f=>f.length===13)){
       clearInterval(timerInterval);streak++;
       document.getElementById('streak').textContent=streak;
-      document.getElementById('win-banner').style.display='block';
-      document.getElementById('win-sub').textContent=`${moves} moves · ${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`;
       playVictoryFanfare();celebrateWin();confetti();setTimeout(()=>playLevelUp(),400);
       trackGameOver('freecell','Card',1,seconds);
+      MGP.gameOver({
+        title: 'FreeCell Complete!',
+        subtitle: `${moves} moves · ${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`,
+        score: moves,
+        sound: 'win',
+      });
     }
   }
 
@@ -328,6 +347,7 @@
     const s=undoStack.pop();
     freeCells=s.freeCells;foundations=s.foundations;tableau=s.tableau;moves=s.moves;
     document.getElementById('moves').textContent=moves;selected=null;
+    MGP.setScore(moves);
     playClick();render();
   }
 

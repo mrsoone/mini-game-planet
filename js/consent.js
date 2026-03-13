@@ -93,9 +93,10 @@ function buildBanner() {
     position: 'fixed', bottom: '0', left: '0', right: '0', zIndex: '9999',
     background: '#FFFFFF', borderTop: '2px solid #E5E7EB',
     borderRadius: '16px 16px 0 0',
-    boxShadow: '0 -8px 32px rgba(0,0,0,0.12)',
+    boxShadow: '0 -12px 36px rgba(15,23,42,0.18)',
     padding: '20px 24px', fontFamily: '"Space Grotesk", system-ui, sans-serif',
-    transition: 'transform 0.3s ease', transform: 'translateY(100%)'
+    transition: 'transform 0.3s ease', transform: 'translateY(100%)',
+    opacity: '1'
   });
 
   const saved = getConsent();
@@ -105,7 +106,7 @@ function buildBanner() {
 
   function render() {
     el.innerHTML = `
-      <div style="max-width:960px;margin:0 auto;">
+      <div style="max-width:960px;margin:0 auto;background:#FFFFFF;">
         <div style="display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap;">
           <div style="flex:1;min-width:240px;">
             <p style="margin:0 0 4px;font-weight:700;font-size:15px;color:#0F172A;">🍪 Cookie Preferences</p>

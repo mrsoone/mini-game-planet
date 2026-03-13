@@ -41,6 +41,7 @@
   background: linear-gradient(135deg, #1a472a 0%, #0d2818 100%);
   color: #E2E8F0;
   position: relative;
+  isolation: isolate;
 }
 
 .mgp-theme-felt::before {
@@ -54,6 +55,18 @@
 
 .mgp-theme-felt > * { position: relative; z-index: 1; }
 .mgp-theme-felt .mgp-score-bar { color: #E2E8F0; }
+
+body.mgp-card-core-page .mgp-theme-felt {
+  background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E"), linear-gradient(135deg, #1a472a 0%, #0d2818 100%);
+  background-repeat: repeat, no-repeat;
+  background-size: 40px 40px, auto;
+  background-position: 0 0, 0 0;
+}
+
+body.mgp-card-core-page .mgp-theme-felt::before {
+  content: none;
+  display: none;
+}
 
 .mgp-theme-wood {
   background: linear-gradient(135deg, #5c3d2e 0%, #3e2723 100%);
@@ -476,14 +489,25 @@
   padding: 32px 16px;
   text-align: center;
   font-size: 13px;
-  opacity: 0.5;
+  opacity: 1;
   font-family: 'Space Grotesk', sans-serif;
+  background: #FFFFFF;
+  color: #64748B;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
 }
 
 .mgp-footer a {
   color: inherit;
   text-decoration: underline;
   margin: 0 8px;
+}
+
+body.mgp-card-core-page .mgp-footer {
+  background: #FFFFFF;
+  color: #64748B;
+  opacity: 1;
 }
 
 .mgp-score-popup {

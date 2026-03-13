@@ -36,7 +36,7 @@
     .sp-card.face-down{background:linear-gradient(135deg, #1E3A5F 0%, #2D1B69 50%, #1E3A5F 100%);border:1.5px solid rgba(255,255,255,0.2)}
     .sp-card.red{color:#DC2626}.sp-card.black{color:#0F172A}
     .sp-card.face-up{background:linear-gradient(135deg,#FFFFFF 0%,#F3F4F6 100%);box-shadow:0 2px 8px rgba(0,0,0,0.15),0 1px 3px rgba(0,0,0,0.1);border:1px solid rgba(0,0,0,0.08)}
-    .sp-card.playable:hover{transform:translateY(-6px);box-shadow:0 6px 16px rgba(0,0,0,0.25)}
+    .sp-card.playable:hover{box-shadow:0 6px 16px rgba(0,0,0,0.25)}
     .sp-card.selected{transform:translateY(-10px);box-shadow:0 0 0 2px #DC2626,0 6px 16px rgba(220,38,38,0.3)}
     .sp-trick-area{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:grid;grid-template-areas:"t t t" "l c r" "b b b";grid-template-columns:1fr auto 1fr;gap:4px;justify-items:center;align-items:center;min-width:200px;min-height:160px}
     #sp-hand{display:flex;justify-content:center;gap:-6px;padding:8px;flex-wrap:nowrap;overflow-x:auto}
@@ -169,8 +169,16 @@
   import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
   import { renderModeSelector, renderQuickChat, sendMove, onMove, onStart, onTurn, onGameOver, onChat, showChatToast, leaveRoom, isConnected } from '/js/multiplayer.js';
 
+  window.__mgpCardConfig = {
+    scoreMode: 'high',
+    scoreLabel: 'Team 1',
+    showBest: false,
+    canPause: false,
+  };
+
   document.addEventListener('click',()=>initAudio(),{once:true});
   initToolPage('spades'); initConsent(); trackGameView('spades','Card');
+  const MGP = window.MGP;
 
   let playerProfile = null;
   getPlayer().then(p => {
@@ -299,6 +307,7 @@
     document.getElementById('score-t2').textContent=scores[1];
     document.getElementById('bags-t1').textContent=bags[0];
     document.getElementById('bags-t2').textContent=bags[1];
+    MGP.setScore(scores[0]);
     const t1bid=(bids.south!==null?Math.max(0,bids.south):0)+(bids.north!==null?Math.max(0,bids.north):0);
     const t2bid=(bids.east!==null?Math.max(0,bids.east):0)+(bids.west!==null?Math.max(0,bids.west):0);
     document.getElementById('bid-t1').textContent=t1bid||'—';
@@ -581,7 +590,6 @@
     phase='over';
     const won=scores[0]>scores[1];
     const tied=scores[0]===scores[1];
-    document.getElementById('game-over-panel').style.display='block';
     document.getElementById('winner-text').textContent=tied?'Tie Game!':won?'🎉 Your Team Wins!':'😞 Opponent Team Wins';
     document.getElementById('final-score-text').textContent=`Final: ${scores[0]} — ${scores[1]}`;
 
@@ -591,13 +599,12 @@
     const dur=Math.round((Date.now()-gameStartTime)/1000);
     trackGameOver('spades','Card',won?1:0,scores[0]);
     submitStats('spades',{score:scores[0],duration:dur,win:won&&!tied,loss:!won&&!tied,draw:tied,online:isOnline});
-
-    document.getElementById('play-again-btn').focus();
-    document.getElementById('play-again-btn').onclick=()=>{
-      document.getElementById('game-over-panel').style.display='none';
-      document.getElementById('round-summary').style.display='none';
-      startNewGame();
-    };
+    MGP.gameOver({
+      title: tied ? 'Tie Game!' : won ? 'Your Team Wins!' : 'Opponent Team Wins',
+      subtitle: `Final: ${scores[0]} — ${scores[1]}`,
+      score: scores[0],
+      sound: won ? 'win' : 'lose',
+    });
   }
 
   // --- Game Flow ---
@@ -607,6 +614,7 @@
     roundNum=0;
     dealer=0;
     gameStartTime=Date.now();
+    window.__mgpCardRestart = startNewGame;
     trackGameStart('spades','Card');
     startRound();
   }

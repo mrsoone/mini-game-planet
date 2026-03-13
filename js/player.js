@@ -57,6 +57,11 @@ export async function getGlobalLeaderboard() {
 }
 
 export function renderIdentityBar(container, player) {
+  if (window.MGP?.elements?.playerName) {
+    if (!player) return;
+    window.MGP.elements.playerName.textContent = player.name;
+    return;
+  }
   if (!player || !container) return;
   let bar = document.getElementById('mgp-identity-bar');
   if (!bar) {
@@ -125,6 +130,10 @@ function showNameModal(player) {
 }
 
 export async function renderLeaderboard(container, gameSlug) {
+  if (window.MGP?.loadLeaderboard && window.MGP?.elements?.leaderboard) {
+    await window.MGP.loadLeaderboard();
+    return;
+  }
   if (!container) return;
   let panel = document.getElementById('mgp-leaderboard');
   if (!panel) {

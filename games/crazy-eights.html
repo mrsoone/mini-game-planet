@@ -20,7 +20,7 @@
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Crazy Eights","url":"https://minigameplanet.com/games/crazy-eights","description":"Play Crazy Eights free online against AI.","genre":"Card","gamePlatform":"Web Browser","applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
   <style>
     .ce-card{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:56px;height:80px;border-radius:6px;background:#fff;border:2px solid #E2E8F0;font-family:'DM Mono',monospace;font-weight:700;cursor:pointer;margin:2px;transition:all 0.15s;user-select:none}
-    .ce-card:hover:not(.disabled){transform:translateY(-6px);box-shadow:0 4px 8px rgba(0,0,0,0.12)}
+    .ce-card:hover:not(.disabled){box-shadow:0 4px 8px rgba(0,0,0,0.12)}
     .ce-card.playable{border-color:#059669;box-shadow:0 0 0 1px #059669}
     .ce-card.disabled{opacity:0.5;cursor:not-allowed}
     .ce-card.red{color:#DC2626}.ce-card.blk{color:#1E293B}
@@ -110,8 +110,16 @@
   import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
   import { renderModeSelector, onMove, onChat, onStart, onTurn, onPlayerLeave, sendMove, sendChat, sendRematch, sendGameOver, renderQuickChat, showChatToast, leaveRoom, isConnected } from '/js/multiplayer.js';
 
+  window.__mgpCardConfig = {
+    scoreMode: 'low',
+    scoreLabel: 'Your Cards',
+    showBest: false,
+    canPause: false,
+  };
+
   document.addEventListener('click',()=>initAudio(),{once:true});
   initToolPage('crazy-eights'); initConsent(); trackGameView('crazy-eights','Card');
+  const MGP = window.MGP;
 
   getPlayer().then(p => {
     if (p) {
@@ -155,6 +163,7 @@
     while(discardPile[0].rank==='8'){drawPile.unshift(discardPile[0]);discardPile=[drawPile.pop()];}
     currentSuit=discardPile[discardPile.length-1].suit;
     gameActive=true;playerTurn=true;
+    window.__mgpCardRestart = newGame;
     document.getElementById('game-over').style.display='none';
     document.getElementById('suit-chooser').style.display='none';
     playCardSlide();trackGameStart('crazy-eights','Card');
@@ -169,6 +178,7 @@
     document.getElementById('cpu-count').textContent=cpuHand.length;
     document.getElementById('draw-count').textContent=drawPile.length;
     document.getElementById('current-suit').textContent=currentSuit;
+    MGP.setScore(playerHand.length);
 
     // Discard
     const tc=topCard();
@@ -278,9 +288,14 @@
     document.getElementById('go-title').textContent=playerWon?'🎉 You Win!':'😞 CPU Wins';
     document.getElementById('go-title').style.color=playerWon?'#059669':'#DC2626';
     document.getElementById('go-sub').textContent=playerWon?'You emptied your hand first!':'CPU emptied their hand first.';
-    document.getElementById('game-over').style.display='block';
     if(playerWon){playVictoryFanfare();celebrateWin();confetti();}else playGameOver();
     trackGameOver('crazy-eights','Card',playerWon?1:0,0);
+    MGP.gameOver({
+      title: playerWon ? 'You Win!' : 'CPU Wins',
+      subtitle: playerWon ? 'You emptied your hand first.' : 'CPU emptied their hand first.',
+      score: playerHand.length,
+      sound: playerWon ? 'win' : 'lose',
+    });
   }
 
   newGame();

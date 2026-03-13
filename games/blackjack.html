@@ -22,7 +22,7 @@
     .hero-grad{background:linear-gradient(135deg,#7C3AED 0%,#9333EA 20%,#C026D3 40%,#E11D48 60%,#EA580C 80%,#F59E0B 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:heroShift 8s ease-in-out infinite}
     @keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
     .card{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:64px;height:92px;border-radius:8px;background:linear-gradient(to bottom,#ffffff 0%,#f8f9fa 100%);border:2px solid #E2E8F0;font-family:'DM Mono',monospace;font-weight:700;font-size:18px;box-shadow:0 2px 8px rgba(0,0,0,0.12),0 1px 2px rgba(0,0,0,0.06);margin:0 -8px;transition:transform 0.2s,box-shadow 0.2s;position:relative}
-    .card:hover{transform:translateY(-4px);box-shadow:0 6px 16px rgba(0,0,0,0.18),0 2px 4px rgba(0,0,0,0.08)}
+    .card:hover{box-shadow:0 6px 16px rgba(0,0,0,0.18),0 2px 4px rgba(0,0,0,0.08)}
     .card.red{color:#DC2626}.card.black{color:#1E293B}
     .card.facedown{background:linear-gradient(135deg,#1E3A5F 0%,#2D1B69 50%,#1E3A5F 100%);border-color:#1a2e4a;color:transparent;background-size:100% 100%}
     .card.facedown::before{content:'';position:absolute;inset:4px;border-radius:4px;border:1px solid rgba(255,255,255,0.08);background:repeating-linear-gradient(45deg,transparent,transparent 4px,rgba(255,255,255,0.03) 4px,rgba(255,255,255,0.03) 8px)}
@@ -169,8 +169,16 @@
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
   import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
+  window.__mgpCardConfig = {
+    scoreMode: 'high',
+    scoreLabel: 'Chips',
+    showBest: false,
+    canPause: false,
+  };
+
   document.addEventListener('click',()=>initAudio(),{once:true});
   initToolPage('blackjack'); initConsent(); trackGameView('blackjack','Card');
+  const MGP = window.MGP;
 
   getPlayer().then(p => {
     if (p) {
@@ -238,6 +246,7 @@
     playerHand=[drawCard(),drawCard()];
     dealerHand=[drawCard(),drawCard()];
     gamePhase='play';session.rounds++;
+    window.__mgpCardRestart = () => document.getElementById('btn-newhand').click();
     trackGameStart('blackjack','Card');
 
     document.getElementById('bet-phase').style.display='none';
@@ -374,6 +383,12 @@
     document.getElementById('session-panel').style.display='block';
     const elapsed=Math.round((Date.now()-session.startTime)/1000);const mins=Math.floor(elapsed/60),secs=elapsed%60;
     document.getElementById('session-stats').innerHTML=`🎮 This Session<br>─────────────────────<br>Hands played    ${session.rounds}<br>Hands won       ${session.wins}<br>Chips won       ${session.totalChipsWon}<br>Best streak     ${streak}<br>Time played     ${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+    MGP.gameOver({
+      title: 'Out of Chips',
+      subtitle: `${session.rounds} hands played`,
+      score: chips,
+      sound: 'lose',
+    });
   }
 
   document.getElementById('reset-chips').addEventListener('click',()=>{
@@ -411,6 +426,7 @@
     document.getElementById('streak').textContent=streak;
     document.getElementById('wins').textContent=winCount;
     document.getElementById('losses').textContent=lossCount;
+    MGP.setScore(chips);
   }
 
   buildShoe();updateUI();

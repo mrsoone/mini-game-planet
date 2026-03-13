@@ -112,8 +112,16 @@
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
   import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
+  window.__mgpCardConfig = {
+    scoreMode: 'high',
+    scoreLabel: 'Credits',
+    showBest: false,
+    canPause: false,
+  };
+
   document.addEventListener('click',()=>initAudio(),{once:true});
   initToolPage('video-poker'); initConsent(); trackGameView('video-poker','Card');
+  const MGP = window.MGP;
 
   getPlayer().then(p => {
     if (p) {
@@ -230,6 +238,7 @@
   function updateUI(){
     document.getElementById('credits').textContent=credits;
     document.getElementById('streak').textContent=streak;
+    MGP.setScore(credits);
   }
   updateUI();
   </script>

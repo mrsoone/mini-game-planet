@@ -27,7 +27,7 @@
     .gr-card{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:clamp(50px,8.5vw,72px);height:clamp(72px,12vw,100px);border-radius:7px;font-family:'DM Mono',monospace;font-weight:700;font-size:clamp(12px,2vw,16px);box-shadow:0 2px 6px rgba(0,0,0,0.15);position:relative;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;flex-shrink:0;user-select:none}
     .gr-card.face-up{background:#fff;border:1.5px solid #E5E7EB}.gr-card.face-down{background:linear-gradient(135deg, #1E3A5F 0%, #2D1B69 50%, #1E3A5F 100%);border:1.5px solid rgba(255,255,255,0.2)}
     .gr-card.red{color:#DC2626}.gr-card.black{color:#0F172A}
-    .gr-card.playable:hover{transform:translateY(-6px);box-shadow:0 6px 16px rgba(0,0,0,0.25)}
+    .gr-card.playable:hover{box-shadow:0 6px 16px rgba(0,0,0,0.25)}
     .gr-card.selected{transform:translateY(-10px);box-shadow:0 0 0 2px #2563EB,0 6px 16px rgba(37,99,235,0.3)}
     .gr-card.meld-highlight{box-shadow:0 0 0 2px #059669}
     #gr-hand{display:flex;justify-content:center;padding:8px;overflow-x:auto}#gr-hand .gr-card{margin:0 -4px}
@@ -133,8 +133,16 @@
   import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
   import { renderModeSelector } from '/js/multiplayer.js';
 
+  window.__mgpCardConfig = {
+    scoreMode: 'high',
+    scoreLabel: 'You',
+    showBest: false,
+    canPause: false,
+  };
+
   document.addEventListener('click',()=>initAudio(),{once:true});
   initToolPage('gin-rummy'); initConsent(); trackGameView('gin-rummy','Card');
+  const MGP = window.MGP;
   let playerProfile=null;
   getPlayer().then(p=>{playerProfile=p;if(p){const m=document.querySelector('main');renderIdentityBar(m,p);renderLeaderboard(m,'gin-rummy');}});
   document.getElementById('sound-btn').addEventListener('click',()=>{initAudio();const m=muteAll();document.getElementById('sound-btn').textContent=m?'🔇 Sound':'🔊 Sound';});
@@ -280,6 +288,7 @@
     document.getElementById('score-you').textContent=myScore;
     document.getElementById('score-opp').textContent=oppScore;
     document.getElementById('round-num').textContent=roundNum;
+    MGP.setScore(myScore);
   }
 
   function setupPileListeners(){
@@ -372,7 +381,6 @@
 
     if(myScore>=TARGET||oppScore>=TARGET){
       document.getElementById('next-round-btn').style.display='none';
-      document.getElementById('game-over-panel').style.display='block';
       const won=myScore>=TARGET;
       document.getElementById('winner-text').textContent=won?'🎉 You Win the Match!':'😞 Opponent Wins';
       document.getElementById('final-score').textContent=`Final: ${myScore} — ${oppScore}`;
@@ -380,13 +388,12 @@
       const dur=Math.round((Date.now()-gameStartTime)/1000);
       trackGameOver('gin-rummy','Card',won?1:0,myScore);
       submitStats('gin-rummy',{score:myScore,duration:dur,win:won,loss:!won,online:isOnline});
-      document.getElementById('play-again-btn').focus();
-      document.getElementById('play-again-btn').onclick=()=>{
-        document.getElementById('game-over-panel').style.display='none';
-        document.getElementById('round-result').style.display='none';
-        document.getElementById('next-round-btn').style.display='';
-        startNewGame();
-      };
+      MGP.gameOver({
+        title: won ? 'You Win the Match!' : 'Opponent Wins',
+        subtitle: `Final: ${myScore} — ${oppScore}`,
+        score: myScore,
+        sound: won ? 'win' : 'lose',
+      });
       return;
     }
 
@@ -402,6 +409,7 @@
 
   function startNewGame(){
     myScore=0;oppScore=0;roundNum=0;gameStartTime=Date.now();
+    window.__mgpCardRestart = startNewGame;
     trackGameStart('gin-rummy','Card');
     startRound();
   }

@@ -133,7 +133,9 @@ function isBetterScore(candidate, current) {
 function ensureStarted() {
   if (state.started) return;
   state.started = true;
-  trackGameStart(state.config.slug, state.config.category);
+  if (state.config.trackAnalytics !== false) {
+    trackGameStart(state.config.slug, state.config.category);
+  }
 }
 
 function makeButton(label, className, onClick, icon = '') {
@@ -157,8 +159,35 @@ function buildFooter() {
     ['/licenses', 'Licenses']
   ];
 
+  footer.style.display = 'flex';
+  footer.style.alignItems = 'center';
+  footer.style.justifyContent = 'space-between';
+  footer.style.flexWrap = 'wrap';
+  footer.style.gap = '12px';
+
+  const brand = document.createElement('div');
+  brand.style.display = 'flex';
+  brand.style.alignItems = 'center';
+  brand.style.gap = '10px';
+  brand.style.fontSize = '14px';
+
+  const logo = document.createElement('img');
+  logo.src = '/images/logo.png';
+  logo.alt = 'Mini Game Planet';
+  logo.style.height = '34px';
+  logo.style.width = 'auto';
+  logo.style.flexShrink = '0';
+
+  const brandText = document.createElement('span');
+  brandText.textContent = '© Mini Game Planet';
+
+  brand.append(logo, brandText);
+
   const wrapper = document.createElement('div');
-  wrapper.textContent = '© Mini Game Planet';
+  wrapper.style.display = 'flex';
+  wrapper.style.alignItems = 'center';
+  wrapper.style.gap = '12px';
+  wrapper.style.flexWrap = 'wrap';
   links.forEach(([href, label]) => {
     const link = document.createElement('a');
     link.href = href;
@@ -169,18 +198,19 @@ function buildFooter() {
   const cookieBtn = document.createElement('button');
   cookieBtn.type = 'button';
   cookieBtn.textContent = 'Cookie Settings';
-  cookieBtn.style.background = 'none';
-  cookieBtn.style.border = 'none';
-  cookieBtn.style.padding = '0';
-  cookieBtn.style.marginLeft = '8px';
+  cookieBtn.style.background = '#F8FAFC';
+  cookieBtn.style.border = '1px solid #E2E8F0';
+  cookieBtn.style.padding = '6px 10px';
+  cookieBtn.style.borderRadius = '999px';
+  cookieBtn.style.marginLeft = '0';
   cookieBtn.style.cursor = 'pointer';
-  cookieBtn.style.textDecoration = 'underline';
+  cookieBtn.style.textDecoration = 'none';
   cookieBtn.style.font = 'inherit';
-  cookieBtn.style.color = 'inherit';
+  cookieBtn.style.color = '#334155';
   cookieBtn.addEventListener('click', () => openConsentBanner());
   wrapper.appendChild(cookieBtn);
 
-  footer.appendChild(wrapper);
+  footer.append(brand, wrapper);
   return footer;
 }
 
@@ -261,7 +291,7 @@ function buildRelatedGames() {
     .forEach((game) => {
       const card = document.createElement('a');
       card.className = 'mgp-related-card';
-      card.href = `/games/${game.slug}.html`;
+      card.href = `/games/${game.slug}`;
 
       const color = document.createElement('div');
       color.className = 'mgp-related-card-color';
@@ -363,19 +393,23 @@ function buildLayout(content) {
 
   if (state.config.scoreMode !== 'none') {
     const scoreBlock = document.createElement('div');
-    scoreBlock.innerHTML = '<div class="mgp-score-label">Score</div><div class="mgp-score-value">0</div>';
+    scoreBlock.innerHTML = `<div class="mgp-score-label">${state.config.scoreLabel || 'Score'}</div><div class="mgp-score-value">0</div>`;
     state.elements.scoreValue = scoreBlock.querySelector('.mgp-score-value');
     scores.appendChild(scoreBlock);
 
-    const bestBlock = document.createElement('div');
-    bestBlock.innerHTML = '<div class="mgp-score-label">Best</div><div class="mgp-score-value">—</div>';
-    state.elements.bestValue = bestBlock.querySelector('.mgp-score-value');
-    scores.appendChild(bestBlock);
+    if (state.config.showBest !== false) {
+      const bestBlock = document.createElement('div');
+      bestBlock.innerHTML = `<div class="mgp-score-label">${state.config.bestLabel || 'Best'}</div><div class="mgp-score-value">—</div>`;
+      state.elements.bestValue = bestBlock.querySelector('.mgp-score-value');
+      scores.appendChild(bestBlock);
+    } else {
+      state.elements.bestValue = null;
+    }
   }
 
   if (state.config.hasTimer) {
     const timerBlock = document.createElement('div');
-    timerBlock.innerHTML = '<div class="mgp-score-label">Time</div><div class="mgp-score-value">0:00</div>';
+    timerBlock.innerHTML = `<div class="mgp-score-label">${state.config.timerLabel || 'Time'}</div><div class="mgp-score-value">0:00</div>`;
     state.elements.timerValue = timerBlock.querySelector('.mgp-score-value');
     scores.appendChild(timerBlock);
   }
@@ -495,10 +529,15 @@ const MGP = {
 
     state.config = {
       scoreMode: 'high',
+      scoreLabel: 'Score',
+      bestLabel: 'Best',
+      showBest: true,
       hasTimer: false,
+      timerLabel: 'Time',
       timerMode: 'up',
       timerStart: 0,
       canPause: true,
+      trackAnalytics: true,
       onRestart: null,
       onPause: null,
       onResume: null,
@@ -526,7 +565,9 @@ const MGP = {
     MGPEffects.init(state.elements.gameWrapper);
     refreshPlayer();
     MGP.loadLeaderboard();
-    trackGameView(state.config.slug, state.config.category);
+    if (state.config.trackAnalytics !== false) {
+      trackGameView(state.config.slug, state.config.category);
+    }
 
     return MGP;
   },
@@ -584,7 +625,8 @@ const MGP = {
     setPauseButtonLabel();
 
     const finalScore = options.score ?? state.score;
-    const isNewBest = isBetterScore(finalScore, state.best);
+    const shouldShowBest = options.showBest ?? state.config.showBest !== false;
+    const isNewBest = shouldShowBest && isBetterScore(finalScore, state.best);
     if (isNewBest) {
       state.best = finalScore;
       saveBest(finalScore);
@@ -595,7 +637,9 @@ const MGP = {
     overlay.querySelector('.mgp-game-over-title').textContent = options.title || 'Game Over';
     overlay.querySelector('.mgp-game-over-subtitle').textContent = options.subtitle || 'Nice run.';
     overlay.querySelector('.mgp-game-over-score').textContent = finalScore;
-    overlay.querySelector('.mgp-game-over-best').textContent = `Best: ${state.best == null ? '—' : state.best}`;
+    const bestLine = overlay.querySelector('.mgp-game-over-best');
+    bestLine.textContent = `Best: ${state.best == null ? '—' : state.best}`;
+    bestLine.style.display = shouldShowBest ? '' : 'none';
 
     const card = overlay.querySelector('.mgp-game-over-card');
     const existingTag = card.querySelector('.mgp-new-best');
@@ -609,8 +653,11 @@ const MGP = {
     }
 
     overlay.classList.add('active');
-    MGPAudio.win();
-    trackGameOver(state.config.slug, state.config.category, finalScore, state.time);
+    if (options.sound === 'lose') MGPAudio.lose();
+    else if (options.sound !== 'none') MGPAudio.win();
+    if (state.config.trackAnalytics !== false) {
+      trackGameOver(state.config.slug, state.config.category, finalScore, state.time);
+    }
     setTimeout(() => MGP.loadLeaderboard(), 400);
   },
 
@@ -647,6 +694,12 @@ const MGP = {
 
   scorePopup(x, y, text, color) {
     MGPEffects.scorePopup(x, y, text, color || MGP.accentColor);
+  },
+
+  mountContent(node) {
+    if (!state.elements.gameArea || !node) return;
+    state.elements.gameArea.innerHTML = '';
+    state.elements.gameArea.appendChild(node);
   },
 
   getPlayer() {

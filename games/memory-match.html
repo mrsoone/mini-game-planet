@@ -96,8 +96,18 @@
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
   import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
+  window.__mgpCardConfig = {
+    scoreMode: 'low',
+    scoreLabel: 'Moves',
+    showBest: false,
+    hasTimer: true,
+    timerLabel: 'Time',
+    canPause: false,
+  };
+
   document.addEventListener('click',()=>initAudio(),{once:true});
   initToolPage('memory-match'); initConsent(); trackGameView('memory-match','Card');
+  const MGP = window.MGP;
 
   getPlayer().then(p => {
     if (p) {
@@ -133,6 +143,7 @@
     const emojis=shuffle([...EMOJI_POOL]).slice(0,numPairs);
     cards=shuffle([...emojis,...emojis]);
     flipped=[];matched=new Set();moveCount=0;combo=0;seconds=0;started=false;locked=false;
+    window.__mgpCardRestart = newGame;
     clearInterval(timerInterval);
     document.getElementById('moves').textContent='0';
     document.getElementById('pairs').textContent='0';
@@ -140,6 +151,8 @@
     document.getElementById('timer').textContent='0:00';
     document.getElementById('game-over').style.display='none';
     document.getElementById('near-miss').style.display='none';
+    MGP.setScore(0);
+    MGP.setTime(0);
     playCardSlide();updateBest();render();
   }
 
@@ -170,12 +183,13 @@
 
   function handleClick(i){
     if(locked||flipped.includes(i)||matched.has(i))return;
-    if(!started){started=true;trackGameStart('memory-match','Card');timerInterval=setInterval(()=>{seconds++;document.getElementById('timer').textContent=`${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`;},1000);}
+    if(!started){started=true;trackGameStart('memory-match','Card');timerInterval=setInterval(()=>{seconds++;document.getElementById('timer').textContent=`${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`;MGP.setTime(seconds);},1000);}
 
     flipped.push(i);playFlip();render();
 
     if(flipped.length===2){
       moveCount++;document.getElementById('moves').textContent=moveCount;
+      MGP.setScore(moveCount);
       locked=true;
       const [a,b]=flipped;
       if(cards[a]===cards[b]){
@@ -194,6 +208,7 @@
   function endGame(){
     clearInterval(timerInterval);session.rounds++;session.wins++;session.totalTime+=seconds;streak++;
     const key=`${cols}x${rows}`;
+    const isNewBest = !best[key]||moveCount<best[key];
     if(!best[key]||moveCount<best[key]){
       best[key]=moveCount;
       document.getElementById('go-title').textContent='🏆 NEW BEST!';document.getElementById('go-title').style.color='#D97706';
@@ -207,7 +222,12 @@
     trackGameOver('memory-match','Card',moveCount,seconds);
     const elapsed=Math.round((Date.now()-session.startTime)/1000);const mins=Math.floor(elapsed/60),secs=elapsed%60;
     document.getElementById('session-stats').innerHTML=`🎮 This Session<br>─────────────────────<br>Rounds played   ${session.rounds}<br>Best (${key})    ${best[key]||'---'} moves<br>Current streak  ${streak} ${streak>=3?'🔥':''}<br>Time played     ${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
-    document.getElementById('game-over').style.display='block';
+    MGP.gameOver({
+      title: isNewBest ? 'New Best!' : 'All Pairs Found!',
+      subtitle: `${moveCount} moves · ${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`,
+      score: moveCount,
+      sound: 'win',
+    });
   }
 
   function updateBest(){const key=`${cols}x${rows}`;document.getElementById('best').textContent=best[key]?best[key]+' moves':'---';}

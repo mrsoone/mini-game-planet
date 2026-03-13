@@ -93,8 +93,16 @@
   import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
   import { renderModeSelector } from '/js/multiplayer.js';
 
+  window.__mgpCardConfig = {
+    scoreMode: 'high',
+    scoreLabel: 'Your Deck',
+    showBest: false,
+    canPause: false,
+  };
+
   document.addEventListener('click',()=>initAudio(),{once:true});
   initToolPage('egyptian-rat-screw');initConsent();trackGameView('egyptian-rat-screw','Card');
+  const MGP = window.MGP;
   let playerProfile=null;
   getPlayer().then(p=>{playerProfile=p;if(p){const m=document.querySelector('main');renderIdentityBar(m,p);renderLeaderboard(m,'egyptian-rat-screw');}});
   document.getElementById('sound-btn').addEventListener('click',()=>{initAudio();const m=muteAll();document.getElementById('sound-btn').textContent=m?'🔇 Sound':'🔊 Sound';});
@@ -127,6 +135,7 @@
     document.getElementById('count-opp').textContent=oppDeck.length;
     document.getElementById('pile-count').textContent=`Pile: ${pile.length}`;
     document.getElementById('pile-card').innerHTML=pile.length>0?renderCard(pile[pile.length-1]):'<div class="ers-card face-down"></div>';
+    MGP.setScore(myDeck.length);
   }
 
   function checkSlappable(){
@@ -207,21 +216,24 @@
 
   function endGame(won){
     phase='over';
-    document.getElementById('game-over-panel').style.display='block';
     document.getElementById('winner-text').textContent=won?'🎉 You Win!':'😞 Opponent Wins!';
     document.getElementById('final-detail').textContent=`Slaps: ${slapCount} | Cards collected: ${won?52:0}`;
     if(won){playVictoryFanfare();celebrateWin();confetti();}else playGameOver();
     const dur=Math.round((Date.now()-gameStartTime)/1000);
     trackGameOver('egyptian-rat-screw','Card',won?1:0,myDeck.length);
     submitStats('egyptian-rat-screw',{score:myDeck.length,duration:dur,win:won,loss:!won,online:isOnline});
-    document.getElementById('play-again-btn').focus();
-    document.getElementById('play-again-btn').onclick=()=>{document.getElementById('game-over-panel').style.display='none';startGame();};
+    MGP.gameOver({
+      title: won ? 'You Win!' : 'Opponent Wins!',
+      subtitle: `Slaps: ${slapCount} | Cards collected: ${won?52:0}`,
+      score: myDeck.length,
+      sound: won ? 'win' : 'lose',
+    });
   }
 
   function startGame(){
     const deck=makeDeck();myDeck=deck.slice(0,26);oppDeck=deck.slice(26);pile=[];
     faceChallenge=0;faceChallenger=null;myTurn=true;phase='play';slapCount=0;
-    gameStartTime=Date.now();trackGameStart('egyptian-rat-screw','Card');
+    gameStartTime=Date.now();window.__mgpCardRestart=startGame;trackGameStart('egyptian-rat-screw','Card');
     msg('Your turn — Play a card or Slap!');playCardSlide();updateUI();
   }
 

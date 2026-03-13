@@ -105,8 +105,16 @@
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
   import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
+  window.__mgpCardConfig = {
+    scoreMode: 'high',
+    scoreLabel: 'Streak',
+    showBest: false,
+    canPause: false,
+  };
+
   document.addEventListener('click',()=>initAudio(),{once:true});
   initToolPage('high-low'); initConsent(); trackGameView('high-low','Card');
+  const MGP = window.MGP;
 
   getPlayer().then(p => {
     if (p) {
@@ -138,6 +146,7 @@
     deck=[];for(const s of SUITS)for(const r of RANKS)deck.push({rank:r,suit:s});
     shuffle(deck);
     currentCard=deck.pop();streak=0;gameActive=true;session.rounds++;playCardSlide();
+    window.__mgpCardRestart = newGame;
     document.getElementById('current-card').innerHTML=cardHTML(currentCard);
     document.getElementById('next-card').innerHTML='<div class="hl-card down"></div>';
     document.getElementById('result-text').textContent='';
@@ -189,7 +198,7 @@
         if(deck.length===0){
           document.getElementById('result-text').textContent='🏆 PERFECT — You cleared the entire deck!';
           document.getElementById('result-text').style.color='#D97706';
-          playVictoryFanfare();celebrateWin();confetti();endGame();return;
+          playVictoryFanfare();celebrateWin();confetti();endGame(true);return;
         }
         updateUI();
       } else{
@@ -201,12 +210,12 @@
           document.getElementById('result-text').textContent=`❌ Wrong! ${nextCard.rank} was ${nv>cv?'higher':'lower'}`;
         }
         document.getElementById('result-text').style.color='#DC2626';
-        playGameOver();endGame();
+        playGameOver();endGame(false);
       }
     },300);
   }
 
-  function endGame(){
+  function endGame(won=false){
     gameActive=false;
     session.totalStreak=Math.max(session.totalStreak,streak);
     if(streak>bestStreak){bestStreak=streak;localStorage.setItem('mgp_highlow_best',bestStreak);}
@@ -217,12 +226,19 @@
     document.getElementById('session-stats').style.display='block';
     document.getElementById('session-stats').innerHTML=`🎮 This Session<br>─────────────────────<br>Rounds played   ${session.rounds}<br>This streak     ${streak}<br>Best ever       ${bestStreak}<br>Time played     ${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
     trackGameOver('high-low','Card',streak,0);
+    MGP.gameOver({
+      title: won ? 'Perfect Run!' : 'Streak Ended',
+      subtitle: won ? 'You cleared the full deck.' : `Final streak: ${streak}`,
+      score: streak,
+      sound: won ? 'win' : 'lose',
+    });
   }
 
   function updateUI(){
     document.getElementById('streak').textContent=streak;
     document.getElementById('best').textContent=bestStreak;
     document.getElementById('remaining').textContent=deck.length;
+    MGP.setScore(streak);
   }
 
   newGame();

@@ -2,6 +2,7 @@
 // Renders Design System-compliant nav, footer, and related game tiles.
 
 import { games, categories } from '/data/games.js';
+import MGP from '/js/mgp-core.js';
 import { muteAll, isMuted, initAudio } from '/js/audio.js';
 import { openConsentBanner } from '/js/consent.js';
 
@@ -850,8 +851,6 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page .card.red,
     body.mgp-themed-page .card.black,
     body.mgp-themed-page .card.facedown,
-    body.mgp-themed-page .card-el,
-    body.mgp-themed-page .card-s,
     body.mgp-themed-page .card-f,
     body.mgp-themed-page .ce-card,
     body.mgp-themed-page .pile-card,
@@ -868,8 +867,6 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page .card.red:hover,
     body.mgp-themed-page .card.black:hover,
     body.mgp-themed-page .card.facedown:hover,
-    body.mgp-themed-page .card-el:hover,
-    body.mgp-themed-page .card-s:hover,
     body.mgp-themed-page .card-f:hover,
     body.mgp-themed-page .ce-card:hover,
     body.mgp-themed-page .gf-card:hover,
@@ -1023,31 +1020,31 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page main ~ article code { background:#F1F5F9!important; color:#334155!important; }
 
     /* ── LAYER 2: White text ONLY inside truly dark-background game areas ── */
-    body.mgp-themed-page [style*="background:#0F"] p,
-    body.mgp-themed-page [style*="background:#0f"] p,
-    body.mgp-themed-page [style*="background:#1E"] p,
-    body.mgp-themed-page [style*="background:#1e"] p,
-    body.mgp-themed-page [style*="background:#0F"] div:not(.card):not(.card-el):not(.card-s):not(.card-f):not(.ce-card):not(.wc):not(.gf-card):not(.vp-card):not(.hl-card):not(.pile-card),
-    body.mgp-themed-page [style*="background:#0f"] div:not(.card):not(.card-el):not(.card-s):not(.card-f):not(.ce-card):not(.wc):not(.gf-card):not(.vp-card):not(.hl-card):not(.pile-card),
-    body.mgp-themed-page [style*="background:#1E"] div,
-    body.mgp-themed-page [style*="background:#1e"] div {
+    body.mgp-themed-page:not(.mgp-card-core-page) [style*="background:#0F"] p,
+    body.mgp-themed-page:not(.mgp-card-core-page) [style*="background:#0f"] p,
+    body.mgp-themed-page:not(.mgp-card-core-page) [style*="background:#1E"] p,
+    body.mgp-themed-page:not(.mgp-card-core-page) [style*="background:#1e"] p,
+    body.mgp-themed-page:not(.mgp-card-core-page) [style*="background:#0F"] div:not(.card):not(.card-el):not(.card-s):not(.card-f):not(.ce-card):not(.wc):not(.gf-card):not(.vp-card):not(.hl-card):not(.pile-card):not(.sp-card):not(.ht-card):not(.rm-card):not(.eu-card):not(.oh-card):not(.cb-card):not(.ers-card):not(.pt-card):not(.pr-card):not([class*="card"]),
+    body.mgp-themed-page:not(.mgp-card-core-page) [style*="background:#0f"] div:not(.card):not(.card-el):not(.card-s):not(.card-f):not(.ce-card):not(.wc):not(.gf-card):not(.vp-card):not(.hl-card):not(.pile-card):not(.sp-card):not(.ht-card):not(.rm-card):not(.eu-card):not(.oh-card):not(.cb-card):not(.ers-card):not(.pt-card):not(.pr-card):not([class*="card"]),
+    body.mgp-themed-page:not(.mgp-card-core-page) [style*="background:#1E"] div:not(.card):not(.card-el):not(.card-s):not(.card-f):not(.ce-card):not(.wc):not(.gf-card):not(.vp-card):not(.hl-card):not(.pile-card):not(.sp-card):not(.ht-card):not(.rm-card):not(.eu-card):not(.oh-card):not(.cb-card):not(.ers-card):not(.pt-card):not(.pr-card):not([class*="card"]),
+    body.mgp-themed-page:not(.mgp-card-core-page) [style*="background:#1e"] div:not(.card):not(.card-el):not(.card-s):not(.card-f):not(.ce-card):not(.wc):not(.gf-card):not(.vp-card):not(.hl-card):not(.pile-card):not(.sp-card):not(.ht-card):not(.rm-card):not(.eu-card):not(.oh-card):not(.cb-card):not(.ers-card):not(.pt-card):not(.pr-card):not([class*="card"]) {
       color: rgba(255,255,255,0.95) !important;
       text-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
     }
-    body.mgp-themed-page [style*="background:#0F"] span:not([style*="color:"]),
-    body.mgp-themed-page [style*="background:#0f"] span:not([style*="color:"]),
-    body.mgp-themed-page [style*="background:#0F"] strong,
-    body.mgp-themed-page [style*="background:#0f"] strong,
-    body.mgp-themed-page [style*="background:#0F"] label,
-    body.mgp-themed-page [style*="background:#0f"] label,
-    body.mgp-themed-page [style*="background:#1E"] span:not([style*="color:"]),
-    body.mgp-themed-page [style*="background:#1e"] span:not([style*="color:"]) {
+    body.mgp-themed-page:not(.mgp-card-core-page) [style*="background:#0F"] span:not([style*="color:"]):not(.rk):not(.st):not(.rank):not(.rank2):not(.suit):not(.r):not(.label),
+    body.mgp-themed-page:not(.mgp-card-core-page) [style*="background:#0f"] span:not([style*="color:"]):not(.rk):not(.st):not(.rank):not(.rank2):not(.suit):not(.r):not(.label),
+    body.mgp-themed-page:not(.mgp-card-core-page) [style*="background:#0F"] strong,
+    body.mgp-themed-page:not(.mgp-card-core-page) [style*="background:#0f"] strong,
+    body.mgp-themed-page:not(.mgp-card-core-page) [style*="background:#0F"] label,
+    body.mgp-themed-page:not(.mgp-card-core-page) [style*="background:#0f"] label,
+    body.mgp-themed-page:not(.mgp-card-core-page) [style*="background:#1E"] span:not([style*="color:"]):not(.rk):not(.st):not(.rank):not(.rank2):not(.suit):not(.r):not(.label),
+    body.mgp-themed-page:not(.mgp-card-core-page) [style*="background:#1e"] span:not([style*="color:"]):not(.rk):not(.st):not(.rank):not(.rank2):not(.suit):not(.r):not(.label) {
       color: rgba(255,255,255,0.85) !important;
       text-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
     }
     /* Inline-colored spans inside dark areas keep their color, just get shadow */
-    body.mgp-themed-page [style*="background:#0F"] span[style*="color:"],
-    body.mgp-themed-page [style*="background:#0f"] span[style*="color:"] {
+    body.mgp-themed-page:not(.mgp-card-core-page) [style*="background:#0F"] span[style*="color:"],
+    body.mgp-themed-page:not(.mgp-card-core-page) [style*="background:#0f"] span[style*="color:"] {
       text-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
     }
 
@@ -1641,18 +1638,7 @@ function injectCategoryAtmosphere(game) {
   style.id = 'mgp-atmosphere-style';
 
   const atmospheres = {
-    Card: `
-      body.mgp-themed-page [style*="background:#0F"],
-      body.mgp-themed-page [style*="background:#0f"],
-      body.mgp-themed-page #game-area {
-        background: linear-gradient(160deg, #1a5c35 0%, #0d4025 100%) !important;
-      }
-      body.mgp-themed-page #game-area::before,
-      body.mgp-themed-page [style*="background:#0F"]::before {
-        content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
-        background:repeating-conic-gradient(rgba(255,255,255,0.015) 0% 25%, transparent 0% 50%) 0 0 / 4px 4px;
-      }
-    `,
+    Card: ``,
     Casino: `
       body.mgp-themed-page [style*="background:#0F"],
       body.mgp-themed-page [style*="background:#0f"],
@@ -1736,6 +1722,233 @@ function wireButtonSounds() {
   }, true);
 }
 
+function ensureMgpCoreStyles() {
+  let link = document.querySelector('link[href="/css/mgp-core.css"]');
+  if (!link) {
+    link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = '/css/mgp-core.css';
+    document.head.appendChild(link);
+  }
+
+  if (!document.getElementById('mgp-card-core-overrides')) {
+    const style = document.createElement('style');
+    style.id = 'mgp-card-core-overrides';
+    style.textContent = `
+      .mgp-card-core-page #mgp-card-legacy-root > div > div:first-child {
+        display: none !important;
+      }
+      .mgp-card-core-page #mgp-card-legacy-root {
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+      body.mgp-card-core-page .mgp-theme-felt {
+        background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E"), linear-gradient(135deg, #1a472a 0%, #0d2818 100%);
+        background-repeat: repeat, no-repeat;
+        background-size: 40px 40px, auto;
+        background-position: 0 0, 0 0;
+      }
+      body.mgp-card-core-page .mgp-theme-felt::before,
+      body.mgp-card-core-page #game-area::before,
+      body.mgp-card-core-page #game-canvas::before,
+      body.mgp-card-core-page #spades-table::before,
+      body.mgp-card-core-page #hearts-table::before,
+      body.mgp-card-core-page #rm-table::before,
+      body.mgp-card-core-page #eu-table::before,
+      body.mgp-card-core-page #oh-table::before,
+      body.mgp-card-core-page #pt-table::before,
+      body.mgp-card-core-page #cb-board::before,
+      body.mgp-card-core-page #ers-table::before,
+      body.mgp-card-core-page [style*="background:#0F"]::before,
+      body.mgp-card-core-page [style*="background:#0f"]::before {
+        content: none !important;
+        display: none !important;
+      }
+      .mgp-card-core-page .mgp-theme-felt,
+      .mgp-card-core-page .mgp-game-wrapper,
+      .mgp-card-core-page .mgp-game-area,
+      .mgp-card-core-page #mgp-card-legacy-root,
+      .mgp-card-core-page #game-area,
+      .mgp-card-core-page #game-canvas,
+      .mgp-card-core-page #spades-table,
+      .mgp-card-core-page #hearts-table,
+      .mgp-card-core-page #rm-table,
+      .mgp-card-core-page #eu-table,
+      .mgp-card-core-page #oh-table,
+      .mgp-card-core-page #pt-table,
+      .mgp-card-core-page #cb-board,
+      .mgp-card-core-page #ers-table {
+        isolation: isolate;
+      }
+      .mgp-card-core-page .vp-card,
+      .mgp-card-core-page .gf-card,
+      .mgp-card-core-page .ce-card,
+      .mgp-card-core-page .sp-card,
+      .mgp-card-core-page .ht-card,
+      .mgp-card-core-page .rm-card,
+      .mgp-card-core-page .eu-card,
+      .mgp-card-core-page .oh-card,
+      .mgp-card-core-page .cb-card,
+      .mgp-card-core-page .ers-card,
+      .mgp-card-core-page .pt-card,
+      .mgp-card-core-page .pr-card,
+      .mgp-card-core-page .gr-card,
+      .mgp-card-core-page .card,
+      .mgp-card-core-page .wc,
+      .mgp-card-core-page .hl-card {
+        isolation: isolate;
+        will-change: transform, box-shadow;
+        transform: translateZ(0);
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        transition-property: box-shadow, filter, border-color, background-color, opacity !important;
+      }
+      .mgp-card-core-page .card::before,
+      .mgp-card-core-page .wc::before,
+      .mgp-card-core-page .hl-card::before,
+      .mgp-card-core-page .vp-card::before,
+      .mgp-card-core-page .gf-card::before,
+      .mgp-card-core-page .ce-card::before,
+      .mgp-card-core-page .sp-card::before,
+      .mgp-card-core-page .ht-card::before,
+      .mgp-card-core-page .rm-card::before,
+      .mgp-card-core-page .eu-card::before,
+      .mgp-card-core-page .oh-card::before,
+      .mgp-card-core-page .cb-card::before,
+      .mgp-card-core-page .ers-card::before,
+      .mgp-card-core-page .pt-card::before,
+      .mgp-card-core-page .pr-card::before,
+      .mgp-card-core-page .gr-card::before {
+        pointer-events: none !important;
+        z-index: 0;
+      }
+      .mgp-card-core-page .card::after,
+      .mgp-card-core-page .wc::after,
+      .mgp-card-core-page .hl-card::after,
+      .mgp-card-core-page .vp-card::after,
+      .mgp-card-core-page .gf-card::after,
+      .mgp-card-core-page .ce-card::after,
+      .mgp-card-core-page .sp-card::after,
+      .mgp-card-core-page .ht-card::after,
+      .mgp-card-core-page .rm-card::after,
+      .mgp-card-core-page .eu-card::after,
+      .mgp-card-core-page .oh-card::after,
+      .mgp-card-core-page .cb-card::after,
+      .mgp-card-core-page .ers-card::after,
+      .mgp-card-core-page .pt-card::after,
+      .mgp-card-core-page .pr-card::after,
+      .mgp-card-core-page .gr-card::after {
+        pointer-events: none !important;
+      }
+      .mgp-card-core-page .card > *,
+      .mgp-card-core-page .wc > *,
+      .mgp-card-core-page .hl-card > *,
+      .mgp-card-core-page .vp-card > *,
+      .mgp-card-core-page .gf-card > *,
+      .mgp-card-core-page .ce-card > *,
+      .mgp-card-core-page .sp-card > *,
+      .mgp-card-core-page .ht-card > *,
+      .mgp-card-core-page .rm-card > *,
+      .mgp-card-core-page .eu-card > *,
+      .mgp-card-core-page .oh-card > *,
+      .mgp-card-core-page .cb-card > *,
+      .mgp-card-core-page .ers-card > *,
+      .mgp-card-core-page .pt-card > *,
+      .mgp-card-core-page .pr-card > *,
+      .mgp-card-core-page .gr-card > * {
+        position: relative;
+        z-index: 1;
+      }
+      .mgp-card-core-page .vp-card:hover,
+      .mgp-card-core-page .gf-card:hover,
+      .mgp-card-core-page .ce-card:hover,
+      .mgp-card-core-page .sp-card:hover,
+      .mgp-card-core-page .ht-card:hover,
+      .mgp-card-core-page .rm-card:hover,
+      .mgp-card-core-page .eu-card:hover,
+      .mgp-card-core-page .oh-card:hover,
+      .mgp-card-core-page .cb-card:hover,
+      .mgp-card-core-page .ers-card:hover,
+      .mgp-card-core-page .pt-card:hover,
+      .mgp-card-core-page .pr-card:hover,
+      .mgp-card-core-page .gr-card:hover,
+      .mgp-card-core-page .card:hover,
+      .mgp-card-core-page .wc:hover,
+      .mgp-card-core-page .hl-card:hover {
+        z-index: 2;
+      }
+      .mgp-card-core-page .vp-card:hover,
+      .mgp-card-core-page .gf-card:hover,
+      .mgp-card-core-page .ce-card:hover,
+      .mgp-card-core-page .sp-card:hover,
+      .mgp-card-core-page .ht-card:hover,
+      .mgp-card-core-page .rm-card:hover,
+      .mgp-card-core-page .eu-card:hover,
+      .mgp-card-core-page .oh-card:hover,
+      .mgp-card-core-page .cb-card:hover,
+      .mgp-card-core-page .ers-card:hover,
+      .mgp-card-core-page .pt-card:hover,
+      .mgp-card-core-page .pr-card:hover,
+      .mgp-card-core-page .gr-card:hover,
+      .mgp-card-core-page .card:hover,
+      .mgp-card-core-page .wc:hover,
+      .mgp-card-core-page .hl-card:hover {
+        transform: translateZ(0) !important;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.22), 0 2px 6px rgba(0,0,0,0.12) !important;
+        filter: brightness(1.02);
+      }
+    `;
+    document.head.appendChild(style);
+  }
+}
+
+function initCardCoreShell(game) {
+  if (!game || game.category !== 'Card' || window.__mgpCardCoreReady) return;
+  ensureMgpCoreStyles();
+
+  const main = document.querySelector('main');
+  if (!main) return;
+
+  const article = document.querySelector('main ~ article') || document.querySelector('body > article');
+  const related = document.getElementById('related-games');
+  const footer = document.getElementById('footer-container');
+
+  const seoSource = document.getElementById('mgp-seo-source') || document.createElement('div');
+  seoSource.id = 'mgp-seo-source';
+  seoSource.style.display = 'none';
+  seoSource.innerHTML = article?.innerHTML || '';
+  document.body.appendChild(seoSource);
+
+  const legacyRoot = main;
+  legacyRoot.id = legacyRoot.id || 'mgp-card-legacy-root';
+  legacyRoot.style.width = '100%';
+  legacyRoot.style.maxWidth = '100%';
+  legacyRoot.style.position = 'relative';
+  legacyRoot.style.margin = '0';
+  legacyRoot.style.padding = '0';
+  article?.remove();
+  related?.remove();
+  footer?.remove();
+
+  MGP.init({
+    slug: game.slug,
+    category: game.category,
+    title: game.name,
+    scoreMode: 'none',
+    hasTimer: false,
+    canPause: false,
+    trackAnalytics: false,
+    onRestart: () => window.__mgpCardRestart?.(),
+    ...(window.__mgpCardConfig || {}),
+  });
+
+  window.__mgpCardConfig = null;
+
+  MGP.mountContent(legacyRoot);
+  document.body.classList.add('mgp-themed-page', 'mgp-card-core-page');
+  window.__mgpCardCoreReady = true;
+}
+
 export function initToolPage(slug) {
   window._mgpGameSlug = slug;
   window._mgpGameStart = Date.now();
@@ -1743,6 +1956,17 @@ export function initToolPage(slug) {
   const game = games.find(g => g.slug === slug);
   const gameName = game ? game.name : '';
   const category = game ? game.category : '';
+
+  if (game?.category === 'Card') {
+    renderNav(gameName);
+    initCardCoreShell(game);
+    if (game) {
+      applyGamePageDecor(game);
+      injectControlsHint(game);
+    }
+    wireButtonSounds();
+    return;
+  }
 
   renderNav(gameName);
   renderFooter();

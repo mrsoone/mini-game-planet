@@ -101,8 +101,16 @@
   import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
   import { renderModeSelector, onMove, onChat, onStart, onTurn, onPlayerLeave, sendMove, sendChat, sendRematch, sendGameOver, renderQuickChat, showChatToast, leaveRoom, isConnected } from '/js/multiplayer.js';
 
+  window.__mgpCardConfig = {
+    scoreMode: 'high',
+    scoreLabel: 'Your Deck',
+    showBest: false,
+    canPause: false,
+  };
+
   document.addEventListener('click',()=>initAudio(),{once:true});
   initToolPage('war'); initConsent(); trackGameView('war','Card');
+  const MGP = window.MGP;
 
   getPlayer().then(p => {
     if (p) {
@@ -141,6 +149,7 @@
     shuffle(deck);
     playerDeck=deck.slice(0,26);cpuDeck=deck.slice(26);
     roundNum=0;gameActive=true;
+    window.__mgpCardRestart = newGame;
     document.getElementById('game-over').style.display='none';
     document.getElementById('player-card').innerHTML='<div class="wc down"></div>';
     document.getElementById('cpu-card').innerHTML='<div class="wc down"></div>';
@@ -224,6 +233,7 @@
   function updateCounts(){
     document.getElementById('player-count').textContent=playerDeck.length;
     document.getElementById('cpu-count').textContent=cpuDeck.length;
+    MGP.setScore(playerDeck.length);
   }
 
   function endGame(){
@@ -232,9 +242,14 @@
     document.getElementById('go-title').textContent=won?'🎉 You Win!':'😞 CPU Wins';
     document.getElementById('go-title').style.color=won?'#059669':'#DC2626';
     document.getElementById('go-sub').textContent=`${roundNum} rounds played`;
-    document.getElementById('game-over').style.display='block';
     if(won){playVictoryFanfare();celebrateWin();confetti();}else playGameOver();
     trackGameOver('war','Card',won?1:0,0);
+    MGP.gameOver({
+      title: won ? 'You Win!' : 'CPU Wins',
+      subtitle: `${roundNum} rounds played`,
+      score: playerDeck.length,
+      sound: won ? 'win' : 'lose',
+    });
   }
 
   newGame();

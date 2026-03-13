@@ -26,7 +26,7 @@
     #game-canvas::before{content:'';position:absolute;inset:0;border-radius:16px;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");opacity:0.06;pointer-events:none}
     .card-el{position:absolute;width:62px;height:88px;border-radius:6px;cursor:pointer;user-select:none;transition:transform 200ms ease-out,box-shadow 200ms ease-out,left 200ms ease-out,top 200ms ease-out;font-family:'DM Mono',monospace}
     .card-el.face-up{background:linear-gradient(135deg,#FFFFFF 0%,#F8F9FA 100%);border:1.5px solid #D1D5DB;box-shadow:0 2px 8px rgba(0,0,0,0.12)}
-    .card-el.face-up:hover{transform:translateY(-4px);box-shadow:0 6px 16px rgba(0,0,0,0.2)}
+    .card-el.face-up:hover{box-shadow:0 6px 16px rgba(0,0,0,0.2)}
     .card-el.face-down{background:linear-gradient(135deg,#1E3A5F 0%,#2D1B69 50%,#1E3A5F 100%);border:1.5px solid #312E81;background-size:100% 100%}
     .card-el.face-down::before{content:'';position:absolute;inset:3px;border-radius:4px;background:repeating-linear-gradient(45deg,transparent,transparent 4px,rgba(255,255,255,0.06) 4px,rgba(255,255,255,0.06) 5px),repeating-linear-gradient(-45deg,transparent,transparent 4px,rgba(255,255,255,0.06) 4px,rgba(255,255,255,0.06) 5px);pointer-events:none}
     .card-el:hover{box-shadow:0 2px 8px rgba(0,0,0,0.2)}
@@ -57,8 +57,8 @@
         </div>
       </div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
-        <button class="draw-btn action-btn" data-n="1" style="background:#2563EB;">Draw 1</button>
-        <button class="draw-btn action-btn" data-n="3" style="background:#475569;">Draw 3</button>
+        <button class="draw-btn action-btn" data-n="1" style="background:#475569;">Draw 1</button>
+        <button class="draw-btn action-btn" data-n="3" style="background:#2563EB;">Draw 3</button>
         <button id="undo-btn" class="action-btn" style="background:#D97706;">↩ Undo</button>
         <button id="new-btn" class="action-btn" style="background:#059669;">🔄 New</button>
       </div>
@@ -113,8 +113,18 @@
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
   import { getPlayer, submitStats, renderIdentityBar, renderLeaderboard } from '/js/player.js';
 
+  window.__mgpCardConfig = {
+    scoreMode: 'low',
+    scoreLabel: 'Moves',
+    showBest: false,
+    hasTimer: true,
+    timerLabel: 'Time',
+    canPause: false,
+  };
+
   document.addEventListener('click',()=>initAudio(),{once:true});
   initToolPage('solitaire'); initConsent(); trackGameView('solitaire','Card');
+  const MGP = window.MGP;
 
   getPlayer().then(p => {
     if (p) {
@@ -128,19 +138,24 @@
   const RANK_VAL={A:1,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'10':10,J:11,Q:12,K:13};
   const isRed=s=>s==='♥'||s==='♦';
 
-  let drawCount=1, stock=[], waste=[], foundations=[[],[],[],[]], tableau=[[],[],[],[],[],[],[]];
+  let drawCount=3, stock=[], waste=[], foundations=[[],[],[],[]], tableau=[[],[],[],[],[],[],[]];
   let moves=0, timerInterval, seconds=0, gameStarted=false, gameOver=false;
   let streak=0, undoStack=[];
 
   const canvas=document.getElementById('game-canvas');
   const CW=62, CH=88, GAP=8, VOFF=22, VOFF_DOWN=6;
 
+  function syncDrawButtons(){
+    document.querySelectorAll('.draw-btn').forEach(x=>{x.style.background='#475569';});
+    const active=document.querySelector(`.draw-btn[data-n="${drawCount}"]`);
+    if(active)active.style.background='#2563EB';
+  }
+
   document.getElementById('sound-btn').addEventListener('click',()=>{initAudio();const m=muteAll();document.getElementById('sound-btn').textContent=m?'🔇':'🔊';});
   document.querySelectorAll('.draw-btn').forEach(b=>{
     b.addEventListener('click',()=>{
       drawCount=parseInt(b.dataset.n);
-      document.querySelectorAll('.draw-btn').forEach(x=>{x.style.background='#475569';});
-      b.style.background='#2563EB';newGame();
+      syncDrawButtons();newGame();
     });
   });
   document.getElementById('new-btn').addEventListener('click',()=>newGame());
@@ -166,17 +181,21 @@
     stock=deck.reverse();stock.forEach(c=>{c.faceUp=false;});
     waste=[];foundations=[[],[],[],[]];
     moves=0;seconds=0;gameStarted=false;gameOver=false;undoStack=[];
+    window.__mgpCardRestart = newGame;
     clearInterval(timerInterval);
     document.getElementById('moves').textContent='0';
     document.getElementById('timer').textContent='0:00';
     document.getElementById('win-banner').style.display='none';
+    MGP.setScore(0);
+    MGP.setTime(0);
+    syncDrawButtons();
     playDeal();render();
   }
 
   function startTimer(){
     if(gameStarted)return;gameStarted=true;
     trackGameStart('solitaire','Card');
-    timerInterval=setInterval(()=>{seconds++;const m=Math.floor(seconds/60),s=seconds%60;document.getElementById('timer').textContent=`${m}:${String(s).padStart(2,'0')}`;},1000);
+    timerInterval=setInterval(()=>{seconds++;const m=Math.floor(seconds/60),s=seconds%60;document.getElementById('timer').textContent=`${m}:${String(s).padStart(2,'0')}`;MGP.setTime(seconds);},1000);
   }
 
   function getLayout(){
@@ -348,6 +367,7 @@
     removeCard(info);
     foundations[f].push(card);
     moves++;document.getElementById('moves').textContent=moves;
+    MGP.setScore(moves);
     playDrop();flipTopCards();render();checkWin();
     return true;
   }
@@ -370,6 +390,7 @@
     const removed=removeCards(info);
     tableau[targetCol].push(...removed);
     moves++;document.getElementById('moves').textContent=moves;
+    MGP.setScore(moves);
     playCardSlide();flipTopCards();render();
     return true;
   }
@@ -396,13 +417,14 @@
       if(waste.length===0)return;
       saveUndo();
       stock=waste.reverse();stock.forEach(c=>{c.faceUp=false;});waste=[];
-      playClick();
+      playDeal();
     } else{
       saveUndo();
       const n=Math.min(drawCount,stock.length);
       for(let i=0;i<n;i++){const c=stock.pop();c.faceUp=true;waste.push(c);}
       moves++;document.getElementById('moves').textContent=moves;
-      playFlip();
+      MGP.setScore(moves);
+      playCardSlide();
     }
     render();
   }
@@ -421,6 +443,7 @@
     const s=undoStack.pop();
     stock=s.stock;waste=s.waste;foundations=s.foundations;tableau=s.tableau;moves=s.moves;
     document.getElementById('moves').textContent=moves;
+    MGP.setScore(moves);
     playClick();render();
   }
 
@@ -428,10 +451,14 @@
     if(foundations.every(f=>f.length===13)){
       gameOver=true;clearInterval(timerInterval);streak++;
       document.getElementById('streak').textContent=streak;
-      document.getElementById('win-banner').style.display='block';
-      document.getElementById('win-sub').textContent=`${moves} moves · ${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`;
       playVictoryFanfare();celebrateWin(canvas);confetti();
       trackGameOver('solitaire','Card',1,seconds);
+      MGP.gameOver({
+        title: 'Solitaire Complete!',
+        subtitle: `${moves} moves · ${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`,
+        score: moves,
+        sound: 'win',
+      });
     }
   }
 
