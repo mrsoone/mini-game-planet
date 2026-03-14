@@ -367,6 +367,41 @@ export function levelUpBurst(x, y) {
   setTimeout(() => ring.remove(), 600);
 }
 
+function hasMgpArcadeOverlay() {
+  return !!(typeof window !== 'undefined' && window.MGP && document.body?.classList?.contains('mgp-arcade-core-page') && document.querySelector('.mgp-game-wrapper'));
+}
+
+function getMgpWrapperRect() {
+  return document.querySelector('.mgp-game-wrapper')?.getBoundingClientRect() || null;
+}
+
+function getMgpPrimaryCanvas() {
+  return document.querySelector('.mgp-arcade-core-page #mgp-arcade-legacy-root canvas, .mgp-arcade-core-page #mgp-arcade-legacy-root #gameCanvas, .mgp-arcade-core-page #mgp-arcade-legacy-root #game-canvas')
+    || document.querySelector('.mgp-arcade-core-page canvas');
+}
+
+function mapViewportPointToMgp(x, y) {
+  const wrapperRect = getMgpWrapperRect();
+  if (!wrapperRect) return { x, y };
+  return {
+    x: x - wrapperRect.left,
+    y: y - wrapperRect.top,
+  };
+}
+
+function mapCanvasPointToMgp(x, y) {
+  const wrapperRect = getMgpWrapperRect();
+  const canvas = getMgpPrimaryCanvas();
+  if (!wrapperRect || !canvas) return { x, y };
+  const rect = canvas.getBoundingClientRect();
+  const width = canvas.width || rect.width || 1;
+  const height = canvas.height || rect.height || 1;
+  return {
+    x: rect.left - wrapperRect.left + (x / width) * rect.width,
+    y: rect.top - wrapperRect.top + (y / height) * rect.height,
+  };
+}
+
 // ── Score Popup System ──
 
 const POPUP_SIZES = { sm: 14, md: 20, lg: 28, xl: 36 };
@@ -379,6 +414,13 @@ export function showScorePopup({
   duration = 1000,
   style = 'float'
 } = {}) {
+  if (hasMgpArcadeOverlay()) {
+    const point = mapViewportPointToMgp(x, y);
+    window.MGP.scorePopup(point.x, point.y, text, color);
+    if (style === 'shake') window.MGP.shake(3);
+    return;
+  }
+
   const el = document.createElement('div');
   const fontSize = POPUP_SIZES[size] || 20;
   el.textContent = text;
@@ -429,6 +471,11 @@ export function showScorePopup({
 // ── Screen Effects ──
 
 export function screenShake(intensity = 5, duration = 300) {
+  if (hasMgpArcadeOverlay()) {
+    window.MGP.shake(intensity);
+    return;
+  }
+
   const container = document.querySelector('.game-container, #game-container, [data-game], main canvas')?.parentElement || document.querySelector('main') || document.body;
   const originalTransform = container.style.transform;
   let start = performance.now();
@@ -609,6 +656,11 @@ export class CanvasParticleSystem {
     gravity = 0.1,
     spread = 360
   } = {}) {
+    if (hasMgpArcadeOverlay()) {
+      const point = mapCanvasPointToMgp(x, y);
+      window.MGP.burst(point.x, point.y, colors[0], Math.max(6, Math.min(count, 16)));
+    }
+
     const baseAngle = -90;
     const halfSpread = spread / 2;
     for (let i = 0; i < count; i++) {
@@ -660,6 +712,12 @@ export class CanvasScorePopups {
   }
 
   add(x, y, text, color = '#FFD700', size = 16) {
+    if (hasMgpArcadeOverlay()) {
+      const point = mapCanvasPointToMgp(x, y);
+      window.MGP.scorePopup(point.x, point.y, text, color);
+      return;
+    }
+
     this.popups.push({
       x, y, text, color, size,
       life: 600, maxLife: 600, vy: -1.5

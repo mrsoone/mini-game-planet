@@ -37,6 +37,134 @@
 
 .mgp-theme-dark .mgp-score-bar { color: #F1F5F9; }
 
+body.mgp-arcade-core-page {
+  background: #F5F5F4 !important;
+  color: #0F172A;
+}
+
+body.mgp-arcade-core-page #mgp-game-bg,
+body.mgp-arcade-core-page #mgp-emoji-scatter {
+  display: none !important;
+}
+
+body.mgp-arcade-core-page .mgp-page {
+  background: transparent;
+  color: #0F172A;
+}
+
+body.mgp-arcade-core-page .mgp-page-content {
+  max-width: 1280px;
+}
+
+body.mgp-arcade-core-page .mgp-theme-dark {
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(circle at top, rgba(56, 189, 248, 0.14) 0%, rgba(56, 189, 248, 0) 28%),
+    linear-gradient(180deg, #071120 0%, #0B1730 100%);
+  border: 1px solid rgba(56, 189, 248, 0.16);
+  box-shadow: 0 20px 60px rgba(2, 8, 23, 0.55), 0 0 0 1px rgba(125, 211, 252, 0.06);
+}
+
+body.mgp-arcade-core-page .mgp-theme-dark::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,0.9) 0 1px, transparent 1.2px),
+    linear-gradient(rgba(34, 211, 238, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34, 211, 238, 0.08) 1px, transparent 1px);
+  background-size: 120px 120px, 26px 26px, 26px 26px;
+  background-position: 0 0, 0 0, 0 0;
+  opacity: 0.18;
+  pointer-events: none;
+  z-index: 0;
+}
+
+body.mgp-arcade-core-page .mgp-theme-dark > * {
+  position: relative;
+  z-index: 1;
+}
+
+body.mgp-arcade-core-page .mgp-score-bar,
+body.mgp-arcade-core-page .mgp-controls-bar,
+body.mgp-arcade-core-page .mgp-player-bar {
+  border-color: rgba(148, 163, 184, 0.16);
+}
+
+body.mgp-arcade-core-page .mgp-game-area {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(34, 211, 238, 0.08) 0%, rgba(34, 211, 238, 0) 32%),
+    linear-gradient(180deg, rgba(8, 15, 28, 0.95) 0%, rgba(3, 7, 18, 0.98) 100%);
+  padding: clamp(12px, 1.5vw, 20px);
+}
+
+body.mgp-arcade-core-page #mgp-arcade-legacy-root #soundToggle,
+body.mgp-arcade-core-page #mgp-arcade-legacy-root #sound-toggle,
+body.mgp-arcade-core-page #mgp-arcade-legacy-root #sound-btn {
+  display: none !important;
+}
+
+body.mgp-arcade-core-page #mgp-arcade-legacy-root canvas {
+  border-radius: 16px;
+  border: 1px solid rgba(103, 232, 249, 0.2);
+  box-shadow:
+    0 0 0 2px rgba(6, 182, 212, 0.16),
+    0 0 36px rgba(34, 211, 238, 0.18),
+    0 20px 50px rgba(2, 8, 23, 0.5);
+}
+
+body.mgp-arcade-core-page .mgp-leaderboard,
+body.mgp-arcade-core-page .mgp-seo-content,
+body.mgp-arcade-core-page .mgp-footer,
+body.mgp-arcade-core-page .mgp-related-card {
+  background: #FFFFFF;
+  color: #0F172A;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+
+body.mgp-arcade-core-page .mgp-leaderboard-header,
+body.mgp-arcade-core-page .mgp-leaderboard-row,
+body.mgp-arcade-core-page .mgp-footer {
+  color: #0F172A;
+}
+
+body.mgp-arcade-core-page .mgp-leaderboard-header,
+body.mgp-arcade-core-page .mgp-leaderboard-row {
+  border-color: #E2E8F0;
+}
+
+body.mgp-arcade-core-page .mgp-related-card {
+  color: #0F172A;
+}
+
+body.mgp-arcade-core-page .mgp-related-card-info {
+  background: linear-gradient(180deg, rgba(248, 250, 252, 0.96) 0%, rgba(241, 245, 249, 1) 100%);
+}
+
+body.mgp-arcade-core-page .mgp-seo-content h2,
+body.mgp-arcade-core-page .mgp-seo-content h3,
+body.mgp-arcade-core-page .mgp-seo-content strong,
+body.mgp-arcade-core-page .mgp-related-games h3 {
+  color: #0F172A;
+}
+
+body.mgp-arcade-core-page .mgp-seo-content p,
+body.mgp-arcade-core-page .mgp-seo-content li,
+body.mgp-arcade-core-page .mgp-footer,
+body.mgp-arcade-core-page .mgp-footer a,
+body.mgp-arcade-core-page .mgp-leaderboard-name,
+body.mgp-arcade-core-page .mgp-leaderboard-score {
+  color: #334155;
+  opacity: 1;
+}
+
+body.mgp-arcade-core-page .mgp-seo-content a,
+body.mgp-arcade-core-page .mgp-footer a {
+  color: #0891B2;
+}
+
 .mgp-theme-felt {
   background: linear-gradient(135deg, #1a472a 0%, #0d2818 100%);
   color: #E2E8F0;
@@ -135,11 +263,43 @@ body.mgp-card-core-page .mgp-theme-felt::before {
 
 .mgp-game-area {
   position: relative;
-  min-height: 400px;
+  min-height: 500px;
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
   padding: 16px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.mgp-game-content {
+  width: 100%;
+  max-width: none;
+  margin: 0 auto;
+}
+
+.mgp-game-content > * {
+  width: 100%;
+  max-width: none !important;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.mgp-game-content .inline-block,
+.mgp-game-content #gameWrapper,
+.mgp-game-content .touch-zone,
+.mgp-game-content [style*="max-width"] {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.mgp-game-area canvas,
+.mgp-game-content canvas {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
 }
 
 .mgp-controls-bar {
@@ -531,4 +691,5 @@ body.mgp-card-core-page .mgp-footer {
   .mgp-game-over-score { font-size: 36px; }
   .mgp-game-over-card { padding: 24px; min-width: 240px; }
   .mgp-related-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
+  .mgp-game-area { min-height: 300px; padding: 12px; }
 }

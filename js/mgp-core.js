@@ -36,6 +36,7 @@ const state = {
     pageContent: null,
     gameWrapper: null,
     gameArea: null,
+    gameMount: null,
     canvas: null,
     scoreValue: null,
     bestValue: null,
@@ -86,6 +87,7 @@ function cleanup() {
   state.paused = false;
   state.gameOver = false;
   state.started = false;
+  state.elements.gameMount = null;
   state.elements.canvas = null;
 }
 
@@ -442,6 +444,9 @@ function buildLayout(content) {
 
   const gameArea = document.createElement('div');
   gameArea.className = 'mgp-game-area';
+  const gameMount = document.createElement('div');
+  gameMount.className = 'mgp-game-content';
+  gameArea.appendChild(gameMount);
 
   const controlsBar = document.createElement('div');
   controlsBar.className = 'mgp-controls-bar';
@@ -483,11 +488,14 @@ function buildLayout(content) {
 
   state.elements.gameWrapper = wrapper;
   state.elements.gameArea = gameArea;
+  state.elements.gameMount = gameMount;
   state.elements.gameOverOverlay = gameOverOverlay;
   state.elements.pauseOverlay = pauseOverlay;
 
   content.appendChild(wrapper);
-  content.appendChild(buildLeaderboard());
+  if (state.config.showLeaderboard !== false) {
+    content.appendChild(buildLeaderboard());
+  }
   content.appendChild(buildRelatedGames());
 
   const seoSource = document.getElementById('mgp-seo-source');
@@ -532,6 +540,7 @@ const MGP = {
       scoreLabel: 'Score',
       bestLabel: 'Best',
       showBest: true,
+      showLeaderboard: true,
       hasTimer: false,
       timerLabel: 'Time',
       timerMode: 'up',
@@ -564,7 +573,9 @@ const MGP = {
 
     MGPEffects.init(state.elements.gameWrapper);
     refreshPlayer();
-    MGP.loadLeaderboard();
+    if (state.config.showLeaderboard !== false) {
+      MGP.loadLeaderboard();
+    }
     if (state.config.trackAnalytics !== false) {
       trackGameView(state.config.slug, state.config.category);
     }
@@ -697,9 +708,9 @@ const MGP = {
   },
 
   mountContent(node) {
-    if (!state.elements.gameArea || !node) return;
-    state.elements.gameArea.innerHTML = '';
-    state.elements.gameArea.appendChild(node);
+    if (!state.elements.gameMount || !node) return;
+    state.elements.gameMount.innerHTML = '';
+    state.elements.gameMount.appendChild(node);
   },
 
   getPlayer() {

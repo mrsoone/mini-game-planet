@@ -191,8 +191,15 @@ function buildBanner() {
   return el;
 }
 
+function removeLegacyBanners() {
+  document.querySelectorAll('#consent-banner').forEach((node) => {
+    if (node !== bannerEl) node.remove();
+  });
+}
+
 export function openConsentBanner() {
   dismiss();
+  removeLegacyBanners();
   bannerEl = buildBanner();
   document.body.appendChild(bannerEl);
   requestAnimationFrame(() => {
@@ -201,6 +208,7 @@ export function openConsentBanner() {
 }
 
 export function initConsent() {
+  removeLegacyBanners();
   const saved = getConsent();
   if (saved) {
     applyConsent(saved);

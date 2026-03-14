@@ -434,6 +434,7 @@
   import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
   import { getPlayer, submitStats, renderIdentityBar } from '/js/player.js';
 
+  window.__mgpCasinoConfig = { showLeaderboard: false };
   document.addEventListener('click',()=>initAudio(),{once:true});
   initToolPage('texas-holdem');initConsent();trackGameView('texas-holdem','Casino');
   let playerProfile=null;

@@ -464,17 +464,26 @@ function applyGamePageDecor(game) {
       width: 100% !important;
       max-width: 100% !important;
     }
+    body.mgp-themed-page main .inline-block,
+    body.mgp-themed-page main #gameWrapper,
+    body.mgp-themed-page main .touch-zone,
+    body.mgp-themed-page main [style*="max-width"] {
+      display: block !important;
+      width: 100% !important;
+      max-width: 100% !important;
+    }
     body.mgp-themed-page main canvas {
       display: block !important;
       margin: 0 auto !important;
-      width: min(92vw, 560px) !important;
+      width: 100% !important;
+      max-width: 100% !important;
       height: auto !important;
-      aspect-ratio: attr(width) / attr(height);
     }
     body.mgp-themed-page main canvas[width="420"][height="420"],
     body.mgp-themed-page main canvas[width="400"][height="400"] {
-      width: min(92vw, 560px) !important;
-      height: min(92vw, 560px) !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      height: auto !important;
     }
 
     /* Compact disclaimers - push below the game */
@@ -767,7 +776,7 @@ function applyGamePageDecor(game) {
 
     /* ── Canvas: glow only — no width/border forcing (preserves game coordinates) ── */
     body.mgp-themed-page canvas {
-      max-width: 94vw !important;
+      max-width: 100% !important;
       border: none !important;
       box-shadow:
         0 0 0 3px rgba(${C}, 0.7),
@@ -973,9 +982,62 @@ function applyGamePageDecor(game) {
       margin-bottom: 12px !important;
       overflow-x: auto !important;
     }
+    body.mgp-arcade-core-page #mgp-arcade-legacy-root > div,
+    body.mgp-arcade-core-page #mgp-arcade-legacy-root > article,
+    body.mgp-arcade-core-page #mgp-arcade-legacy-root > section,
+    body.mgp-arcade-core-page #mgp-arcade-legacy-root > div > article,
+    body.mgp-arcade-core-page #mgp-arcade-legacy-root > div > section,
+    body.mgp-arcade-core-page #mgp-arcade-legacy-root > article > section,
+    body.mgp-arcade-core-page #mgp-arcade-legacy-root > article > div,
+    body.mgp-arcade-core-page #mgp-arcade-legacy-root > div > div:first-child {
+      background: rgba(15, 23, 42, 0.84) !important;
+      color: #E2E8F0 !important;
+      border: 1px solid rgba(${C}, 0.2) !important;
+      box-shadow: 0 18px 40px rgba(2,8,23,0.3) !important;
+    }
+    body.mgp-arcade-core-page #mgp-arcade-legacy-root canvas {
+      width: 100% !important;
+      max-width: 100% !important;
+      height: auto !important;
+    }
+    body.mgp-arcade-core-page #mgp-arcade-legacy-root #soundToggle,
+    body.mgp-arcade-core-page #mgp-arcade-legacy-root #sound-toggle,
+    body.mgp-arcade-core-page #mgp-arcade-legacy-root #sound-btn {
+      display: none !important;
+    }
     /* ── LAYER 1: Force dark readable text on ALL content areas ── */
     ${CONTENT} {
       color: #0F172A !important;
+    }
+    body.mgp-arcade-core-page #mgp-arcade-legacy-root,
+    body.mgp-arcade-core-page #mgp-arcade-legacy-root p,
+    body.mgp-arcade-core-page #mgp-arcade-legacy-root span,
+    body.mgp-arcade-core-page #mgp-arcade-legacy-root div,
+    body.mgp-arcade-core-page #mgp-arcade-legacy-root label,
+    body.mgp-arcade-core-page #mgp-arcade-legacy-root strong,
+    body.mgp-arcade-core-page #mgp-arcade-legacy-root li,
+    body.mgp-arcade-core-page #mgp-arcade-legacy-root h1,
+    body.mgp-arcade-core-page #mgp-arcade-legacy-root h2,
+    body.mgp-arcade-core-page #mgp-arcade-legacy-root h3,
+    body.mgp-arcade-core-page #mgp-arcade-legacy-root h4 {
+      color: #E2E8F0 !important;
+    }
+    body.mgp-arcade-core-page #mgp-arcade-legacy-root [class*="text-gray-500"],
+    body.mgp-arcade-core-page #mgp-arcade-legacy-root [class*="text-gray-600"],
+    body.mgp-arcade-core-page #mgp-arcade-legacy-root [class*="text-slate-600"],
+    body.mgp-arcade-core-page #mgp-arcade-legacy-root [class*="text-gray-700"],
+    body.mgp-arcade-core-page #mgp-arcade-legacy-root [class*="text-slate-700"] {
+      color: #CBD5E1 !important;
+    }
+    body.mgp-arcade-core-page #mgp-arcade-legacy-root [class*="bg-gray-50"],
+    body.mgp-arcade-core-page #mgp-arcade-legacy-root [class*="bg-gray-100"],
+    body.mgp-arcade-core-page #mgp-arcade-legacy-root [class*="bg-indigo-100"],
+    body.mgp-arcade-core-page #mgp-arcade-legacy-root [class*="bg-amber-100"] {
+      background: rgba(30, 41, 59, 0.9) !important;
+      color: #E2E8F0 !important;
+    }
+    body.mgp-arcade-core-page #mgp-arcade-legacy-root a {
+      color: rgb(${C}) !important;
     }
     body.mgp-themed-page main p:not([class*="text-white"]),
     body.mgp-themed-page main div:not([style*="background:#"]):not([style*="background:linear"]):not([style*="background:radial"]):not(#mgp-header-emojis):not(#mgp-footer-emojis):not([class*="bg-black"]):not([class*="bg-gray-9"]):not([class*="bg-slate-9"]),
@@ -1115,6 +1177,47 @@ function applyGamePageDecor(game) {
       box-shadow: 0 16px 50px -16px rgba(0,0,0,0.45) !important;
     }
     body.mgp-themed-page #related-games h3 { color: #0F172A !important; }
+    body.mgp-arcade-core-page {
+      background: #F5F5F4 !important;
+      color: #0F172A !important;
+    }
+    body.mgp-arcade-core-page #mgp-game-bg,
+    body.mgp-arcade-core-page #mgp-emoji-scatter {
+      display: none !important;
+    }
+    body.mgp-arcade-core-page .mgp-leaderboard,
+    body.mgp-arcade-core-page .mgp-seo-content,
+    body.mgp-arcade-core-page .mgp-footer,
+    body.mgp-arcade-core-page .mgp-related-card {
+      background: #FFFFFF !important;
+      color: #0F172A !important;
+      border: 1px solid #E2E8F0 !important;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08) !important;
+    }
+    body.mgp-arcade-core-page .mgp-related-card-info {
+      background: linear-gradient(180deg, rgba(248, 250, 252, 0.96) 0%, rgba(241, 245, 249, 1) 100%) !important;
+    }
+    body.mgp-arcade-core-page .mgp-leaderboard-header,
+    body.mgp-arcade-core-page .mgp-leaderboard-row,
+    body.mgp-arcade-core-page .mgp-leaderboard-name,
+    body.mgp-arcade-core-page .mgp-leaderboard-score,
+    body.mgp-arcade-core-page .mgp-related-games h3,
+    body.mgp-arcade-core-page .mgp-seo-content,
+    body.mgp-arcade-core-page .mgp-seo-content h2,
+    body.mgp-arcade-core-page .mgp-seo-content h3,
+    body.mgp-arcade-core-page .mgp-seo-content p,
+    body.mgp-arcade-core-page .mgp-seo-content li,
+    body.mgp-arcade-core-page .mgp-seo-content strong,
+    body.mgp-arcade-core-page .mgp-footer,
+    body.mgp-arcade-core-page .mgp-footer a {
+      color: #0F172A !important;
+      text-shadow: none !important;
+      -webkit-text-fill-color: currentColor !important;
+    }
+    body.mgp-arcade-core-page .mgp-seo-content a,
+    body.mgp-arcade-core-page .mgp-footer a {
+      color: rgb(${C}) !important;
+    }
 
     /* ── Buttons get flair ── */
     body.mgp-themed-page main button,
@@ -1352,6 +1455,67 @@ function applyGamePageDecor(game) {
       background: #1E293B !important;
       border-radius: 50% !important;
       box-shadow: inset 0 1px 2px rgba(0,0,0,0.3) !important;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       CASINO ACCENT POLISH — emerald highlights for slot/roulette
+       ═══════════════════════════════════════════════════════════════ */
+    body.mgp-themed-page[data-game-slug="roulette"] .bet-chip {
+      box-shadow: 0 8px 18px rgba(15,23,42,0.24) !important;
+    }
+    body.mgp-themed-page[data-game-slug="roulette"] .bet-chip.selected {
+      box-shadow: 0 0 0 3px #059669, 0 12px 26px rgba(5,150,105,0.45) !important;
+      transform: translateY(-3px) scale(1.14) !important;
+    }
+    body.mgp-themed-page[data-game-slug="roulette"] .bet-cell {
+      position: relative !important;
+      overflow: visible !important;
+    }
+    body.mgp-themed-page[data-game-slug="roulette"] .bet-cell.has-bet {
+      box-shadow: inset 0 0 0 2px #059669, 0 0 0 1px rgba(16,185,129,0.2), 0 10px 24px rgba(5,150,105,0.24) !important;
+      transform: translateY(-1px) scale(1.02) !important;
+    }
+    body.mgp-themed-page[data-game-slug="roulette"] .bet-cell.has-bet::after {
+      content: '' !important;
+      position: absolute !important;
+      top: -6px !important;
+      right: -6px !important;
+      width: 15px !important;
+      height: 15px !important;
+      border-radius: 999px !important;
+      background: radial-gradient(circle at 35% 35%, #ECFDF5 0 24%, #10B981 25% 60%, #047857 61% 100%) !important;
+      border: 2px solid rgba(236,253,245,0.95) !important;
+      box-shadow: 0 4px 10px rgba(5,150,105,0.4), 0 0 0 3px rgba(5,150,105,0.12) !important;
+      animation: mgpChipStack 0.4s ease !important;
+      pointer-events: none !important;
+    }
+    @keyframes mgpChipStack {
+      0% { transform: translateY(6px) scale(0.7); opacity: 0; }
+      100% { transform: translateY(0) scale(1); opacity: 1; }
+    }
+    body.mgp-themed-page[data-game-slug="slot-machine"] .slot-window {
+      border-color: #059669 !important;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 0 14px rgba(5,150,105,0.35) !important;
+    }
+    body.mgp-themed-page[data-game-slug="slot-machine"] .slot-light:nth-child(odd) {
+      background: #10B981 !important;
+    }
+    body.mgp-themed-page[data-game-slug="slot-machine"] .slot-light:nth-child(even) {
+      background: #34D399 !important;
+    }
+    body.mgp-themed-page[data-game-slug="slot-machine"] .mode-btn[style*="background:#f59e0b"],
+    body.mgp-themed-page[data-game-slug="slot-machine"] .mode-btn[style*="background: #f59e0b"] {
+      background: #059669 !important;
+      border-color: #10B981 !important;
+      color: #ECFDF5 !important;
+      box-shadow: 0 10px 24px rgba(5,150,105,0.3) !important;
+    }
+    body.mgp-themed-page[data-game-slug="spin-the-wheel"] #spin-btn,
+    body.mgp-themed-page[data-game-slug="roulette"] #spin-btn {
+      background: linear-gradient(135deg, #10B981 0%, #047857 100%) !important;
+      border-color: #065F46 !important;
+      color: #ECFDF5 !important;
+      box-shadow: 0 10px 28px rgba(5,150,105,0.34) !important;
     }
 
     /* ═══════════════════════════════════════════════════════════════
@@ -1897,9 +2061,100 @@ function ensureMgpCoreStyles() {
         box-shadow: 0 8px 20px rgba(0,0,0,0.22), 0 2px 6px rgba(0,0,0,0.12) !important;
         filter: brightness(1.02);
       }
+      .mgp-casino-core-page #mgp-casino-legacy-root {
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+      .mgp-casino-core-page #mgp-casino-legacy-root > article,
+      .mgp-casino-core-page #mgp-casino-legacy-root > section {
+        margin-bottom: 0 !important;
+      }
+      .mgp-casino-core-page #mgp-casino-legacy-root .prose {
+        max-width: none !important;
+      }
+      .mgp-arcade-core-page #mgp-arcade-legacy-root {
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+      .mgp-arcade-core-page #mgp-arcade-legacy-root .prose {
+        max-width: none !important;
+      }
+      .mgp-arcade-core-page #mgp-arcade-legacy-root canvas,
+      .mgp-arcade-core-page #mgp-arcade-legacy-root #gameCanvas,
+      .mgp-arcade-core-page #mgp-arcade-legacy-root #game-canvas {
+        display: block !important;
+        max-width: 100% !important;
+        height: auto !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+      }
     `;
     document.head.appendChild(style);
   }
+}
+
+function extractCoreSeoSource(legacyRoot) {
+  const seoSource = document.getElementById('mgp-seo-source') || document.createElement('div');
+  seoSource.id = 'mgp-seo-source';
+  seoSource.style.display = 'none';
+  seoSource.innerHTML = '';
+
+  if (!legacyRoot) return seoSource;
+
+  const children = Array.from(legacyRoot.children || []);
+  const gameplayIndex = children.findIndex((node) => node.querySelector?.('canvas, #game-area, #gameCanvas, #game-canvas, #gameWrapper'));
+  const directSeoNodes = gameplayIndex >= 0
+    ? children.slice(gameplayIndex + 1).filter((node) => node.matches?.('article, section, [class*="prose"]') && node.id !== 'related-games' && node.id !== 'footer-container' && !node.matches?.('.footer-container'))
+    : [];
+
+  if (directSeoNodes.length) {
+    seoSource.innerHTML = directSeoNodes.map((node) => node.outerHTML).join('');
+    directSeoNodes.forEach((node) => node.remove());
+    return seoSource;
+  }
+
+  const bodySeoNodes = [];
+  let sibling = legacyRoot.nextElementSibling;
+  while (sibling) {
+    const next = sibling.nextElementSibling;
+    if (sibling.id === 'related-games' || sibling.id === 'footer-container' || sibling.matches?.('.footer-container')) break;
+    if (sibling.matches?.('article, section, [class*="prose"]')) bodySeoNodes.push(sibling);
+    sibling = next;
+  }
+
+  if (bodySeoNodes.length) {
+    seoSource.innerHTML = bodySeoNodes.map((node) => node.outerHTML).join('');
+    bodySeoNodes.forEach((node) => node.remove());
+    return seoSource;
+  }
+
+  const gameplayBlock = children[gameplayIndex] || legacyRoot.firstElementChild;
+  const inlineChildren = gameplayBlock ? Array.from(gameplayBlock.children || []) : [];
+  const inlineSeoIndex = inlineChildren.findIndex((node) => node.matches?.('.prose, article[class*="prose"], section[class*="prose"], div[class*="prose"]'));
+  if (gameplayBlock && inlineSeoIndex >= 0) {
+    const inlineSeoNodes = inlineChildren.slice(inlineSeoIndex);
+    seoSource.innerHTML = inlineSeoNodes
+      .filter((node) => node.id !== 'related-games' && node.id !== 'footer-container' && !node.matches?.('.footer-container'))
+      .map((node) => node.outerHTML)
+      .join('');
+    inlineSeoNodes.forEach((node) => node.remove());
+  }
+
+  return seoSource;
+}
+
+function findArcadeLegacyRoot() {
+  const main = document.querySelector('main');
+  if (main) return main;
+  return Array.from(document.body.children).find((node) => node.matches?.('div, section, article') && node.querySelector?.('canvas, #game-area, #gameCanvas, #game-canvas, #gameWrapper')) || null;
+}
+
+function hoistLegacyNav(legacyRoot) {
+  if (!legacyRoot || legacyRoot.matches?.('main')) return;
+  const nav = Array.from(legacyRoot.children || []).find((node) => node.id === 'nav-container' || node.classList?.contains('nav-container'));
+  if (!nav) return;
+  if (!nav.id) nav.id = 'nav-container';
+  document.body.insertBefore(nav, legacyRoot);
 }
 
 function initCardCoreShell(game) {
@@ -1949,9 +2204,116 @@ function initCardCoreShell(game) {
   window.__mgpCardCoreReady = true;
 }
 
+function initCasinoCoreShell(game) {
+  if (!game || game.category !== 'Casino' || window.__mgpCasinoCoreReady) return;
+  ensureMgpCoreStyles();
+
+  const main = document.querySelector('main');
+  if (!main) return;
+
+  const related = document.getElementById('related-games');
+  const footer = document.getElementById('footer-container') || document.querySelector('.footer-container');
+
+  const seoSource = extractCoreSeoSource(main);
+
+  if (seoSource.innerHTML.trim()) {
+    document.body.appendChild(seoSource);
+  }
+
+  const legacyRoot = main;
+  legacyRoot.id = legacyRoot.id || 'mgp-casino-legacy-root';
+  legacyRoot.style.width = '100%';
+  legacyRoot.style.maxWidth = '100%';
+  legacyRoot.style.position = 'relative';
+  legacyRoot.style.margin = '0';
+  legacyRoot.style.padding = '0';
+
+  related?.remove();
+  footer?.remove();
+
+  MGP.init({
+    slug: game.slug,
+    category: game.category,
+    title: game.name,
+    scoreMode: 'none',
+    showBest: false,
+    hasTimer: false,
+    canPause: false,
+    trackAnalytics: false,
+    onRestart: () => {
+      if (typeof window.__mgpCasinoRestart === 'function') {
+        window.__mgpCasinoRestart();
+        return;
+      }
+      window.location.reload();
+    },
+    ...(window.__mgpCasinoConfig || {}),
+  });
+
+  window.__mgpCasinoConfig = null;
+
+  MGP.mountContent(legacyRoot);
+  document.body.classList.add('mgp-themed-page', 'mgp-casino-core-page');
+  window.__mgpCasinoCoreReady = true;
+}
+
+function initArcadeCoreShell(game) {
+  if (!game || game.category !== 'Arcade' || window.__mgpArcadeCoreReady) return;
+  ensureMgpCoreStyles();
+
+  const legacyRoot = findArcadeLegacyRoot();
+  if (!legacyRoot) return;
+
+  hoistLegacyNav(legacyRoot);
+
+  const related = document.getElementById('related-games');
+  const footer = document.getElementById('footer-container') || document.querySelector('.footer-container');
+  const seoSource = extractCoreSeoSource(legacyRoot);
+
+  if (seoSource.innerHTML.trim()) {
+    document.body.appendChild(seoSource);
+  }
+
+  legacyRoot.id = legacyRoot.id || 'mgp-arcade-legacy-root';
+  legacyRoot.style.width = '100%';
+  legacyRoot.style.maxWidth = '100%';
+  legacyRoot.style.position = 'relative';
+  legacyRoot.style.margin = '0';
+  legacyRoot.style.padding = '0';
+
+  related?.remove();
+  footer?.remove();
+
+  MGP.init({
+    slug: game.slug,
+    category: game.category,
+    title: game.name,
+    scoreMode: 'none',
+    showBest: false,
+    hasTimer: false,
+    canPause: false,
+    trackAnalytics: false,
+    onRestart: () => {
+      if (typeof window.__mgpArcadeRestart === 'function') {
+        window.__mgpArcadeRestart();
+        return;
+      }
+      window.location.reload();
+    },
+    ...(window.__mgpArcadeConfig || {}),
+  });
+
+  window.__mgpArcadeConfig = null;
+
+  MGP.mountContent(legacyRoot);
+  document.body.classList.add('mgp-themed-page', 'mgp-arcade-core-page');
+  window.__mgpArcadeCoreReady = true;
+}
+
 export function initToolPage(slug) {
   window._mgpGameSlug = slug;
   window._mgpGameStart = Date.now();
+  document.body.dataset.gameSlug = slug;
 
   const game = games.find(g => g.slug === slug);
   const gameName = game ? game.name : '';
@@ -1962,6 +2324,30 @@ export function initToolPage(slug) {
     initCardCoreShell(game);
     if (game) {
       applyGamePageDecor(game);
+      injectControlsHint(game);
+    }
+    wireButtonSounds();
+    return;
+  }
+
+  if (game?.category === 'Casino') {
+    renderNav(gameName);
+    initCasinoCoreShell(game);
+    if (game) {
+      applyGamePageDecor(game);
+      injectCategoryAtmosphere(game);
+      injectControlsHint(game);
+    }
+    wireButtonSounds();
+    return;
+  }
+
+  if (game?.category === 'Arcade') {
+    renderNav(gameName);
+    initArcadeCoreShell(game);
+    if (game) {
+      applyGamePageDecor(game);
+      injectCategoryAtmosphere(game);
       injectControlsHint(game);
     }
     wireButtonSounds();
