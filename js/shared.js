@@ -2287,6 +2287,15 @@ function initCardCoreShell(game) {
 
   MGP.mountContent(legacyRoot);
   document.body.classList.add('mgp-themed-page', 'mgp-card-core-page');
+
+  // Remove duplicate shell chrome — legacy card games have their own UI
+  const cw = document.querySelector('.mgp-game-wrapper');
+  if (cw) {
+    cw.querySelector('.mgp-score-bar')?.remove();
+    cw.querySelector('.mgp-controls-bar')?.remove();
+    cw.querySelector('.mgp-player-bar')?.remove();
+  }
+
   window.__mgpCardCoreReady = true;
 }
 
@@ -2334,6 +2343,15 @@ function initCasinoCoreShell(game) {
 
   MGP.mountContent(legacyRoot);
   document.body.classList.add('mgp-themed-page', 'mgp-casino-core-page');
+
+  // Remove duplicate shell chrome — legacy casino games have their own UI
+  const kw = document.querySelector('.mgp-game-wrapper');
+  if (kw) {
+    kw.querySelector('.mgp-score-bar')?.remove();
+    kw.querySelector('.mgp-controls-bar')?.remove();
+    kw.querySelector('.mgp-player-bar')?.remove();
+  }
+
   window.__mgpCasinoCoreReady = true;
 }
 
@@ -2381,6 +2399,17 @@ function initArcadeCoreShell(game) {
 
   MGP.mountContent(legacyRoot);
   document.body.classList.add('mgp-themed-page', 'mgp-arcade-core-page');
+
+  // Remove duplicate shell chrome — legacy arcade games have their own UI
+  const aw = document.querySelector('.mgp-game-wrapper');
+  if (aw) {
+    aw.querySelector('.mgp-score-bar')?.remove();
+    aw.querySelector('.mgp-controls-bar')?.remove();
+    aw.querySelector('.mgp-player-bar')?.remove();
+    aw.querySelector('.mgp-game-over-overlay')?.remove();
+    aw.querySelector('.mgp-pause-overlay')?.remove();
+  }
+
   window.__mgpArcadeCoreReady = true;
 }
 
