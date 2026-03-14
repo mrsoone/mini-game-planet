@@ -63,12 +63,16 @@ export function renderIdentityBar(container, player) {
     return;
   }
   if (!player || !container) return;
+  const shell = document.querySelector('.mgp-legacy-game-shell, .mgp-game-wrapper');
   let bar = document.getElementById('mgp-identity-bar');
   if (!bar) {
     bar = document.createElement('div');
     bar.id = 'mgp-identity-bar';
     bar.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:8px;padding:8px 16px;font-size:14px;color:#64748B;font-family:"Space Grotesk",system-ui,sans-serif;';
-    container.insertAdjacentElement('afterbegin', bar);
+    if (shell) shell.insertAdjacentElement('afterbegin', bar);
+    else container.insertAdjacentElement('afterbegin', bar);
+  } else if (shell && bar.parentElement !== shell) {
+    shell.insertAdjacentElement('afterbegin', bar);
   }
   const emojis = window._mgpBannerEmojis || [];
   const leftEmojis = emojis.slice(0, 3).map(e => `<span class="mgp-banner-e">${e}</span>`).join('');

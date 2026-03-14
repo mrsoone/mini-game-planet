@@ -20,10 +20,15 @@
 }
 
 .mgp-game-wrapper {
+  width: min(100%, 900px);
+  margin: 0 auto;
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
   position: relative;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  max-height: calc(var(--app-vh, 100vh) - 80px);
 }
 
 .mgp-theme-light {
@@ -263,26 +268,48 @@ body.mgp-card-core-page .mgp-theme-felt::before {
 
 .mgp-game-area {
   position: relative;
-  min-height: 500px;
   display: flex;
-  align-items: stretch;
+  align-items: center;
   justify-content: center;
   padding: 16px;
   width: 100%;
   overflow: hidden;
+  min-height: 0;
+  max-height: calc(var(--app-vh, 100vh) - 200px);
 }
 
 .mgp-game-content {
   width: 100%;
-  max-width: none;
+  max-width: 900px;
   margin: 0 auto;
+  min-height: 0;
+  max-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .mgp-game-content > * {
   width: 100%;
-  max-width: none !important;
+  max-width: 900px !important;
   margin-left: auto;
   margin-right: auto;
+}
+
+.mgp-game-content.mgp-content-dom {
+  height: 100%;
+  align-items: stretch;
+  justify-content: flex-start;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.mgp-game-content.mgp-content-dom > * {
+  min-height: min-content;
+}
+
+.mgp-game-content.mgp-content-canvas {
+  overflow: hidden;
 }
 
 .mgp-game-content .inline-block,
@@ -291,15 +318,17 @@ body.mgp-card-core-page .mgp-theme-felt::before {
 .mgp-game-content [style*="max-width"] {
   display: block !important;
   width: 100% !important;
-  max-width: 100% !important;
+  max-width: min(100%, 900px) !important;
 }
 
 .mgp-game-area canvas,
 .mgp-game-content canvas {
   display: block;
-  width: 100%;
-  max-width: 100%;
+  width: auto;
+  max-width: min(100%, 900px);
   height: auto;
+  max-height: calc(var(--app-vh, 100vh) - 200px);
+  object-fit: contain;
 }
 
 .mgp-controls-bar {
@@ -691,5 +720,16 @@ body.mgp-card-core-page .mgp-footer {
   .mgp-game-over-score { font-size: 36px; }
   .mgp-game-over-card { padding: 24px; min-width: 240px; }
   .mgp-related-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
-  .mgp-game-area { min-height: 300px; padding: 12px; }
+  .mgp-game-wrapper {
+    width: 100%;
+    max-height: calc(var(--app-vh, 100vh) - 80px);
+  }
+  .mgp-game-area {
+    max-height: calc(var(--app-vh, 100vh) - 140px);
+    padding: 12px;
+  }
+  .mgp-game-area canvas,
+  .mgp-game-content canvas {
+    max-height: calc(var(--app-vh, 100vh) - 140px);
+  }
 }

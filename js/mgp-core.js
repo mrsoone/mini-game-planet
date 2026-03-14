@@ -379,6 +379,22 @@ function invokeRestart() {
   }
 }
 
+function getMountedCanvas(node) {
+  if (!node) return null;
+  if (node instanceof HTMLCanvasElement) return node;
+  return node.querySelector('canvas');
+}
+
+function syncMountedContentLayout(node) {
+  if (!state.elements.gameMount || !state.elements.gameWrapper) return;
+  const canvas = getMountedCanvas(node);
+  state.elements.gameMount.classList.toggle('mgp-content-canvas', !!canvas);
+  state.elements.gameMount.classList.toggle('mgp-content-dom', !canvas);
+  state.elements.gameWrapper.classList.toggle('mgp-wrapper-canvas', !!canvas);
+  state.elements.gameWrapper.classList.toggle('mgp-wrapper-dom', !canvas);
+  state.elements.canvas = canvas;
+}
+
 function buildLayout(content) {
   const wrapper = document.createElement('section');
   wrapper.className = `mgp-game-wrapper mgp-theme-${MGP.theme}`;
@@ -711,6 +727,7 @@ const MGP = {
     if (!state.elements.gameMount || !node) return;
     state.elements.gameMount.innerHTML = '';
     state.elements.gameMount.appendChild(node);
+    syncMountedContentLayout(node);
   },
 
   getPlayer() {

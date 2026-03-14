@@ -42,10 +42,47 @@ function dispatchVirtualKey(code, key) {
   document.dispatchEvent(event);
 }
 
+function getPrimaryCanvas() {
+  return document.querySelector('.mgp-game-area canvas, main canvas, canvas');
+}
+
+function markGameShell() {
+  const main = document.querySelector('main');
+  if (!main) return null;
+  const candidates = Array.from(main.children).filter(el => el instanceof HTMLElement);
+  const shell = candidates.find((el) => el.querySelector('canvas, #gameCanvas, #game-canvas, #gameWrapper, #game-wrap, #game-area, #battle-area, #bet-phase, #play-phase, #board, #sudoku-grid')) || null;
+  if (!shell) return null;
+  const hasCanvas = !!shell.querySelector('canvas');
+  shell.classList.add('mgp-legacy-game-shell');
+  shell.classList.toggle('mgp-legacy-game-shell-canvas', hasCanvas);
+  shell.classList.toggle('mgp-legacy-game-shell-dom', !hasCanvas);
+  return shell;
+}
+
+function ensureOverlayHost(el) {
+  if (!(el instanceof HTMLElement)) return null;
+  if (getComputedStyle(el).position === 'static') {
+    el.style.position = 'relative';
+  }
+  el.classList.add('mgp-overlay-host');
+  return el;
+}
+
+function getControlsOverlayHost() {
+  const coreHost = document.querySelector('.mgp-game-area');
+  if (coreHost instanceof HTMLElement) return ensureOverlayHost(coreHost);
+  const canvas = getPrimaryCanvas();
+  const legacyShell = markGameShell();
+  const explicitHost = canvas?.closest('#gameWrapper, #game-wrap, .relative, .touch-zone');
+  return ensureOverlayHost(explicitHost || legacyShell || canvas?.parentElement || null);
+}
+
 function addMobileKeyboardFallback() {
   if (document.getElementById('mobile-controls')) return;
-  const canvas = document.querySelector('canvas');
+  const canvas = getPrimaryCanvas();
   if (!canvas) return;
+  const existingTouchUi = document.querySelector('#touchControls, #touchOverlay, #touchLeft, #touchRight, .touch-btn, [data-action], [data-key]');
+  if (existingTouchUi) return;
 
   const pageScriptText = Array.from(document.scripts)
     .map(script => script.textContent || '')
@@ -59,15 +96,22 @@ function addMobileKeyboardFallback() {
   controls.id = 'mobile-controls';
   controls.className = 'mobile-controls';
   controls.innerHTML = `
-    <button class="mobile-control-btn" data-code="ArrowUp" data-key="ArrowUp">▲</button>
-    <button class="mobile-control-btn" data-code="ArrowLeft" data-key="ArrowLeft">◀</button>
-    <button class="mobile-control-btn" data-code="Space" data-key=" ">Tap</button>
-    <button class="mobile-control-btn" data-code="ArrowRight" data-key="ArrowRight">▶</button>
-    <button class="mobile-control-btn" data-code="ArrowDown" data-key="ArrowDown">▼</button>
+    <div class="mobile-controls-cluster mobile-controls-cluster--move">
+      <button class="mobile-control-btn" data-code="ArrowUp" data-key="ArrowUp" aria-label="Up">▲</button>
+      <div class="mobile-controls-row">
+        <button class="mobile-control-btn" data-code="ArrowLeft" data-key="ArrowLeft" aria-label="Left">◀</button>
+        <button class="mobile-control-btn" data-code="ArrowDown" data-key="ArrowDown" aria-label="Down">▼</button>
+        <button class="mobile-control-btn" data-code="ArrowRight" data-key="ArrowRight" aria-label="Right">▶</button>
+      </div>
+    </div>
+    <div class="mobile-controls-cluster mobile-controls-cluster--actions">
+      <button class="mobile-control-btn mobile-control-btn--action" data-code="Space" data-key=" " aria-label="Action">◎</button>
+    </div>
   `;
 
-  const parent = canvas.parentElement || canvas;
-  parent.insertAdjacentElement('afterend', controls);
+  const host = getControlsOverlayHost();
+  if (!host) return;
+  host.appendChild(controls);
 
   controls.querySelectorAll('.mobile-control-btn').forEach(btn => {
     let repeatTimer = null;
@@ -129,9 +173,51 @@ function initGlobalMobileUX() {
     canvas, svg, img, video { max-width: 100%; height: auto; }
     canvas { touch-action: none; }
     input, textarea, select, button { font-size: 16px; }
+    .mgp-overlay-host { position: relative; }
+    .mgp-controls-hint-overlay {
+      position: absolute;
+      left: 50%;
+      bottom: 12px;
+      transform: translate(-50%, 12px);
+      opacity: 0;
+      pointer-events: none;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.78);
+      color: #E2E8F0;
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.28);
+      backdrop-filter: blur(10px);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      z-index: 24;
+    }
+    .mgp-controls-hint-overlay.is-visible {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+    .mgp-controls-hint-overlay.is-hidden {
+      opacity: 0;
+      transform: translate(-50%, 12px);
+    }
+    @media (hover:hover) and (pointer:fine) {
+      .mobile-controls,
+      #touchControls,
+      #touchOverlay,
+      .touch-btn,
+      #touchLeft,
+      #touchRight {
+        display: none !important;
+      }
+    }
     @media (pointer: coarse) {
       button, [role="button"], .cat-pill, .speed-btn, a {
         min-height: 42px;
+      }
+      .mgp-controls-hint-overlay {
+        display: none !important;
       }
       #nav-container nav {
         padding: 8px 12px !important;
@@ -149,23 +235,145 @@ function initGlobalMobileUX() {
         font-size: 13px !important;
       }
       .mobile-controls {
-        margin-top: 10px;
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 8px;
+        position: absolute;
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 14px;
+        pointer-events: none;
+        z-index: 22;
       }
-      .mobile-control-btn {
-        border: 2px solid #CBD5E1;
-        background: #FFFFFF;
-        border-radius: 12px;
-        min-height: 48px;
-        font-size: 18px;
+      .mobile-controls-cluster {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+      }
+      .mobile-controls-row {
+        display: flex;
+        gap: 10px;
+      }
+      .mobile-control-btn,
+      .touch-btn {
+        width: 56px !important;
+        height: 56px !important;
+        min-width: 48px !important;
+        min-height: 48px !important;
+        border-radius: 999px !important;
+        border: 1px solid rgba(255, 255, 255, 0.22) !important;
+        background: rgba(15, 23, 42, 0.52) !important;
+        color: #F8FAFC !important;
+        font-size: 24px !important;
+        font-weight: 700 !important;
+        font-family: inherit !important;
+        box-shadow: 0 12px 30px rgba(2, 8, 23, 0.28) !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
+        opacity: 0.66 !important;
+        pointer-events: auto !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        transition: opacity 0.15s ease, transform 0.15s ease, background-color 0.15s ease !important;
+      }
+      .mobile-control-btn--action,
+      #touchControls .touch-btn[data-key=" "],
+      #touchControls .touch-btn[data-key="Space"],
+      .touch-btn#btn-up,
+      .touch-btn#btn-hold {
+        background: rgba(var(--mgp-accent-rgb, 59, 130, 246), 0.6) !important;
+        border-color: rgba(var(--mgp-accent-rgb, 59, 130, 246), 0.72) !important;
+      }
+      .mobile-control-btn:active,
+      .touch-btn:active {
+        opacity: 0.9 !important;
+        transform: scale(0.96) !important;
+        background: rgba(var(--mgp-accent-rgb, 59, 130, 246), 0.72) !important;
+      }
+      #touchControls {
+        position: absolute !important;
+        left: 12px !important;
+        right: 12px !important;
+        bottom: 12px !important;
+        display: flex !important;
+        align-items: flex-end !important;
+        justify-content: space-between !important;
+        gap: 12px !important;
+        opacity: 1 !important;
+        pointer-events: none !important;
+        z-index: 22 !important;
+      }
+      #touchControls > *,
+      #touchControls button {
+        pointer-events: auto !important;
+      }
+      #touchControls .touch-btn {
+        font-size: 0 !important;
+      }
+      #touchControls .touch-btn::before {
+        font-size: 20px;
+        line-height: 1;
+      }
+      #touchControls .touch-btn[data-key="ArrowLeft"]::before { content: '◀'; }
+      #touchControls .touch-btn[data-key="ArrowRight"]::before { content: '▶'; }
+      #touchControls .touch-btn[data-key=" "]::before { content: '◎'; font-size: 24px; }
+      #touchControls .touch-btn[data-key="Space"]::before { content: '●'; font-size: 18px; }
+      .mgp-legacy-game-shell-canvas > div:has(.touch-btn):not(#touchControls) {
+        position: absolute !important;
+        left: 12px !important;
+        right: 12px !important;
+        bottom: 12px !important;
+        margin: 0 !important;
+        justify-content: center !important;
+        z-index: 22 !important;
+      }
+      #touchOverlay {
+        position: absolute !important;
+        inset: 0 !important;
+        display: block !important;
+        pointer-events: none !important;
+        z-index: 21 !important;
+      }
+      #touchLeft,
+      #touchRight {
+        position: absolute !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        width: 50% !important;
+        pointer-events: auto !important;
+      }
+      #touchLeft { left: 0 !important; }
+      #touchRight { right: 0 !important; }
+      #touchLeft::after,
+      #touchRight::after {
+        position: absolute;
+        bottom: 12px;
+        width: 56px;
+        height: 56px;
+        border-radius: 999px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(15, 23, 42, 0.52);
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        color: #F8FAFC;
+        font-size: 24px;
         font-weight: 700;
-        color: #0F172A;
-        font-family: inherit;
+        box-shadow: 0 12px 30px rgba(2, 8, 23, 0.28);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        opacity: 0.66;
       }
-      .mobile-control-btn:active {
-        background: #E2E8F0;
+      #touchLeft::after {
+        content: '◀';
+        left: 12px;
+      }
+      #touchRight::after {
+        content: '▶';
+        right: 12px;
       }
     }
   `;
@@ -284,53 +492,10 @@ function applyGamePageDecor(game) {
 
   document.body.classList.add('mgp-themed-page');
   document.documentElement.style.setProperty('--mgp-accent-rgb', theme.accentRgb);
-
-  let bg = document.getElementById('mgp-game-bg');
-  if (!bg) {
-    bg = document.createElement('div');
-    bg.id = 'mgp-game-bg';
-    document.body.insertAdjacentElement('afterbegin', bg);
-  }
-  bg.style.cssText = `position:fixed;inset:0;z-index:0;pointer-events:none;background:${theme.bg};`;
-
-  let scatter = document.getElementById('mgp-emoji-scatter');
-  if (!scatter) {
-    scatter = document.createElement('div');
-    scatter.id = 'mgp-emoji-scatter';
-    scatter.setAttribute('aria-hidden', 'true');
-    document.body.insertAdjacentElement('afterbegin', scatter);
-  }
-  let scatterHTML = '';
-  const positions = [
-    { top:'2%',left:'2%',size:'5rem',rotate:-15,delay:0,dur:5 },
-    { top:'5%',right:'3%',size:'4.5rem',rotate:12,delay:1,dur:7 },
-    { top:'14%',left:'1%',size:'3.8rem',rotate:-22,delay:2.5,dur:6 },
-    { top:'12%',right:'1%',size:'4.2rem',rotate:20,delay:0.5,dur:8 },
-    { top:'26%',left:'3%',size:'3.5rem',rotate:-10,delay:3,dur:5.5 },
-    { top:'30%',right:'2%',size:'5rem',rotate:18,delay:1.8,dur:7.5 },
-    { top:'40%',left:'1%',size:'4rem',rotate:-28,delay:0.3,dur:6.5 },
-    { top:'44%',right:'3%',size:'3.6rem',rotate:14,delay:2.2,dur:5 },
-    { top:'55%',left:'2%',size:'4.8rem',rotate:-8,delay:1.5,dur:8 },
-    { top:'58%',right:'1%',size:'4.2rem',rotate:25,delay:3.5,dur:6 },
-    { top:'68%',left:'3%',size:'3.5rem',rotate:-18,delay:0.8,dur:7 },
-    { top:'72%',right:'2%',size:'4rem',rotate:12,delay:2.8,dur:5.5 },
-    { top:'82%',left:'1%',size:'4.5rem',rotate:-14,delay:1.2,dur:6.5 },
-    { top:'86%',right:'3%',size:'3.8rem',rotate:22,delay:3.2,dur:7.5 },
-    { top:'94%',left:'4%',size:'3.2rem',rotate:-20,delay:0.6,dur:5 },
-    { top:'96%',right:'4%',size:'3.5rem',rotate:16,delay:2,dur:8 },
-    { top:'8%',left:'6%',size:'6.5rem',rotate:-5,delay:1.5,dur:9 },
-    { top:'35%',right:'5%',size:'6rem',rotate:8,delay:0.4,dur:8.5 },
-    { top:'62%',left:'5%',size:'7rem',rotate:-12,delay:2.6,dur:10 },
-    { top:'90%',right:'6%',size:'5.5rem',rotate:10,delay:1,dur:7 },
-  ];
-  const allEmojis = [gameEmoji, gameEmoji, gameEmoji, gameEmoji, ...vibeEmojis];
-  positions.forEach((pos, i) => {
-    const emoji = allEmojis[i % allEmojis.length];
-    const posX = pos.left ? 'left:'+pos.left : 'right:'+pos.right;
-    const posStyle = `top:${pos.top};${posX};font-size:${pos.size};--mgp-r:${pos.rotate}deg;animation-delay:${pos.delay}s;animation-duration:${pos.dur}s;`;
-    scatterHTML += `<span class="mgp-scatter-emoji" style="${posStyle}">${emoji}</span>`;
-  });
-  scatter.innerHTML = scatterHTML;
+  document.documentElement.style.setProperty('--mgp-theme-bg', theme.bg);
+  markGameShell();
+  document.getElementById('mgp-game-bg')?.remove();
+  document.getElementById('mgp-emoji-scatter')?.remove();
 
   const oldBanner = document.getElementById('mgp-emoji-banner');
   if (oldBanner) oldBanner.remove();
@@ -368,27 +533,8 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page main ~ article,
     body.mgp-themed-page main ~ section:not(#related-games),
     body.mgp-themed-page main ~ div:not(#related-games):not(#footer-container):not(#nav-container):not(#mgp-game-bg):not(#mgp-emoji-scatter)`;
-  const CONTENT_STAR = CONTENT.split(',').map(s => s.trim() + ' *').join(',\n    ');
-
   style.textContent = `
-    body.mgp-themed-page { background: #0f172a !important; }
-
-    /* ── Emoji scatter ── */
-    #mgp-emoji-scatter {
-      position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
-    }
-    .mgp-scatter-emoji {
-      position: absolute;
-      opacity: 0.22;
-      filter: saturate(1.6) brightness(1.2);
-      animation: mgpFloat 6s ease-in-out infinite;
-      line-height: 1;
-      transform: rotate(var(--mgp-r, 0deg));
-    }
-    @keyframes mgpFloat {
-      0%, 100% { transform: translateY(0) rotate(var(--mgp-r, 0deg)) scale(1); }
-      50% { transform: translateY(-14px) rotate(var(--mgp-r, 0deg)) scale(1.08); }
-    }
+    body.mgp-themed-page { background: #F5F5F4 !important; color: #0F172A !important; }
 
     /* ── Animated emojis beside player name ── */
     .mgp-name-emojis {
@@ -470,20 +616,23 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page main [style*="max-width"] {
       display: block !important;
       width: 100% !important;
-      max-width: 100% !important;
+      max-width: min(100%, 900px) !important;
     }
     body.mgp-themed-page main canvas {
       display: block !important;
       margin: 0 auto !important;
-      width: 100% !important;
-      max-width: 100% !important;
+      width: auto !important;
+      max-width: min(100%, 900px) !important;
       height: auto !important;
+      max-height: calc(var(--app-vh, 100vh) - 200px) !important;
+      object-fit: contain !important;
     }
     body.mgp-themed-page main canvas[width="420"][height="420"],
     body.mgp-themed-page main canvas[width="400"][height="400"] {
-      width: 100% !important;
-      max-width: 100% !important;
+      width: auto !important;
+      max-width: min(100%, 900px) !important;
       height: auto !important;
+      max-height: calc(var(--app-vh, 100vh) - 200px) !important;
     }
 
     /* Compact disclaimers - push below the game */
@@ -762,7 +911,8 @@ function applyGamePageDecor(game) {
       width: min(18vw, 100px) !important; height: min(18vw, 100px) !important;
     }
     body.mgp-themed-page .touch-btn {
-      width: clamp(44px, 8vw, 60px) !important; height: clamp(44px, 8vw, 60px) !important;
+      width: clamp(48px, 10vw, 60px) !important; height: clamp(48px, 10vw, 60px) !important;
+      min-width: 48px !important; min-height: 48px !important;
       font-size: clamp(18px, 3vw, 26px) !important;
     }
 
@@ -996,9 +1146,11 @@ function applyGamePageDecor(game) {
       box-shadow: 0 18px 40px rgba(2,8,23,0.3) !important;
     }
     body.mgp-arcade-core-page #mgp-arcade-legacy-root canvas {
-      width: 100% !important;
-      max-width: 100% !important;
+      width: auto !important;
+      max-width: min(100%, 900px) !important;
       height: auto !important;
+      max-height: calc(var(--app-vh, 100vh) - 200px) !important;
+      object-fit: contain !important;
     }
     body.mgp-arcade-core-page #mgp-arcade-legacy-root #soundToggle,
     body.mgp-arcade-core-page #mgp-arcade-legacy-root #sound-toggle,
@@ -1217,6 +1369,57 @@ function applyGamePageDecor(game) {
     body.mgp-arcade-core-page .mgp-seo-content a,
     body.mgp-arcade-core-page .mgp-footer a {
       color: rgb(${C}) !important;
+    }
+    body.mgp-themed-page .mgp-game-wrapper,
+    body.mgp-themed-page .mgp-legacy-game-shell {
+      width: min(100%, 900px) !important;
+      max-width: 900px !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+      margin-bottom: 24px !important;
+      max-height: calc(var(--app-vh, 100vh) - 80px) !important;
+    }
+    body.mgp-themed-page .mgp-legacy-game-shell {
+      overflow: hidden !important;
+    }
+    body.mgp-themed-page .mgp-legacy-game-shell-canvas {
+      background: #FFFFFF !important;
+    }
+    body.mgp-themed-page .mgp-legacy-game-shell-dom {
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+    }
+    body.mgp-themed-page .mgp-legacy-game-shell-canvas #gameCanvas,
+    body.mgp-themed-page .mgp-legacy-game-shell-canvas #game-canvas,
+    body.mgp-themed-page .mgp-legacy-game-shell-canvas canvas {
+      max-height: calc(var(--app-vh, 100vh) - 200px) !important;
+    }
+    body.mgp-themed-page .mgp-legacy-game-shell-canvas .relative,
+    body.mgp-themed-page .mgp-legacy-game-shell-canvas #gameWrapper,
+    body.mgp-themed-page .mgp-legacy-game-shell-canvas #game-wrap,
+    body.mgp-themed-page .mgp-legacy-game-shell-canvas .touch-zone {
+      max-width: min(100%, 900px) !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+    body.mgp-themed-page .mgp-legacy-game-shell-canvas > div:has(canvas) {
+      max-height: calc(var(--app-vh, 100vh) - 320px) !important;
+      min-height: 0 !important;
+      overflow: hidden !important;
+    }
+    body.mgp-themed-page .mgp-legacy-game-shell-canvas > div:has(canvas) canvas {
+      max-height: calc(var(--app-vh, 100vh) - 320px) !important;
+    }
+    body.mgp-themed-page .mgp-legacy-game-shell-dom #game-area,
+    body.mgp-themed-page .mgp-legacy-game-shell-dom #battle-area,
+    body.mgp-themed-page .mgp-legacy-game-shell-dom #bet-phase,
+    body.mgp-themed-page .mgp-legacy-game-shell-dom #play-phase,
+    body.mgp-themed-page .mgp-legacy-game-shell-dom #board,
+    body.mgp-themed-page .mgp-legacy-game-shell-dom #sudoku-grid,
+    body.mgp-themed-page .mgp-legacy-game-shell-dom #grid-container {
+      max-height: calc(var(--app-vh, 100vh) - 200px) !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
     }
 
     /* ── Buttons get flair ── */
@@ -1751,46 +1954,38 @@ function injectControlsHint(game) {
   if (!game || document.getElementById('mgp-controls-hint')) return;
   const isCanvas = !!document.querySelector('main canvas');
   const isTouch = window.matchMedia('(pointer: coarse)').matches;
+  if (isTouch) return;
 
   let hints = [];
   if (isCanvas) {
-    hints = isTouch
-      ? ['Swipe to move', 'Tap to act', 'Double-tap to pause']
-      : ['Arrow keys to move', 'Space to act', 'M to mute'];
+    hints = ['Arrow keys / WASD', 'Space to act', 'M to mute'];
   } else if (['Card', 'Casino'].includes(game.category)) {
-    hints = isTouch
-      ? ['Tap cards to play', 'Long-press for options']
-      : ['Click cards to play', 'Enter to deal'];
+    hints = ['Click cards to play', 'Enter to deal'];
   } else if (['Puzzle', 'Math', 'Board', 'Strategy'].includes(game.category)) {
-    hints = isTouch
-      ? ['Tap cells to select', 'Swipe to navigate']
-      : ['Click to select', 'Arrow keys to navigate', 'Enter to confirm'];
+    hints = ['Click to select', 'Arrow keys to navigate', 'Enter to confirm'];
   } else if (game.category === 'Word') {
-    hints = isTouch
-      ? ['Tap letters to type']
-      : ['Type letters on keyboard', 'Enter to submit'];
+    hints = ['Type letters on keyboard', 'Enter to submit'];
   } else {
-    hints = isTouch
-      ? ['Tap to interact']
-      : ['Click to interact', 'M to mute'];
+    hints = ['Click to interact', 'M to mute'];
   }
 
-  const bar = document.createElement('div');
-  bar.id = 'mgp-controls-hint';
-  bar.style.cssText = `
-    text-align:center;padding:6px 12px;font-size:12px;color:#94A3B8;
-    font-family:'Space Grotesk',system-ui,sans-serif;
-    border-top:1px solid rgba(148,163,184,0.2);margin-top:8px;
-  `;
-  bar.textContent = hints.join(' · ');
+  const host = getControlsOverlayHost() || ensureOverlayHost(markGameShell()) || ensureOverlayHost(document.querySelector('main'));
+  if (!host) return;
 
-  const main = document.querySelector('main');
-  const gameCard = main?.querySelector('.card, [style*="background:#fff"], [style*="background: #fff"], .bg-white, [class*="rounded-2xl"]');
-  if (gameCard) {
-    gameCard.appendChild(bar);
-  } else if (main) {
-    main.appendChild(bar);
-  }
+  const overlay = document.createElement('div');
+  overlay.id = 'mgp-controls-hint';
+  overlay.className = 'mgp-controls-hint-overlay is-visible';
+  overlay.textContent = hints.join(' • ');
+  host.appendChild(overlay);
+
+  window.setTimeout(() => {
+    overlay.classList.remove('is-visible');
+    overlay.classList.add('is-hidden');
+  }, 3000);
+
+  window.setTimeout(() => {
+    overlay.remove();
+  }, 3600);
 }
 
 // ── Section 7: Category-Specific Atmosphere ──
