@@ -143,7 +143,7 @@ export async function renderLeaderboard(container, gameSlug) {
   if (!panel) {
     panel = document.createElement('div');
     panel.id = 'mgp-leaderboard';
-    panel.style.cssText = 'margin:16px auto;font-family:"Space Grotesk",system-ui,sans-serif;max-width:min(100vw,1100px);padding:0 16px;';
+    panel.style.cssText = 'margin:16px auto;font-family:"Space Grotesk",system-ui,sans-serif;max-width:min(100%,960px);padding:0 16px;';
     const main = document.querySelector('main');
     const related = document.getElementById('related-games');
     if (main && main.parentNode) {

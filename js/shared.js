@@ -32,10 +32,7 @@ function applyPlanetFavicon() {
   upsertLink({ rel: 'manifest', href: '/manifest.json' });
 }
 
-function updateViewportHeightVar() {
-  const h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-  document.documentElement.style.setProperty('--app-vh', `${h}px`);
-}
+// updateViewportHeightVar removed — sizing now uses 100dvh in CSS
 
 function dispatchVirtualKey(code, key) {
   const event = new KeyboardEvent('keydown', { code, key, bubbles: true, cancelable: true });
@@ -167,9 +164,8 @@ function initGlobalMobileUX() {
   const style = document.createElement('style');
   style.id = 'mgp-mobile-ux';
   style.textContent = `
-    :root { --app-vh: 100vh; }
     html, body { max-width: 100%; overflow-x: hidden; }
-    body { min-height: var(--app-vh); }
+    body { min-height: 100vh; min-height: 100dvh; }
     canvas, svg, img, video { max-width: 100%; height: auto; }
     canvas { touch-action: none; }
     input, textarea, select, button { font-size: 16px; }
@@ -209,7 +205,7 @@ function initGlobalMobileUX() {
       .touch-btn,
       #touchLeft,
       #touchRight {
-        display: none !important;
+        display: none;
       }
     }
     @media (pointer: coarse) {
@@ -217,22 +213,22 @@ function initGlobalMobileUX() {
         min-height: 42px;
       }
       .mgp-controls-hint-overlay {
-        display: none !important;
+        display: none;
       }
       #nav-container nav {
-        padding: 8px 12px !important;
-        min-height: 56px !important;
-        height: auto !important;
+        padding: 8px 12px;
+        min-height: 56px;
+        height: auto;
         flex-wrap: wrap;
         gap: 8px;
       }
       #nav-container nav > div {
-        gap: 10px !important;
+        gap: 10px;
         flex-wrap: wrap;
         justify-content: flex-end;
       }
       #nav-container nav a, #nav-container nav button {
-        font-size: 13px !important;
+        font-size: 13px;
       }
       .mobile-controls {
         position: absolute;
@@ -258,60 +254,60 @@ function initGlobalMobileUX() {
       }
       .mobile-control-btn,
       .touch-btn {
-        width: 56px !important;
-        height: 56px !important;
-        min-width: 48px !important;
-        min-height: 48px !important;
-        border-radius: 999px !important;
-        border: 1px solid rgba(255, 255, 255, 0.22) !important;
-        background: rgba(15, 23, 42, 0.52) !important;
-        color: #F8FAFC !important;
-        font-size: 24px !important;
-        font-weight: 700 !important;
-        font-family: inherit !important;
-        box-shadow: 0 12px 30px rgba(2, 8, 23, 0.28) !important;
-        backdrop-filter: blur(10px) !important;
-        -webkit-backdrop-filter: blur(10px) !important;
-        opacity: 0.66 !important;
-        pointer-events: auto !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        transition: opacity 0.15s ease, transform 0.15s ease, background-color 0.15s ease !important;
+        width: 56px;
+        height: 56px;
+        min-width: 48px;
+        min-height: 48px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        background: rgba(15, 23, 42, 0.52);
+        color: #F8FAFC;
+        font-size: 24px;
+        font-weight: 700;
+        font-family: inherit;
+        box-shadow: 0 12px 30px rgba(2, 8, 23, 0.28);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        opacity: 0.66;
+        pointer-events: auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.15s ease, transform 0.15s ease, background-color 0.15s ease;
       }
       .mobile-control-btn--action,
       #touchControls .touch-btn[data-key=" "],
       #touchControls .touch-btn[data-key="Space"],
       .touch-btn#btn-up,
       .touch-btn#btn-hold {
-        background: rgba(var(--mgp-accent-rgb, 59, 130, 246), 0.6) !important;
-        border-color: rgba(var(--mgp-accent-rgb, 59, 130, 246), 0.72) !important;
+        background: rgba(var(--mgp-accent-rgb, 59, 130, 246), 0.6);
+        border-color: rgba(var(--mgp-accent-rgb, 59, 130, 246), 0.72);
       }
       .mobile-control-btn:active,
       .touch-btn:active {
-        opacity: 0.9 !important;
-        transform: scale(0.96) !important;
-        background: rgba(var(--mgp-accent-rgb, 59, 130, 246), 0.72) !important;
+        opacity: 0.9;
+        transform: scale(0.96);
+        background: rgba(var(--mgp-accent-rgb, 59, 130, 246), 0.72);
       }
       #touchControls {
-        position: absolute !important;
-        left: 12px !important;
-        right: 12px !important;
-        bottom: 12px !important;
-        display: flex !important;
-        align-items: flex-end !important;
-        justify-content: space-between !important;
-        gap: 12px !important;
-        opacity: 1 !important;
-        pointer-events: none !important;
-        z-index: 22 !important;
+        position: absolute;
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 12px;
+        opacity: 1;
+        pointer-events: none;
+        z-index: 22;
       }
       #touchControls > *,
       #touchControls button {
-        pointer-events: auto !important;
+        pointer-events: auto;
       }
       #touchControls .touch-btn {
-        font-size: 0 !important;
+        font-size: 0;
       }
       #touchControls .touch-btn::before {
         font-size: 20px;
@@ -322,31 +318,31 @@ function initGlobalMobileUX() {
       #touchControls .touch-btn[data-key=" "]::before { content: '◎'; font-size: 24px; }
       #touchControls .touch-btn[data-key="Space"]::before { content: '●'; font-size: 18px; }
       .mgp-legacy-game-shell-canvas > div:has(.touch-btn):not(#touchControls) {
-        position: absolute !important;
-        left: 12px !important;
-        right: 12px !important;
-        bottom: 12px !important;
-        margin: 0 !important;
-        justify-content: center !important;
-        z-index: 22 !important;
+        position: absolute;
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+        margin: 0;
+        justify-content: center;
+        z-index: 22;
       }
       #touchOverlay {
-        position: absolute !important;
-        inset: 0 !important;
-        display: block !important;
-        pointer-events: none !important;
-        z-index: 21 !important;
+        position: absolute;
+        inset: 0;
+        display: block;
+        pointer-events: none;
+        z-index: 21;
       }
       #touchLeft,
       #touchRight {
-        position: absolute !important;
-        top: 0 !important;
-        bottom: 0 !important;
-        width: 50% !important;
-        pointer-events: auto !important;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 50%;
+        pointer-events: auto;
       }
-      #touchLeft { left: 0 !important; }
-      #touchRight { right: 0 !important; }
+      #touchLeft { left: 0; }
+      #touchRight { right: 0; }
       #touchLeft::after,
       #touchRight::after {
         position: absolute;
@@ -378,10 +374,6 @@ function initGlobalMobileUX() {
     }
   `;
   document.head.appendChild(style);
-
-  updateViewportHeightVar();
-  window.addEventListener('resize', updateViewportHeightVar, { passive: true });
-  window.visualViewport?.addEventListener('resize', updateViewportHeightVar, { passive: true });
 
   if (window.matchMedia('(pointer: coarse)').matches) {
     let lastTouchEnd = 0;
@@ -534,8 +526,6 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page main ~ section:not(#related-games),
     body.mgp-themed-page main ~ div:not(#related-games):not(#footer-container):not(#nav-container):not(#mgp-game-bg):not(#mgp-emoji-scatter)`;
   style.textContent = `
-    body.mgp-themed-page { background: #F5F5F4 !important; color: #0F172A !important; }
-
     /* ── Animated emojis beside player name ── */
     .mgp-name-emojis {
       display: inline-flex;
@@ -563,37 +553,31 @@ function applyGamePageDecor(game) {
       50% { transform: scale(1.15) translateY(-4px); }
     }
 
-    /* ── Z-index layering ── */
-    body.mgp-themed-page > *:not(#mgp-game-bg):not(#mgp-emoji-scatter) {
-      position: relative; z-index: 1;
-    }
-
     /* ── Overflow protection ── */
     body.mgp-themed-page,
     body.mgp-themed-page main,
     body.mgp-themed-page main > div,
     body.mgp-themed-page main > article,
     body.mgp-themed-page > article {
-      overflow-x: hidden !important;
-      max-width: 100vw !important;
+      overflow-x: hidden;
+      max-width: 100vw;
     }
     body.mgp-themed-page *, body.mgp-themed-page *::before, body.mgp-themed-page *::after {
-      box-sizing: border-box !important;
+      box-sizing: border-box;
     }
 
-    /* ── Make game areas THE MAIN EVENT ── */
     body.mgp-themed-page main {
-      max-width: min(100vw, 1100px) !important;
-      width: 100% !important;
-      padding: 12px !important;
-      margin: 0 auto !important;
+      max-width: min(100%, 960px);
+      width: 100%;
+      padding: 12px;
+      margin: 0 auto;
     }
     body.mgp-themed-page main > div:first-child,
     body.mgp-themed-page main > .card:first-child,
     body.mgp-themed-page main > article:first-child {
-      max-width: 100% !important;
-      width: 100% !important;
-      overflow-x: auto !important;
+      max-width: 100%;
+      width: 100%;
+      overflow-x: auto;
     }
 
     /* ── FORCE STACKED LAYOUT: Never side-by-side game + article ── */
@@ -602,48 +586,43 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page [class*="md:flex-row"],
     body.mgp-themed-page main .flex.flex-col.md\\:flex-row,
     body.mgp-themed-page main > div > div.flex {
-      flex-direction: column !important;
-      align-items: center !important;
+      flex-direction: column;
+      align-items: center;
     }
     body.mgp-themed-page main .flex-shrink-0,
     body.mgp-themed-page main .flex-1 {
-      width: 100% !important;
-      max-width: 100% !important;
+      width: 100%;
+      max-width: 100%;
     }
     body.mgp-themed-page main .inline-block,
     body.mgp-themed-page main #gameWrapper,
     body.mgp-themed-page main .touch-zone,
     body.mgp-themed-page main [style*="max-width"] {
-      display: block !important;
-      width: 100% !important;
-      max-width: min(100%, 900px) !important;
+      display: block;
+      width: 100%;
+      max-width: 100%;
     }
     body.mgp-themed-page main canvas {
-      display: block !important;
-      margin: 0 auto !important;
-      width: auto !important;
-      max-width: min(100%, 900px) !important;
-      height: auto !important;
-      max-height: calc(var(--app-vh, 100vh) - 200px) !important;
-      object-fit: contain !important;
+      display: block;
+      margin: 0 auto;
+      max-width: 100%;
+      height: auto;
     }
     body.mgp-themed-page main canvas[width="420"][height="420"],
     body.mgp-themed-page main canvas[width="400"][height="400"] {
-      width: auto !important;
-      max-width: min(100%, 900px) !important;
-      height: auto !important;
-      max-height: calc(var(--app-vh, 100vh) - 200px) !important;
+      max-width: 100%;
+      height: auto;
     }
 
     /* Compact disclaimers - push below the game */
     body.mgp-themed-page .bg-amber-50,
     body.mgp-themed-page [style*="background:#FEF3C7"],
     body.mgp-themed-page [style*="background: #FEF3C7"] {
-      order: 99 !important;
-      padding: 8px 12px !important;
-      font-size: 12px !important;
-      margin-top: 12px !important;
-      margin-bottom: 0 !important;
+      order: 99;
+      padding: 8px 12px;
+      font-size: 12px;
+      margin-top: 12px;
+      margin-bottom: 0;
     }
     /* How-to-Play articles: own container below the game */
     body.mgp-themed-page > article,
@@ -651,20 +630,20 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page main + article,
     body.mgp-themed-page main .flex-1 article,
     body.mgp-themed-page main article {
-      margin-top: 16px !important;
-      padding: 20px !important;
-      font-size: 14px !important;
-      background: #fff !important;
-      border-radius: 16px !important;
-      border: 2px solid rgba(${C}, 0.2) !important;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08) !important;
+      margin-top: 16px;
+      padding: 20px;
+      font-size: 14px;
+      background: #fff;
+      border-radius: 16px;
+      border: 2px solid rgba(${C}, 0.2);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
     }
     body.mgp-themed-page > article h2,
     body.mgp-themed-page main ~ article h2,
     body.mgp-themed-page main article h2 {
-      font-size: 18px !important;
-      margin-bottom: 8px !important;
-      color: #0F172A !important;
+      font-size: 18px;
+      margin-bottom: 8px;
+      color: #0F172A;
     }
 
     /* ── CARD GAMES: Centering + wrapping for card hands ── */
@@ -675,8 +654,8 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page #cpu-cards,
     body.mgp-themed-page .hand,
     body.mgp-themed-page [id*="-hand"] {
-      justify-content: center !important;
-      flex-wrap: wrap !important;
+      justify-content: center;
+      flex-wrap: wrap;
     }
 
     /* Blackjack PLAYING cards only (not layout .card wrappers) */
@@ -685,23 +664,23 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page .card.facedown,
     body.mgp-themed-page .card.deal,
     body.mgp-themed-page [id*="-hand"] > .card {
-      width: clamp(76px, 15vw, 120px) !important;
-      height: clamp(110px, 22vw, 172px) !important;
-      font-size: clamp(24px, 4.5vw, 38px) !important;
-      border-radius: 14px !important;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.25), 0 0 15px rgba(${C}, 0.15) !important;
-      margin: 0 clamp(-6px, -0.8vw, -3px) !important;
+      width: clamp(76px, 15vw, 120px);
+      height: clamp(110px, 22vw, 172px);
+      font-size: clamp(24px, 4.5vw, 38px);
+      border-radius: 14px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25), 0 0 15px rgba(${C}, 0.15);
+      margin: 0 clamp(-6px, -0.8vw, -3px);
     }
     body.mgp-themed-page .card.red > span,
     body.mgp-themed-page .card.black > span,
     body.mgp-themed-page [id*="-hand"] > .card > span {
-      font-size: clamp(20px, 3.5vw, 32px) !important;
+      font-size: clamp(20px, 3.5vw, 32px);
     }
     body.mgp-themed-page .card.red > span[style*="font-size:12px"],
     body.mgp-themed-page .card.black > span[style*="font-size:12px"],
     body.mgp-themed-page .card.red > span[style*="font-size: 12px"],
     body.mgp-themed-page .card.black > span[style*="font-size: 12px"] {
-      font-size: clamp(16px, 2.8vw, 24px) !important;
+      font-size: clamp(16px, 2.8vw, 24px);
     }
     body.mgp-themed-page .card.red > span[style*="font-size:22px"],
     body.mgp-themed-page .card.black > span[style*="font-size:22px"],
@@ -711,125 +690,125 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page .card.black > span[style*="font-size: 22px"],
     body.mgp-themed-page .card.red > span[style*="font-size: 18px"],
     body.mgp-themed-page .card.black > span[style*="font-size: 18px"] {
-      font-size: clamp(26px, 5vw, 42px) !important;
+      font-size: clamp(26px, 5vw, 42px);
     }
     body.mgp-themed-page .card.facedown::after {
-      font-size: clamp(36px, 7vw, 56px) !important;
+      font-size: clamp(36px, 7vw, 56px);
     }
     /* All card inline span text across all games */
     body.mgp-themed-page .ce-card > span,
     body.mgp-themed-page .pile-card > span {
-      font-size: clamp(16px, 2.8vw, 26px) !important;
+      font-size: clamp(16px, 2.8vw, 26px);
     }
     body.mgp-themed-page .ce-card > span[style*="font-size:18px"],
     body.mgp-themed-page .ce-card > span[style*="font-size: 18px"],
     body.mgp-themed-page .pile-card > span[style*="font-size:22px"],
     body.mgp-themed-page .pile-card > span[style*="font-size: 22px"] {
-      font-size: clamp(22px, 4vw, 36px) !important;
+      font-size: clamp(22px, 4vw, 36px);
     }
 
     /* Solitaire .card-el / .slot (62x88 -> 100x142) */
     body.mgp-themed-page .card-el,
     body.mgp-themed-page .slot {
-      width: clamp(60px, 12vw, 100px) !important;
-      height: clamp(86px, 17vw, 142px) !important;
-      border-radius: 10px !important;
+      width: clamp(60px, 12vw, 100px);
+      height: clamp(86px, 17vw, 142px);
+      border-radius: 10px;
     }
-    body.mgp-themed-page .card-rank { font-size: clamp(14px, 2.4vw, 20px) !important; }
-    body.mgp-themed-page .card-suit { font-size: clamp(18px, 3.2vw, 28px) !important; }
+    body.mgp-themed-page .card-rank { font-size: clamp(14px, 2.4vw, 20px); }
+    body.mgp-themed-page .card-suit { font-size: clamp(18px, 3.2vw, 28px); }
 
     /* Spider Solitaire .card-s (58x82 -> 96x136) */
     body.mgp-themed-page .card-s {
-      width: clamp(56px, 11vw, 96px) !important;
-      height: clamp(80px, 16vw, 136px) !important;
-      border-radius: 10px !important;
+      width: clamp(56px, 11vw, 96px);
+      height: clamp(80px, 16vw, 136px);
+      border-radius: 10px;
     }
-    body.mgp-themed-page .card-s .r { font-size: clamp(12px, 2vw, 18px) !important; }
-    body.mgp-themed-page .card-s .st { font-size: clamp(16px, 2.8vw, 24px) !important; }
+    body.mgp-themed-page .card-s .r { font-size: clamp(12px, 2vw, 18px); }
+    body.mgp-themed-page .card-s .st { font-size: clamp(16px, 2.8vw, 24px); }
 
     /* FreeCell .card-f / .slot-f (60x84 -> 98x138) */
     body.mgp-themed-page .card-f,
     body.mgp-themed-page .slot-f {
-      width: clamp(58px, 11.5vw, 98px) !important;
-      height: clamp(82px, 16.5vw, 138px) !important;
-      border-radius: 10px !important;
+      width: clamp(58px, 11.5vw, 98px);
+      height: clamp(82px, 16.5vw, 138px);
+      border-radius: 10px;
     }
-    body.mgp-themed-page .card-f .rk { font-size: clamp(12px, 2vw, 18px) !important; }
-    body.mgp-themed-page .card-f .su { font-size: clamp(16px, 2.8vw, 24px) !important; }
+    body.mgp-themed-page .card-f .rk { font-size: clamp(12px, 2vw, 18px); }
+    body.mgp-themed-page .card-f .su { font-size: clamp(16px, 2.8vw, 24px); }
 
     /* Crazy Eights .ce-card (56x80 -> 90x128) */
     body.mgp-themed-page .ce-card {
-      width: clamp(54px, 11vw, 90px) !important;
-      height: clamp(76px, 15.5vw, 128px) !important;
-      border-radius: 10px !important;
+      width: clamp(54px, 11vw, 90px);
+      height: clamp(76px, 15.5vw, 128px);
+      border-radius: 10px;
     }
     body.mgp-themed-page .pile-card,
     body.mgp-themed-page #draw-pile {
-      width: clamp(62px, 12.5vw, 105px) !important;
-      height: clamp(88px, 17.5vw, 148px) !important;
-      border-radius: 10px !important;
+      width: clamp(62px, 12.5vw, 105px);
+      height: clamp(88px, 17.5vw, 148px);
+      border-radius: 10px;
     }
     body.mgp-themed-page .suit-btn {
-      width: clamp(40px, 7vw, 56px) !important;
-      height: clamp(40px, 7vw, 56px) !important;
-      font-size: clamp(20px, 3.5vw, 30px) !important;
+      width: clamp(40px, 7vw, 56px);
+      height: clamp(40px, 7vw, 56px);
+      font-size: clamp(20px, 3.5vw, 30px);
     }
 
     /* War .wc (72x104 -> 125x180) */
     body.mgp-themed-page .wc {
-      width: clamp(76px, 15vw, 125px) !important;
-      height: clamp(110px, 22vw, 180px) !important;
-      border-radius: 12px !important;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.15) !important;
+      width: clamp(76px, 15vw, 125px);
+      height: clamp(110px, 22vw, 180px);
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
     }
-    body.mgp-themed-page .wc .rk { font-size: clamp(16px, 3vw, 24px) !important; }
-    body.mgp-themed-page .wc .st { font-size: clamp(28px, 5vw, 42px) !important; }
+    body.mgp-themed-page .wc .rk { font-size: clamp(16px, 3vw, 24px); }
+    body.mgp-themed-page .wc .st { font-size: clamp(28px, 5vw, 42px); }
 
     /* Go Fish .gf-card (52x74 -> 82x116) */
     body.mgp-themed-page .gf-card {
-      width: clamp(50px, 10vw, 82px) !important;
-      height: clamp(70px, 14vw, 116px) !important;
-      font-size: clamp(13px, 2.2vw, 18px) !important;
-      border-radius: 10px !important;
+      width: clamp(50px, 10vw, 82px);
+      height: clamp(70px, 14vw, 116px);
+      font-size: clamp(13px, 2.2vw, 18px);
+      border-radius: 10px;
     }
     body.mgp-themed-page .gf-back {
-      width: clamp(42px, 7.5vw, 64px) !important;
-      height: clamp(58px, 10.5vw, 88px) !important;
-      border-radius: 8px !important;
+      width: clamp(42px, 7.5vw, 64px);
+      height: clamp(58px, 10.5vw, 88px);
+      border-radius: 8px;
     }
 
     /* Video Poker .vp-card (72x104 -> 110x158) */
     body.mgp-themed-page .vp-card {
-      width: clamp(68px, 13vw, 110px) !important;
-      height: clamp(98px, 19vw, 158px) !important;
-      border-radius: 12px !important;
+      width: clamp(68px, 13vw, 110px);
+      height: clamp(98px, 19vw, 158px);
+      border-radius: 12px;
     }
-    body.mgp-themed-page .vp-card .rank { font-size: clamp(14px, 2.5vw, 22px) !important; }
-    body.mgp-themed-page .vp-card .suit { font-size: clamp(22px, 4vw, 34px) !important; }
+    body.mgp-themed-page .vp-card .rank { font-size: clamp(14px, 2.5vw, 22px); }
+    body.mgp-themed-page .vp-card .suit { font-size: clamp(22px, 4vw, 34px); }
 
     /* High-Low .hl-card (80x116 -> 120x174) */
     body.mgp-themed-page .hl-card {
-      width: clamp(76px, 14vw, 120px) !important;
-      height: clamp(110px, 21vw, 174px) !important;
-      border-radius: 12px !important;
+      width: clamp(76px, 14vw, 120px);
+      height: clamp(110px, 21vw, 174px);
+      border-radius: 12px;
     }
-    body.mgp-themed-page .hl-card .rk { font-size: clamp(18px, 3vw, 28px) !important; }
-    body.mgp-themed-page .hl-card .st { font-size: clamp(28px, 5vw, 42px) !important; }
+    body.mgp-themed-page .hl-card .rk { font-size: clamp(18px, 3vw, 28px); }
+    body.mgp-themed-page .hl-card .st { font-size: clamp(28px, 5vw, 42px); }
 
     /* Dominoes .domino-tile */
     body.mgp-themed-page .domino-tile {
-      width: clamp(44px, 7vw, 60px) !important;
-      height: clamp(88px, 14vw, 120px) !important;
+      width: clamp(44px, 7vw, 60px);
+      height: clamp(88px, 14vw, 120px);
     }
 
     /* ── DISCLAIMER / ENTERTAINMENT BOXES (box styling only, text in Layer 3) ── */
     body.mgp-themed-page [style*="background:#FEF3C7"],
     body.mgp-themed-page [style*="background: #FEF3C7"],
     body.mgp-themed-page .bg-amber-50 {
-      background: #FEF3C7 !important;
-      border: 2px solid #FCD34D !important;
-      border-radius: 12px !important;
-      padding: 14px 18px !important;
+      background: #FEF3C7;
+      border: 2px solid #FCD34D;
+      border-radius: 12px;
+      padding: 14px 18px;
     }
 
     /* ── ALL GAME BUTTONS: Bigger + exciting ── */
@@ -838,106 +817,106 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page .btn-f,
     body.mgp-themed-page .guess-btn,
     body.mgp-themed-page .mode-btn {
-      padding: clamp(12px, 2vw, 20px) clamp(24px, 4vw, 48px) !important;
-      font-size: clamp(15px, 2.2vw, 20px) !important;
-      font-weight: 700 !important;
-      border-radius: 14px !important;
-      text-transform: uppercase !important;
-      letter-spacing: 0.5px !important;
+      padding: clamp(12px, 2vw, 20px) clamp(24px, 4vw, 48px);
+      font-size: clamp(15px, 2.2vw, 20px);
+      font-weight: 700;
+      border-radius: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
     
 
     /* ── BOARD GAMES: Bigger boards ── */
     body.mgp-themed-page #chess-board {
-      max-width: min(92vw, 600px) !important; width: min(92vw, 600px) !important;
+      max-width: min(92vw, 600px); width: min(92vw, 600px);
     }
     body.mgp-themed-page .chess-piece {
-      font-size: clamp(2rem, 6vw, 4.5rem) !important;
+      font-size: clamp(2rem, 6vw, 4.5rem);
     }
     body.mgp-themed-page #board[class*="w-72"],
     body.mgp-themed-page #board[class*="w-80"] {
-      width: min(92vw, 520px) !important; height: min(92vw, 520px) !important;
+      width: min(92vw, 520px); height: min(92vw, 520px);
     }
     body.mgp-themed-page [class*="text-4xl"][class*="md\\:text-5xl"] {
-      font-size: clamp(2.5rem, 6vw, 4rem) !important;
+      font-size: clamp(2.5rem, 6vw, 4rem);
     }
     body.mgp-themed-page [class*="w-\\[min(90vw"] {
-      max-width: min(92vw, 600px) !important; width: min(92vw, 600px) !important;
+      max-width: min(92vw, 600px); width: min(92vw, 600px);
     }
 
     /* ── PUZZLE GAMES: Bigger grids ── */
     body.mgp-themed-page #sudoku-grid {
-      max-width: min(92vw, 560px) !important; width: min(92vw, 560px) !important;
+      max-width: min(92vw, 560px); width: min(92vw, 560px);
     }
     body.mgp-themed-page .su-cell {
-      font-size: clamp(16px, 3vw, 24px) !important;
+      font-size: clamp(16px, 3vw, 24px);
     }
-    body.mgp-themed-page .su-note { font-size: clamp(7px, 1.2vw, 10px) !important; }
+    body.mgp-themed-page .su-note { font-size: clamp(7px, 1.2vw, 10px); }
     body.mgp-themed-page .num-btn {
-      width: clamp(34px, 6vw, 48px) !important; height: clamp(38px, 6.5vw, 52px) !important;
-      font-size: clamp(16px, 2.5vw, 22px) !important;
+      width: clamp(34px, 6vw, 48px); height: clamp(38px, 6.5vw, 52px);
+      font-size: clamp(16px, 2.5vw, 22px);
     }
     body.mgp-themed-page #grid-container {
-      max-width: 88vw !important; overflow-x: auto !important;
+      max-width: 88vw; overflow-x: auto;
     }
     body.mgp-themed-page #board[style*="max-width:340px"],
     body.mgp-themed-page #board[style*="max-width: 340px"] {
-      max-width: min(88vw, 440px) !important;
+      max-width: min(88vw, 440px);
     }
 
     /* ── HANGMAN: Responsive ── */
     body.mgp-themed-page .hm-letter {
-      font-size: clamp(22px, 4vw, 36px) !important; width: clamp(22px, 4vw, 36px) !important;
+      font-size: clamp(22px, 4vw, 36px); width: clamp(22px, 4vw, 36px);
     }
     body.mgp-themed-page .kb-letter {
-      width: clamp(32px, 5.5vw, 44px) !important; height: clamp(32px, 5.5vw, 44px) !important;
-      font-size: clamp(13px, 2vw, 18px) !important;
+      width: clamp(32px, 5.5vw, 44px); height: clamp(32px, 5.5vw, 44px);
+      font-size: clamp(13px, 2vw, 18px);
     }
     body.mgp-themed-page #hangman-canvas {
-      width: clamp(160px, 30vw, 240px) !important; height: clamp(160px, 30vw, 240px) !important;
+      width: clamp(160px, 30vw, 240px); height: clamp(160px, 30vw, 240px);
     }
 
     /* ── MEMORY MATCH ── */
     body.mgp-themed-page .mm-card {
-      min-width: 0 !important;
+      min-width: 0;
     }
 
     /* ── BLOCK PUZZLE: Responsive ── */
     body.mgp-themed-page #gameCanvas[width="300"],
     body.mgp-themed-page canvas[width="300"][height="480"] {
-      width: min(65vw, 360px) !important; height: min(104vw, 576px) !important;
+      width: min(65vw, 360px); height: min(104vw, 576px);
     }
     body.mgp-themed-page #holdCanvas, body.mgp-themed-page #nextCanvas {
-      width: min(18vw, 100px) !important; height: min(18vw, 100px) !important;
+      width: min(18vw, 100px); height: min(18vw, 100px);
     }
     body.mgp-themed-page .touch-btn {
-      width: clamp(48px, 10vw, 60px) !important; height: clamp(48px, 10vw, 60px) !important;
-      min-width: 48px !important; min-height: 48px !important;
-      font-size: clamp(18px, 3vw, 26px) !important;
+      width: clamp(48px, 10vw, 60px); height: clamp(48px, 10vw, 60px);
+      min-width: 48px; min-height: 48px;
+      font-size: clamp(18px, 3vw, 26px);
     }
 
     /* ── SNAKE & square canvases — handled by main canvas rules above ── */
 
     /* ── ALL GAMES: Bigger action buttons (not sound toggles or small toggles) ── */
     body.mgp-themed-page main button:not(#sound-toggle):not(#soundToggle):not(#sound-btn):not(.mode-btn) {
-      min-height: 44px !important;
-      font-weight: 700 !important;
+      min-height: 44px;
+      font-weight: 700;
     }
 
     /* ── Canvas: glow only — no width/border forcing (preserves game coordinates) ── */
     body.mgp-themed-page canvas {
-      max-width: 100% !important;
-      border: none !important;
+      max-width: 100%;
+      border: none;
       box-shadow:
         0 0 0 3px rgba(${C}, 0.7),
         0 0 20px rgba(${C}, 0.6),
         0 0 60px rgba(${C}, 0.3),
         0 0 120px rgba(${C}, 0.15),
-        0 16px 40px -12px rgba(0,0,0,0.6) !important;
-      border-radius: 16px !important;
+        0 16px 40px -12px rgba(0,0,0,0.6);
+      border-radius: 16px;
     }
     body.mgp-themed-page #game-canvas {
-      max-width: min(94vw, 1000px) !important;
+      max-width: min(94vw, 1000px);
     }
 
     /* ── SLOT MACHINE: handled by inline styles in slot-machine.html ── */
@@ -945,7 +924,7 @@ function applyGamePageDecor(game) {
     /* ── ROULETTE WHEEL ── */
     body.mgp-themed-page #roulette-wheel,
     body.mgp-themed-page canvas[id*="roulette"] {
-      max-width: min(90vw, 500px) !important;
+      max-width: min(90vw, 500px);
     }
 
     /* ── Game area centering + styling ── */
@@ -955,14 +934,14 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page [style*="background:#0f6b3a"],
     body.mgp-themed-page #game-area,
     body.mgp-themed-page #battle-area {
-      border-radius: 20px !important;
-      padding: clamp(20px, 4vw, 36px) !important;
-      text-align: center !important;
+      border-radius: 20px;
+      padding: clamp(20px, 4vw, 36px);
+      text-align: center;
       box-shadow:
         inset 0 0 40px rgba(0,0,0,0.2),
         0 0 30px rgba(${C}, 0.2),
-        0 12px 40px rgba(0,0,0,0.3) !important;
-      border: 2px solid rgba(255,255,255,0.1) !important;
+        0 12px 40px rgba(0,0,0,0.3);
+      border: 2px solid rgba(255,255,255,0.1);
     }
     body.mgp-themed-page [style*="background:#0F4C3A"] > div,
     body.mgp-themed-page [style*="background:#0F6B3A"] > div,
@@ -970,18 +949,18 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page [style*="background:#0f6b3a"] > div,
     body.mgp-themed-page #game-area > div,
     body.mgp-themed-page #battle-area > div {
-      display: flex !important;
-      flex-direction: column !important;
-      align-items: center !important;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
     body.mgp-themed-page [style*="display:flex"][style*="min-height"],
     body.mgp-themed-page [id$="-hand"],
     body.mgp-themed-page [id$="-cards"] {
-      justify-content: center !important;
+      justify-content: center;
     }
     /* Center all game content sections */
     body.mgp-themed-page main > div > div:first-child {
-      position: relative !important;
+      position: relative;
     }
     body.mgp-themed-page #bet-phase,
     body.mgp-themed-page #bet-preview-felt,
@@ -989,21 +968,21 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page [id*="result"],
     body.mgp-themed-page main > div > div[style*="text-align:center"],
     body.mgp-themed-page main > article > div[style*="text-align:center"] {
-      text-align: center !important;
-      margin-left: auto !important;
-      margin-right: auto !important;
+      text-align: center;
+      margin-left: auto;
+      margin-right: auto;
     }
     /* Center flex containers with buttons/chips */
     body.mgp-themed-page main > div div[style*="display:flex"][style*="justify-content:center"],
     body.mgp-themed-page main > article div[style*="display:flex"][style*="justify-content:center"] {
-      justify-content: center !important;
-      align-items: center !important;
+      justify-content: center;
+      align-items: center;
     }
     /* Center all canvases */
     body.mgp-themed-page main canvas {
-      display: block !important;
-      margin-left: auto !important;
-      margin-right: auto !important;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     /* ── ANIMATIONS: Playing cards, buttons, cells ── */
@@ -1020,7 +999,7 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page .mm-card,
     body.mgp-themed-page .slot,
     body.mgp-themed-page .slot-f {
-      transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
       cursor: pointer;
     }
     body.mgp-themed-page .card.red:hover,
@@ -1032,9 +1011,9 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page .vp-card:hover,
     body.mgp-themed-page .hl-card:hover,
     body.mgp-themed-page .mm-card:hover {
-      transform: translateY(-8px) scale(1.08) !important;
-      box-shadow: 0 16px 32px -4px rgba(0,0,0,0.35) !important;
-      z-index: 10 !important;
+      transform: translateY(-8px) scale(1.08);
+      box-shadow: 0 16px 32px -4px rgba(0,0,0,0.35);
+      z-index: 10;
     }
     body.mgp-themed-page .su-cell,
     body.mgp-themed-page .cell,
@@ -1042,28 +1021,28 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page .kb-letter,
     body.mgp-themed-page .num-btn,
     body.mgp-themed-page .suit-btn {
-      transition: transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease !important;
+      transition: transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
       cursor: pointer;
     }
     body.mgp-themed-page .su-cell:hover,
     body.mgp-themed-page .cell:hover,
     body.mgp-themed-page .chess-square:hover {
-      transform: scale(1.08) !important;
-      box-shadow: 0 0 12px rgba(${C}, 0.4) !important;
-      z-index: 5 !important;
+      transform: scale(1.08);
+      box-shadow: 0 0 12px rgba(${C}, 0.4);
+      z-index: 5;
     }
     body.mgp-themed-page .kb-letter:hover,
     body.mgp-themed-page .num-btn:hover,
     body.mgp-themed-page .suit-btn:hover {
-      transform: scale(1.12) !important;
-      box-shadow: 0 4px 16px rgba(${C}, 0.4) !important;
+      transform: scale(1.12);
+      box-shadow: 0 4px 16px rgba(${C}, 0.4);
     }
     body.mgp-themed-page .kb-letter:active,
     body.mgp-themed-page .num-btn:active,
     body.mgp-themed-page .suit-btn:active,
     body.mgp-themed-page .su-cell:active,
     body.mgp-themed-page .cell:active {
-      transform: scale(0.92) !important;
+      transform: scale(0.92);
     }
 
     /* ── Primary buttons get a pulse glow ── */
@@ -1077,7 +1056,7 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page button[id*="play"],
     body.mgp-themed-page button[id*="deal"],
     body.mgp-themed-page button[id*="spin"] {
-      animation: mgpBtnPulse 2s ease-in-out infinite !important;
+      animation: mgpBtnPulse 2s ease-in-out infinite;
     }
     @keyframes mgpBtnPulse {
       0%, 100% { box-shadow: 0 4px 16px rgba(${C}, 0.3); }
@@ -1087,79 +1066,55 @@ function applyGamePageDecor(game) {
     /* ── Widen articles outside main ── */
     body.mgp-themed-page > article,
     body.mgp-themed-page main ~ article {
-      max-width: min(92vw, 1100px) !important;
-      margin-left: auto !important;
-      margin-right: auto !important;
-      overflow-x: hidden !important;
-    }
-
-    /* ── Nav & Footer ── */
-    body.mgp-themed-page #nav-container nav {
-      background: rgba(255,255,255,0.97) !important;
-      border-bottom: 3px solid rgba(${C},0.5) !important;
-    }
-    body.mgp-themed-page #footer-container footer {
-      background: #fff !important;
-      border-color: #E5E7EB !important;
-    }
-    body.mgp-themed-page #footer-container footer span,
-    body.mgp-themed-page #footer-container footer a,
-    body.mgp-themed-page #footer-container footer button {
-      color: #64748B !important;
+      width: 100%;
+      max-width: min(100%, 960px);
+      margin-left: auto;
+      margin-right: auto;
+      overflow-x: hidden;
     }
 
     /* ── Wrapper divs around main should be transparent, not cards ── */
     body.mgp-themed-page > div:not(#nav-container):not(#footer-container):not(#related-games):not(#mgp-game-bg):not(#mgp-emoji-scatter) {
-      background: transparent !important;
-      border: none !important;
-      box-shadow: none !important;
-      padding: 0 !important;
-      max-width: 100% !important;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      padding: 0;
+      max-width: 100%;
     }
 
     /* ── Content cards ── */
     ${CONTENT} {
-      background: #ffffff !important;
-      color: #0F172A !important;
-      border: 2px solid rgba(${C}, 0.5) !important;
-      border-radius: 20px !important;
+      background: #ffffff;
+      color: #0F172A;
+      border: 2px solid rgba(${C}, 0.5);
+      border-radius: 20px;
       box-shadow:
         0 0 30px -5px rgba(${C}, 0.4),
         0 0 80px -15px rgba(${C}, 0.25),
         0 20px 60px -15px rgba(0,0,0,0.5),
-        0 0 0 1px rgba(255,255,255,0.15) !important;
-      padding: 16px !important;
-      margin-bottom: 12px !important;
-      overflow-x: auto !important;
+        0 0 0 1px rgba(255,255,255,0.15);
+      padding: 16px;
+      margin-bottom: 12px;
+      overflow-x: auto;
     }
-    body.mgp-arcade-core-page #mgp-arcade-legacy-root > div,
-    body.mgp-arcade-core-page #mgp-arcade-legacy-root > article,
-    body.mgp-arcade-core-page #mgp-arcade-legacy-root > section,
-    body.mgp-arcade-core-page #mgp-arcade-legacy-root > div > article,
-    body.mgp-arcade-core-page #mgp-arcade-legacy-root > div > section,
-    body.mgp-arcade-core-page #mgp-arcade-legacy-root > article > section,
-    body.mgp-arcade-core-page #mgp-arcade-legacy-root > article > div,
-    body.mgp-arcade-core-page #mgp-arcade-legacy-root > div > div:first-child {
-      background: rgba(15, 23, 42, 0.84) !important;
-      color: #E2E8F0 !important;
-      border: 1px solid rgba(${C}, 0.2) !important;
-      box-shadow: 0 18px 40px rgba(2,8,23,0.3) !important;
-    }
-    body.mgp-arcade-core-page #mgp-arcade-legacy-root canvas {
-      width: auto !important;
-      max-width: min(100%, 900px) !important;
-      height: auto !important;
-      max-height: calc(var(--app-vh, 100vh) - 200px) !important;
-      object-fit: contain !important;
+    body.mgp-arcade-core-page #mgp-arcade-legacy-root #gameWrapper,
+    body.mgp-arcade-core-page #mgp-arcade-legacy-root #game-wrap,
+    body.mgp-arcade-core-page #mgp-arcade-legacy-root #game-area,
+    body.mgp-arcade-core-page #mgp-arcade-legacy-root .touch-zone,
+    body.mgp-arcade-core-page #mgp-arcade-legacy-root .relative:has(canvas) {
+      background: rgba(15, 23, 42, 0.84);
+      color: #E2E8F0;
+      border: 1px solid rgba(${C}, 0.2);
+      box-shadow: 0 18px 40px rgba(2,8,23,0.3);
     }
     body.mgp-arcade-core-page #mgp-arcade-legacy-root #soundToggle,
     body.mgp-arcade-core-page #mgp-arcade-legacy-root #sound-toggle,
     body.mgp-arcade-core-page #mgp-arcade-legacy-root #sound-btn {
-      display: none !important;
+      display: none;
     }
     /* ── LAYER 1: Force dark readable text on ALL content areas ── */
     ${CONTENT} {
-      color: #0F172A !important;
+      color: #0F172A;
     }
     body.mgp-arcade-core-page #mgp-arcade-legacy-root,
     body.mgp-arcade-core-page #mgp-arcade-legacy-root p,
@@ -1172,24 +1127,24 @@ function applyGamePageDecor(game) {
     body.mgp-arcade-core-page #mgp-arcade-legacy-root h2,
     body.mgp-arcade-core-page #mgp-arcade-legacy-root h3,
     body.mgp-arcade-core-page #mgp-arcade-legacy-root h4 {
-      color: #E2E8F0 !important;
+      color: #E2E8F0;
     }
     body.mgp-arcade-core-page #mgp-arcade-legacy-root [class*="text-gray-500"],
     body.mgp-arcade-core-page #mgp-arcade-legacy-root [class*="text-gray-600"],
     body.mgp-arcade-core-page #mgp-arcade-legacy-root [class*="text-slate-600"],
     body.mgp-arcade-core-page #mgp-arcade-legacy-root [class*="text-gray-700"],
     body.mgp-arcade-core-page #mgp-arcade-legacy-root [class*="text-slate-700"] {
-      color: #CBD5E1 !important;
+      color: #CBD5E1;
     }
     body.mgp-arcade-core-page #mgp-arcade-legacy-root [class*="bg-gray-50"],
     body.mgp-arcade-core-page #mgp-arcade-legacy-root [class*="bg-gray-100"],
     body.mgp-arcade-core-page #mgp-arcade-legacy-root [class*="bg-indigo-100"],
     body.mgp-arcade-core-page #mgp-arcade-legacy-root [class*="bg-amber-100"] {
-      background: rgba(30, 41, 59, 0.9) !important;
-      color: #E2E8F0 !important;
+      background: rgba(30, 41, 59, 0.9);
+      color: #E2E8F0;
     }
     body.mgp-arcade-core-page #mgp-arcade-legacy-root a {
-      color: rgb(${C}) !important;
+      color: rgb(${C});
     }
     body.mgp-themed-page main p:not([class*="text-white"]),
     body.mgp-themed-page main div:not([style*="background:#"]):not([style*="background:linear"]):not([style*="background:radial"]):not(#mgp-header-emojis):not(#mgp-footer-emojis):not([class*="bg-black"]):not([class*="bg-gray-9"]):not([class*="bg-slate-9"]),
@@ -1214,7 +1169,7 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page main ~ article li,
     body.mgp-themed-page main ~ section p,
     body.mgp-themed-page main ~ section li {
-      color: #0F172A !important;
+      color: #0F172A;
     }
     /* Preserve Tailwind white text on dark overlays/backgrounds */
     body.mgp-themed-page [class*="bg-black"] p,
@@ -1225,13 +1180,13 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page [class*="bg-gray-9"] span,
     body.mgp-themed-page [class*="bg-slate-9"] p,
     body.mgp-themed-page [class*="bg-slate-9"] span {
-      color: #fff !important;
+      color: #fff;
     }
     body.mgp-themed-page main > div a,
     body.mgp-themed-page > article a,
-    body.mgp-themed-page main ~ article a { color: rgb(${C}) !important; }
+    body.mgp-themed-page main ~ article a { color: rgb(${C}); }
     body.mgp-themed-page > article code,
-    body.mgp-themed-page main ~ article code { background:#F1F5F9!important; color:#334155!important; }
+    body.mgp-themed-page main ~ article code { background:#F1F5F9; color:#334155; }
 
     /* ── LAYER 2: White text ONLY inside truly dark-background game areas ── */
     body.mgp-themed-page:not(.mgp-card-core-page) [style*="background:#0F"] p,
@@ -1242,8 +1197,8 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page:not(.mgp-card-core-page) [style*="background:#0f"] div:not(.card):not(.card-el):not(.card-s):not(.card-f):not(.ce-card):not(.wc):not(.gf-card):not(.vp-card):not(.hl-card):not(.pile-card):not(.sp-card):not(.ht-card):not(.rm-card):not(.eu-card):not(.oh-card):not(.cb-card):not(.ers-card):not(.pt-card):not(.pr-card):not([class*="card"]),
     body.mgp-themed-page:not(.mgp-card-core-page) [style*="background:#1E"] div:not(.card):not(.card-el):not(.card-s):not(.card-f):not(.ce-card):not(.wc):not(.gf-card):not(.vp-card):not(.hl-card):not(.pile-card):not(.sp-card):not(.ht-card):not(.rm-card):not(.eu-card):not(.oh-card):not(.cb-card):not(.ers-card):not(.pt-card):not(.pr-card):not([class*="card"]),
     body.mgp-themed-page:not(.mgp-card-core-page) [style*="background:#1e"] div:not(.card):not(.card-el):not(.card-s):not(.card-f):not(.ce-card):not(.wc):not(.gf-card):not(.vp-card):not(.hl-card):not(.pile-card):not(.sp-card):not(.ht-card):not(.rm-card):not(.eu-card):not(.oh-card):not(.cb-card):not(.ers-card):not(.pt-card):not(.pr-card):not([class*="card"]) {
-      color: rgba(255,255,255,0.95) !important;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
+      color: rgba(255,255,255,0.95);
+      text-shadow: 0 1px 3px rgba(0,0,0,0.3);
     }
     body.mgp-themed-page:not(.mgp-card-core-page) [style*="background:#0F"] span:not([style*="color:"]):not(.rk):not(.st):not(.rank):not(.rank2):not(.suit):not(.r):not(.label),
     body.mgp-themed-page:not(.mgp-card-core-page) [style*="background:#0f"] span:not([style*="color:"]):not(.rk):not(.st):not(.rank):not(.rank2):not(.suit):not(.r):not(.label),
@@ -1253,24 +1208,24 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page:not(.mgp-card-core-page) [style*="background:#0f"] label,
     body.mgp-themed-page:not(.mgp-card-core-page) [style*="background:#1E"] span:not([style*="color:"]):not(.rk):not(.st):not(.rank):not(.rank2):not(.suit):not(.r):not(.label),
     body.mgp-themed-page:not(.mgp-card-core-page) [style*="background:#1e"] span:not([style*="color:"]):not(.rk):not(.st):not(.rank):not(.rank2):not(.suit):not(.r):not(.label) {
-      color: rgba(255,255,255,0.85) !important;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
+      color: rgba(255,255,255,0.85);
+      text-shadow: 0 1px 3px rgba(0,0,0,0.3);
     }
     /* Inline-colored spans inside dark areas keep their color, just get shadow */
     body.mgp-themed-page:not(.mgp-card-core-page) [style*="background:#0F"] span[style*="color:"],
     body.mgp-themed-page:not(.mgp-card-core-page) [style*="background:#0f"] span[style*="color:"] {
-      text-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.3);
     }
 
     /* Overlay elements — handled by [class*="bg-black"] rules above (white text) */
 
     /* ── LAYER 2.5: Preserve playing card colors ── */
     body.mgp-themed-page .card.red,
-    body.mgp-themed-page .card.red span { color: #DC2626 !important; text-shadow: none !important; }
+    body.mgp-themed-page .card.red span { color: #DC2626; text-shadow: none; }
     body.mgp-themed-page .card.black,
-    body.mgp-themed-page .card.black span { color: #1E293B !important; text-shadow: none !important; }
+    body.mgp-themed-page .card.black span { color: #1E293B; text-shadow: none; }
     body.mgp-themed-page .card.facedown,
-    body.mgp-themed-page .card.facedown span { color: transparent !important; text-shadow: none !important; }
+    body.mgp-themed-page .card.facedown span { color: transparent; text-shadow: none; }
     body.mgp-themed-page .ce-card span,
     body.mgp-themed-page .pile-card span,
     body.mgp-themed-page .card-el span,
@@ -1279,12 +1234,12 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page .wc span,
     body.mgp-themed-page .gf-card span,
     body.mgp-themed-page .vp-card span,
-    body.mgp-themed-page .hl-card span { text-shadow: none !important; }
+    body.mgp-themed-page .hl-card span { text-shadow: none; }
     body.mgp-themed-page button[style*="color:#fff"],
     body.mgp-themed-page button[style*="color: #fff"],
     body.mgp-themed-page button[style*="color:white"],
     body.mgp-themed-page .action-btn,
-    body.mgp-themed-page .bet-btn { text-shadow: none !important; }
+    body.mgp-themed-page .bet-btn { text-shadow: none; }
 
     /* ── LAYER 3: Disclaimer boxes get dark amber text (wins over layers 1 & 2) ── */
     body.mgp-themed-page main [style*="background:#FEF3C7"] p,
@@ -1306,109 +1261,53 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page .bg-amber-50 p,
     body.mgp-themed-page .bg-amber-50 span,
     body.mgp-themed-page .bg-amber-50 div {
-      color: #451A03 !important;
-      -webkit-text-fill-color: #451A03 !important;
-      font-size: clamp(13px, 2vw, 15px) !important;
-      font-weight: 700 !important;
-      text-transform: none !important;
-      letter-spacing: normal !important;
-      text-shadow: none !important;
+      color: #451A03;
+      -webkit-text-fill-color: #451A03;
+      font-size: clamp(13px, 2vw, 15px);
+      font-weight: 700;
+      text-transform: none;
+      letter-spacing: normal;
+      text-shadow: none;
     }
 
     /* ── Related games ── */
     body.mgp-themed-page #related-games {
-      background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important;
-      max-width: min(100vw, 1100px) !important;
-      margin-left: auto !important; margin-right: auto !important;
-      overflow-x: hidden !important;
+      background: transparent; border: none; box-shadow: none; padding: 0;
+      max-width: min(100%, 960px);
+      margin-left: auto; margin-right: auto;
+      overflow-x: hidden;
     }
     body.mgp-themed-page #related-games > section {
-      background: rgba(255,255,255,0.97) !important;
-      border: 2px solid rgba(${C},0.25) !important;
-      border-radius: 20px !important;
-      box-shadow: 0 16px 50px -16px rgba(0,0,0,0.45) !important;
+      background: rgba(255,255,255,0.97);
+      border: 2px solid rgba(${C},0.25);
+      border-radius: 20px;
+      box-shadow: 0 16px 50px -16px rgba(0,0,0,0.45);
     }
-    body.mgp-themed-page #related-games h3 { color: #0F172A !important; }
-    body.mgp-arcade-core-page {
-      background: #F5F5F4 !important;
-      color: #0F172A !important;
-    }
-    body.mgp-arcade-core-page #mgp-game-bg,
-    body.mgp-arcade-core-page #mgp-emoji-scatter {
-      display: none !important;
-    }
-    body.mgp-arcade-core-page .mgp-leaderboard,
-    body.mgp-arcade-core-page .mgp-seo-content,
-    body.mgp-arcade-core-page .mgp-footer,
-    body.mgp-arcade-core-page .mgp-related-card {
-      background: #FFFFFF !important;
-      color: #0F172A !important;
-      border: 1px solid #E2E8F0 !important;
-      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08) !important;
-    }
-    body.mgp-arcade-core-page .mgp-related-card-info {
-      background: linear-gradient(180deg, rgba(248, 250, 252, 0.96) 0%, rgba(241, 245, 249, 1) 100%) !important;
-    }
-    body.mgp-arcade-core-page .mgp-leaderboard-header,
-    body.mgp-arcade-core-page .mgp-leaderboard-row,
-    body.mgp-arcade-core-page .mgp-leaderboard-name,
-    body.mgp-arcade-core-page .mgp-leaderboard-score,
-    body.mgp-arcade-core-page .mgp-related-games h3,
-    body.mgp-arcade-core-page .mgp-seo-content,
-    body.mgp-arcade-core-page .mgp-seo-content h2,
-    body.mgp-arcade-core-page .mgp-seo-content h3,
-    body.mgp-arcade-core-page .mgp-seo-content p,
-    body.mgp-arcade-core-page .mgp-seo-content li,
-    body.mgp-arcade-core-page .mgp-seo-content strong,
-    body.mgp-arcade-core-page .mgp-footer,
-    body.mgp-arcade-core-page .mgp-footer a {
-      color: #0F172A !important;
-      text-shadow: none !important;
-      -webkit-text-fill-color: currentColor !important;
-    }
-    body.mgp-arcade-core-page .mgp-seo-content a,
-    body.mgp-arcade-core-page .mgp-footer a {
-      color: rgb(${C}) !important;
-    }
-    body.mgp-themed-page .mgp-game-wrapper,
+    body.mgp-themed-page #related-games h3 { color: #0F172A; }
     body.mgp-themed-page .mgp-legacy-game-shell {
-      width: min(100%, 900px) !important;
-      max-width: 900px !important;
-      margin-left: auto !important;
-      margin-right: auto !important;
-      margin-bottom: 24px !important;
-      max-height: calc(var(--app-vh, 100vh) - 80px) !important;
+      width: 100%;
+      max-width: 960px;
+      margin-left: auto;
+      margin-right: auto;
+      margin-bottom: 24px;
     }
     body.mgp-themed-page .mgp-legacy-game-shell {
-      overflow: hidden !important;
+      overflow: hidden;
     }
     body.mgp-themed-page .mgp-legacy-game-shell-canvas {
-      background: #FFFFFF !important;
+      background: #FFFFFF;
     }
     body.mgp-themed-page .mgp-legacy-game-shell-dom {
-      overflow-y: auto !important;
-      overflow-x: hidden !important;
-    }
-    body.mgp-themed-page .mgp-legacy-game-shell-canvas #gameCanvas,
-    body.mgp-themed-page .mgp-legacy-game-shell-canvas #game-canvas,
-    body.mgp-themed-page .mgp-legacy-game-shell-canvas canvas {
-      max-height: calc(var(--app-vh, 100vh) - 200px) !important;
+      overflow-y: auto;
+      overflow-x: hidden;
     }
     body.mgp-themed-page .mgp-legacy-game-shell-canvas .relative,
     body.mgp-themed-page .mgp-legacy-game-shell-canvas #gameWrapper,
     body.mgp-themed-page .mgp-legacy-game-shell-canvas #game-wrap,
     body.mgp-themed-page .mgp-legacy-game-shell-canvas .touch-zone {
-      max-width: min(100%, 900px) !important;
-      margin-left: auto !important;
-      margin-right: auto !important;
-    }
-    body.mgp-themed-page .mgp-legacy-game-shell-canvas > div:has(canvas) {
-      max-height: calc(var(--app-vh, 100vh) - 320px) !important;
-      min-height: 0 !important;
-      overflow: hidden !important;
-    }
-    body.mgp-themed-page .mgp-legacy-game-shell-canvas > div:has(canvas) canvas {
-      max-height: calc(var(--app-vh, 100vh) - 320px) !important;
+      max-width: 100%;
+      margin-left: auto;
+      margin-right: auto;
     }
     body.mgp-themed-page .mgp-legacy-game-shell-dom #game-area,
     body.mgp-themed-page .mgp-legacy-game-shell-dom #battle-area,
@@ -1417,9 +1316,8 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page .mgp-legacy-game-shell-dom #board,
     body.mgp-themed-page .mgp-legacy-game-shell-dom #sudoku-grid,
     body.mgp-themed-page .mgp-legacy-game-shell-dom #grid-container {
-      max-height: calc(var(--app-vh, 100vh) - 200px) !important;
-      overflow-y: auto !important;
-      overflow-x: hidden !important;
+      overflow-y: auto;
+      overflow-x: hidden;
     }
 
     /* ── Buttons get flair ── */
@@ -1427,75 +1325,75 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page main [role="button"],
     body.mgp-themed-page > article button,
     body.mgp-themed-page main ~ article button {
-      border-radius: 12px !important;
-      font-weight: 600 !important;
-      min-height: 44px !important;
-      transition: transform 0.15s, box-shadow 0.15s, background-color 0.15s !important;
+      border-radius: 12px;
+      font-weight: 600;
+      min-height: 44px;
+      transition: transform 0.15s, box-shadow 0.15s, background-color 0.15s;
     }
     @media (hover: hover) {
       body.mgp-themed-page main button:hover,
       body.mgp-themed-page main [role="button"]:hover {
-        transform: translateY(-2px) !important;
-        box-shadow: 0 4px 16px -4px rgba(${C},0.4) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px -4px rgba(${C},0.4);
       }
     }
     body.mgp-themed-page main button:active,
     body.mgp-themed-page main [role="button"]:active {
-      transform: scale(0.97) !important;
+      transform: scale(0.97);
     }
 
     /* ── Scoped Tailwind button overrides (buttons only) ── */
     body.mgp-themed-page main button.text-sm,
     body.mgp-themed-page main select.text-sm {
-      font-size: 15px !important;
+      font-size: 15px;
     }
     body.mgp-themed-page main button.px-3,
     body.mgp-themed-page main select.px-3 {
-      padding-left: 16px !important; padding-right: 16px !important;
+      padding-left: 16px; padding-right: 16px;
     }
     body.mgp-themed-page main button.py-1,
     body.mgp-themed-page main select.py-1 {
-      padding-top: 8px !important; padding-bottom: 8px !important;
+      padding-top: 8px; padding-bottom: 8px;
     }
     body.mgp-themed-page main button.px-6 {
-      padding-left: 28px !important; padding-right: 28px !important;
+      padding-left: 28px; padding-right: 28px;
     }
     body.mgp-themed-page main button.py-2,
     body.mgp-themed-page main select.py-2 {
-      padding-top: 12px !important; padding-bottom: 12px !important;
+      padding-top: 12px; padding-bottom: 12px;
     }
     body.mgp-themed-page main button.py-3 {
-      padding-top: 16px !important; padding-bottom: 16px !important;
+      padding-top: 16px; padding-bottom: 16px;
     }
 
     /* ── Mobile: tablet ── */
     @media (max-width: 768px) {
       .mgp-scatter-emoji { opacity: 0.15; }
       .mgp-banner-e { font-size: 1rem; }
-      #mgp-header-emojis { gap: 3px !important; }
+      #mgp-header-emojis { gap: 3px; }
       body.mgp-themed-page main {
-        padding: 4px !important;
+        padding: 4px;
       }
       ${CONTENT} {
-        padding: 12px !important;
-        border-radius: 14px !important;
+        padding: 12px;
+        border-radius: 14px;
       }
     }
     /* ── Mobile: phone ── */
     @media (max-width: 480px) {
-      .mgp-scatter-emoji { opacity: 0.10; font-size: 80% !important; }
+      .mgp-scatter-emoji { opacity: 0.10; font-size: 80%; }
       .mgp-banner-e { font-size: 0.85rem; }
-      #mgp-header-emojis { gap: 2px !important; }
+      #mgp-header-emojis { gap: 2px; }
       body.mgp-themed-page main {
-        padding: 2px !important;
+        padding: 2px;
       }
       ${CONTENT} {
-        padding: 8px !important;
-        border-radius: 12px !important;
+        padding: 8px;
+        border-radius: 12px;
       }
       body.mgp-themed-page .action-btn,
       body.mgp-themed-page .bet-btn {
-        padding: 10px 20px !important; font-size: 14px !important;
+        padding: 10px 20px; font-size: 14px;
       }
     }
 
@@ -1515,14 +1413,14 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page .card-f:not(.face-down),
     body.mgp-themed-page .card-s.up,
     body.mgp-themed-page .ers-card.face-up {
-      background: linear-gradient(135deg, #FFFFFF 0%, #F3F4F6 100%) !important;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15), 0 1px 3px rgba(0,0,0,0.1) !important;
-      border: 1px solid rgba(0,0,0,0.08) !important;
+      background: linear-gradient(135deg, #FFFFFF 0%, #F3F4F6 100%);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15), 0 1px 3px rgba(0,0,0,0.1);
+      border: 1px solid rgba(0,0,0,0.08);
     }
     body.mgp-themed-page .ce-card.playable,
     body.mgp-themed-page .ht-card.playable,
     body.mgp-themed-page .card-el.playable {
-      animation: cardPulse 2s ease-in-out infinite !important;
+      animation: cardPulse 2s ease-in-out infinite;
     }
     @keyframes cardPulse {
       0%, 100% { box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
@@ -1532,8 +1430,8 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page .gf-card.selected,
     body.mgp-themed-page .ht-card.selected,
     body.mgp-themed-page .card.selected {
-      transform: translateY(-8px) !important;
-      box-shadow: 0 0 0 3px #3B82F6, 0 8px 20px rgba(0,0,0,0.2) !important;
+      transform: translateY(-8px);
+      box-shadow: 0 0 0 3px #3B82F6, 0 8px 20px rgba(0,0,0,0.2);
     }
     /* Card backs */
     body.mgp-themed-page .ce-card.disabled,
@@ -1544,9 +1442,9 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page .gf-back,
     body.mgp-themed-page .ht-card.face-down,
     body.mgp-themed-page .ers-card.face-down {
-      background: linear-gradient(135deg, #1E3A5F 0%, #2D1B69 50%, #1E3A5F 100%) !important;
-      border: 1px solid rgba(255,255,255,0.1) !important;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
+      background: linear-gradient(135deg, #1E3A5F 0%, #2D1B69 50%, #1E3A5F 100%);
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
     /* Preserve red/black card text colors */
     body.mgp-themed-page .ce-card.red,
@@ -1554,13 +1452,13 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page .ht-card.red,
     body.mgp-themed-page .card.red,
     body.mgp-themed-page .card-el .card-red,
-    body.mgp-themed-page .ers-card.red { color: #DC2626 !important; text-shadow: none !important; }
+    body.mgp-themed-page .ers-card.red { color: #DC2626; text-shadow: none; }
     body.mgp-themed-page .ce-card.blk,
     body.mgp-themed-page .gf-card.blk,
     body.mgp-themed-page .ht-card.black,
     body.mgp-themed-page .card.black,
     body.mgp-themed-page .card-el .card-black,
-    body.mgp-themed-page .ers-card.black { color: #1E293B !important; text-shadow: none !important; }
+    body.mgp-themed-page .ers-card.black { color: #1E293B; text-shadow: none; }
 
     /* ═══════════════════════════════════════════════════════════════
        FELT TABLE SURFACE — universal for card/casino game areas
@@ -1570,20 +1468,20 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page [style*="background: linear-gradient(160deg, #1a5c35"],
     body.mgp-themed-page .game-table,
     body.mgp-themed-page .mgp-table-surface {
-      position: relative !important;
-      overflow: hidden !important;
+      position: relative;
+      overflow: hidden;
     }
     body.mgp-themed-page [style*="background:linear-gradient(160deg,#1a5c35"]::before,
     body.mgp-themed-page [style*="background:linear-gradient(145deg,#1a5c35"]::before,
     body.mgp-themed-page [style*="background: linear-gradient(160deg, #1a5c35"]::before,
     body.mgp-themed-page .game-table::before,
     body.mgp-themed-page .mgp-table-surface::before {
-      content: '' !important;
-      position: absolute !important;
-      inset: 0 !important;
-      background: repeating-conic-gradient(rgba(255,255,255,0.03) 0% 25%, transparent 0% 50%) 0 0 / 4px 4px !important;
-      pointer-events: none !important;
-      border-radius: inherit !important;
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-conic-gradient(rgba(255,255,255,0.03) 0% 25%, transparent 0% 50%) 0 0 / 4px 4px;
+      pointer-events: none;
+      border-radius: inherit;
     }
 
     /* ═══════════════════════════════════════════════════════════════
@@ -1592,56 +1490,56 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page #game-over:not([style*="display:none"]):not([style*="display: none"]),
     body.mgp-themed-page [id$="-gameover"],
     body.mgp-themed-page .game-over-overlay {
-      background: rgba(15,23,42,0.92) !important;
-      backdrop-filter: blur(6px) !important;
-      -webkit-backdrop-filter: blur(6px) !important;
-      color: #fff !important;
-      border-radius: 16px !important;
-      padding: 24px !important;
-      text-align: center !important;
-      border: 1px solid rgba(255,255,255,0.1) !important;
+      background: rgba(15,23,42,0.92);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      color: #fff;
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.1);
     }
     body.mgp-themed-page #game-over h2,
     body.mgp-themed-page #game-over h3,
     body.mgp-themed-page #game-over [id*="title"],
     body.mgp-themed-page [id$="-gameover"] h2,
     body.mgp-themed-page .game-over-overlay h2 {
-      font-family: 'Space Grotesk', sans-serif !important;
-      font-size: 28px !important;
-      font-weight: 700 !important;
-      color: #fff !important;
-      margin-bottom: 8px !important;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 8px;
     }
     body.mgp-themed-page #game-over [id*="score"],
     body.mgp-themed-page [id$="-gameover"] [id*="score"],
     body.mgp-themed-page .game-over-score {
-      font-family: 'DM Mono', monospace !important;
-      font-size: 42px !important;
-      font-weight: 700 !important;
-      color: #F59E0B !important;
+      font-family: 'DM Mono', monospace;
+      font-size: 42px;
+      font-weight: 700;
+      color: #F59E0B;
     }
     body.mgp-themed-page #game-over button,
     body.mgp-themed-page [id$="-gameover"] button,
     body.mgp-themed-page .game-over-overlay button {
-      background: #3B82F6 !important;
-      color: #fff !important;
-      border: none !important;
-      border-radius: 10px !important;
-      padding: 12px 32px !important;
-      font-size: 15px !important;
-      font-weight: 700 !important;
-      font-family: 'Space Grotesk', sans-serif !important;
-      cursor: pointer !important;
-      margin-top: 16px !important;
-      transition: all 0.15s ease !important;
-      box-shadow: 0 4px 12px rgba(59,130,246,0.3) !important;
+      background: #3B82F6;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 32px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: 'Space Grotesk', sans-serif;
+      cursor: pointer;
+      margin-top: 16px;
+      transition: all 0.15s ease;
+      box-shadow: 0 4px 12px rgba(59,130,246,0.3);
     }
     body.mgp-themed-page #game-over button:hover,
     body.mgp-themed-page [id$="-gameover"] button:hover,
     body.mgp-themed-page .game-over-overlay button:hover {
-      background: #2563EB !important;
-      transform: translateY(-2px) !important;
-      box-shadow: 0 6px 20px rgba(59,130,246,0.4) !important;
+      background: #2563EB;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(59,130,246,0.4);
     }
 
     /* ═══════════════════════════════════════════════════════════════
@@ -1649,76 +1547,76 @@ function applyGamePageDecor(game) {
        ═══════════════════════════════════════════════════════════════ */
     body.mgp-themed-page .dice-face,
     body.mgp-themed-page .die {
-      background: linear-gradient(145deg, #FFFFFF 0%, #E5E7EB 100%) !important;
-      border-radius: 12px !important;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.15), 0 1px 3px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.8) !important;
+      background: linear-gradient(145deg, #FFFFFF 0%, #E5E7EB 100%);
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15), 0 1px 3px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.8);
     }
     body.mgp-themed-page .pip,
     body.mgp-themed-page .die-pip {
-      background: #1E293B !important;
-      border-radius: 50% !important;
-      box-shadow: inset 0 1px 2px rgba(0,0,0,0.3) !important;
+      background: #1E293B;
+      border-radius: 50%;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
     }
 
     /* ═══════════════════════════════════════════════════════════════
        CASINO ACCENT POLISH — emerald highlights for slot/roulette
        ═══════════════════════════════════════════════════════════════ */
     body.mgp-themed-page[data-game-slug="roulette"] .bet-chip {
-      box-shadow: 0 8px 18px rgba(15,23,42,0.24) !important;
+      box-shadow: 0 8px 18px rgba(15,23,42,0.24);
     }
     body.mgp-themed-page[data-game-slug="roulette"] .bet-chip.selected {
-      box-shadow: 0 0 0 3px #059669, 0 12px 26px rgba(5,150,105,0.45) !important;
-      transform: translateY(-3px) scale(1.14) !important;
+      box-shadow: 0 0 0 3px #059669, 0 12px 26px rgba(5,150,105,0.45);
+      transform: translateY(-3px) scale(1.14);
     }
     body.mgp-themed-page[data-game-slug="roulette"] .bet-cell {
-      position: relative !important;
-      overflow: visible !important;
+      position: relative;
+      overflow: visible;
     }
     body.mgp-themed-page[data-game-slug="roulette"] .bet-cell.has-bet {
-      box-shadow: inset 0 0 0 2px #059669, 0 0 0 1px rgba(16,185,129,0.2), 0 10px 24px rgba(5,150,105,0.24) !important;
-      transform: translateY(-1px) scale(1.02) !important;
+      box-shadow: inset 0 0 0 2px #059669, 0 0 0 1px rgba(16,185,129,0.2), 0 10px 24px rgba(5,150,105,0.24);
+      transform: translateY(-1px) scale(1.02);
     }
     body.mgp-themed-page[data-game-slug="roulette"] .bet-cell.has-bet::after {
-      content: '' !important;
-      position: absolute !important;
-      top: -6px !important;
-      right: -6px !important;
-      width: 15px !important;
-      height: 15px !important;
-      border-radius: 999px !important;
-      background: radial-gradient(circle at 35% 35%, #ECFDF5 0 24%, #10B981 25% 60%, #047857 61% 100%) !important;
-      border: 2px solid rgba(236,253,245,0.95) !important;
-      box-shadow: 0 4px 10px rgba(5,150,105,0.4), 0 0 0 3px rgba(5,150,105,0.12) !important;
-      animation: mgpChipStack 0.4s ease !important;
-      pointer-events: none !important;
+      content: '';
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      width: 15px;
+      height: 15px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 35% 35%, #ECFDF5 0 24%, #10B981 25% 60%, #047857 61% 100%);
+      border: 2px solid rgba(236,253,245,0.95);
+      box-shadow: 0 4px 10px rgba(5,150,105,0.4), 0 0 0 3px rgba(5,150,105,0.12);
+      animation: mgpChipStack 0.4s ease;
+      pointer-events: none;
     }
     @keyframes mgpChipStack {
       0% { transform: translateY(6px) scale(0.7); opacity: 0; }
       100% { transform: translateY(0) scale(1); opacity: 1; }
     }
     body.mgp-themed-page[data-game-slug="slot-machine"] .slot-window {
-      border-color: #059669 !important;
-      box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 0 14px rgba(5,150,105,0.35) !important;
+      border-color: #059669;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 0 14px rgba(5,150,105,0.35);
     }
     body.mgp-themed-page[data-game-slug="slot-machine"] .slot-light:nth-child(odd) {
-      background: #10B981 !important;
+      background: #10B981;
     }
     body.mgp-themed-page[data-game-slug="slot-machine"] .slot-light:nth-child(even) {
-      background: #34D399 !important;
+      background: #34D399;
     }
     body.mgp-themed-page[data-game-slug="slot-machine"] .mode-btn[style*="background:#f59e0b"],
     body.mgp-themed-page[data-game-slug="slot-machine"] .mode-btn[style*="background: #f59e0b"] {
-      background: #059669 !important;
-      border-color: #10B981 !important;
-      color: #ECFDF5 !important;
-      box-shadow: 0 10px 24px rgba(5,150,105,0.3) !important;
+      background: #059669;
+      border-color: #10B981;
+      color: #ECFDF5;
+      box-shadow: 0 10px 24px rgba(5,150,105,0.3);
     }
     body.mgp-themed-page[data-game-slug="spin-the-wheel"] #spin-btn,
     body.mgp-themed-page[data-game-slug="roulette"] #spin-btn {
-      background: linear-gradient(135deg, #10B981 0%, #047857 100%) !important;
-      border-color: #065F46 !important;
-      color: #ECFDF5 !important;
-      box-shadow: 0 10px 28px rgba(5,150,105,0.34) !important;
+      background: linear-gradient(135deg, #10B981 0%, #047857 100%);
+      border-color: #065F46;
+      color: #ECFDF5;
+      box-shadow: 0 10px 28px rgba(5,150,105,0.34);
     }
 
     /* ═══════════════════════════════════════════════════════════════
@@ -1732,19 +1630,19 @@ function applyGamePageDecor(game) {
     body.mgp-themed-page [id*="Timer"]:not(button),
     body.mgp-themed-page [id*="count"]:not(button):not(select),
     body.mgp-themed-page [id*="level"]:not(button):not(select):not(div[style*="display"]) {
-      font-family: 'DM Mono', monospace !important;
-      font-weight: 700 !important;
+      font-family: 'DM Mono', monospace;
+      font-weight: 700;
     }
 
     /* ═══════════════════════════════════════════════════════════════
        LEADERBOARD — consistent styling
        ═══════════════════════════════════════════════════════════════ */
     body.mgp-themed-page #mgp-leaderboard details {
-      background: rgba(255,255,255,0.97) !important;
-      border: 2px solid #E5E7EB !important;
-      border-radius: 12px !important;
-      padding: 12px 16px !important;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
+      background: rgba(255,255,255,0.97);
+      border: 2px solid #E5E7EB;
+      border-radius: 12px;
+      padding: 12px 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     }
   `;
 }
@@ -1814,12 +1712,10 @@ function renderFooter() {
   const footerHTML = `
     <footer style="background:#fff;border-top:1px solid #E2E8F0;padding:32px 24px 16px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;max-width:100%;">
       <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:#64748B;">
-        <img src="/images/logo.png" alt="MiniGamePlanet" style="height:34px;width:auto;flex-shrink:0;">
-        <span>&copy; 2026 Jagan Worldwide Games. All rights reserved.</span>
+        <img src="/images/logo.png" alt="Mini Game Planet" style="height:34px;width:auto;flex-shrink:0;">
+        <span>&copy; Mini Game Planet</span>
       </div>
       <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
-        <a href="/leaderboard" style="font-size:13px;color:#D97706;font-weight:600;text-decoration:none;" onmouseover="this.style.color='#B45309'" onmouseout="this.style.color='#D97706'">👑 Leaderboards</a>
-        <a href="/blog" style="font-size:13px;color:#64748B;text-decoration:none;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#64748B'">Blog</a>
         <a href="/about" style="font-size:13px;color:#64748B;text-decoration:none;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#64748B'">About</a>
         <a href="/privacy" style="font-size:13px;color:#64748B;text-decoration:none;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#64748B'">Privacy</a>
         <a href="/terms" style="font-size:13px;color:#64748B;text-decoration:none;" onmouseover="this.style.color='#0F172A'" onmouseout="this.style.color='#64748B'">Terms</a>
@@ -1886,7 +1782,7 @@ function renderRelatedGames(currentSlug, category) {
   if (related.length === 0) return;
 
   el.innerHTML = `
-    <section style="max-width:min(100vw,1100px);margin:0 auto;padding:16px;">
+    <section style="max-width:min(100%,960px);margin:0 auto;padding:16px;">
       <h3 style="font-size:18px;font-weight:700;color:#0F172A;margin-bottom:16px;">More Games You'll Love</h3>
       <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;" class="sm:grid-cols-2 md:grid-cols-4">
         ${related.map(g => buildGameCard(g)).join('')}
@@ -1925,8 +1821,8 @@ function applyCardGrid(container) {
   style.textContent = `
     @media(min-width:640px){#related-games .sm\\:grid-cols-2{grid-template-columns:repeat(2,1fr);}}
     @media(min-width:768px){#related-games .md\\:grid-cols-4{grid-template-columns:repeat(4,1fr);}}
-    .game-tile:hover .tile-play-cta{opacity:1!important;transform:translateX(0)!important;}
-    .game-tile:hover .tile-bg-emoji{opacity:0.18!important;transform:rotate(-8deg) scale(1.05)!important;}
+    .game-tile:hover .tile-play-cta{opacity:1;transform:translateX(0);}
+    .game-tile:hover .tile-bg-emoji{opacity:0.18;transform:rotate(-8deg) scale(1.05);}
   `;
   if (!document.getElementById('tile-hover-styles')) {
     style.id = 'tile-hover-styles';
@@ -2002,58 +1898,58 @@ function injectCategoryAtmosphere(game) {
       body.mgp-themed-page [style*="background:#0F"],
       body.mgp-themed-page [style*="background:#0f"],
       body.mgp-themed-page #game-area {
-        background: linear-gradient(160deg, #0d3320 0%, #072015 100%) !important;
+        background: linear-gradient(160deg, #0d3320 0%, #072015 100%);
       }
     `,
     Arcade: `
       body.mgp-themed-page canvas {
-        box-shadow: 0 0 0 3px rgba(0,255,255,0.4), 0 0 20px rgba(0,255,255,0.3), 0 0 60px rgba(0,255,255,0.15), 0 16px 40px -12px rgba(0,0,0,0.6) !important;
+        box-shadow: 0 0 0 3px rgba(0,255,255,0.4), 0 0 20px rgba(0,255,255,0.3), 0 0 60px rgba(0,255,255,0.15), 0 16px 40px -12px rgba(0,0,0,0.6);
       }
     `,
     Action: `
       body.mgp-themed-page canvas {
-        box-shadow: 0 0 0 3px rgba(255,100,0,0.4), 0 0 20px rgba(255,100,0,0.3), 0 0 60px rgba(255,100,0,0.15), 0 16px 40px -12px rgba(0,0,0,0.6) !important;
+        box-shadow: 0 0 0 3px rgba(255,100,0,0.4), 0 0 20px rgba(255,100,0,0.3), 0 0 60px rgba(255,100,0,0.15), 0 16px 40px -12px rgba(0,0,0,0.6);
       }
     `,
     Puzzle: `
       body.mgp-themed-page main > div:first-child,
       body.mgp-themed-page main > .card:first-child {
-        background: #FAFBFC !important;
+        background: #FAFBFC;
       }
     `,
     Math: `
       body.mgp-themed-page main > div:first-child,
       body.mgp-themed-page main > .card:first-child {
-        background: #F8FAFF !important;
+        background: #F8FAFF;
       }
     `,
     Word: `
       body.mgp-themed-page main > div:first-child,
       body.mgp-themed-page main > .card:first-child {
-        background: #FAF8F5 !important;
+        background: #FAF8F5;
       }
     `,
     Board: `
       body.mgp-themed-page #chess-board,
       body.mgp-themed-page #board,
       body.mgp-themed-page [id*="board"] {
-        box-shadow: 0 4px 20px rgba(0,0,0,0.3) !important;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
       }
     `,
     Strategy: `
       body.mgp-themed-page #chess-board,
       body.mgp-themed-page #board {
-        box-shadow: 0 4px 20px rgba(0,0,0,0.3) !important;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
       }
     `,
     Casual: `
       body.mgp-themed-page main > div:first-child {
-        background: #FFFBF5 !important;
+        background: #FFFBF5;
       }
     `,
     Builder: `
       body.mgp-themed-page main > div:first-child {
-        background: #F5F7FA !important;
+        background: #F5F7FA;
       }
     `
   };
@@ -2095,11 +1991,11 @@ function ensureMgpCoreStyles() {
     style.id = 'mgp-card-core-overrides';
     style.textContent = `
       .mgp-card-core-page #mgp-card-legacy-root > div > div:first-child {
-        display: none !important;
+        display: none;
       }
       .mgp-card-core-page #mgp-card-legacy-root {
-        width: 100% !important;
-        max-width: 100% !important;
+        width: 100%;
+        max-width: 100%;
       }
       body.mgp-card-core-page .mgp-theme-felt {
         background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E"), linear-gradient(135deg, #1a472a 0%, #0d2818 100%);
@@ -2120,8 +2016,8 @@ function ensureMgpCoreStyles() {
       body.mgp-card-core-page #ers-table::before,
       body.mgp-card-core-page [style*="background:#0F"]::before,
       body.mgp-card-core-page [style*="background:#0f"]::before {
-        content: none !important;
-        display: none !important;
+        content: none;
+        display: none;
       }
       .mgp-card-core-page .mgp-theme-felt,
       .mgp-card-core-page .mgp-game-wrapper,
@@ -2160,7 +2056,7 @@ function ensureMgpCoreStyles() {
         transform: translateZ(0);
         backface-visibility: hidden;
         -webkit-backface-visibility: hidden;
-        transition-property: box-shadow, filter, border-color, background-color, opacity !important;
+        transition-property: box-shadow, filter, border-color, background-color, opacity;
       }
       .mgp-card-core-page .card::before,
       .mgp-card-core-page .wc::before,
@@ -2178,7 +2074,7 @@ function ensureMgpCoreStyles() {
       .mgp-card-core-page .pt-card::before,
       .mgp-card-core-page .pr-card::before,
       .mgp-card-core-page .gr-card::before {
-        pointer-events: none !important;
+        pointer-events: none;
         z-index: 0;
       }
       .mgp-card-core-page .card::after,
@@ -2197,7 +2093,7 @@ function ensureMgpCoreStyles() {
       .mgp-card-core-page .pt-card::after,
       .mgp-card-core-page .pr-card::after,
       .mgp-card-core-page .gr-card::after {
-        pointer-events: none !important;
+        pointer-events: none;
       }
       .mgp-card-core-page .card > *,
       .mgp-card-core-page .wc > *,
@@ -2252,36 +2148,37 @@ function ensureMgpCoreStyles() {
       .mgp-card-core-page .card:hover,
       .mgp-card-core-page .wc:hover,
       .mgp-card-core-page .hl-card:hover {
-        transform: translateZ(0) !important;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.22), 0 2px 6px rgba(0,0,0,0.12) !important;
+        transform: translateZ(0);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.22), 0 2px 6px rgba(0,0,0,0.12);
         filter: brightness(1.02);
       }
       .mgp-casino-core-page #mgp-casino-legacy-root {
-        width: 100% !important;
-        max-width: 100% !important;
+        width: 100%;
+        max-width: 100%;
       }
       .mgp-casino-core-page #mgp-casino-legacy-root > article,
       .mgp-casino-core-page #mgp-casino-legacy-root > section {
-        margin-bottom: 0 !important;
+        margin-bottom: 0;
       }
       .mgp-casino-core-page #mgp-casino-legacy-root .prose {
-        max-width: none !important;
+        max-width: none;
       }
       .mgp-arcade-core-page #mgp-arcade-legacy-root {
-        width: 100% !important;
-        max-width: 100% !important;
+        width: 100%;
+        max-width: 100%;
       }
       .mgp-arcade-core-page #mgp-arcade-legacy-root .prose {
-        max-width: none !important;
+        max-width: none;
       }
       .mgp-arcade-core-page #mgp-arcade-legacy-root canvas,
       .mgp-arcade-core-page #mgp-arcade-legacy-root #gameCanvas,
       .mgp-arcade-core-page #mgp-arcade-legacy-root #game-canvas {
-        display: block !important;
-        max-width: 100% !important;
-        height: auto !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        margin-left: auto;
+        margin-right: auto;
       }
     `;
     document.head.appendChild(style);
@@ -2371,14 +2268,8 @@ function initCardCoreShell(game) {
 
   const legacyRoot = main;
   legacyRoot.id = legacyRoot.id || 'mgp-card-legacy-root';
-  legacyRoot.style.width = '100%';
-  legacyRoot.style.maxWidth = '100%';
-  legacyRoot.style.position = 'relative';
-  legacyRoot.style.margin = '0';
-  legacyRoot.style.padding = '0';
   article?.remove();
   related?.remove();
-  footer?.remove();
 
   MGP.init({
     slug: game.slug,
@@ -2417,14 +2308,8 @@ function initCasinoCoreShell(game) {
 
   const legacyRoot = main;
   legacyRoot.id = legacyRoot.id || 'mgp-casino-legacy-root';
-  legacyRoot.style.width = '100%';
-  legacyRoot.style.maxWidth = '100%';
-  legacyRoot.style.position = 'relative';
-  legacyRoot.style.margin = '0';
-  legacyRoot.style.padding = '0';
 
   related?.remove();
-  footer?.remove();
 
   MGP.init({
     slug: game.slug,
@@ -2470,14 +2355,8 @@ function initArcadeCoreShell(game) {
   }
 
   legacyRoot.id = legacyRoot.id || 'mgp-arcade-legacy-root';
-  legacyRoot.style.width = '100%';
-  legacyRoot.style.maxWidth = '100%';
-  legacyRoot.style.position = 'relative';
-  legacyRoot.style.margin = '0';
-  legacyRoot.style.padding = '0';
 
   related?.remove();
-  footer?.remove();
 
   MGP.init({
     slug: game.slug,
@@ -2517,6 +2396,7 @@ export function initToolPage(slug) {
   if (game?.category === 'Card') {
     renderNav(gameName);
     initCardCoreShell(game);
+    renderFooter();
     if (game) {
       applyGamePageDecor(game);
       injectControlsHint(game);
@@ -2528,6 +2408,7 @@ export function initToolPage(slug) {
   if (game?.category === 'Casino') {
     renderNav(gameName);
     initCasinoCoreShell(game);
+    renderFooter();
     if (game) {
       applyGamePageDecor(game);
       injectCategoryAtmosphere(game);
@@ -2540,6 +2421,7 @@ export function initToolPage(slug) {
   if (game?.category === 'Arcade') {
     renderNav(gameName);
     initArcadeCoreShell(game);
+    renderFooter();
     if (game) {
       applyGamePageDecor(game);
       injectCategoryAtmosphere(game);
@@ -2567,8 +2449,8 @@ export function initToolPage(slug) {
     const style = document.createElement('style');
     style.id = 'tile-hover-styles';
     style.textContent = `
-      .game-tile:hover .tile-play-cta{opacity:1!important;transform:translateX(0)!important;}
-      .game-tile:hover .tile-bg-emoji{opacity:0.18!important;transform:rotate(-8deg) scale(1.05)!important;}
+      .game-tile:hover .tile-play-cta{opacity:1;transform:translateX(0);}
+      .game-tile:hover .tile-bg-emoji{opacity:0.18;transform:rotate(-8deg) scale(1.05);}
     `;
     document.head.appendChild(style);
   }

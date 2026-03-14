@@ -20,15 +20,16 @@
 }
 
 .mgp-game-wrapper {
-  width: min(100%, 900px);
-  margin: 0 auto;
+  width: 100%;
+  max-width: 960px;
+  margin-left: auto;
+  margin-right: auto;
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
   position: relative;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto auto;
-  max-height: calc(var(--app-vh, 100vh) - 80px);
 }
 
 .mgp-theme-light {
@@ -43,13 +44,13 @@
 .mgp-theme-dark .mgp-score-bar { color: #F1F5F9; }
 
 body.mgp-arcade-core-page {
-  background: #F5F5F4 !important;
+  background: #F5F5F4;
   color: #0F172A;
 }
 
 body.mgp-arcade-core-page #mgp-game-bg,
 body.mgp-arcade-core-page #mgp-emoji-scatter {
-  display: none !important;
+  display: none;
 }
 
 body.mgp-arcade-core-page .mgp-page {
@@ -107,12 +108,15 @@ body.mgp-arcade-core-page .mgp-game-area {
 body.mgp-arcade-core-page #mgp-arcade-legacy-root #soundToggle,
 body.mgp-arcade-core-page #mgp-arcade-legacy-root #sound-toggle,
 body.mgp-arcade-core-page #mgp-arcade-legacy-root #sound-btn {
-  display: none !important;
+  display: none;
 }
 
 body.mgp-arcade-core-page #mgp-arcade-legacy-root canvas {
   border-radius: 16px;
   border: 1px solid rgba(103, 232, 249, 0.2);
+  width: 100%;
+  max-width: 100%;
+  height: auto;
   box-shadow:
     0 0 0 2px rgba(6, 182, 212, 0.16),
     0 0 36px rgba(34, 211, 238, 0.18),
@@ -145,7 +149,7 @@ body.mgp-arcade-core-page .mgp-related-card {
 }
 
 body.mgp-arcade-core-page .mgp-related-card-info {
-  background: linear-gradient(180deg, rgba(248, 250, 252, 0.96) 0%, rgba(241, 245, 249, 1) 100%);
+  background: linear-gradient(180deg, rgba(248,250,252,0.96) 0%, rgba(241,245,249,1) 100%);
 }
 
 body.mgp-arcade-core-page .mgp-seo-content h2,
@@ -157,17 +161,128 @@ body.mgp-arcade-core-page .mgp-related-games h3 {
 
 body.mgp-arcade-core-page .mgp-seo-content p,
 body.mgp-arcade-core-page .mgp-seo-content li,
+body.mgp-arcade-core-page .mgp-seo-content strong,
 body.mgp-arcade-core-page .mgp-footer,
 body.mgp-arcade-core-page .mgp-footer a,
 body.mgp-arcade-core-page .mgp-leaderboard-name,
 body.mgp-arcade-core-page .mgp-leaderboard-score {
   color: #334155;
   opacity: 1;
+  text-shadow: none;
+  -webkit-text-fill-color: currentColor;
 }
 
 body.mgp-arcade-core-page .mgp-seo-content a,
 body.mgp-arcade-core-page .mgp-footer a {
-  color: #0891B2;
+  color: rgb(var(--mgp-accent-rgb, 8, 145, 178));
+}
+
+/* === THEMED PAGE BACKGROUND === */
+
+body.mgp-themed-page {
+  background: #F5F5F4;
+  color: #0F172A;
+  position: relative;
+}
+
+body.mgp-themed-page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: var(--mgp-theme-bg, #F5F5F4);
+  opacity: 0.12;
+  pointer-events: none;
+  z-index: 0;
+}
+
+body.mgp-themed-page > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* === THEMED PAGE — below-wrapper sections on light bg === */
+
+body.mgp-themed-page .mgp-page-content {
+  max-width: min(100%, 1200px);
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.mgp-game-wrapper,
+body.mgp-themed-page .mgp-leaderboard,
+body.mgp-themed-page .mgp-related-games,
+body.mgp-themed-page .mgp-seo-content {
+  width: 100%;
+  max-width: 960px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+body.mgp-themed-page .mgp-leaderboard,
+body.mgp-themed-page .mgp-seo-content,
+body.mgp-themed-page .mgp-footer,
+body.mgp-themed-page .mgp-related-card {
+  background: #FFFFFF;
+  color: #0F172A;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+body.mgp-themed-page .mgp-related-card-info {
+  background: linear-gradient(180deg, rgba(248,250,252,0.96) 0%, rgba(241,245,249,1) 100%);
+}
+
+body.mgp-themed-page .mgp-leaderboard-header,
+body.mgp-themed-page .mgp-leaderboard-row,
+body.mgp-themed-page .mgp-leaderboard-name,
+body.mgp-themed-page .mgp-leaderboard-score,
+body.mgp-themed-page .mgp-related-games h3,
+body.mgp-themed-page .mgp-seo-content,
+body.mgp-themed-page .mgp-seo-content h2,
+body.mgp-themed-page .mgp-seo-content h3,
+body.mgp-themed-page .mgp-seo-content p,
+body.mgp-themed-page .mgp-seo-content li,
+body.mgp-themed-page .mgp-seo-content strong,
+body.mgp-themed-page .mgp-footer,
+body.mgp-themed-page .mgp-footer a {
+  color: #0F172A;
+  text-shadow: none;
+  -webkit-text-fill-color: currentColor;
+}
+
+body.mgp-themed-page .mgp-seo-content a,
+body.mgp-themed-page .mgp-footer a:hover {
+  color: rgb(var(--mgp-accent-rgb, 37, 99, 235));
+}
+
+/* Legacy themed pages: related-games and footer containers */
+body.mgp-themed-page #related-games {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  max-width: min(100%, 960px);
+  margin: 24px auto 0;
+  overflow-x: hidden;
+}
+
+body.mgp-themed-page #footer-container {
+  width: 100%;
+  max-width: 960px;
+  margin: 24px auto 0;
+}
+
+/* === LEGACY ROOT SIZING (Card / Casino / Arcade shell paths) === */
+
+#mgp-card-legacy-root,
+#mgp-casino-legacy-root,
+#mgp-arcade-legacy-root {
+  width: 100%;
+  max-width: 100%;
+  position: relative;
+  margin: 0;
+  padding: 0;
 }
 
 .mgp-theme-felt {
@@ -275,15 +390,13 @@ body.mgp-card-core-page .mgp-theme-felt::before {
   width: 100%;
   overflow: hidden;
   min-height: 0;
-  max-height: calc(var(--app-vh, 100vh) - 200px);
 }
 
 .mgp-game-content {
   width: 100%;
-  max-width: 900px;
+  max-width: 100%;
   margin: 0 auto;
   min-height: 0;
-  max-height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -291,7 +404,7 @@ body.mgp-card-core-page .mgp-theme-felt::before {
 
 .mgp-game-content > * {
   width: 100%;
-  max-width: 900px !important;
+  max-width: 100%;
   margin-left: auto;
   margin-right: auto;
 }
@@ -316,19 +429,19 @@ body.mgp-card-core-page .mgp-theme-felt::before {
 .mgp-game-content #gameWrapper,
 .mgp-game-content .touch-zone,
 .mgp-game-content [style*="max-width"] {
-  display: block !important;
-  width: 100% !important;
-  max-width: min(100%, 900px) !important;
+  display: block;
+  width: 100%;
+  max-width: 100%;
 }
 
 .mgp-game-area canvas,
 .mgp-game-content canvas {
   display: block;
-  width: auto;
-  max-width: min(100%, 900px);
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 100%;
   height: auto;
-  max-height: calc(var(--app-vh, 100vh) - 200px);
-  object-fit: contain;
 }
 
 .mgp-controls-bar {
@@ -722,14 +835,8 @@ body.mgp-card-core-page .mgp-footer {
   .mgp-related-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
   .mgp-game-wrapper {
     width: 100%;
-    max-height: calc(var(--app-vh, 100vh) - 80px);
   }
   .mgp-game-area {
-    max-height: calc(var(--app-vh, 100vh) - 140px);
     padding: 12px;
-  }
-  .mgp-game-area canvas,
-  .mgp-game-content canvas {
-    max-height: calc(var(--app-vh, 100vh) - 140px);
   }
 }

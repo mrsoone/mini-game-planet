@@ -3,7 +3,6 @@ import MGPEffects from '/js/effects.js';
 import { games } from '/data/games.js';
 import { getPlayer, getLeaderboard, submitStats, setPlayerName } from '/js/player.js';
 import { trackGameView, trackGameStart, trackGameOver } from '/js/analytics.js';
-import { openConsentBanner } from '/js/consent.js';
 
 const CATEGORY_THEMES = {
   Arcade: 'dark', Action: 'dark',
@@ -147,73 +146,6 @@ function makeButton(label, className, onClick, icon = '') {
   button.textContent = icon ? `${icon} ${label}` : label;
   button.addEventListener('click', onClick);
   return button;
-}
-
-function buildFooter() {
-  const footer = document.createElement('div');
-  footer.className = 'mgp-footer';
-
-  const links = [
-    ['/about', 'About'],
-    ['/privacy', 'Privacy'],
-    ['/terms', 'Terms'],
-    ['/cookies', 'Cookies'],
-    ['/licenses', 'Licenses']
-  ];
-
-  footer.style.display = 'flex';
-  footer.style.alignItems = 'center';
-  footer.style.justifyContent = 'space-between';
-  footer.style.flexWrap = 'wrap';
-  footer.style.gap = '12px';
-
-  const brand = document.createElement('div');
-  brand.style.display = 'flex';
-  brand.style.alignItems = 'center';
-  brand.style.gap = '10px';
-  brand.style.fontSize = '14px';
-
-  const logo = document.createElement('img');
-  logo.src = '/images/logo.png';
-  logo.alt = 'Mini Game Planet';
-  logo.style.height = '34px';
-  logo.style.width = 'auto';
-  logo.style.flexShrink = '0';
-
-  const brandText = document.createElement('span');
-  brandText.textContent = '© Mini Game Planet';
-
-  brand.append(logo, brandText);
-
-  const wrapper = document.createElement('div');
-  wrapper.style.display = 'flex';
-  wrapper.style.alignItems = 'center';
-  wrapper.style.gap = '12px';
-  wrapper.style.flexWrap = 'wrap';
-  links.forEach(([href, label]) => {
-    const link = document.createElement('a');
-    link.href = href;
-    link.textContent = label;
-    wrapper.appendChild(link);
-  });
-
-  const cookieBtn = document.createElement('button');
-  cookieBtn.type = 'button';
-  cookieBtn.textContent = 'Cookie Settings';
-  cookieBtn.style.background = '#F8FAFC';
-  cookieBtn.style.border = '1px solid #E2E8F0';
-  cookieBtn.style.padding = '6px 10px';
-  cookieBtn.style.borderRadius = '999px';
-  cookieBtn.style.marginLeft = '0';
-  cookieBtn.style.cursor = 'pointer';
-  cookieBtn.style.textDecoration = 'none';
-  cookieBtn.style.font = 'inherit';
-  cookieBtn.style.color = '#334155';
-  cookieBtn.addEventListener('click', () => openConsentBanner());
-  wrapper.appendChild(cookieBtn);
-
-  footer.append(brand, wrapper);
-  return footer;
 }
 
 function buildLeaderboard() {
@@ -521,8 +453,6 @@ function buildLayout(content) {
     seo.innerHTML = seoSource.innerHTML;
     content.appendChild(seo);
   }
-
-  content.appendChild(buildFooter());
 }
 
 function bindKeys() {
